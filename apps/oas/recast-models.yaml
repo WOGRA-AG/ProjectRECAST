@@ -1,0 +1,12 @@
+openapi: 3.0.3
+info:
+  title: Recast Models
+  description: Models for Recast Project
+  version: 1.0.0
+
+paths: {}
+
+components:
+  schemas:
+    Message:
+      type: string
