@@ -1,6 +1,11 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
+  "cli": {
+    "cache": {
+      "environment": "ci"
+    }
+  },
   "newProjectRoot": "projects",
   "projects": {
     "recast": {
@@ -15,7 +20,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/recast",
             "index": "src/index.html",
@@ -30,7 +35,10 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "customWebpackConfig": {
+              "path": "config/webpack.config.js"
+            }
           },
           "configurations": {
             "production": {
@@ -66,25 +74,31 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "configurations": {
             "production": {
               "browserTarget": "recast:build:production"
             },
             "development": {
               "browserTarget": "recast:build:development"
+            },
+            "customWebpackConfig": {
+              "path": "config/webpack.config.js"
             }
           },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular-builders/custom-webpack:extract-i18n",
           "options": {
-            "browserTarget": "recast:build"
+            "browserTarget": "recast:build",
+            "customWebpackConfig": {
+              "path": "config/webpack.config.js"
+            }
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular-builders/custom-webpack:karma",
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
@@ -98,7 +112,10 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "customWebpackConfig": {
+              "path": "config/webpack.config.js"
+            }
           }
         }
       }

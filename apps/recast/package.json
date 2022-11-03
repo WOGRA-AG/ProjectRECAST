@@ -13,6 +13,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-builders/custom-webpack": "^14.0.1",
     "@angular/animations": "^14.2.0",
     "@angular/common": "^14.2.0",
     "@angular/compiler": "^14.2.0",
@@ -22,6 +23,8 @@
     "@angular/platform-browser-dynamic": "^14.2.0",
     "@angular/router": "^14.2.0",
     "@supabase/supabase-js": "^2.0.5",
+    "node-sass": "^7.0.3",
+    "node-sass-json-importer": "^4.3.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

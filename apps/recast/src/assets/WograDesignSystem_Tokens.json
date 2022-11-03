@@ -1,5 +1,5 @@
 {
-  "WOGRA Design System": {
+  "light": {
     "--WOGRA-spacing-2px": {
       "value": "2",
       "type": "spacing"
