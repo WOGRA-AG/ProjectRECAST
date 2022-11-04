@@ -217,10 +217,17 @@
       "type": "color"
     }
   },
+  "dark": {
+    "Background": {
+      "value": "#0000",
+      "type": "color"
+    }
+  },
   "$themes": [],
   "$metadata": {
     "tokenSetOrder": [
-      "WOGRA Design System"
+      "light",
+      "dark"
     ]
   }
 }
