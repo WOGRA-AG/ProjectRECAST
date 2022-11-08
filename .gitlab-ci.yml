@@ -8,7 +8,7 @@ stages:
 variables:
   SWAGGER_CLI_VERSION: 4.0.4
 
-job-manager-validate-oas:
+validate-oas:
   extends:
     - .validate-oas
   variables:
