@@ -5,7 +5,7 @@
 >
   <div>
     <label for="email">Email</label>
-    <input id="email" type="text" [value]="session.user.email" disabled />
+    <input id="email" type="text" [value]="session?.user?.email" disabled />
   </div>
   <div>
     <label for="username">Name</label>
@@ -17,12 +17,12 @@
   </div>
 
   <div>
-    <button type="submit" class="button primary block" [disabled]="loading">
+    <button type="submit" mat-flat-button color="primary" [disabled]="loading">
       {{ loading ? 'Loading ...' : 'Update' }}
     </button>
   </div>
 
   <div>
-    <button class="button block" (click)="signOut()">Sign Out</button>
+    <button mat-flat-button color="warn" (click)="signOut()">Sign Out</button>
   </div>
 </form>

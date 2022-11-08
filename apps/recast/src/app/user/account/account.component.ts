@@ -12,8 +12,7 @@ export class AccountComponent implements OnInit {
   loading = false
   profile!: Profile
 
-  @Input()
-  session!: AuthSession
+  session = this.supabase.session
 
   updateProfileForm = this.formBuilder.group({
     username: '',
@@ -43,6 +42,9 @@ export class AccountComponent implements OnInit {
   }
 
   async getProfile() {
+    if (!this.session) {
+      return;
+    }
     try {
       this.loading = true
       const { user } = this.session
@@ -65,6 +67,9 @@ export class AccountComponent implements OnInit {
   }
 
   async updateProfile(): Promise<void> {
+    if (!this.session) {
+      return;
+    }
     try {
       this.loading = true
       const { user } = this.session

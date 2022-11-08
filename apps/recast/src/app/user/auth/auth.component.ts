@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { FormBuilder } from '@angular/forms'
 import { SupabaseService } from '../../services/supabase.service'
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent {
   loading = false
 
   signInForm = this.formBuilder.group({
@@ -16,24 +17,23 @@ export class AuthComponent implements OnInit {
 
   constructor(
     private readonly supabase: SupabaseService,
-    private readonly formBuilder: FormBuilder
-  ) {}
-
-  ngOnInit(): void {}
+    private readonly formBuilder: FormBuilder,
+  ) {
+  }
 
   async onSubmit(): Promise<void> {
     try {
       this.loading = true
       const email = this.signInForm.value.email as string
-      const { error } = await this.supabase.signIn(email)
+      const { error } = await this.supabase.signIn()
       if (error) throw error
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message)
       }
     } finally {
-      this.signInForm.reset()
-      this.loading = false
+      this.signInForm.reset();
+      this.loading = false;
     }
   }
 }

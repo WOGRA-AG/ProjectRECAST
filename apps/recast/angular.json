@@ -4,7 +4,8 @@
   "cli": {
     "cache": {
       "environment": "ci"
-    }
+    },
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -13,6 +14,9 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
         }
       },
       "root": "",
@@ -33,9 +37,11 @@
               "src/assets"
             ],
             "styles": [
+              "src/app/material/recast-material-theme.scss",
               "src/styles.scss"
             ],
             "scripts": [],
+            "baseHref": ".",
             "customWebpackConfig": {
               "path": "config/webpack.config.js"
             }
@@ -64,7 +70,7 @@
             },
             "development": {
               "buildOptimizer": false,
-              "optimization": false,
+              "optimization": true,
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
@@ -110,6 +116,7 @@
               "src/assets"
             ],
             "styles": [
+              "src/app/material/recast-material-theme.scss",
               "src/styles.scss"
             ],
             "scripts": [],

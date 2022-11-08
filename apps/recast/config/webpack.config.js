@@ -8,7 +8,7 @@ module.exports = {
         {
           loader: require.resolve('sass-loader'),
           options: {
-            implementation: require('node-sass'),
+            implementation: require('sass'),
             sassOptions: {
               // bootstrap-sass requires a minimum precision of 8
               precision: 8,

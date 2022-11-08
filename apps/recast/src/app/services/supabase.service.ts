@@ -58,7 +58,7 @@ export class SupabaseService {
     return this.supabase.auth.onAuthStateChange(callback)
   }
 
-  signIn(email: string) {
+  signIn() {
     return this.supabase.auth.signInWithOAuth({ provider: 'keycloak' })
   }
 

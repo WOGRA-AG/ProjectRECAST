@@ -8,5 +8,80 @@ paths: {}
 
 components:
   schemas:
-    Message:
-      type: string
+    Bauteil:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/BauteilEigenschaft'
+
+    BauteilEigenschaft:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          nullable: true
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum:
+            - string
+            - number
+            - file
+
+    Workflow:
+      properties:
+        bauteile:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bauteil'
+        stage:
+          $ref: '#/components/schemas/BauteilEigenschaft'
+
+    Balloon:
+      properties:
+        color:
+          type: string
+          description: color of balloon
+          enum:
+            - red
+            - blue
+            - yellow
+          default: red
+        diameter:
+          type: number
+          description: diameter not inflated in cm
+          default: 5
+        size:
+          type: number
+          description: diameter inflated in cm
+        image:
+          type: string
+          format: byte
+          description: image of inflated balloon
+
+    Cat:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: the name of the cat
+        color:
+          type: string
+          enum:
+            - red
+            - orange
+            - brown
+            - grey
+          description: the color of the cat
+        weight:
+          type: number
+          description: weight in kg

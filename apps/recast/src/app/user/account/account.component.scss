@@ -1,7 +1,8 @@
 @import "src/assets/WograDesignSystem_Tokens.json";
 
-$spacing-light: map-get($light, "--wogra-spacing-2px");
+$spacing-light: map-get($light, --wogra-spacing-2px);
 $primary-light: map-get($light, --wogra-color-primary-600);
+
 .primary {
   padding: map-get($spacing-light, value);
   color: map-get($primary-light, value);

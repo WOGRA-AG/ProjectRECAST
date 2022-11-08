@@ -1,0 +1,39 @@
+include:
+  - local: 'gitlab/shared/.gitlab-ci.build-production.yml'
+
+.build-frontend:
+  stage: build
+  needs: [ ]
+  image: $CI_REGISTRY/developer/images/node-java:node-16-jre-11
+  script:
+    - cd $DIR
+    - npm ci --cache .npm_cache
+    - npm run lint
+    - npm run build
+
+build-frontend:
+  extends:
+    - .build-frontend
+  variables:
+    DIR: 'apps/recast'
+    IMG_NAME: 'frontend'
+  artifacts:
+    paths:
+      - apps/recast/dist/recast
+  cache:
+    key: frontend
+    paths:
+      - apps/recast/node_modules
+      - apps/recast/.npm_cache
+
+build-frontend-image:
+  extends:
+    - .build-production
+  needs:
+    - build-frontend
+  dependencies:
+    - build-frontend
+  variables:
+    DOCKERFILE: 'apps/recast/Dockerfile'
+    IMG_NAME: 'frontend'
+    BUILD_CONTEXT: 'apps/recast'
