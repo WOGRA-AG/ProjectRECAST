@@ -1,6 +1,6 @@
-import { Component } from '@angular/core'
-import { FormBuilder } from '@angular/forms'
-import { SupabaseService } from '../../services/supabase.service'
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { SupabaseService } from '../../services/supabase.service';
 import {Router} from '@angular/router';
 
 @Component({
@@ -9,11 +9,11 @@ import {Router} from '@angular/router';
   styleUrls: ['./auth.component.scss'],
 })
 export class AuthComponent {
-  loading = false
+  loading = false;
 
   signInForm = this.formBuilder.group({
     email: '',
-  })
+  });
 
   constructor(
     private readonly supabase: SupabaseService,
@@ -23,12 +23,11 @@ export class AuthComponent {
 
   async onSubmit(): Promise<void> {
     try {
-      this.loading = true
-      const email = this.signInForm.value.email as string
-      await this.supabase.signIn()
+      this.loading = true;
+      await this.supabase.signIn();
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message)
+        alert(error.message);
       }
     } finally {
       this.signInForm.reset();

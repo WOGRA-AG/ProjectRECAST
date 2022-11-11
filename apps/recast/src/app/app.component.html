@@ -1,7 +1,3 @@
 <div class="container">
-  <router-outlet *ngIf="isAuthenticated() else auth"></router-outlet>
+  <router-outlet></router-outlet>
 </div>
-
-<ng-template #auth>
-  <app-auth></app-auth>
-</ng-template>
