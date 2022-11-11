@@ -8,12 +8,10 @@ const routes: Routes = [
   {
     path: 'login',
     component: AuthComponent,
-    runGuardsAndResolvers: 'always',
   },
   {
     path: 'profile',
     component: AccountComponent,
-    runGuardsAndResolvers: 'always',
   },
   {
     path: '',

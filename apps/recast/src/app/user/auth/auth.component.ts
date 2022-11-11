@@ -25,8 +25,7 @@ export class AuthComponent {
     try {
       this.loading = true
       const email = this.signInForm.value.email as string
-      const { error } = await this.supabase.signIn()
-      if (error) throw error
+      await this.supabase.signIn()
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message)

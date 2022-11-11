@@ -45,43 +45,24 @@ components:
         stage:
           $ref: '#/components/schemas/BauteilEigenschaft'
 
-    Balloon:
-      properties:
-        color:
-          type: string
-          description: color of balloon
-          enum:
-            - red
-            - blue
-            - yellow
-          default: red
-        diameter:
-          type: number
-          description: diameter not inflated in cm
-          default: 5
-        size:
-          type: number
-          description: diameter inflated in cm
-        image:
-          type: string
-          format: byte
-          description: image of inflated balloon
-
-    Cat:
+    Profile:
       required:
-        - name
+        - id
+        - email
       properties:
-        name:
+        id:
           type: string
-          description: the name of the cat
-        color:
+        updatedAt:
           type: string
-          enum:
-            - red
-            - orange
-            - brown
-            - grey
-          description: the color of the cat
-        weight:
-          type: number
-          description: weight in kg
+        fullName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        avatarUrl:
+          type: string

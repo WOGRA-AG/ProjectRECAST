@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { FormBuilder } from '@angular/forms'
-import { AuthSession } from '@supabase/supabase-js'
-import { Profile, SupabaseService } from '../../services/supabase.service'
+import {SupabaseService } from '../../services/supabase.service'
+import {Profile} from '../../../../build/openapi/recast';
 
 @Component({
   selector: 'app-account',
@@ -15,9 +15,10 @@ export class AccountComponent implements OnInit {
   session = this.supabase.session
 
   updateProfileForm = this.formBuilder.group({
+    id: '',
+    email: '',
     username: '',
-    website: '',
-    avatar_url: '',
+    avatarUrl: '',
   })
 
   constructor(
@@ -33,11 +34,12 @@ export class AccountComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.getProfile()
 
-    const { username, website, avatar_url } = this.profile
+    const { id, username, email, avatarUrl } = this.profile
     this.updateProfileForm.patchValue({
+      id,
       username,
-      website,
-      avatar_url,
+      email,
+      avatarUrl,
     })
   }
 
@@ -75,14 +77,14 @@ export class AccountComponent implements OnInit {
       const { user } = this.session
 
       const username = this.updateProfileForm.value.username as string
-      const website = this.updateProfileForm.value.website as string
-      const avatar_url = this.updateProfileForm.value.avatar_url as string
+      const email = this.updateProfileForm.value.email as string
+      const avatarUrl = this.updateProfileForm.value.avatarUrl as string
 
       const { error } = await this.supabase.updateProfile({
         id: user.id,
         username,
-        website,
-        avatar_url,
+        email,
+        avatarUrl,
       })
       if (error) throw error
     } catch (error) {

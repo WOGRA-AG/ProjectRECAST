@@ -9,13 +9,7 @@ import {
 } from '@supabase/supabase-js'
 import { environment } from 'src/environments/environment'
 import {BehaviorSubject} from 'rxjs';
-
-export interface Profile {
-  id?: string
-  username: string
-  website: string
-  avatar_url: string
-}
+import {Profile} from '../../../build/openapi/recast';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +17,7 @@ export interface Profile {
 export class SupabaseService {
   private supabase: SupabaseClient
   _session: AuthSession | null = null
-  profile$: BehaviorSubject<Profile> = new BehaviorSubject<Profile>({username: '', avatar_url: '', website: ''})
+  profile$: BehaviorSubject<Profile> = new BehaviorSubject<Profile>({id: '', username: '', email: '', avatarUrl: ''})
 
   constructor() {
     this.supabase = createClient(
@@ -47,7 +41,7 @@ export class SupabaseService {
   profile(user: User) {
     return this.supabase
       .from('profiles')
-      .select(`username, website, avatar_url`)
+      .select(`id, username, email, avatar_url`)
       .eq('id', user.id)
       .single()
   }

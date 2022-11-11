@@ -9,12 +9,17 @@ import { SupabaseService} from './services/supabase.service';
 export class AppComponent implements OnInit {
   title = 'recast';
 
-  session = this.supabase.session
+  session: any;
 
   constructor(private readonly supabase: SupabaseService) {
+    this.session = this.supabase.session;
   }
 
   ngOnInit() {
     this.supabase.authChanges((_, session) => (this.session = session));
+  }
+
+  public isAuthenticated(): boolean {
+    return !!this.session;
   }
 }
