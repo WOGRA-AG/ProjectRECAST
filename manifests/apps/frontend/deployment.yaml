@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recast-ui
+  labels:
+    app.kubernetes.io/name: recast
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: recast-local
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: recast
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: recast
+        tier: frontend
+    spec:
+      containers:
+        - name: recast-ui
+          image: "gitlab-registry.wogra.com/developer/wogra/recast/frontend"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 100m
+              memory: 20Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /index.html
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            privileged: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "/usr/sbin/nginx","-s","quit" ]
+      imagePullSecrets:
+        - name: registry-credentials
+      serviceAccountName: recast-sa
