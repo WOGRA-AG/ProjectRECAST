@@ -47,7 +47,9 @@ export class SupabaseService {
   }
 
   signIn() {
-    return this.supabase.auth.signInWithOAuth({ provider: 'keycloak' });
+    return this.supabase.auth.signInWithOAuth({
+      provider: 'keycloak', options: {redirectTo: window.location.origin}
+    });
   }
 
   async signOut() {
