@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: recast
 commonLabels:
   app.kubernetes.io/name: recast
-  app.kubernetes.io/instance: recast-local
+  app.kubernetes.io/instance: recast-base
 resources:
   - deployment.yaml
   - service.yaml

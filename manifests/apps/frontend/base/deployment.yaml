@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: recast
     app.kubernetes.io/component: ui
-    app.kubernetes.io/instance: recast-local
+    app.kubernetes.io/instance: recast-base
 spec:
   replicas: 1
   revisionHistoryLimit: 3
@@ -48,12 +48,7 @@ spec:
             periodSeconds: 5
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
             privileged: false
-            runAsNonRoot: true
-            capabilities:
-              drop:
-                - all
           lifecycle:
             preStop:
               exec:
