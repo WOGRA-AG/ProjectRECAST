@@ -1,5 +1,5 @@
 {
-  "wds/light/colors": {
+  "wds-light-colors": {
     "$wds-light-color-primary": {
       "value": "#2EAADC",
       "type": "color"
@@ -173,7 +173,7 @@
       "type": "color"
     }
   },
-  "wds/light/buttons": {
+  "wds-light-buttons": {
     "$wds-light-buttons-filled-small-paddingTop": {
       "value": "8",
       "type": "spacing"
@@ -223,7 +223,7 @@
       "type": "spacing"
     }
   },
-  "wds/dark/colors": {
+  "wds-dark-colors": {
     "Background": {
       "value": "#0000",
       "type": "color"
@@ -232,9 +232,9 @@
   "$themes": [],
   "$metadata": {
     "tokenSetOrder": [
-      "wds/light/colors",
-      "wds/light/buttons",
-      "wds/dark/colors"
+      "wds-light-colors",
+      "wds-light-buttons",
+      "wds-dark-colors"
     ]
   }
 }
