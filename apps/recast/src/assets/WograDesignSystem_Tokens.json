@@ -223,6 +223,176 @@
       "type": "spacing"
     }
   },
+  "wds-light-typography": {
+    "wds-light-typography-display": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "112",
+        "fontSize": "75",
+        "letterSpacing": "0px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-heading-1": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "112",
+        "fontSize": "60",
+        "letterSpacing": "0px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-heading-2": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "72",
+        "fontSize": "44.2",
+        "letterSpacing": "2.5px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-heading-3": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "47.5",
+        "fontSize": "33.16",
+        "letterSpacing": "0px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-heading-4": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "43",
+        "fontSize": "30",
+        "letterSpacing": "0px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-heading-5": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "33",
+        "fontSize": "24",
+        "letterSpacing": "0px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-heading-6": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "24",
+        "fontSize": "20",
+        "letterSpacing": "0px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-subtitle-1": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Heavy",
+        "lineHeight": "24",
+        "fontSize": "18",
+        "letterSpacing": "0.15px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-subtitle-2": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Heavy",
+        "lineHeight": "21",
+        "fontSize": "14",
+        "letterSpacing": "0.1px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-body-1": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Book",
+        "lineHeight": "24",
+        "fontSize": "16",
+        "letterSpacing": "0.5px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-body-2": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Book",
+        "lineHeight": "20",
+        "fontSize": "14",
+        "letterSpacing": "0.25px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-button-small": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "20",
+        "fontSize": "14",
+        "letterSpacing": "1.25px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-button-medium": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "24",
+        "fontSize": "18",
+        "letterSpacing": "1.25px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    },
+    "wds-light-typography-button-large": {
+      "value": {
+        "fontFamily": "Avenir",
+        "fontWeight": "Black",
+        "lineHeight": "24",
+        "fontSize": "21",
+        "letterSpacing": "1.96px",
+        "paragraphSpacing": "0",
+        "textDecoration": "none"
+      },
+      "type": "typography"
+    }
+  },
   "wds-dark-colors": {
     "Background": {
       "value": "#0000",
@@ -234,6 +404,7 @@
     "tokenSetOrder": [
       "wds-light-colors",
       "wds-light-buttons",
+      "wds-light-typography",
       "wds-dark-colors"
     ]
   }
