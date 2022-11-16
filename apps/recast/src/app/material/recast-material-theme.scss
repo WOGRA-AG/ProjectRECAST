@@ -1,0 +1,40 @@
+@use '@angular/material' as mat;
+@use './essentials/typography' as typography;
+@use './essentials/color.scss' as colors;
+@use './components/sidenav.scss' as sidenav;
+@use './components/toolbar.scss' as toolbar;
+@use './components/navlist.scss' as navlist;
+@use './components/button.scss' as button;
+@use './components/expansion-module.scss' as expansionModule;
+@use './components/dialog.scss' as dialog;
+@use './components/list.scss' as list;
+@use './components/table.scss' as table;
+@use './components/chips.scss' as chips;
+@use './components/stepper.scss' as stepper;
+
+
+$recast-theme: mat.define-light-theme((
+  color: (
+    primary: colors.$recast-primary,
+    accent: colors.$recast-accent,
+    warn: colors.$recast-warn,
+  )
+));
+
+@include mat.core();
+@include mat.core(typography.$custom-typography);
+@include mat.all-component-themes($recast-theme);
+
+.recast-theme {
+  @include typography.additional-typography-settings;
+  @include sidenav.theme($recast-theme);
+  @include toolbar.theme($recast-theme);
+  @include navlist.theme($recast-theme);
+  @include button.theme($recast-theme);
+  @include stepper.theme($recast-theme);
+  @include expansionModule.theme($recast-theme, colors.$border-color);
+  @include dialog.theme($recast-theme, colors.$overlay, colors.$background);
+  @include list.theme($recast-theme, colors.$background);
+  @include table.theme($recast-theme, colors.$background);
+  @include chips.theme($recast-theme, colors.$background);
+}

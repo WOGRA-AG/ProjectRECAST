@@ -1,134 +1,182 @@
 {
-  "wds/light/colors": {
-    "$wds-light-color-primary": {
+  "light": {
+    "--WOGRA-spacing-2px": {
+      "value": "2",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-4px": {
+      "value": "4",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-8px": {
+      "value": "8",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-12px": {
+      "value": "12",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-16px": {
+      "value": "16",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-24px": {
+      "value": "24",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-32px": {
+      "value": "32",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-48px": {
+      "value": "48",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-64px": {
+      "value": "64",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-80px": {
+      "value": "80",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-96px": {
+      "value": "96",
+      "type": "spacing"
+    },
+    "--WOGRA-spacing-160px": {
+      "value": "160",
+      "type": "spacing"
+    },
+    "--WOGRA-color-primary": {
       "value": "#2EAADC",
       "type": "color"
     },
-    "$wds-light-color-primary-900": {
+    "--WOGRA-color-primary-900": {
       "value": "#127FC5",
       "type": "color"
     },
-    "$wds-light-color-primary-800": {
+    "--WOGRA-color-primary-800": {
       "value": "#1D90CE",
       "type": "color"
     },
-    "$wds-light-color-primary-700": {
+    "--WOGRA-color-primary-700": {
       "value": "#2399D3",
       "type": "color"
     },
-    "$wds-light-color-primary-600": {
+    "--WOGRA-color-primary-600": {
       "value": "#29A3D8",
       "type": "color"
     },
-    "$wds-light-color-primary-500": {
+    "--WOGRA-color-primary-500": {
       "value": "#2EAADC",
       "type": "color"
     },
-    "$wds-light-color-primary-400": {
+    "--WOGRA-color-primary-400": {
       "value": "#4DB7E1",
       "type": "color"
     },
-    "$wds-light-color-primary-300": {
+    "--WOGRA-color-primary-300": {
       "value": "#6DC4E7",
       "type": "color"
     },
-    "$wds-light-color-primary-200": {
+    "--WOGRA-color-primary-200": {
       "value": "#97D5EE",
       "type": "color"
     },
-    "$wds-light-color-primary-100": {
+    "--WOGRA-color-primary-100": {
       "value": "#C0E6F5",
       "type": "color"
     },
-    "$wds-light-color-primary-50": {
+    "--WOGRA-color-primary-50": {
       "value": "#E6F5FB",
       "type": "color"
     },
-    "$wds-light-color-secondary": {
+    "--WOGRA-color-secondary": {
       "value": "#666666",
       "type": "color"
     },
-    "$wds-light-color-secondary-900": {
+    "--WOGRA-color-secondary-900": {
       "value": "#383838",
       "type": "color"
     },
-    "$wds-light-color-secondary-800": {
+    "--WOGRA-color-secondary-800": {
       "value": "#494949",
       "type": "color"
     },
-    "$wds-light-color-secondary-700": {
+    "--WOGRA-color-secondary-700": {
       "value": "#535353",
       "type": "color"
     },
-    "$wds-light-color-secondary-600": {
+    "--WOGRA-color-secondary-600": {
       "value": "#5E5E5E",
       "type": "color"
     },
-    "$wds-light-color-secondary-500": {
+    "--WOGRA-color-secondary-500": {
       "value": "#666666",
       "type": "color"
     },
-    "$wds-light-color-secondary-400": {
+    "--WOGRA-color-secondary-400": {
       "value": "#7D7D7D",
       "type": "color"
     },
-    "$wds-light-color-secondary-300": {
+    "--WOGRA-color-secondary-300": {
       "value": "#949494",
       "type": "color"
     },
-    "$wds-light-color-secondary-200": {
+    "--WOGRA-color-secondary-200": {
       "value": "#B3B3B3",
       "type": "color"
     },
-    "$wds-light-color-secondary-100": {
+    "--WOGRA-color-secondary-100": {
       "value": "#D1D1D1",
       "type": "color"
     },
-    "$wds-light-color-secondary-50": {
+    "--WOGRA-color-secondary-50": {
       "value": "#EDEDED",
       "type": "color"
     },
-    "$wds-light-color-third": {
+    "--WOGRA-color-third": {
       "value": "#FF9400",
       "type": "color"
     },
-    "$wds-light-color-third-900": {
+    "--WOGRA-color-third-900": {
       "value": "#FF6500",
       "type": "color"
     },
-    "$wds-light-color-third-800": {
+    "--WOGRA-color-third-800": {
       "value": "#FF7700",
       "type": "color"
     },
-    "$wds-light-color-third-700": {
+    "--WOGRA-color-third-700": {
       "value": "#FF8100",
       "type": "color"
     },
-    "$wds-light-color-third-600": {
+    "--WOGRA-color-third-600": {
       "value": "#FF8C00",
       "type": "color"
     },
-    "$wds-light-color-third-500": {
+    "--WOGRA-color-third-500": {
       "value": "#FF9400",
       "type": "color"
     },
-    "$wds-light-color-third-400": {
+    "--WOGRA-color-third-400": {
       "value": "#FFA426",
       "type": "color"
     },
-    "$wds-light-color-third-300": {
+    "--WOGRA-color-third-300": {
       "value": "#FFB44D",
       "type": "color"
     },
-    "$wds-light-color-third-200": {
+    "--WOGRA-color-third-200": {
       "value": "#FFCA80",
       "type": "color"
     },
-    "$wds-light-color-third-100": {
+    "--WOGRA-color-third-100": {
       "value": "#FFDFB3",
       "type": "color"
     },
-    "$wds-light-color-third-50": {
+    "--WOGRA-color-third-50": {
       "value": "#FFF2E0",
       "type": "color"
     },
@@ -167,63 +215,9 @@
     "--WOGRA-color-third-onThird-Disabled": {
       "value": "rgba(255,255,255,38%)",
       "type": "color"
-    },
-    "$wds-light-color-background": {
-      "value": "#fff",
-      "type": "color"
     }
   },
-  "wds/light/buttons": {
-    "$wds-light-buttons-filled-small-paddingTop": {
-      "value": "8",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-medium-paddingTop": {
-      "value": "12",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-large-paddingTop": {
-      "value": "16",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-small-paddingLeft": {
-      "value": "24",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-medium-paddingLeft": {
-      "value": "24",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-large-paddingLeft": {
-      "value": "32",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-small-paddingRight": {
-      "value": "24",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-medium-paddingRight": {
-      "value": "24",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-large-paddingRight": {
-      "value": "32",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-small-paddingBottom": {
-      "value": "8",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-medium-paddingBottom": {
-      "value": "12",
-      "type": "spacing"
-    },
-    "$wds-light-buttons-filled-large-paddingBottom": {
-      "value": "16",
-      "type": "spacing"
-    }
-  },
-  "wds/dark/colors": {
+  "dark": {
     "Background": {
       "value": "#0000",
       "type": "color"
@@ -232,9 +226,8 @@
   "$themes": [],
   "$metadata": {
     "tokenSetOrder": [
-      "wds/light/colors",
-      "wds/light/buttons",
-      "wds/dark/colors"
+      "light",
+      "dark"
     ]
   }
 }

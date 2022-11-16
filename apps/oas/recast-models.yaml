@@ -8,5 +8,61 @@ paths: {}
 
 components:
   schemas:
-    Message:
-      type: string
+    Bauteil:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/BauteilEigenschaft'
+
+    BauteilEigenschaft:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          nullable: true
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum:
+            - string
+            - number
+            - file
+
+    Workflow:
+      properties:
+        bauteile:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bauteil'
+        stage:
+          $ref: '#/components/schemas/BauteilEigenschaft'
+
+    Profile:
+      required:
+        - id
+        - email
+      properties:
+        id:
+          type: string
+        updatedAt:
+          type: string
+        fullName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        avatarUrl:
+          type: string

@@ -1,0 +1,28 @@
+<form
+  [formGroup]="updateProfileForm"
+  (ngSubmit)="updateProfile()"
+  class="form-widget"
+>
+  <div>
+    <label for="id">ID</label>
+    <input id="id" type="text" [value]="session?.user?.id" disabled />
+  </div>
+  <div>
+    <label for="email">Email</label>
+    <input id="email" type="text" [value]="session?.user?.email" disabled />
+  </div>
+  <div>
+    <label for="username">username</label>
+    <input formControlName="username" id="username" type="text" />
+  </div>
+
+  <div>
+    <button type="submit" mat-flat-button color="primary" [disabled]="loading">
+      {{ loading ? 'Loading ...' : 'Update' }}
+    </button>
+  </div>
+
+  <div>
+    <button mat-flat-button color="warn" (click)="signOut()">Sign Out</button>
+  </div>
+</form>
