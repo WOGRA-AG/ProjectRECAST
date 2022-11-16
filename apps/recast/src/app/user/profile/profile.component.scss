@@ -7,3 +7,9 @@ $primary-light: map-get($light, --wogra-color-primary-600);
   padding: map-get($spacing-light, value);
   color: map-get($primary-light, value);
 }
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}

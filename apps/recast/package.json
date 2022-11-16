@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "generate:base": "openapi-generator-cli generate -g typescript-angular --generator-key v3.0 --additional-properties=ngVersion=14.2.0",
-    "generate:api": "npm run generate:base -- -i ../oas/recast-models.yaml -o ./build/openapi/recast",
+    "generate:api": "npm run generate:base -- -i ../oas/recast-models.yaml -o build/openapi/recast",
     "prestart": "npm run generate:api",
+    "prebuild": "npm run generate:api",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
