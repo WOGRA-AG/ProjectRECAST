@@ -175,99 +175,99 @@
   },
   "wds-light-buttons": {
     "wds-light-buttons-normal-small-paddingTop": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-medium-paddingTop": {
-      "value": "12",
+      "value": "12px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-large-paddingTop": {
-      "value": "16",
+      "value": "16px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-small-paddingLeft": {
-      "value": "24",
+      "value": "24px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-medium-paddingLeft": {
-      "value": "24",
+      "value": "24px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-large-paddingLeft": {
-      "value": "32",
+      "value": "32px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-small-paddingRight": {
-      "value": "24",
+      "value": "24px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-medium-paddingRight": {
-      "value": "24",
+      "value": "24px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-large-paddingRight": {
-      "value": "32",
+      "value": "32px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-small-paddingBottom": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-medium-paddingBottom": {
-      "value": "12",
+      "value": "12px",
       "type": "spacing"
     },
     "wds-light-buttons-normal-large-paddingBottom": {
-      "value": "16",
+      "value": "16px",
       "type": "spacing"
     },
     "wds-light-buttons-text-small-paddingTop": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-text-medium-paddingTop": {
-      "value": "12",
+      "value": "12px",
       "type": "spacing"
     },
     "wds-light-buttons-text-large-paddingTop": {
-      "value": "16",
+      "value": "16px",
       "type": "spacing"
     },
     "wds-light-buttons-text-small-paddingLeft": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-text-medium-paddingLeft": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-text-large-paddingLeft": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-text-small-paddingRight": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-text-medium-paddingRight": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-text-large-paddingRight": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-text-small-paddingBottom": {
-      "value": "8",
+      "value": "8px",
       "type": "spacing"
     },
     "wds-light-buttons-text-medium-paddingBottom": {
-      "value": "12",
+      "value": "12px",
       "type": "spacing"
     },
     "wds-light-buttons-text-large-paddingBottom": {
-      "value": "16",
+      "value": "16px",
       "type": "spacing"
     }
   },
