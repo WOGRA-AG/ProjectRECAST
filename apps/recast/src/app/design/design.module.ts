@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonPrimaryComponent } from './components/atoms/button-primary.component';
 import { MaterialModule } from './material/material.module';
+import { ButtonPrimaryComponent } from './components/atoms/button-primary/button-primary.component';
 
 @NgModule({
   declarations: [
