@@ -3,15 +3,12 @@ import { CommonModule } from '@angular/common';
 import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from '../material/material.module';
-import { ButtonComponent } from './components/atoms/button.component';
-
+import { DesignModule } from '../design/design.module';
 
 @NgModule({
   declarations: [
     AuthComponent,
     ProfileComponent,
-    ButtonComponent,
   ],
   exports: [
     ProfileComponent,
@@ -20,7 +17,7 @@ import { ButtonComponent } from './components/atoms/button.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MaterialModule,
+    DesignModule,
   ]
 })
 export class UserModule { }

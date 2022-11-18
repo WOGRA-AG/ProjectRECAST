@@ -6,8 +6,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PageNotFoundComponent } from './templates/page-not-found/page-not-found.component';
-import {MaterialModule} from './material/material.module';
 import {SupabaseService} from './services/supabase.service';
+import { DesignModule } from './design/design.module';
 
 const appInit = (supabaseService: SupabaseService) => () => supabaseService.session;
 
@@ -21,7 +21,7 @@ const appInit = (supabaseService: SupabaseService) => () => supabaseService.sess
     AppRoutingModule,
     BrowserAnimationsModule,
     UserModule,
-    MaterialModule,
+    DesignModule,
   ],
   providers: [
     {provide: APP_INITIALIZER, useFactory: appInit, deps: [SupabaseService], multi: true}

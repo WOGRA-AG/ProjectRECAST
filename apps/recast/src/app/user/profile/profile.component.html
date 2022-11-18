@@ -23,13 +23,13 @@
   </div>
   <div class="actions">
     <div>
-      <button type="submit" mat-flat-button color="primary" [disabled]="loading">
+      <app-button-primary type="submit" [disabled]="loading">
         {{ loading ? 'Loading ...' : 'Update' }}
-      </button>
+      </app-button-primary>
     </div>
 
     <div>
-      <button mat-flat-button color="warn" (click)="signOut()">Sign Out</button>
+      <app-button-primary (click)="signOut()">Sign Out</app-button-primary>
     </div>
   </div>
   </form>

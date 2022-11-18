@@ -1,0 +1,35 @@
+@import "src/assets/WograDesignSystem_Tokens.json";
+
+@mixin layout() {
+
+  .mat-flat-button {
+    padding-top: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-medium-padding-top), value) + px;
+    padding-bottom: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-medium-padding-bottom), value) + px;
+    padding-left: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-medium-padding-left), value) + px;
+    padding-right: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-medium-padding-right), value) + px;
+    font-size: 18px;
+    line-height: 24px;
+
+    &.small {
+      padding-top: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-small-padding-top), value) + px;
+      padding-bottom: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-small-padding-bottom), value) + px;
+      padding-left: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-small-padding-left), value) + px;
+      padding-right: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-small-padding-right), value) + px;
+      font-size: 21px;
+      line-height: 24px;
+    }
+
+    &.large {
+      padding-top: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-large-padding-top), value) + px;
+      padding-bottom: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-large-padding-bottom), value) + px;
+      padding-left: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-large-padding-left), value) + px;
+      padding-right: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-large-padding-right), value) + px;
+      font-size: 21px;
+      line-height: 24px;
+    }
+  }
+}
+
+@mixin theme($theme) {
+  @include layout()
+}
