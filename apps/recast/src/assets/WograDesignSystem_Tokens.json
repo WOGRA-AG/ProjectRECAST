@@ -269,6 +269,30 @@
     "text-large-paddingBottom": {
       "value": "16px",
       "type": "spacing"
+    },
+    "normal-small-borderWidth": {
+      "value": "2px",
+      "type": "borderWidth"
+    },
+    "normal-medium-borderWidth": {
+      "value": "2px",
+      "type": "borderWidth"
+    },
+    "normal-large-borderWidth": {
+      "value": "2.5px",
+      "type": "borderWidth"
+    },
+    "normal-small-broderRadius": {
+      "value": "5px",
+      "type": "borderRadius"
+    },
+    "normal-medium-broderRadius": {
+      "value": "5px",
+      "type": "borderRadius"
+    },
+    "normal-large-broderRadius": {
+      "value": "5px",
+      "type": "borderRadius"
     }
   },
   "wds-light-typography": {
