@@ -1,35 +1,74 @@
-@import "src/assets/WograDesignSystem_Tokens.json";
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import '../essentials/layout.scss';
+
+@mixin color($theme) {
+  $primary-palette: map.get($theme, 'primary');
+  $primary-color: mat.get-color-from-palette($primary-palette, 500);
+
+  .mat-stroked-button:not(.mat-button-disabled) {
+    border-color: $primary-color;
+  }
+}
 
 @mixin layout() {
 
-  .mat-flat-button {
-    padding-top: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-medium-padding-top), value) + px;
-    padding-bottom: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-medium-padding-bottom), value) + px;
-    padding-left: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-medium-padding-left), value) + px;
-    padding-right: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-medium-padding-right), value) + px;
-    font-size: 18px;
-    line-height: 24px;
+  .mat-flat-button, .mat-stroked-button {
+    border-radius: $btn-medium-border-radius;
+    border-width: $btn-medium-border-widht;
+    padding-top: $btn-medium-padding-top;
+    padding-bottom: $btn-medium-padding-bottom;
+    padding-left: $btn-medium-padding-left;
+    padding-right: $btn-medium-padding-right;
 
     &.small {
-      padding-top: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-small-padding-top), value) + px;
-      padding-bottom: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-small-padding-bottom), value) + px;
-      padding-left: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-small-padding-left), value) + px;
-      padding-right: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-small-padding-right), value) + px;
-      font-size: 21px;
-      line-height: 24px;
+      border-radius: $btn-small-border-radius;
+      border-width: $btn-small-border-widht;
+      padding-top: $btn-small-padding-top;
+      padding-bottom: $btn-small-padding-bottom;
+      padding-left: $btn-small-padding-left;
+      padding-right: $btn-small-padding-right;
     }
 
     &.large {
-      padding-top: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-large-padding-top), value) + px;
-      padding-bottom: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-large-padding-bottom), value) + px;
-      padding-left: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-large-padding-left), value) + px;
-      padding-right: map-get(map-get($wds-light-buttons, wds-light-buttons-normal-large-padding-right), value) + px;
-      font-size: 21px;
-      line-height: 24px;
+      border-radius: $btn-large-border-radius;
+      border-width: $btn-large-border-widht;
+      padding-top: $btn-large-padding-top;
+      padding-bottom: $btn-large-padding-bottom;
+      padding-left: $btn-large-padding-left;
+      padding-right: $btn-large-padding-right;
+    }
+
+    &.text {
+      border: none;
+      padding-top: $btn-text-medium-padding-top;
+      padding-bottom: $btn-text-medium-padding-bottom;
+      padding-left: $btn-text-medium-padding-left;
+      padding-right: $btn-text-medium-padding-right;
+
+      &.small {
+        padding-top: $btn-text-small-padding-top;
+        padding-bottom: $btn-text-small-padding-bottom;
+        padding-left: $btn-text-small-padding-left;
+        padding-right: $btn-text-small-padding-right;
+      }
+
+      &.large {
+        padding-top: $btn-text-large-padding-top;
+        padding-bottom: $btn-text-large-padding-bottom;
+        padding-left: $btn-text-large-padding-left;
+        padding-right: $btn-text-large-padding-right;
+      }
+    }
+
+    .mat-icon {
+      height: 100%;
+      padding-right: 2px;
     }
   }
 }
 
 @mixin theme($theme) {
-  @include layout()
+  @include color($theme);
+  @include layout();
 }

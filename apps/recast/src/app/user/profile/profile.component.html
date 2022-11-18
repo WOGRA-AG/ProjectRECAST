@@ -23,13 +23,20 @@
   </div>
   <div class="actions">
     <div>
-      <app-button-primary type="submit" [disabled]="loading">
+      <app-button-filled type="submit" [disabled]="loading">
         {{ loading ? 'Loading ...' : 'Update' }}
-      </app-button-primary>
+      </app-button-filled>
     </div>
 
     <div>
-      <app-button-primary (click)="signOut()">Sign Out</app-button-primary>
+      <app-button-unfilled [bordered]="true" (click)="signOut()">Sign Out</app-button-unfilled>
     </div>
+
+    <div>
+      <app-icon-button-filled size="small" icon="add">Enbaled</app-icon-button-filled>
+    </div>
+
+    
   </div>
+  <h1>test</h1>
   </form>

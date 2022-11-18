@@ -1,0 +1,41 @@
+@use "@angular/material" as mat;
+@import "src/assets/WograDesignSystem_Tokens.json";
+
+$btn-small-padding-top: map-get(map-get($wds-light-buttons, normal-small-padding-top), value);
+$btn-small-padding-bottom: map-get(map-get($wds-light-buttons, normal-small-padding-bottom), value);
+$btn-small-padding-left: map-get(map-get($wds-light-buttons, normal-small-padding-left), value);
+$btn-small-padding-right: map-get(map-get($wds-light-buttons, normal-small-padding-right), value);
+
+$btn-medium-padding-top: map-get(map-get($wds-light-buttons, normal-medium-padding-top), value);
+$btn-medium-padding-bottom: map-get(map-get($wds-light-buttons, normal-medium-padding-bottom), value);
+$btn-medium-padding-left: map-get(map-get($wds-light-buttons, normal-medium-padding-left), value);
+$btn-medium-padding-right: map-get(map-get($wds-light-buttons, normal-medium-padding-right), value);
+
+$btn-large-padding-top: map-get(map-get($wds-light-buttons, normal-large-padding-top), value);
+$btn-large-padding-bottom: map-get(map-get($wds-light-buttons, normal-large-padding-bottom), value);
+$btn-large-padding-left: map-get(map-get($wds-light-buttons, normal-large-padding-left), value);
+$btn-large-padding-right: map-get(map-get($wds-light-buttons, normal-large-padding-right), value);
+
+$btn-text-small-padding-top: map-get(map-get($wds-light-buttons, text-small-padding-top), value);
+$btn-text-small-padding-bottom: map-get(map-get($wds-light-buttons, text-small-padding-bottom), value);
+$btn-text-small-padding-left: map-get(map-get($wds-light-buttons, text-small-padding-left), value);
+$btn-text-small-padding-right: map-get(map-get($wds-light-buttons, text-small-padding-right), value);
+
+$btn-text-medium-padding-top: map-get(map-get($wds-light-buttons, text-medium-padding-top), value);
+$btn-text-medium-padding-bottom: map-get(map-get($wds-light-buttons, text-medium-padding-bottom), value);
+$btn-text-medium-padding-left: map-get(map-get($wds-light-buttons, text-medium-padding-left), value);
+$btn-text-medium-padding-right: map-get(map-get($wds-light-buttons, text-medium-padding-right), value);
+
+$btn-text-large-padding-top: map-get(map-get($wds-light-buttons, text-large-padding-top), value);
+$btn-text-large-padding-bottom: map-get(map-get($wds-light-buttons, text-large-padding-bottom), value);
+$btn-text-large-padding-left: map-get(map-get($wds-light-buttons, text-large-padding-left), value);
+$btn-text-large-padding-right: map-get(map-get($wds-light-buttons, text-large-padding-right), value);
+
+$btn-small-border-widht: map-get(map-get($wds-light-buttons, normal-small-border-width), value);
+$btn-medium-border-widht: map-get(map-get($wds-light-buttons, normal-medium-border-width), value);
+$btn-large-border-widht: map-get(map-get($wds-light-buttons, normal-large-border-width), value);
+
+$btn-small-border-radius: map-get(map-get($wds-light-buttons, normal-small-broder-radius), value);
+$btn-medium-border-radius: map-get(map-get($wds-light-buttons, normal-medium-broder-radius), value);
+$btn-large-border-radius: map-get(map-get($wds-light-buttons, normal-large-broder-radius), value);
+
