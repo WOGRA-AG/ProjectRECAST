@@ -1,0 +1,13 @@
+<mat-form-field appearance="outline">
+  <mat-label *ngIf="label">{{label}}</mat-label>
+  <mat-hint>{{hint}}</mat-hint>
+  <input
+    matInput
+    type="text"
+    [formControl]="formControl"
+    (change)="change($event)"
+    (blur)="onTouch()"
+    [value]="value"
+  />
+  <mat-error *ngIf="ngControl.invalid">{{errMsg}}</mat-error>
+</mat-form-field>
