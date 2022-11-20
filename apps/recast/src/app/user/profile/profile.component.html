@@ -18,21 +18,18 @@
   </div>
   <div>
     <app-text-input-field
-      [formControl]="updateProfileForm.controls.username"
+      formControlName="username"
       label="username"
-      errMsg="Mindestens 3 Buchstaben"
-      hint="Dein Nutzername"
+      errMsg="Minimum of 3 characters"
     ></app-text-input-field>
   </div>
   <div class="actions">
-    <div>
-      <app-button-filled type="submit" [disabled]="loading">
+      <app-submit-button [disabled]="loading">
         {{ loading ? 'Loading ...' : 'Update' }}
-      </app-button-filled>
-    </div>
-
-    <div>
-      <app-button-unfilled [bordered]="true" (click)="signOut()">Sign Out</app-button-unfilled>
-    </div>
+      </app-submit-button>
+      <app-logout-button (click)="signOut()">Sign Out</app-logout-button>
+      <app-icon-button-filled size="small" icon="add" type="button">
+        Enbaled
+      </app-icon-button-filled>
   </div>
 </form>
