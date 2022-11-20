@@ -298,7 +298,7 @@
   "wds-light-typography": {
     "display": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "112",
         "fontSize": "75",
@@ -310,7 +310,7 @@
     },
     "heading-1": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "112",
         "fontSize": "60",
@@ -322,7 +322,7 @@
     },
     "heading-2": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "72",
         "fontSize": "44.2",
@@ -334,7 +334,7 @@
     },
     "heading-3": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "47.5",
         "fontSize": "33.16",
@@ -346,7 +346,7 @@
     },
     "heading-4": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "43",
         "fontSize": "30",
@@ -358,7 +358,7 @@
     },
     "heading-5": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "33",
         "fontSize": "24",
@@ -370,7 +370,7 @@
     },
     "heading-6": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "24",
         "fontSize": "20",
@@ -382,7 +382,7 @@
     },
     "subtitle-1": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Heavy",
         "lineHeight": "24",
         "fontSize": "18",
@@ -394,7 +394,7 @@
     },
     "subtitle-2": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Heavy",
         "lineHeight": "21",
         "fontSize": "14",
@@ -406,7 +406,7 @@
     },
     "body-1": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Book",
         "lineHeight": "24",
         "fontSize": "16",
@@ -418,7 +418,7 @@
     },
     "body-2": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Book",
         "lineHeight": "20",
         "fontSize": "14",
@@ -430,7 +430,7 @@
     },
     "button-small": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "20",
         "fontSize": "14",
@@ -442,7 +442,7 @@
     },
     "button-medium": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "24",
         "fontSize": "18",
@@ -454,7 +454,7 @@
     },
     "button-large": {
       "value": {
-        "fontFamily": "Avenir",
+        "fontFamily": "Montserrat",
         "fontWeight": "Black",
         "lineHeight": "24",
         "fontSize": "21",
