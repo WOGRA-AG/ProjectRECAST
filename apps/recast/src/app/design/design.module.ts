@@ -20,7 +20,7 @@ const COMPONENTS = [
   TextInputFieldComponent,
   LogoutButtonComponent,
   SubmitButtonComponent,
-]
+];
 
 @NgModule({
   declarations: [

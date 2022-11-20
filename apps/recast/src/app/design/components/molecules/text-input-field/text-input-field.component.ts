@@ -12,13 +12,13 @@ import {ControlValueAccessor, FormControl, NgControl} from '@angular/forms';
 })
 export class TextInputFieldComponent implements ControlValueAccessor {
 
-  @Input() label: string = '';
-  @Input() errMsg: string = ''
-  @Input() hint: string = '';
+  @Input() label = '';
+  @Input() errMsg = '';
+  @Input() hint = '';
 
-  private _value: string = '';
-  private _onChange: Function = new Function;
-  onTouch: Function = new Function;
+  onTouch: any;
+  private val = '';
+  private onChange: any;
 
   constructor(@Optional() @Self() public ngControl: NgControl) {
     if (this.ngControl != null) {
@@ -28,23 +28,24 @@ export class TextInputFieldComponent implements ControlValueAccessor {
 
   @Input()
   get value(): string {
-    return this._value;
+    return this.val;
   }
   set value(val: string) {
     if (!val) {
       return;
     }
-    this._value = val;
-    if (this._onChange) this._onChange(val);
-    if (this.onTouch) this.onTouch();
+    this.val = val;
+    if (this.onChange) {this.onChange(val);}
+    if (this.onTouch) {this.onTouch();}
   }
 
-  get formControl(): FormControl {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  public get formControl(): FormControl {
     return this.ngControl.control as FormControl;
   }
 
   registerOnChange(fn: any): void {
-    this._onChange = fn;
+    this.onChange = fn;
   }
 
   registerOnTouched(fn: any): void {
@@ -52,15 +53,15 @@ export class TextInputFieldComponent implements ControlValueAccessor {
   }
 
   writeValue(val: any): void {
-    if (!val) return;
+    if (!val) {return;}
     this.value = val;
-    this._onChange(val);
+    this.onChange(val);
     this.onTouch();
   }
 
   change(event: Event): void {
     const target: HTMLInputElement = event.target as HTMLInputElement;
-    this._onChange(target.value);
+    this.onChange(target.value);
     this.onTouch();
   }
 }
