@@ -1,3 +1,10 @@
-<button mat-stroked-button color="primary" [class]="size" [ngClass]="{'text': !bordered}" [disabled]="disabled">
+<button
+  mat-stroked-button
+  color="{{color}}"
+  [type]="type"
+  [class]="size"
+  [ngClass]="{'text': !bordered}"
+  [disabled]="disabled"
+>
     <ng-content></ng-content>
 </button>
