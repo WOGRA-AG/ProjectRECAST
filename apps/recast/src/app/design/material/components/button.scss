@@ -3,11 +3,8 @@
 @import '../essentials/layout.scss';
 
 @mixin color($theme) {
-  $primary-palette: map.get($theme, 'primary');
-  $primary-color: mat.get-color-from-palette($primary-palette, 500);
-
   .mat-stroked-button:not(.mat-button-disabled) {
-    border-color: $primary-color;
+    border-color: currentColor;
   }
 }
 
@@ -20,6 +17,7 @@
     padding-bottom: $btn-medium-padding-bottom;
     padding-left: $btn-medium-padding-left;
     padding-right: $btn-medium-padding-right;
+    // padding: .5em 1em .5em 1em;
 
     &.small {
       border-radius: $btn-small-border-radius;
