@@ -1,25 +1,28 @@
 <form
-  [formGroup]="updateProfileForm"
-  (ngSubmit)="updateProfile()"
+  #f="ngForm"
+  (ngSubmit)="f.form.valid && updateProfile()"
   class="form-widget"
+  [formGroup]="updateProfileForm"
 >
   <div>
-    <mat-form-field appearance="outline">
-      <mat-label>id</mat-label>
-      <input matInput id="id" type="text" [value]="session?.user?.id" disabled />
-    </mat-form-field>
+    <app-text-input-field
+      [label]="'id'"
+      formControlName="id"
+    ></app-text-input-field>
   </div>
   <div>
-    <mat-form-field appearance="outline">
-      <mat-label>email</mat-label>
-      <input matInput id="email" type="text" [value]="session?.user?.email" disabled />
-    </mat-form-field>
+    <app-text-input-field
+      formControlName="email"
+      [label]="'email'"
+    ></app-text-input-field>
   </div>
   <div>
-    <mat-form-field appearance="outline">
-      <mat-label>username</mat-label>
-      <input matInput formControlName="username" id="username" type="text" />
-    </mat-form-field>
+    <app-text-input-field
+      [formControl]="updateProfileForm.controls.username"
+      label="username"
+      errMsg="Mindestens 3 Buchstaben"
+      hint="Dein Nutzername"
+    ></app-text-input-field>
   </div>
   <div class="actions">
     <div>
@@ -36,7 +39,7 @@
       <app-icon-button-filled size="small" icon="add">Enbaled</app-icon-button-filled>
     </div>
 
-    
+
   </div>
   <h1>test</h1>
-  </form>
+</form>

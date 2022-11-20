@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
-import {ReactiveFormsModule} from '@angular/forms';
 import { DesignModule } from '../design/design.module';
 
 @NgModule({
@@ -16,7 +15,6 @@ import { DesignModule } from '../design/design.module';
   ],
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     DesignModule,
   ]
 })

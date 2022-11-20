@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {SupabaseService } from '../../services/supabase.service';
 import {Profile} from '../../../../build/openapi/recast';
 import {AuthSession} from '@supabase/supabase-js';
@@ -16,9 +16,12 @@ export class ProfileComponent {
   session: AuthSession | null = this.supabase.session;
 
   updateProfileForm = this.formBuilder.group({
-    id: '',
-    email: '',
-    username: '',
+    id: new FormControl({value: '', disabled: true}),
+    email: new FormControl({value: '', disabled: true}),
+    username: new FormControl(
+      '',
+      [Validators.minLength(3), Validators.required]
+    ),
     avatarUrl: '',
   });
 
@@ -35,6 +38,12 @@ export class ProfileComponent {
         this.session = value as AuthSession;
       }
     });
+    this.updateProfileForm.valueChanges.subscribe(values => {
+      this.profile.username = values.username || this.profile.username;
+      this.profile.id = values.id || this.profile.id;
+      this.profile.email = values.email || this.profile.email;
+      this.profile.avatarUrl = values.avatarUrl || this.profile.avatarUrl;
+    });
   }
 
   async updateProfile(): Promise<void> {
@@ -45,9 +54,9 @@ export class ProfileComponent {
       this.loading = true;
       const user = this.session.user;
 
-      const username = this.updateProfileForm.value.username as string;
-      const email = this.updateProfileForm.value.email as string;
-      const avatarUrl = this.updateProfileForm.value.avatarUrl as string;
+      const username = this.profile.username as string;
+      const email = this.profile.email as string;
+      const avatarUrl = this.profile.avatarUrl as string;
 
       await this.supabase.saveProfile({
         id: user.id,
