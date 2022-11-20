@@ -6,6 +6,6 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./submit-button.component.scss']
 })
 export class SubmitButtonComponent {
-  @Input() disabled: boolean = false;
-  @Input() size: string = 'medium';
+  @Input() disabled = false;
+  @Input() size = 'medium';
 }
