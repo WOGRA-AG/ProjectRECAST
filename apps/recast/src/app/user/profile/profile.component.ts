@@ -54,9 +54,9 @@ export class ProfileComponent {
       this.loading = true;
       const user = this.session.user;
 
-      const username = this.profile.username!;
-      const email = this.profile.email!;
-      const avatarUrl = this.profile.avatarUrl!;
+      const username = this.profile.username;
+      const email = this.profile.email;
+      const avatarUrl = this.profile.avatarUrl;
 
       await this.supabase.saveProfile({
         id: user.id,
