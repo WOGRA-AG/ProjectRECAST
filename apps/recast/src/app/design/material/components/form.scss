@@ -1,0 +1,33 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import '../essentials/layout.scss';
+
+@mixin color($theme) {
+  $primary-palette: map.get($theme, 'primary');
+  $primary-color: mat.get-color-from-palette($primary-palette, 500);
+
+  .mat-form-field {
+    &.mat-form-field-appearance-outline {
+      &:not(.mat-form-field-invalid) {
+        .mat-form-field-outline-thick {
+            color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+@mixin layout() {
+  .mat-form-field {
+    .mat-form-field-wrapper {
+      .mat-form-field-infix {
+        padding: .5em 0 .5em 0;
+      }
+    }
+  }
+}
+
+@mixin theme($theme) {
+  @include color($theme);
+  @include layout();
+}

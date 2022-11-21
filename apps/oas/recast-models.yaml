@@ -8,23 +8,46 @@ paths: {}
 
 components:
   schemas:
-    Bauteil:
+    Processes:
+      properties:
+        processes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Process'
+
+    Process:
       required:
         - name
       properties:
+        id:
+          type: string
         name:
           type: string
-        properties:
+        steps:
+          nullable: true
           type: array
           items:
-            $ref: '#/components/schemas/BauteilEigenschaft'
+            $ref: '#/components/schemas/Step'
 
-    BauteilEigenschaft:
-      type: object
+    Step:
       properties:
+        id:
+          type: string
         name:
           type: string
-        value:
+        stepProperties:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepProperty'
+
+    StepProperty:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        defaultValue:
           nullable: true
           type: string
         description:
@@ -32,18 +55,38 @@ components:
         type:
           type: string
           enum:
-            - string
+            - text
             - number
             - file
 
-    Workflow:
+    Elements:
       properties:
-        bauteile:
+        processes:
           type: array
           items:
-            $ref: '#/components/schemas/Bauteil'
-        stage:
-          $ref: '#/components/schemas/BauteilEigenschaft'
+            $ref: '#/components/schemas/Element'
+
+    Element:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        processId:
+          type: string
+        elementProperties:
+          type: array
+          items:
+            $ref: '#/components/schemas/ElementProperty'
+
+    ElementProperty:
+      properties:
+        id:
+          type: string
+        stepProperty:
+          $ref: '#/components/schemas/StepProperty'
+        value:
+          type: string
 
     Profile:
       required:

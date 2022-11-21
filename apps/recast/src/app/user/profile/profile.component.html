@@ -1,35 +1,32 @@
 <form
-  [formGroup]="updateProfileForm"
-  (ngSubmit)="updateProfile()"
+  #f="ngForm"
+  (ngSubmit)="f.form.valid && updateProfile()"
   class="form-widget"
+  [formGroup]="updateProfileForm"
 >
   <div>
-    <mat-form-field appearance="outline">
-      <mat-label>id</mat-label>
-      <input matInput id="id" type="text" [value]="session?.user?.id" disabled />
-    </mat-form-field>
+    <app-text-input-field
+      [label]="'id'"
+      formControlName="id"
+    ></app-text-input-field>
   </div>
   <div>
-    <mat-form-field appearance="outline">
-      <mat-label>email</mat-label>
-      <input matInput id="email" type="text" [value]="session?.user?.email" disabled />
-    </mat-form-field>
+    <app-text-input-field
+      formControlName="email"
+      [label]="'email'"
+    ></app-text-input-field>
   </div>
   <div>
-    <mat-form-field appearance="outline">
-      <mat-label>username</mat-label>
-      <input matInput formControlName="username" id="username" type="text" />
-    </mat-form-field>
+    <app-text-input-field
+      formControlName="username"
+      label="username"
+      errMsg="Minimum of 3 characters"
+    ></app-text-input-field>
   </div>
   <div class="actions">
-    <div>
-      <app-button-filled type="submit" [disabled]="loading">
+      <app-submit-button [disabled]="loading">
         {{ loading ? 'Loading ...' : 'Update' }}
-      </app-button-filled>
-    </div>
-
-    <div>
-      <app-button-unfilled [bordered]="true" (click)="signOut()">Sign Out</app-button-unfilled>
-    </div>
+      </app-submit-button>
+      <app-logout-button (click)="signOut()">Sign Out</app-logout-button>
   </div>
 </form>

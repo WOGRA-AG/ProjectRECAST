@@ -9,7 +9,7 @@ import { PageNotFoundComponent } from './templates/page-not-found/page-not-found
 import {SupabaseService} from './services/supabase.service';
 import { DesignModule } from './design/design.module';
 
-const appInit = (supabaseService: SupabaseService) => () => supabaseService.session;
+const supabaseInit = (supabaseService: SupabaseService) => () => supabaseService.session;
 
 @NgModule({
   declarations: [
@@ -24,7 +24,7 @@ const appInit = (supabaseService: SupabaseService) => () => supabaseService.sess
     DesignModule,
   ],
   providers: [
-    {provide: APP_INITIALIZER, useFactory: appInit, deps: [SupabaseService], multi: true}
+    {provide: APP_INITIALIZER, useFactory: supabaseInit, deps: [SupabaseService], multi: true},
   ],
   bootstrap: [AppComponent]
 })
