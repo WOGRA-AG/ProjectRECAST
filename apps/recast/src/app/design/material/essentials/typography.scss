@@ -43,36 +43,36 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
 @mixin additional-typography-settings {
   .mat-h1, h1 {
     font-family: map-get($heading-1, font-family);
-    font-weight: 800; //map-get($heading-1, font-weight);
-    line-height: map-get($heading-1, line-height) + px;
-    font-size: map-get($heading-1, font-size) + px;
+    font-weight: map-get($heading-1, font-weight);
+    line-height: map-get($heading-1, line-height);
+    font-size: map-get($heading-1, font-size);
     letter-spacing: map-get($heading-1, letter-spacing);
     text-decoration: map-get($heading-1, text-decoration);
   }
 
   .mat-h2, h2 {
     font-family: map-get($heading-2, font-family);
-    font-weight: 800; //map-get($heading-2, font-weight);
-    line-height: map-get($heading-2, line-height) + px;
-    font-size: map-get($heading-2, font-size) + px;
+    font-weight: map-get($heading-2, font-weight);
+    line-height: map-get($heading-2, line-height);
+    font-size: map-get($heading-2, font-size);
     letter-spacing: map-get($heading-2, letter-spacing);
     text-decoration: map-get($heading-2, text-decoration);
   }
 
   .mat-h3, h3 {
     font-family: map-get($heading-3, font-family);
-    font-weight: 800; //map-get($heading-3, font-weight);
-    line-height: map-get($heading-3, line-height) + px;
-    font-size: map-get($heading-3, font-size) + px;
+    font-weight: map-get($heading-3, font-weight);
+    line-height: map-get($heading-3, line-height);
+    font-size: map-get($heading-3, font-size);
     letter-spacing: map-get($heading-3, letter-spacing);
     text-decoration: map-get($heading-3, text-decoration);
   }
 
   .mat-h4, h4 {
     font-family: map-get($heading-4, font-family);
-    font-weight: 800; //map-get($heading-4, font-weight);
-    line-height: map-get($heading-4, line-height) + px;
-    font-size: map-get($heading-4, font-size) + px;
+    font-weight: map-get($heading-4, font-weight);
+    line-height: map-get($heading-4, line-height);
+    font-size: map-get($heading-4, font-size);
     letter-spacing: map-get($heading-4, letter-spacing);
     text-decoration: map-get($heading-4, text-decoration);
     text-align: left;
@@ -80,72 +80,72 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
 
   .mat-h5, h5 {
     font-family: map-get($heading-5, font-family);
-    font-weight: 800; //map-get($heading-5, font-weight);
-    line-height: map-get($heading-5, line-height) + px;
-    font-size: map-get($heading-5, font-size) + px;
+    font-weight: map-get($heading-5, font-weight);
+    line-height: map-get($heading-5, line-height);
+    font-size: map-get($heading-5, font-size);
     letter-spacing: map-get($heading-5, letter-spacing);
     text-decoration: map-get($heading-5, text-decoration);
   }
 
   .mat-h6, h6 {
     font-family: map-get($heading-6, font-family);
-    font-weight: 800; //map-get($heading-6, font-weight);
-    line-height: map-get($heading-6, line-height) + px;
-    font-size: map-get($heading-6, font-size) + px;
+    font-weight: map-get($heading-6, font-weight);
+    line-height: map-get($heading-6, line-height);
+    font-size: map-get($heading-6, font-size);
     letter-spacing: map-get($heading-6, letter-spacing);
     text-decoration: map-get($heading-6, text-decoration);
   }
 
   .mat-subheading-1 {
     font-family: map-get($subtitle-1, font-family);
-    font-weight: 800; //map-get($subtitle-1, font-weight);
-    line-height: map-get($subtitle-1, line-height) + px;
-    font-size: map-get($subtitle-1, font-size) + px;
+    font-weight: map-get($subtitle-1, font-weight);
+    line-height: map-get($subtitle-1, line-height);
+    font-size: map-get($subtitle-1, font-size);
     letter-spacing: map-get($subtitle-1, letter-spacing);
     text-decoration: map-get($subtitle-1, text-decoration);
   }
 
   .mat-subheading-2 {
     font-family: map-get($subtitle-2, font-family);
-    font-weight: 800; //map-get($subtitle-2, font-weight);
-    line-height: map-get($subtitle-2, line-height) + px;
-    font-size: map-get($subtitle-2, font-size) + px;
+    font-weight: map-get($subtitle-2, font-weight);
+    line-height: map-get($subtitle-2, line-height);
+    font-size: map-get($subtitle-2, font-size);
     letter-spacing: map-get($subtitle-2, letter-spacing);
     text-decoration: map-get($subtitle-2, text-decoration);
   }
 
   .mat-body-1 {
     font-family: map-get($body-1, font-family);
-    font-weight: 800; //map-get($body-1, font-weight);
-    line-height: map-get($body-1, line-height) + px;
-    font-size: map-get($body-1, font-size) + px;
+    font-weight: map-get($body-1, font-weight);
+    line-height: map-get($body-1, line-height);
+    font-size: map-get($body-1, font-size);
     letter-spacing: map-get($body-1, letter-spacing);
     text-decoration: map-get($body-1, text-decoration);
   }
 
   .mat-body-2 {
     font-family: map-get($body-2, font-family);
-    font-weight: 800; //map-get($body-2, font-weight);
-    line-height: map-get($body-2, line-height) + px;
-    font-size: map-get($body-2, font-size) + px;
+    font-weight: map-get($body-2, font-weight);
+    line-height: map-get($body-2, line-height);
+    font-size: map-get($body-2, font-size);
     letter-spacing: map-get($body-2, letter-spacing);
     text-decoration: map-get($body-2, text-decoration);
   }
 
   .mat-flat-button {
     font-family: map-get($button-medium, font-family);
-    font-weight: 800; //map-get($button-medium, font-weight);
-    line-height: map-get($button-medium, line-height) + px;
-    font-size: map-get($button-medium, font-size) + px;
+    font-weight: map-get($button-medium, font-weight);
+    line-height: map-get($button-medium, line-height);
+    font-size: map-get($button-medium, font-size);
     letter-spacing: map-get($button-medium, letter-spacing);
     text-decoration: map-get($button-medium, text-decoration);
     text-align: left;
 
     &.small {
       font-family: map-get($button-small, font-family);
-      font-weight: 800; //map-get($button-small, font-weight);
-      line-height: map-get($button-small, line-height) + px;
-      font-size: map-get($button-small, font-size) + px;
+      font-weight: map-get($button-small, font-weight);
+      line-height: map-get($button-small, line-height);
+      font-size: map-get($button-small, font-size);
       letter-spacing: map-get($button-small, letter-spacing);
       text-decoration: map-get($button-small, text-decoration);
       text-align: left;
@@ -153,9 +153,9 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
 
     &.large {
       font-family: map-get($button-large, font-family);
-      font-weight: 800; //map-get($button-large, font-weight);
-      line-height: map-get($button-large, line-height) + px;
-      font-size: map-get($button-large, font-size) + px;
+      font-weight: map-get($button-large, font-weight);
+      line-height: map-get($button-large, line-height);
+      font-size: map-get($button-large, font-size);
       letter-spacing: map-get($button-large, letter-spacing);
       text-decoration: map-get($button-large, text-decoration);
       text-align: left;
@@ -164,18 +164,18 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
 
   .mat-flat-button, .mat-stroked-button {
     font-family: map-get($button-medium, font-family);
-    font-weight: 800; //map-get($button-medium, font-weight);
-    line-height: map-get($button-medium, line-height) + px;
-    font-size: map-get($button-medium, font-size) + px;
+    font-weight: map-get($button-medium, font-weight);
+    line-height: map-get($button-medium, line-height);
+    font-size: map-get($button-medium, font-size);
     letter-spacing: map-get($button-medium, letter-spacing);
     text-decoration: map-get($button-medium, text-decoration);
     text-align: left;
 
     &.small {
       font-family: map-get($button-small, font-family);
-      font-weight: 800; //map-get($button-small, font-weight);
-      line-height: map-get($button-small, line-height) + px;
-      font-size: map-get($button-small, font-size) + px;
+      font-weight: map-get($button-small, font-weight);
+      line-height: map-get($button-small, line-height);
+      font-size: map-get($button-small, font-size);
       letter-spacing: map-get($button-small, letter-spacing);
       text-decoration: map-get($button-small, text-decoration);
       text-align: left;
@@ -183,9 +183,9 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
 
     &.large {
       font-family: map-get($button-large, font-family);
-      font-weight: 800; //map-get($button-large, font-weight);
-      line-height: map-get($button-large, line-height) + px;
-      font-size: map-get($button-large, font-size) + px;
+      font-weight: map-get($button-large, font-weight);
+      line-height: map-get($button-large, line-height);
+      font-size: map-get($button-large, font-size);
       letter-spacing: map-get($button-large, letter-spacing);
       text-decoration: map-get($button-large, text-decoration);
       text-align: left;
@@ -193,14 +193,14 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
   }
 
   .mat-icon {
-    font-size: map-get($button-medium, font-size) + px;
+    font-size: map-get($button-medium, font-size);
 
     &.small {
-      font-size: map-get($button-small, font-size) + px;
+      font-size: map-get($button-small, font-size);
     }
 
     &.large {
-      font-size: map-get($button-large, font-size) + px;
+      font-size: map-get($button-large, font-size);
     }
   }
 

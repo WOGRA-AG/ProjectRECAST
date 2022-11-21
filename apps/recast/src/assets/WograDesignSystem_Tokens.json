@@ -299,9 +299,9 @@
     "display": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "112",
-        "fontSize": "75",
+        "fontWeight": "800",
+        "lineHeight": "112px",
+        "fontSize": "75px",
         "letterSpacing": "0px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -311,9 +311,9 @@
     "heading-1": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "112",
-        "fontSize": "60",
+        "fontWeight": "800",
+        "lineHeight": "112px",
+        "fontSize": "60px",
         "letterSpacing": "0px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -323,9 +323,9 @@
     "heading-2": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "72",
-        "fontSize": "44.2",
+        "fontWeight": "800",
+        "lineHeight": "72px",
+        "fontSize": "44.2px",
         "letterSpacing": "2.5px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -335,9 +335,9 @@
     "heading-3": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "47.5",
-        "fontSize": "33.16",
+        "fontWeight": "800",
+        "lineHeight": "47.5px",
+        "fontSize": "33.16px",
         "letterSpacing": "0px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -347,9 +347,9 @@
     "heading-4": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "43",
-        "fontSize": "30",
+        "fontWeight": "800",
+        "lineHeight": "43px",
+        "fontSize": "30px",
         "letterSpacing": "0px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -359,9 +359,9 @@
     "heading-5": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "33",
-        "fontSize": "24",
+        "fontWeight": "800",
+        "lineHeight": "33px",
+        "fontSize": "24px",
         "letterSpacing": "0px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -371,9 +371,9 @@
     "heading-6": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "24",
-        "fontSize": "20",
+        "fontWeight": "800",
+        "lineHeight": "24px",
+        "fontSize": "20px",
         "letterSpacing": "0px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -383,9 +383,9 @@
     "subtitle-1": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Heavy",
-        "lineHeight": "24",
-        "fontSize": "18",
+        "fontWeight": "800",
+        "lineHeight": "24px",
+        "fontSize": "18px",
         "letterSpacing": "0.15px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -395,9 +395,9 @@
     "subtitle-2": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Heavy",
-        "lineHeight": "21",
-        "fontSize": "14",
+        "fontWeight": "800",
+        "lineHeight": "21px",
+        "fontSize": "14px",
         "letterSpacing": "0.1px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -407,9 +407,9 @@
     "body-1": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Book",
-        "lineHeight": "24",
-        "fontSize": "16",
+        "fontWeight": "350",
+        "lineHeight": "24px",
+        "fontSize": "16px",
         "letterSpacing": "0.5px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -419,9 +419,9 @@
     "body-2": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Book",
-        "lineHeight": "20",
-        "fontSize": "14",
+        "fontWeight": "350",
+        "lineHeight": "20px",
+        "fontSize": "14px",
         "letterSpacing": "0.25px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -431,9 +431,9 @@
     "button-small": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "20",
-        "fontSize": "14",
+        "fontWeight": "800",
+        "lineHeight": "20px",
+        "fontSize": "14px",
         "letterSpacing": "1.25px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -443,9 +443,9 @@
     "button-medium": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "24",
-        "fontSize": "18",
+        "fontWeight": "800",
+        "lineHeight": "24px",
+        "fontSize": "18px",
         "letterSpacing": "1.25px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
@@ -455,9 +455,9 @@
     "button-large": {
       "value": {
         "fontFamily": "Avenir",
-        "fontWeight": "Black",
-        "lineHeight": "24",
-        "fontSize": "21",
+        "fontWeight": "800",
+        "lineHeight": "24px",
+        "fontSize": "21px",
         "letterSpacing": "1.96px",
         "paragraphSpacing": "0",
         "textDecoration": "none"
