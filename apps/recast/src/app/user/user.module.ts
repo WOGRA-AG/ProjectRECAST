@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from '../material/material.module';
-
+import { DesignModule } from '../design/design.module';
 
 @NgModule({
   declarations: [
@@ -18,7 +17,7 @@ import {MaterialModule} from '../material/material.module';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MaterialModule,
+    DesignModule,
   ]
 })
 export class UserModule { }

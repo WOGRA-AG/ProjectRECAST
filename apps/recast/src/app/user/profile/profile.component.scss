@@ -1,15 +1,13 @@
-@import "src/assets/WograDesignSystem_Tokens.json";
-
-$spacing-light: map-get($light, --wogra-spacing-2px);
-$primary-light: map-get($light, --wogra-color-primary-600);
-
-.primary {
-  padding: map-get($spacing-light, value);
-  color: map-get($primary-light, value);
+.form-widget {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .actions {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  gap: 1rem;
 }

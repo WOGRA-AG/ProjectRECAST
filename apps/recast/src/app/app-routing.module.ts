@@ -4,11 +4,16 @@ import {AuthComponent} from './user/auth/auth.component';
 import {ProfileComponent} from './user/profile/profile.component';
 import {PageNotFoundComponent} from './templates/page-not-found/page-not-found.component';
 import {AuthGuard} from './user/guards/auth.guard';
+import { DemoComponent } from './design/demo/demo.component';
 
 const routes: Routes = [
   {
     path: 'login',
     component: AuthComponent,
+  },
+  {
+    path: 'demo',
+    component: DemoComponent,
   },
   {
     path: 'profile',
