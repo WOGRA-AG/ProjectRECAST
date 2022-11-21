@@ -5,6 +5,7 @@ import { ButtonFilledComponent } from './components/atoms/button-filled/button-f
 import { ButtonUnfilledComponent } from './components/atoms/button-unfilled/button-unfilled.component';
 import { IconButtonFilledComponent } from './components/molecules/icon-button-filled/icon-button-filled.component';
 import { DemoComponent } from './demo/demo.component';
+import { IconButtonUnfilledComponent } from './components/molecules/icon-button-unfilled/icon-button-unfilled.component';
 
 @NgModule({
   declarations: [
@@ -12,12 +13,14 @@ import { DemoComponent } from './demo/demo.component';
     ButtonFilledComponent,
     ButtonUnfilledComponent,
     IconButtonFilledComponent,
+    IconButtonUnfilledComponent
   ],
   exports: [
     MaterialModule,
     ButtonFilledComponent,
     ButtonUnfilledComponent,
     IconButtonFilledComponent,
+    IconButtonUnfilledComponent
   ],
   imports: [
     CommonModule,
