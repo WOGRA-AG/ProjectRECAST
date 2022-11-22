@@ -1,8 +1,7 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
-import {SupabaseService } from '../../services/supabase.service';
-import {Profile} from '../../../../build/openapi/recast';
-import {AuthSession} from '@supabase/supabase-js';
+import {Profile} from '../../../../../build/openapi/recast';
+import {UserService} from '../../services/user.service';
 
 @Component({
   selector: 'app-account',
@@ -12,8 +11,6 @@ import {AuthSession} from '@supabase/supabase-js';
 export class ProfileComponent {
   loading = false;
   profile!: Profile;
-
-  session: AuthSession | null = this.supabase.session;
 
   updateProfileForm = this.formBuilder.group({
     id: new FormControl({value: '', disabled: true}),
@@ -26,17 +23,12 @@ export class ProfileComponent {
   });
 
   constructor(
-    private readonly supabase: SupabaseService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private readonly userService: UserService,
   ) {
-    supabase.profile$.subscribe(value => {
+    userService.profile$.subscribe(value => {
+      this.updateProfileForm.patchValue(value);
       this.profile = value;
-      this.updateProfileForm.patchValue(this.profile);
-    });
-    supabase.session$.subscribe(value => {
-      if (value){
-        this.session = value as AuthSession;
-      }
     });
     this.updateProfileForm.valueChanges.subscribe(values => {
       this.profile.username = values.username || this.profile.username;
@@ -47,19 +39,16 @@ export class ProfileComponent {
   }
 
   async updateProfile(): Promise<void> {
-    if (!this.session) {
-      return;
-    }
     try {
       this.loading = true;
-      const user = this.session.user;
 
       const username = this.profile.username;
       const email = this.profile.email;
       const avatarUrl = this.profile.avatarUrl;
+      const id = this.profile.id;
 
-      await this.supabase.saveProfile({
-        id: user.id,
+      await this.userService.saveProfile({
+        id,
         username,
         email,
         avatarUrl,
@@ -74,6 +63,6 @@ export class ProfileComponent {
   }
 
   async signOut() {
-    await this.supabase.signOut();
+    await this.userService.signOut();
   }
 }

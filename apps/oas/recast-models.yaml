@@ -17,10 +17,13 @@ components:
 
     Process:
       required:
-        - name
+        - id
       properties:
         id:
+          type: integer
+        createdAt:
           type: string
+          format: date-time
         name:
           type: string
         steps:
@@ -32,6 +35,11 @@ components:
     Step:
       properties:
         id:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        processId:
           type: string
         name:
           type: string
@@ -44,6 +52,11 @@ components:
       type: object
       properties:
         id:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        stepId:
           type: string
         name:
           type: string
@@ -69,7 +82,10 @@ components:
     Element:
       properties:
         id:
+          type: integer
+        createdAt:
           type: string
+          format: date-time
         name:
           type: string
         processId:
@@ -82,6 +98,11 @@ components:
     ElementProperty:
       properties:
         id:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        elementId:
           type: string
         stepProperty:
           $ref: '#/components/schemas/StepProperty'
@@ -97,6 +118,7 @@ components:
           type: string
         updatedAt:
           type: string
+          format: date-time
         fullName:
           type: string
         firstName:
