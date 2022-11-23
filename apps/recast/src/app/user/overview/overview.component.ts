@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent {
+  public tabs: string[] = ['Prozesse', 'Bundles', 'Bauteile'];
 
+  public changeContent(index: number): void {
+    //TODO
+  }
 }

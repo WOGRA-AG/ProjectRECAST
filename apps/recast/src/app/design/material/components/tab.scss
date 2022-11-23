@@ -1,0 +1,32 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin color($theme) {
+  $primary-palette: map.get($theme, 'primary');
+  $primary-color: mat.get-color-from-palette($primary-palette, 500);
+  $accent-palette: map.get($theme, 'accent');
+  $accent-color: mat.get-color-from-palette($accent-palette, 500);
+
+  .mat-tab-label {
+    color: $accent-color;
+  }
+
+  .mat-tab-label-active {
+    color: $primary-color;
+  }
+}
+
+@mixin layout() {
+  .mat-tab-nav-bar, .mat-tab-header {
+    border-bottom: none;
+  }
+
+  .mat-tab-label {
+    opacity: 1;
+  }
+}
+
+@mixin theme($theme) {
+  @include color($theme);
+  @include layout();
+}

@@ -7,12 +7,12 @@
 
 @font-face {
   font-family: "Avenir Roman";
-  src: local("Avenir"), url("/assets/fonts/AvenirLTPro-Roman.ttf") format("truetype");
+  src: local("Avenir Roman"), url("/assets/fonts/AvenirLTPro-Roman.ttf") format("truetype");
 }
 
 @font-face {
-  font-family: "Avenir Black";
-  src: local("Avenir Black"), url("/assets/fonts/AvenirLTPro-Black.ttf") format("truetype");
+  font-family: "Avenir";
+  src: local("Avenir"), url("/assets/fonts/AvenirLTPro-Black.ttf") format("truetype");
 }
 
 $custom-typography: mat.define-typography-config(
@@ -209,6 +209,15 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     &.large {
       font-size: map-get($button-large, font-size);
     }
+  }
+
+  .mat-tab-label {
+    font-family: map-get($button-medium, font-family);
+    font-weight: map-get($button-medium, font-weight);
+    line-height: map-get($button-medium, line-height);
+    font-size: map-get($button-medium, font-size);
+    letter-spacing: map-get($button-medium, letter-spacing);
+    text-decoration: map-get($button-medium, text-decoration);
   }
 
   .mat-caption {

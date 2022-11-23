@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
-@import '../essentials/layout.scss';
+@import '../essentials/button-layout.scss';
 
 @mixin color($theme) {
   .mat-stroked-button:not(.mat-button-disabled) {
