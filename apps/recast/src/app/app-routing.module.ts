@@ -5,6 +5,7 @@ import {ProfileComponent} from './user/profile/profile.component';
 import {PageNotFoundComponent} from './templates/page-not-found/page-not-found.component';
 import {AuthGuard} from './user/guards/auth.guard';
 import { DemoComponent } from './design/demo/demo.component';
+import { OverviewComponent } from './user/overview/overview.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,11 @@ const routes: Routes = [
     path: '',
     redirectTo: '/profile',
     pathMatch: 'full',
+  },
+  {
+    path: 'overview',
+    component: OverviewComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: '**',
