@@ -16,13 +16,6 @@ components:
       type: string
       format: uuid
 
-    Processes:
-      properties:
-        processes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Process'
-
     Process:
       required:
         - id
@@ -81,13 +74,6 @@ components:
             - text
             - number
             - file
-
-    Elements:
-      properties:
-        processes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Element'
 
     Element:
       properties:
