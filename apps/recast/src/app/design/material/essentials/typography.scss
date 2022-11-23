@@ -11,8 +11,8 @@
 }
 
 @font-face {
-  font-family: "Avenir";
-  src: local("Avenir"), url("/assets/fonts/AvenirLTPro-Black.ttf") format("truetype");
+  font-family: "Avenir Black";
+  src: local("Avenir Black"), url("/assets/fonts/AvenirLTPro-Black.ttf") format("truetype");
 }
 
 $custom-typography: mat.define-typography-config(
