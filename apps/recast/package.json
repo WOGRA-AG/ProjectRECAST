@@ -11,11 +11,12 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "e2e": "npx cypress run"
   },
   "private": true,
   "dependencies": {
-    "@angular-builders/custom-webpack": "^14.0.1",
+    "@angular-builders/custom-webpack": "^14.1.0",
     "@angular/animations": "^14.2.0",
     "@angular/cdk": "^14.2.6",
     "@angular/common": "^14.2.0",
@@ -48,6 +49,7 @@
     "@types/snakecase-keys": "^3.1.0",
     "@typescript-eslint/eslint-plugin": "5.37.0",
     "@typescript-eslint/parser": "5.37.0",
+    "cypress": "^11.1.0",
     "eslint": "^8.23.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsdoc": "^39.6.2",

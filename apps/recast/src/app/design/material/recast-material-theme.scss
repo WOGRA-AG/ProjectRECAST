@@ -11,6 +11,7 @@
 @use './components/table.scss' as table;
 @use './components/chips.scss' as chips;
 @use './components/stepper.scss' as stepper;
+@use './components/form.scss' as form;
 
 
 $recast-theme: mat.define-light-theme((
@@ -37,4 +38,5 @@ $recast-theme: mat.define-light-theme((
   @include list.theme($recast-theme, colors.$background);
   @include table.theme($recast-theme, colors.$background);
   @include chips.theme($recast-theme, colors.$background);
+  @include form.theme($recast-theme);
 }

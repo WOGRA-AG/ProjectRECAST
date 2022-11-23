@@ -7,4 +7,6 @@ import { Component, Input } from '@angular/core';
   export class ButtonFilledComponent {
     @Input() disabled = false;
     @Input() size = '';
+    @Input() type = 'button';
+    @Input() color = 'primary';
   }

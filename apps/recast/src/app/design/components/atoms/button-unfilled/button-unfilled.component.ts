@@ -8,4 +8,6 @@ import { Component, Input } from '@angular/core';
     @Input() disabled = false;
     @Input() bordered = false;
     @Input() size = '';
+    @Input() type = 'button';
+    @Input() color = 'primary';
   }
