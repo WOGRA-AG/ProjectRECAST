@@ -9,7 +9,7 @@ import {
 import {SupabaseService} from './supabase.service';
 import {StepFacadeService} from './step-facade.service';
 import {BehaviorSubject, from, groupBy, mergeMap, Observable, reduce} from 'rxjs';
-import {Process, Step, StepProperty} from '../../../build/openapi/recast';
+import {Process, Step} from '../../../build/openapi/recast';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 

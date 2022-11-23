@@ -2,9 +2,6 @@ import {Component} from '@angular/core';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {Profile} from '../../../../../build/openapi/recast';
 import {UserFacadeService} from '../../services/user-facade.service';
-import {StepPropertyService} from '../../../services/step-property.service';
-import {StepFacadeService} from '../../../services/step-facade.service';
-import {ProcessFacadeService} from '../../../services/process-facade.service';
 
 @Component({
   selector: 'app-account',
@@ -28,14 +25,10 @@ export class ProfileComponent {
   constructor(
     private formBuilder: FormBuilder,
     private readonly userService: UserFacadeService,
-    private readonly processFacade: ProcessFacadeService,
   ) {
     userService.profile$.subscribe(value => {
       this.updateProfileForm.patchValue(value);
       this.profile = value;
-    });
-    processFacade.processes$.subscribe(stepProps => {
-      console.log('procs', stepProps);
     });
     this.updateProfileForm.valueChanges.subscribe(values => {
       this.profile.username = values.username || this.profile.username;

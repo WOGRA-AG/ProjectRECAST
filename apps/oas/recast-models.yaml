@@ -11,6 +11,7 @@ components:
     Id:
       type: integer
       format: int64
+
     UserId:
       type: string
       format: uuid
@@ -113,8 +114,8 @@ components:
           format: date-time
         elementId:
           $ref: '#/components/schemas/Id'
-        stepProperty:
-          $ref: '#/components/schemas/StepProperty'
+        stepPropertyId:
+          $ref: '#/components/schemas/Id'
         value:
           type: string
 
