@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
-@import '../essentials/layout.scss';
 
 @mixin color($theme) {
   $primary-palette: map.get($theme, 'primary');

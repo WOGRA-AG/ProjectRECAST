@@ -10,6 +10,9 @@ import {TextInputFieldComponent} from './components/molecules/text-input-field/t
 import {LogoutButtonComponent} from './components/molecules/logout-button/logout-button.component';
 import {SubmitButtonComponent} from './components/molecules/submit-button/submit-button.component';
 import { IconButtonUnfilledComponent } from './components/molecules/icon-button-unfilled/icon-button-unfilled.component';
+import { TabGroupComponent } from './components/molecules/tab-group/tab-group.component';
+import { PageHeaderComponent } from './components/atoms/page-header/page-header.component';
+import { CreateButtonComponent } from './components/molecules/create-button/create-button.component';
 
 const COMPONENTS = [
   DemoComponent,
@@ -20,6 +23,9 @@ const COMPONENTS = [
   TextInputFieldComponent,
   LogoutButtonComponent,
   SubmitButtonComponent,
+  TabGroupComponent,
+  PageHeaderComponent,
+  CreateButtonComponent,
 ];
 
 @NgModule({
@@ -29,11 +35,8 @@ const COMPONENTS = [
   exports: [
     ...COMPONENTS,
     MaterialModule,
-    ButtonFilledComponent,
-    ButtonUnfilledComponent,
-    IconButtonFilledComponent,
     FormsModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   imports: [
     CommonModule,
