@@ -8,6 +8,13 @@ paths: {}
 
 components:
   schemas:
+    Id:
+      type: integer
+      format: int64
+    UserId:
+      type: string
+      format: uuid
+
     Processes:
       properties:
         processes:
@@ -20,12 +27,14 @@ components:
         - id
       properties:
         id:
-          type: integer
+          $ref: '#/components/schemas/Id'
         createdAt:
           type: string
           format: date-time
         name:
           type: string
+        ownerId:
+          $ref: '#/components/schemas/UserId'
         steps:
           nullable: true
           type: array
@@ -35,12 +44,12 @@ components:
     Step:
       properties:
         id:
-          type: integer
+          $ref: '#/components/schemas/Id'
         createdAt:
           type: string
           format: date-time
         processId:
-          type: string
+          $ref: '#/components/schemas/Id'
         name:
           type: string
         stepProperties:
@@ -52,12 +61,12 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          $ref: '#/components/schemas/Id'
         createdAt:
           type: string
           format: date-time
         stepId:
-          type: string
+          $ref: '#/components/schemas/Id'
         name:
           type: string
         defaultValue:
@@ -82,14 +91,14 @@ components:
     Element:
       properties:
         id:
-          type: integer
+          $ref: '#/components/schemas/Id'
         createdAt:
           type: string
           format: date-time
         name:
           type: string
         processId:
-          type: string
+          $ref: '#/components/schemas/Id'
         elementProperties:
           type: array
           items:
@@ -98,12 +107,12 @@ components:
     ElementProperty:
       properties:
         id:
-          type: integer
+          $ref: '#/components/schemas/Id'
         createdAt:
           type: string
           format: date-time
         elementId:
-          type: string
+          $ref: '#/components/schemas/Id'
         stepProperty:
           $ref: '#/components/schemas/StepProperty'
         value:
@@ -115,7 +124,7 @@ components:
         - email
       properties:
         id:
-          type: string
+          $ref: '#/components/schemas/UserId'
         updatedAt:
           type: string
           format: date-time
