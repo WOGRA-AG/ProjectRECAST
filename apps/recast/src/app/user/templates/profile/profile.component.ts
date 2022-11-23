@@ -1,7 +1,9 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {Profile} from '../../../../../build/openapi/recast';
-import {UserService} from '../../services/user.service';
+import {UserFacadeService} from '../../services/user-facade.service';
+import {StepPropertyService} from '../../../services/step-property.service';
+import {StepFacadeService} from '../../../services/step-facade.service';
 
 @Component({
   selector: 'app-account',
@@ -24,7 +26,7 @@ export class ProfileComponent {
 
   constructor(
     private formBuilder: FormBuilder,
-    private readonly userService: UserService,
+    private readonly userService: UserFacadeService,
   ) {
     userService.profile$.subscribe(value => {
       this.updateProfileForm.patchValue(value);

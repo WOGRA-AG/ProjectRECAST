@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import {UserService} from '../../services/user.service';
+import {UserFacadeService} from '../../services/user-facade.service';
 
 @Component({
   selector: 'app-auth',
@@ -15,7 +15,7 @@ export class AuthComponent {
   });
 
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: UserFacadeService,
     private readonly formBuilder: FormBuilder,
   ) {
   }
