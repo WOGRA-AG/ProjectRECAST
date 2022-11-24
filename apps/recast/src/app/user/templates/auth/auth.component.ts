@@ -20,17 +20,14 @@ export class AuthComponent {
   ) {
   }
 
-  async onSubmit(): Promise<void> {
-    try {
-      this.loading = true;
-      await this.userService.signIn();
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
+  onSubmit(): void {
+    this.loading = true;
+    this.userService.signIn().subscribe(err => {
+      if(err) {
+        alert(err.message);
       }
-    } finally {
       this.signInForm.reset();
       this.loading = false;
-    }
+    });
   }
 }

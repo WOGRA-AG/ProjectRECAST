@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {SupabaseService} from '../../services/supabase.service';
-import {AuthSession, Session, SupabaseClient} from '@supabase/supabase-js';
-import {BehaviorSubject} from 'rxjs';
+import {AuthError, PostgrestError, SupabaseClient} from '@supabase/supabase-js';
+import {BehaviorSubject, catchError, concatMap, filter, from, map, Observable, of, Subject} from 'rxjs';
 import {Profile} from '../../../../build/openapi/recast';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -11,80 +11,88 @@ const camelCase = require('camelcase-keys');
 })
 export class UserFacadeService {
 
-  profile$: BehaviorSubject<Profile> = new BehaviorSubject<Profile>({id: '', username: '', email: '', avatarUrl: ''});
-  private supabaseClient: SupabaseClient;
-  private session: AuthSession | null = this.supabase.session;
+  private readonly _currentProfile$: BehaviorSubject<Profile | null> = new BehaviorSubject<Profile | null>(null);
+  private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
 
   constructor(private supabase: SupabaseService) {
-    supabase.session$.subscribe(session => {
-      this.session = session;
-      this.updateProfile(this.session);
+    supabase.session$.pipe(
+      filter(session => !!session),
+      concatMap(() => this.updateProfile()),
+      catchError(() => of(null))
+    ).subscribe(profile => {
+      this._currentProfile$.next(profile);
     });
-    this.supabaseClient = this.supabase.client;
-    this.supabaseClient.channel('profiles-changes')
-    .on(
-      'postgres_changes',
-      {event: 'UPDATE', schema: 'public', table: 'profiles'},
-      payload => {
-        this.profile$.next(camelCase(payload.new) as Profile);
-      }
-    )
-    .subscribe();
+    this.profileChanges$().subscribe(profile => this._currentProfile$.next(profile));
   }
 
-  async saveProfile(profile: Profile): Promise<void> {
+  get currentProfile$(): Observable<Profile> {
+    return this._currentProfile$.pipe(
+      filter(profile => !!profile),
+      map(profile => profile!)
+    );
+  }
+
+  get profile$(): Observable<Profile | null> {
+    return this._currentProfile$;
+  }
+
+  saveProfile(profile: Profile): Observable<PostgrestError> {
     const update = {
       ...profile,
       updatedAt: new Date(),
     };
-
-    await this.supabaseClient.from('profiles').upsert(snakeCase(update));
+    const upsert = this._supabaseClient.from('profiles').upsert(snakeCase(update));
+    return from(upsert).pipe(
+      map(({error}) => error!)
+    );
   }
 
-  async downLoadImage(path: string): Promise<Blob> {
-    const {data, error} = await this.supabaseClient.storage.from('avatars').download(path);
-    if (error) {
-      alert(error);
-      throw error;
-    }
-    return data;
-  }
-
-  async uploadAvatar(filePath: string, file: File): Promise<void> {
-    try {
-      await this.supabaseClient.storage.from('avatars').upload(filePath, file);
-    } catch (err) {
-      alert(err);
-    }
-  }
-
-  signIn() {
-    return this.supabaseClient.auth.signInWithOAuth({
+  signIn(): Observable<AuthError> {
+    const signIn = this._supabaseClient.auth.signInWithOAuth({
       provider: 'keycloak', options: {redirectTo: window.location.origin}
     });
+    return from(signIn).pipe(
+      map(({error}) => error!)
+    );
   }
 
-  async signOut() {
-    await this.supabaseClient.auth.signOut();
-    window.location.href = 'https://login.os4ml.wogra.com/logout';
+  signOut(): Observable<AuthError | undefined> {
+    const signout = this._supabaseClient.auth.signOut();
+    return from(signout).pipe(
+      map(({error}) => {
+      if (!!error) {
+        return error;
+      }
+      window.location.href = 'https://login.os4ml.wogra.com/logout';
+      return;
+    }));
   }
 
-  private async profile(): Promise<Profile> {
-    const { data: profile, error, status } = await this.supabaseClient
+  private profileChanges$(): Observable<Profile> {
+    const changes$: Subject<Profile> = new Subject<Profile>();
+    this._supabaseClient.channel('profiles-changes')
+      .on(
+        'postgres_changes',
+        {event: 'UPDATE', schema: 'public', table: 'profiles'},
+        payload => {
+          changes$.next(camelCase(payload.new));
+        }
+      ).subscribe();
+    return changes$;
+  }
+
+  private updateProfile(): Observable<Profile> {
+    const select = this._supabaseClient
       .from('profiles')
       .select(`id, username, email, avatar_url`)
       .single();
-    if (error && status !== 406) {
-      throw error;
-    }
-    return camelCase(profile) as Profile;
-  }
-
-  private updateProfile(session: Session | null) {
-    if (session) {
-      this.profile().then(profile => {
-        this.profile$.next(profile as Profile);
-      });
-    }
+    return from(select).pipe(
+      map(({data: profile, error}) => {
+        if (error) {
+          throw error;
+        }
+        return camelCase(profile) as Profile;
+      })
+    );
   }
 }

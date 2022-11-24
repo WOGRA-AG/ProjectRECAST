@@ -1,14 +1,24 @@
 import { Injectable } from '@angular/core';
 import {
-  AuthSession,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
-  RealtimeChannel,
   SupabaseClient
 } from '@supabase/supabase-js';
 import {SupabaseService} from './supabase.service';
 import {StepFacadeService} from './step-facade.service';
-import {BehaviorSubject, from, groupBy, mergeMap, Observable, reduce} from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  concatMap,
+  filter,
+  from,
+  groupBy,
+  map, merge,
+  mergeMap,
+  Observable,
+  of,
+  reduce, skip, Subject
+} from 'rxjs';
 import {Process, Step} from '../../../build/openapi/recast';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -18,28 +28,39 @@ const camelCase = require('camelcase-keys');
 })
 export class ProcessFacadeService {
 
-  processes$: BehaviorSubject<Process[]> = new BehaviorSubject<Process[]>([]);
-  private supabaseClient: SupabaseClient = this.supabase.client;
-  private session: AuthSession | null = this.supabase.session;
-  private steps: Step[] = [];
+  private readonly _processes$: BehaviorSubject<Process[]> = new BehaviorSubject<Process[]>([]);
+  private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
 
   constructor(
     private readonly supabase: SupabaseService,
     private readonly stepFacade: StepFacadeService,
   ) {
-    supabase.session$.subscribe(session => {
-      this.session = session;
-      this.updateProcesses();
+    const sessionChanges$ = supabase.currentSession$.pipe(
+      concatMap(() => this.loadProcesses$()),
+      catchError(() => of([]))
+    );
+    const stepChanges$ = stepFacade.steps$.pipe(
+      skip(2),
+      concatMap(value => this.groupStepsByProcessId$(value)),
+      filter(({processId, values}) => !!processId),
+      map(({processId, values}) => this.addStepsToProcesses(this._processes$.getValue(), processId!, values))
+    );
+    merge(this.processChanges$(), stepChanges$, sessionChanges$).subscribe(properties => {
+      this._processes$.next(properties);
     });
-    stepFacade.steps$.subscribe(steps => {
-      this.steps = steps;
-      this.updateProcessesWithSteps(this.processes$.getValue(), steps);
-    });
-    this.dbRealtimeChannel().subscribe();
   }
 
-  private dbRealtimeChannel(): RealtimeChannel {
-    return this.supabaseClient
+  get processes$(): Observable<Process[]> {
+    return this._processes$;
+  }
+
+  get processes(): Process[] {
+    return this._processes$.getValue();
+  }
+
+  private processChanges$(): Observable<Process[]> {
+    const changes$: Subject<Process[]> = new Subject<Process[]>();
+    this._supabaseClient
       .channel('process-change')
       .on(
         REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
@@ -49,20 +70,22 @@ export class ProcessFacadeService {
           table: 'Processes'
         },
         payload => {
-          const state = this.processes$.getValue();
+          const state = this._processes$.getValue();
           switch (payload.eventType) {
             case 'INSERT':
-              this.processes$.next(
+              changes$.next(
                 this.insertProcess(state, camelCase(payload.new))
               );
               break;
             case 'UPDATE':
-              this.updateProcessWithSteps(state, camelCase(payload.new));
+              const steps = this.stepFacade.steps;
+              this.updateProcessWithSteps$(state, camelCase(payload.new), steps)
+                .subscribe(processes => changes$.next(processes));
               break;
             case 'DELETE':
               const step: Step = payload.old;
               if (step.id) {
-                this.processes$.next(
+                changes$.next(
                   this.deleteProcess(state, step.id)
                 );
               }
@@ -71,11 +94,12 @@ export class ProcessFacadeService {
               break;
           }
         }
-      );
+      ).subscribe();
+    return changes$;
   }
 
-  private updateProcesses(): void {
-    this.supabaseClient
+  private loadProcesses$(): Observable<Process[]> {
+    const select = this._supabaseClient
       .from('Processes')
       .select(`
         *,
@@ -83,14 +107,15 @@ export class ProcessFacadeService {
           *,
           step_properties: StepProperties (*)
         )
-      `)
-      .then(({data, error, status}) => {
-        if (error && status !== 406) {throw error;}
-        if (!data) {return;}
-        this.processes$.next(
-          this.processesToCamelCase(data)
-        );
-      });
+      `);
+    return from(select).pipe(
+      map(({data, error}) => {
+        if (error) {
+          throw error;
+        }
+        return this.processesToCamelCase(data);
+      })
+    );
   }
 
   private processesToCamelCase(state: Process[]): Process[] {
@@ -113,26 +138,21 @@ export class ProcessFacadeService {
     return state.concat(step);
   }
 
-  private updateProcessWithSteps(state: Process[], process: Process): void {
-    this.groupStepsByProcessId(this.steps).subscribe(({ processId, values }) => {
-      if (!processId) {return;}
-      process = this.addStepsToProcess(process, processId, values);
-      this.processes$.next(
-        state.map(value => value.id === process.id ? process : value)
-      );
-    });
+  private updateProcessWithSteps$(state: Process[], process: Process, steps: Step[]): Observable<Process[]> {
+    return this.groupStepsByProcessId$(steps).pipe(
+      filter(({processId, values}) => !!processId),
+      map(({processId, values}) => {
+        process = this.addStepsToProcess(process, processId!, values);
+        return state.map(value => value.id === process.id ? process : value);
+      })
+    );
   }
 
-  private updateProcessesWithSteps(state: Process[], steps: Step[]): void {
-    this.groupStepsByProcessId(steps).subscribe(({ processId, values }) => {
-      if (!processId) {return;}
-      this.processes$.next(
-        state.map(process => this.addStepsToProcess(process, processId, values))
-      );
-    });
+  private addStepsToProcesses(state: Process[], processId: number, steps: Step[]): Process[] {
+    return state.map(process => this.addStepsToProcess(process, processId, steps));
   }
 
-  private groupStepsByProcessId(steps: Step[]):
+  private groupStepsByProcessId$(steps: Step[]):
     Observable<{ processId: number | undefined; values: Step[] }> {
     return from(steps).pipe(
       groupBy(stepProp => stepProp.processId),

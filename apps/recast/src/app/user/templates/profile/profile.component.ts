@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {Profile} from '../../../../../build/openapi/recast';
 import {UserFacadeService} from '../../services/user-facade.service';
+import {catchError, filter, of} from 'rxjs';
 
 @Component({
   selector: 'app-account',
@@ -26,11 +27,13 @@ export class ProfileComponent {
     private formBuilder: FormBuilder,
     private readonly userService: UserFacadeService,
   ) {
-    userService.profile$.subscribe(value => {
+    userService.currentProfile$.subscribe(value => {
       this.updateProfileForm.patchValue(value);
       this.profile = value;
     });
-    this.updateProfileForm.valueChanges.subscribe(values => {
+    this.updateProfileForm.valueChanges.pipe(
+      filter(() => !!this.profile)
+    ).subscribe(values => {
       this.profile.username = values.username || this.profile.username;
       this.profile.id = values.id || this.profile.id;
       this.profile.email = values.email || this.profile.email;
@@ -38,31 +41,34 @@ export class ProfileComponent {
     });
   }
 
-  async updateProfile(): Promise<void> {
-    try {
+  updateProfile(): void {
       this.loading = true;
-
       const username = this.profile.username;
       const email = this.profile.email;
       const avatarUrl = this.profile.avatarUrl;
       const id = this.profile.id;
-
-      await this.userService.saveProfile({
+      this.userService.saveProfile({
         id,
         username,
         email,
         avatarUrl,
+      }).pipe(
+        catchError(err => {
+          if (err instanceof Error) {
+            alert(err.message);
+          }
+          return of({})
+        })
+      ).subscribe(() => {
+        this.loading = false;
       });
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      }
-    } finally {
-      this.loading = false;
-    }
   }
 
-  async signOut() {
-    await this.userService.signOut();
+  signOut() {
+    this.userService.signOut().subscribe(err => {
+      if (err) {
+        alert(err.message);
+      }
+    });
   }
 }

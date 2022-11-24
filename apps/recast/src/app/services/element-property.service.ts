@@ -1,14 +1,13 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
-  AuthSession,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
-  RealtimeChannel,
   SupabaseClient
 } from '@supabase/supabase-js';
 import {SupabaseService} from './supabase.service';
-import {BehaviorSubject} from 'rxjs';
-import {ElementProperty} from '../../../build/openapi/recast';
+import {BehaviorSubject, catchError, concatMap, from, map, merge, Observable, of, Subject} from 'rxjs';
+import {ElementProperty, StepProperty} from '../../../build/openapi/recast';
+
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -17,23 +16,33 @@ const camelCase = require('camelcase-keys');
 })
 export class ElementPropertyService {
 
-  elementProperties$: BehaviorSubject<ElementProperty[]> = new BehaviorSubject<ElementProperty[]>([]);
-  private supabaseClient: SupabaseClient = this.supabase.client;
-  private session: AuthSession | null = this.supabase.session;
+  private readonly _elementProperties$: BehaviorSubject<ElementProperty[]> = new BehaviorSubject<ElementProperty[]>([]);
+  private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
 
   constructor(
     private readonly supabase: SupabaseService,
   ) {
-    supabase.session$.subscribe(session => {
-      this.session = session;
-      this.updateElementProperties();
-    });
-
-    this.dbRealtimeChannel().subscribe();
+    const sessionChanges$ = supabase.currentSession$.pipe(
+      concatMap(() => this.loadProperties$()),
+      catchError(() => of([]))
+    );
+    merge(sessionChanges$, this.propertyChanges$())
+      .subscribe(properties => {
+        this._elementProperties$.next(properties);
+      });
   }
 
-  private dbRealtimeChannel(): RealtimeChannel {
-    return this.supabaseClient
+  get elementProperties$(): Observable<StepProperty[]> {
+    return this._elementProperties$;
+  }
+
+  get elementProperties(): StepProperty[] {
+    return this._elementProperties$.getValue();
+  }
+
+  private propertyChanges$(): Observable<ElementProperty[]> {
+    const changes$: Subject<ElementProperty[]> = new Subject<ElementProperty[]>();
+    this._supabaseClient
       .channel('element-property-change')
       .on(
         REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
@@ -43,22 +52,22 @@ export class ElementPropertyService {
           table: 'ElementProperties'
         },
         payload => {
-          const state = this.elementProperties$.getValue();
+          const state = this._elementProperties$.getValue();
           switch (payload.eventType) {
             case 'INSERT':
-              this.elementProperties$.next(
+              changes$.next(
                 this.insertElementProperty(state, camelCase(payload.new))
               );
               break;
             case 'UPDATE':
-              this.elementProperties$.next(
+              changes$.next(
                 this.updateElementProperty(state, camelCase(payload.new))
               );
               break;
             case 'DELETE':
               const elemProp: ElementProperty = payload.old;
               if (elemProp.id) {
-                this.elementProperties$.next(
+                changes$.next(
                   this.deleteElementProperty(state, elemProp.id)
                 );
               }
@@ -67,24 +76,22 @@ export class ElementPropertyService {
               break;
           }
         }
-      );
+      ).subscribe();
+    return changes$;
   }
 
-  private updateElementProperties(): void {
-    this.supabaseClient
+  private loadProperties$(): Observable<ElementProperty[]> {
+    const select = this._supabaseClient
       .from('ElementProperties')
-      .select()
-      .then(({data, error, status}) => {
-        if (error && status !== 406) {throw error;}
-        if (!data) {return;}
-        this.elementProperties$.next(
-          this.elementPropertiesToCamelCase(data)
-        );
-      });
-  }
-
-  private elementPropertiesToCamelCase(elementProperties: ElementProperty[]): ElementProperty[] {
-    return elementProperties.map(camelCase);
+      .select();
+    return from(select).pipe(
+      map(({data, error}) => {
+        if (error) {
+          throw error;
+        }
+        return data?.map(camelCase);
+      })
+    );
   }
 
   private deleteElementProperty(state: ElementProperty[], id: number): ElementProperty[] {
