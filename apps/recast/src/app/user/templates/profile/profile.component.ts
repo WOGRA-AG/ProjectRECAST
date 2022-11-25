@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
-import {SupabaseService } from '../../services/supabase.service';
-import {Profile} from '../../../../build/openapi/recast';
-import {AuthSession} from '@supabase/supabase-js';
+import {Profile} from '../../../../../build/openapi/recast';
+import {UserFacadeService} from '../../services/user-facade.service';
+import {catchError, filter, of} from 'rxjs';
 
 @Component({
   selector: 'app-account',
@@ -12,8 +12,6 @@ import {AuthSession} from '@supabase/supabase-js';
 export class ProfileComponent {
   loading = false;
   profile!: Profile;
-
-  session: AuthSession | null = this.supabase.session;
 
   updateProfileForm = this.formBuilder.group({
     id: new FormControl({value: '', disabled: true}),
@@ -26,19 +24,16 @@ export class ProfileComponent {
   });
 
   constructor(
-    private readonly supabase: SupabaseService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private readonly userService: UserFacadeService,
   ) {
-    supabase.profile$.subscribe(value => {
+    userService.currentProfile$.subscribe(value => {
+      this.updateProfileForm.patchValue(value);
       this.profile = value;
-      this.updateProfileForm.patchValue(this.profile);
     });
-    supabase.session$.subscribe(value => {
-      if (value){
-        this.session = value as AuthSession;
-      }
-    });
-    this.updateProfileForm.valueChanges.subscribe(values => {
+    this.updateProfileForm.valueChanges.pipe(
+      filter(() => !!this.profile)
+    ).subscribe(values => {
       this.profile.username = values.username || this.profile.username;
       this.profile.id = values.id || this.profile.id;
       this.profile.email = values.email || this.profile.email;
@@ -46,34 +41,34 @@ export class ProfileComponent {
     });
   }
 
-  async updateProfile(): Promise<void> {
-    if (!this.session) {
-      return;
-    }
-    try {
+  updateProfile(): void {
       this.loading = true;
-      const user = this.session.user;
-
       const username = this.profile.username;
       const email = this.profile.email;
       const avatarUrl = this.profile.avatarUrl;
-
-      await this.supabase.saveProfile({
-        id: user.id,
+      const id = this.profile.id;
+      this.userService.saveProfile({
+        id,
         username,
         email,
         avatarUrl,
+      }).pipe(
+        catchError(err => {
+          if (err instanceof Error) {
+            alert(err.message);
+          }
+          return of({});
+        })
+      ).subscribe(() => {
+        this.loading = false;
       });
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      }
-    } finally {
-      this.loading = false;
-    }
   }
 
-  async signOut() {
-    await this.supabase.signOut();
+  signOut() {
+    this.userService.signOut().subscribe(err => {
+      if (err) {
+        alert(err.message);
+      }
+    });
   }
 }

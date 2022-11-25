@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {AuthComponent} from './user/auth/auth.component';
-import {ProfileComponent} from './user/profile/profile.component';
+import {AuthComponent} from './user/templates/auth/auth.component';
+import {ProfileComponent} from './user/templates/profile/profile.component';
 import {PageNotFoundComponent} from './templates/page-not-found/page-not-found.component';
 import {AuthGuard} from './user/guards/auth.guard';
 import { DemoComponent } from './design/demo/demo.component';

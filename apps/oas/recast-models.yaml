@@ -8,21 +8,27 @@ paths: {}
 
 components:
   schemas:
-    Processes:
-      properties:
-        processes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Process'
+    Id:
+      type: integer
+      format: int64
+
+    UserId:
+      type: string
+      format: uuid
 
     Process:
       required:
-        - name
+        - id
       properties:
         id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
           type: string
+          format: date-time
         name:
           type: string
+        ownerId:
+          $ref: '#/components/schemas/UserId'
         steps:
           nullable: true
           type: array
@@ -32,7 +38,12 @@ components:
     Step:
       properties:
         id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
           type: string
+          format: date-time
+        processId:
+          $ref: '#/components/schemas/Id'
         name:
           type: string
         stepProperties:
@@ -44,7 +55,12 @@ components:
       type: object
       properties:
         id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
           type: string
+          format: date-time
+        stepId:
+          $ref: '#/components/schemas/Id'
         name:
           type: string
         defaultValue:
@@ -59,21 +75,17 @@ components:
             - number
             - file
 
-    Elements:
-      properties:
-        processes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Element'
-
     Element:
       properties:
         id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
           type: string
+          format: date-time
         name:
           type: string
         processId:
-          type: string
+          $ref: '#/components/schemas/Id'
         elementProperties:
           type: array
           items:
@@ -82,9 +94,14 @@ components:
     ElementProperty:
       properties:
         id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
           type: string
-        stepProperty:
-          $ref: '#/components/schemas/StepProperty'
+          format: date-time
+        elementId:
+          $ref: '#/components/schemas/Id'
+        stepPropertyId:
+          $ref: '#/components/schemas/Id'
         value:
           type: string
 
@@ -94,9 +111,10 @@ components:
         - email
       properties:
         id:
-          type: string
+          $ref: '#/components/schemas/UserId'
         updatedAt:
           type: string
+          format: date-time
         fullName:
           type: string
         firstName:

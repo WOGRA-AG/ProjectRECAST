@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { SupabaseService } from '../../services/supabase.service';
-import {Router} from '@angular/router';
+import {UserFacadeService} from '../../services/user-facade.service';
 
 @Component({
   selector: 'app-auth',
@@ -16,22 +15,19 @@ export class AuthComponent {
   });
 
   constructor(
-    private readonly supabase: SupabaseService,
+    private readonly userService: UserFacadeService,
     private readonly formBuilder: FormBuilder,
   ) {
   }
 
-  async onSubmit(): Promise<void> {
-    try {
-      this.loading = true;
-      await this.supabase.signIn();
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
+  onSubmit(): void {
+    this.loading = true;
+    this.userService.signIn().subscribe(err => {
+      if(err) {
+        alert(err.message);
       }
-    } finally {
       this.signInForm.reset();
       this.loading = false;
-    }
+    });
   }
 }
