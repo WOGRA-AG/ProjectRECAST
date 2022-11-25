@@ -11,9 +11,6 @@ import { DesignModule } from './design/design.module';
 import { OverviewComponent } from './templates/overview/overview.component';
 import {SharedModule} from './shared/shared.module';
 
-const supabaseInit = (supabaseService: SupabaseService) => () => supabaseService.session;
-
-
 @NgModule({
   declarations: [
     AppComponent,
