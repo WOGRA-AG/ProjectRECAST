@@ -13,6 +13,8 @@ import { IconButtonUnfilledComponent } from './components/molecules/icon-button-
 import { TabGroupComponent } from './components/molecules/tab-group/tab-group.component';
 import { PageHeaderComponent } from './components/atoms/page-header/page-header.component';
 import { CreateButtonComponent } from './components/molecules/create-button/create-button.component';
+import { FileUploadComponent } from './components/organisms/file-upload/file-upload.component';
+import { DragAndDropDirective } from './directives/drag-and-drop.directive';
 
 const COMPONENTS = [
   DemoComponent,
@@ -31,6 +33,8 @@ const COMPONENTS = [
 @NgModule({
   declarations: [
     ...COMPONENTS,
+    FileUploadComponent,
+    DragAndDropDirective,
   ],
   exports: [
     ...COMPONENTS,

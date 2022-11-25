@@ -1,4 +1,7 @@
-import {from, mergeMap, Observable, reduce, groupBy as rxGroup} from 'rxjs';
+import {from, mergeMap, Observable, reduce, groupBy as rxGroup, concat, of, scan, tap, map, catchError} from 'rxjs';
+import {parse} from 'yaml';
+import {Process} from '../../../../build/openapi/recast';
+import {string} from 'yaml/dist/schema/common/string';
 
 export const groupBy = <T extends Include<any, string | number | symbol>, G extends keyof T>(elements: T[], key: G): Record<T[G], T[]> =>
   elements.reduce((prev, current) => {
@@ -21,3 +24,13 @@ Observable<{key: T[G]; values: T[]}> =>
   );
 
 type Include<T, K extends keyof any> = Pick<T, Extract<keyof T, K>>;
+
+export const yamlToProcess = (file: File): Observable<Process> => {
+  return from(file.text()).pipe(
+    tap(text => console.log(text)),
+    map(text => {
+      const proc: Process = parse(text);
+      return proc;
+    })
+  )
+}
