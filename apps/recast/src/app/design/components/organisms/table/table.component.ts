@@ -7,10 +7,10 @@ import { MatTableDataSource } from '@angular/material/table';
     templateUrl: './table.component.html',
     styleUrls: ['./table.component.scss']
   })
-  
+
 export class TableComponent {
   @Input() dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-    
+
   @ViewChild(MatSort) sort: MatSort | null = null;
   @Input() columns: string[] = [];
 }
