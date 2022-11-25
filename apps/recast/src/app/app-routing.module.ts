@@ -5,7 +5,7 @@ import {ProfileComponent} from './user/profile/profile.component';
 import {PageNotFoundComponent} from './templates/page-not-found/page-not-found.component';
 import {AuthGuard} from './user/guards/auth.guard';
 import { DemoComponent } from './design/demo/demo.component';
-import { OverviewComponent } from './user/overview/overview.component';
+import { OverviewComponent } from './templates/overview/overview.component';
 
 const routes: Routes = [
   {
