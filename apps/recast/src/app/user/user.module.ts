@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthComponent } from './auth/auth.component';
-import { ProfileComponent } from './profile/profile.component';
+import { AuthComponent } from './templates/auth/auth.component';
+import { ProfileComponent } from './templates/profile/profile.component';
 import { DesignModule } from '../design/design.module';
 import { OverviewComponent } from './overview/overview.component';
 

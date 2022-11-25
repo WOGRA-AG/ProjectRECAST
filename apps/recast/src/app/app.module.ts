@@ -8,8 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PageNotFoundComponent } from './templates/page-not-found/page-not-found.component';
 import {SupabaseService} from './services/supabase.service';
 import { DesignModule } from './design/design.module';
-
-const supabaseInit = (supabaseService: SupabaseService) => () => supabaseService.session;
+import {SharedModule} from './shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -22,9 +21,10 @@ const supabaseInit = (supabaseService: SupabaseService) => () => supabaseService
     BrowserAnimationsModule,
     UserModule,
     DesignModule,
+    SharedModule,
   ],
   providers: [
-    {provide: APP_INITIALIZER, useFactory: supabaseInit, deps: [SupabaseService], multi: true},
+    SupabaseService
   ],
   bootstrap: [AppComponent]
 })
