@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {SupabaseService} from './supabase.service';
 import {
-  AuthSession,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient

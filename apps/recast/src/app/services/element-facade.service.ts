@@ -5,11 +5,9 @@ import {
   concatMap,
   filter,
   from,
-  groupBy,
   map, merge,
-  mergeMap,
   Observable, of,
-  reduce, skip,
+  skip,
   Subject
 } from 'rxjs';
 import {ElementProperty, Element} from '../../../build/openapi/recast';
@@ -20,6 +18,7 @@ import {
 } from '@supabase/supabase-js';
 import {SupabaseService} from './supabase.service';
 import {ElementPropertyService} from './element-property.service';
+import {groupBy$} from '../shared/util/common-utils';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -41,9 +40,9 @@ export class ElementFacadeService {
     );
     const elemPropChanges$ = elementPropertyService.elementProperties$.pipe(
       skip(2),
-      concatMap(value => this.groupPropertiesByElementId$(value)),
-      filter(({elementId, values}) => !!elementId),
-      map(({elementId, values}) => this.addPropertiesToElements(this._elements$.getValue(), elementId!, values))
+      concatMap(value => groupBy$(value, 'elementId')),
+      filter(({key, values}) => !!key),
+      map(({key, values}) => this.addPropertiesToElements(this._elements$.getValue(), key!, values))
     );
     merge(this.elementChanges$(), sessionChanges$, elemPropChanges$).subscribe(properties => {
       this._elements$.next(properties);
@@ -56,21 +55,6 @@ export class ElementFacadeService {
 
   get elements(): Element[] {
     return this._elements$.getValue();
-  }
-
-  private groupPropertiesByElementId$(val: ElementProperty[]):
-    Observable<{ elementId: number | undefined; values: ElementProperty[] }> {
-    return from(val).pipe(
-      groupBy(elementProp => elementProp.elementId),
-      mergeMap(group$ =>
-        group$.pipe(
-          reduce((acc, cur) => {
-            acc.values.push(cur);
-            return acc;
-          }, {elementId: group$.key, values: [] as ElementProperty[]})
-        )
-      )
-    );
   }
 
   private elementChanges$(): Observable<Element[]> {
@@ -149,10 +133,10 @@ export class ElementFacadeService {
   }
 
   private updateElementWithProperties$(state: Element[], element: Element, props: ElementProperty[]): Observable<Element[]> {
-    return this.groupPropertiesByElementId$(props).pipe(
-      filter(({elementId, values}) => !!elementId),
-      map(({elementId, values}) => {
-        element = this.addPropertiesToElement(element, elementId!, values);
+    return groupBy$(props, 'elementId').pipe(
+      filter(({key, values}) => !!key),
+      map(({key, values}) => {
+        element = this.addPropertiesToElement(element, key!, values);
         return state.map(value => value.id === element.id ? element : value);
       })
     );

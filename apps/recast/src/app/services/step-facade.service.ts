@@ -9,12 +9,12 @@ import {Step, StepProperty} from '../../../build/openapi/recast';
 import {
   BehaviorSubject, catchError, concatMap, filter,
   from,
-  groupBy, map, merge,
-  mergeMap,
+  map, merge,
   Observable, of,
-  reduce, skip, Subject,
+  skip, Subject,
 } from 'rxjs';
 import {StepPropertyService} from './step-property.service';
+import {groupBy$} from '../shared/util/common-utils';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -37,9 +37,9 @@ export class StepFacadeService {
     );
     const stepPropChanges$ = stepPropertyService.stepProperties$.pipe(
       skip(2),
-      concatMap(value => this.groupPropertiesByStepId$(value)),
-      filter(({stepId, values}) => !!stepId),
-      map(({stepId, values}) => this.addPropertiesToSteps(this._steps$.getValue(), stepId!, values))
+      concatMap(value => groupBy$(value, 'stepId')),
+      filter(({key, values}) => !!key),
+      map(({key, values}) => this.addPropertiesToSteps(this._steps$.getValue(), key!, values))
     );
     merge(this.stepsChanges$(), sessionChanges$, stepPropChanges$)
       .subscribe(properties => {
@@ -53,21 +53,6 @@ export class StepFacadeService {
 
   get steps(): Step[] {
     return this._steps$.getValue();
-  }
-
-  private groupPropertiesByStepId$(val: StepProperty[]):
-    Observable<{ stepId: number | undefined; values: StepProperty[] }> {
-    return from(val).pipe(
-      groupBy(stepProp => stepProp.stepId),
-      mergeMap(group$ =>
-        group$.pipe(
-          reduce((acc, cur) => {
-            acc.values.push(cur);
-            return acc;
-          }, {stepId: group$.key, values: [] as StepProperty[]})
-        )
-      )
-    );
   }
 
   private stepsChanges$(): Observable<Step[]> {
@@ -146,10 +131,10 @@ export class StepFacadeService {
   }
 
   private updateStepWithProperties$(state: Step[], step: Step, props: StepProperty[]): Observable<Step[]> {
-    return this.groupPropertiesByStepId$(props).pipe(
-      filter(({stepId, values}) => !!stepId),
-      map(({stepId, values}) => {
-        step = this.addPropertiesToStep(step, stepId, values);
+    return groupBy$(props, 'stepId').pipe(
+      filter(({key, values}) => !!key),
+      map(({key, values}) => {
+        step = this.addPropertiesToStep(step, key, values);
         return state.map(value => value.id === step.id ? step : value);
       })
     );

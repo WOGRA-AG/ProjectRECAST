@@ -57,7 +57,7 @@ export class ProfileComponent {
           if (err instanceof Error) {
             alert(err.message);
           }
-          return of({})
+          return of({});
         })
       ).subscribe(() => {
         this.loading = false;

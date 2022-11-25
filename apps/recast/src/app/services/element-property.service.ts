@@ -6,7 +6,7 @@ import {
 } from '@supabase/supabase-js';
 import {SupabaseService} from './supabase.service';
 import {BehaviorSubject, catchError, concatMap, from, map, merge, Observable, of, Subject} from 'rxjs';
-import {ElementProperty, StepProperty} from '../../../build/openapi/recast';
+import {ElementProperty} from '../../../build/openapi/recast';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -32,11 +32,11 @@ export class ElementPropertyService {
       });
   }
 
-  get elementProperties$(): Observable<StepProperty[]> {
+  get elementProperties$(): Observable<ElementProperty[]> {
     return this._elementProperties$;
   }
 
-  get elementProperties(): StepProperty[] {
+  get elementProperties(): ElementProperty[] {
     return this._elementProperties$.getValue();
   }
 
