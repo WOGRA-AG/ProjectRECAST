@@ -65,7 +65,7 @@
   }
 }
 
-@mixin theme($theme) {
+@mixin theme($theme, $typography-config, $variants) {
   @include color($theme);
   @include layout();
 }

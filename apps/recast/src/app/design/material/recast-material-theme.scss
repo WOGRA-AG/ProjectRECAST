@@ -1,44 +1,29 @@
 @use '@angular/material' as mat;
+@use "./components" as components;
 @use './essentials/typography' as typography;
 @use './essentials/color.scss' as colors;
-@use './components/sidenav.scss' as sidenav;
-@use './components/toolbar.scss' as toolbar;
-@use './components/navlist.scss' as navlist;
-@use './components/button.scss' as button;
-@use './components/expansion-module.scss' as expansionModule;
-@use './components/dialog.scss' as dialog;
-@use './components/list.scss' as list;
-@use './components/table.scss' as table;
-@use './components/chips.scss' as chips;
-@use './components/stepper.scss' as stepper;
-@use './components/form.scss' as form;
-@use './components/tab.scss' as tab;
 
 
-$recast-theme: mat.define-light-theme((
+$recast-light-theme: mat.define-light-theme((
   color: (
-    primary: colors.$recast-primary,
-    accent: colors.$recast-accent,
-    warn: colors.$recast-warn,
-  )
+    primary: colors.$recast-light-primary,
+    accent: colors.$recast-light-accent,
+    warn: colors.$recast-light-warn,
+  ),
+  typography: typography.$custom-typography,
 ));
 
-@include mat.core();
-@include mat.core(typography.$custom-typography);
-@include mat.all-component-themes($recast-theme);
+$recast-light-variants: (
+  success: colors.$recast-light-success,
+  tertiary: colors.$recast-light-tertiary,
+  info: colors.$recast-light-info,
+);
 
-.recast-theme {
+@include mat.core();
+@include mat.all-component-typographies(typography.$custom-typography);
+
+.recast-light-theme {
+  @include mat.all-component-themes($recast-light-theme);
   @include typography.additional-typography-settings;
-  @include sidenav.theme($recast-theme);
-  @include toolbar.theme($recast-theme);
-  @include navlist.theme($recast-theme);
-  @include button.theme($recast-theme);
-  @include stepper.theme($recast-theme);
-  @include expansionModule.theme($recast-theme, colors.$border-color);
-  @include dialog.theme($recast-theme, colors.$overlay, colors.$background);
-  @include list.theme($recast-theme, colors.$background);
-  @include table.theme($recast-theme, colors.$background);
-  @include chips.theme($recast-theme, colors.$background);
-  @include form.theme($recast-theme);
-  @include tab.theme($recast-theme);
+  @include components.theme($recast-light-theme, typography.$custom-typography, $recast-light-variants);
 }

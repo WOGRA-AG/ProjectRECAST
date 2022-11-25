@@ -13,7 +13,7 @@
   }
 }
 
-@mixin theme($theme) {
+@mixin theme($theme, $typography-config, $variants) {
   @include color();
   @include layout();
 }
