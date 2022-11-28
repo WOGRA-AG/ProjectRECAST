@@ -1,14 +1,12 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
-@mixin color($theme, $background) {
+@mixin color($theme) {
   $primary-palette: map.get($theme, 'primary');
   $primary-color: mat.get-color-from-palette($primary-palette, 500);
 
   .mat-list {
     .mat-list-item {
-      border-color: $background;
-
       &.active {
         border-color: $primary-color;
       }
@@ -37,7 +35,7 @@
   }
 }
 
-@mixin theme($theme, $background) {
-  @include color($theme, $background);
+@mixin theme($theme, $typography-config, $variants) {
+  @include color($theme);
   @include layout();
 }

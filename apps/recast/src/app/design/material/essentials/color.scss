@@ -100,16 +100,19 @@ $md-recast-colors-warn: (
   )
 );
 
-$recast-primary: mat.define-palette($md-recast-colors-primary);
-$recast-warn: mat.define-palette($md-recast-colors-warn);
-$recast-accent: mat.define-palette($md-recast-colors-accent);
+$recast-light-primary: mat.define-palette($md-recast-colors-primary);
+$recast-light-accent: mat.define-palette($md-recast-colors-accent);
+$recast-light-warn: mat.define-palette(mat.$red-palette);
+$recast-light-tertiary: mat.define-palette($md-recast-colors-warn);
+$recast-light-success: mat.define-palette(mat.$green-palette);
+$recast-light-info: mat.define-palette(mat.$blue-palette);
 
-$primary-color: mat.get-color-from-palette($recast-primary, 500);
-$primary-color-100: mat.get-color-from-palette($recast-primary, 100);
-$primary-color-900: mat.get-color-from-palette($recast-primary, 900);
-$primary-variant: mat.get-color-from-palette($recast-primary, 700);
-$accent-color: mat.get-color-from-palette($recast-accent, 500);
-$warn-color: mat.get-color-from-palette($recast-warn, default);
+$primary-color: mat.get-color-from-palette($recast-light-primary, 500);
+$primary-color-100: mat.get-color-from-palette($recast-light-primary, 100);
+$primary-color-900: mat.get-color-from-palette($recast-light-primary, 900);
+$primary-variant: mat.get-color-from-palette($recast-light-primary, 700);
+$accent-color: mat.get-color-from-palette($recast-light-accent, 500);
+$warn-color: mat.get-color-from-palette($recast-light-warn, default);
 $background: #f4f9fd;
 $surface: #FFFFFF;
 $error: #B00020;

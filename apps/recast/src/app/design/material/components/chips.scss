@@ -1,14 +1,10 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
-@mixin color($theme, $background) {
+@mixin color($theme) {
   $primary-palette: map.get($theme, 'primary');
-
-  .mat-chip{
-    background-color: $background;
-  }
 }
 
-@mixin theme($theme, $background) {
-  @include color($theme, $background);
+@mixin theme($theme, $typography-config, $variants) {
+  @include color($theme);
 }
