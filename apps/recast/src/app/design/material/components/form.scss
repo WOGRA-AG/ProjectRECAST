@@ -39,6 +39,10 @@
       }
     }
   }
+
+  .mat-form-field-appearance-legacy .mat-form-field-ripple {
+    height: 0;
+  }
 }
 
 @mixin theme($theme) {

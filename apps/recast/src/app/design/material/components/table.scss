@@ -10,6 +10,12 @@
     background-color: $primary-color-50;
   }
 
+  tr.mat-row:first-of-type {
+    td {
+      border-top: 1px solid $primary-color;
+    }
+  }
+
   td.mat-cell {
     border-color: $primary-color;
   }
