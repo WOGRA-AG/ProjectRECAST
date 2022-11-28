@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
 })
 export class OverviewComponent {
   public tabs: string[] = ['Prozesse', 'Bundles', 'Bauteile'];
+  public columns = ['title', 'edit', 'delete'];
 
   public changeContent(index: number): void {
     //TODO

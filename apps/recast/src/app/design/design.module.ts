@@ -13,6 +13,10 @@ import { IconButtonUnfilledComponent } from './components/molecules/icon-button-
 import { TabGroupComponent } from './components/molecules/tab-group/tab-group.component';
 import { PageHeaderComponent } from './components/atoms/page-header/page-header.component';
 import { CreateButtonComponent } from './components/molecules/create-button/create-button.component';
+import { TableComponent } from './components/organisms/table/table.component';
+import { EditIconComponent } from './components/atoms/edit-icon/edit-icon.component';
+import { DeleteIconComponent } from './components/atoms/delete-icon/delete-icon.component';
+import { HttpClientModule } from '@angular/common/http';
 import { FileUploadComponent } from './components/organisms/file-upload/file-upload.component';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
 
@@ -28,13 +32,16 @@ const COMPONENTS = [
   TabGroupComponent,
   PageHeaderComponent,
   CreateButtonComponent,
+  TableComponent,
+  EditIconComponent,
+  DeleteIconComponent,
+  FileUploadComponent,
+  DragAndDropDirective,
 ];
 
 @NgModule({
   declarations: [
     ...COMPONENTS,
-    FileUploadComponent,
-    DragAndDropDirective,
   ],
   exports: [
     ...COMPONENTS,
@@ -47,6 +54,7 @@ const COMPONENTS = [
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
   ]
 })
 export class DesignModule { }

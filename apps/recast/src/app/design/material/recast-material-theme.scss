@@ -3,7 +3,6 @@
 @use './essentials/typography' as typography;
 @use './essentials/color.scss' as colors;
 
-
 $recast-light-theme: mat.define-light-theme((
   color: (
     primary: colors.$recast-light-primary,

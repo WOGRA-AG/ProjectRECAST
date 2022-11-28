@@ -1,0 +1,7 @@
+<app-page-header header="Übersicht"></app-page-header>
+
+<div class="content-wrapper">
+    <app-tab-group class="tabs" [labels]="tabs" (indexChanged)="changeContent($event)"></app-tab-group>
+    <app-table class="table" [columns]="columns"></app-table>
+    <app-create-button class="button">Erstellen</app-create-button>
+</div>
