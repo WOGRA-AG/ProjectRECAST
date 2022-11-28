@@ -11,6 +11,7 @@
 @use 'form.scss' as form;
 @use 'tab.scss' as tab;
 @use 'button_variants.scss' as button_variants;
+@use 'icon.scss' as icon;
 
 @mixin theme($theme, $typography-config, $variants) {
   @include button.theme($theme, $typography-config, $variants);
@@ -26,4 +27,5 @@
   @include form.theme($theme, $typography-config, $variants);
   @include tab.theme($theme, $typography-config, $variants);
   @include button_variants.color($theme, $variants);
+  @include icon.theme($theme, $typography-config, $variants);
 }

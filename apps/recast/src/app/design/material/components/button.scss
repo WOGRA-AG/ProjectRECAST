@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 @import '../essentials/button-layout.scss';
+@import "src/app/design/material/essentials/media-queries";
 
 @mixin color($theme) {
   .mat-stroked-button:not(.mat-button-disabled) {
@@ -11,12 +12,21 @@
 @mixin layout() {
 
   .mat-flat-button, .mat-stroked-button {
-    border-radius: $btn-medium-border-radius;
-    border-width: $btn-medium-border-widht;
-    padding-top: $btn-medium-padding-top;
-    padding-bottom: $btn-medium-padding-bottom;
-    padding-left: $btn-medium-padding-left;
-    padding-right: $btn-medium-padding-right;
+    border-radius: $btn-small-border-radius;
+    border-width: $btn-small-border-widht;
+    padding-top: $btn-small-padding-top;
+    padding-bottom: $btn-small-padding-bottom;
+    padding-left: $btn-small-padding-left;
+    padding-right: $btn-small-padding-right;
+
+    @media #{$medium-and-up} {
+      border-radius: $btn-medium-border-radius;
+      border-width: $btn-medium-border-widht;
+      padding-top: $btn-medium-padding-top;
+      padding-bottom: $btn-medium-padding-bottom;
+      padding-left: $btn-medium-padding-left;
+      padding-right: $btn-medium-padding-right;
+    }
 
     &.small {
       border-radius: $btn-small-border-radius;
@@ -25,6 +35,15 @@
       padding-bottom: $btn-small-padding-bottom;
       padding-left: $btn-small-padding-left;
       padding-right: $btn-small-padding-right;
+    }
+
+    &.medium {
+      border-radius: $btn-medium-border-radius;
+      border-width: $btn-medium-border-widht;
+      padding-top: $btn-medium-padding-top;
+      padding-bottom: $btn-medium-padding-bottom;
+      padding-left: $btn-medium-padding-left;
+      padding-right: $btn-medium-padding-right;
     }
 
     &.large {
@@ -38,16 +57,30 @@
 
     &.text {
       border: none;
-      padding-top: $btn-text-medium-padding-top;
-      padding-bottom: $btn-text-medium-padding-bottom;
-      padding-left: $btn-text-medium-padding-left;
-      padding-right: $btn-text-medium-padding-right;
+      padding-top: $btn-text-small-padding-top;
+      padding-bottom: $btn-text-small-padding-bottom;
+      padding-left: $btn-text-small-padding-left;
+      padding-right: $btn-text-small-padding-right;
+
+      @media #{$medium-and-up} {
+        padding-top: $btn-text-medium-padding-top;
+        padding-bottom: $btn-text-medium-padding-bottom;
+        padding-left: $btn-text-medium-padding-left;
+        padding-right: $btn-text-medium-padding-right;
+      }
 
       &.small {
         padding-top: $btn-text-small-padding-top;
         padding-bottom: $btn-text-small-padding-bottom;
         padding-left: $btn-text-small-padding-left;
         padding-right: $btn-text-small-padding-right;
+      }
+
+      &.medium {
+        padding-top: $btn-text-medium-padding-top;
+        padding-bottom: $btn-text-medium-padding-bottom;
+        padding-left: $btn-text-medium-padding-left;
+        padding-right: $btn-text-medium-padding-right;
       }
 
       &.large {
@@ -60,7 +93,7 @@
 
     .mat-icon {
       height: 100%;
-      padding-right: 2px;
+      padding-right: 0.5em;
     }
   }
 }
