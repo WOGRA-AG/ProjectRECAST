@@ -16,6 +16,7 @@ import { CreateButtonComponent } from './components/molecules/create-button/crea
 import { TableComponent } from './components/organisms/table/table.component';
 import { EditIconComponent } from './components/atoms/edit-icon/edit-icon.component';
 import { DeleteIconComponent } from './components/atoms/delete-icon/delete-icon.component';
+import { HttpClientModule } from '@angular/common/http';
 
 const COMPONENTS = [
   DemoComponent,
@@ -49,6 +50,7 @@ const COMPONENTS = [
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
   ]
 })
 export class DesignModule { }

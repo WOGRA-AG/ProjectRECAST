@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @import "src/assets/WograDesignSystem_Tokens.json";
+@import "src/app/design/material/essentials/media-queries";
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import url(https://fonts.googleapis.com/css?family=Roboto:100,100italic,300,300italic,400,400italic,500,500italic,700,700italic,900,900italic&subset=latin,latin-ext,cyrillic,cyrillic-ext,greek-ext,greek,vietnamese);
 @import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext,cyrillic-ext,cyrillic,greek-ext,greek,vietnamese);
@@ -139,44 +140,23 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     text-decoration: map-get($body-2, text-decoration);
   }
 
-  .mat-flat-button {
-    font-family: map-get($button-medium, font-family);
-    font-weight: map-get($button-medium, font-weight);
-    line-height: map-get($button-medium, line-height);
-    font-size: map-get($button-medium, font-size);
-    letter-spacing: map-get($button-medium, letter-spacing);
-    text-decoration: map-get($button-medium, text-decoration);
-    text-align: left;
-
-    &.small {
-      font-family: map-get($button-small, font-family);
-      font-weight: map-get($button-small, font-weight);
-      line-height: map-get($button-small, line-height);
-      font-size: map-get($button-small, font-size);
-      letter-spacing: map-get($button-small, letter-spacing);
-      text-decoration: map-get($button-small, text-decoration);
-      text-align: left;
-    }
-
-    &.large {
-      font-family: map-get($button-large, font-family);
-      font-weight: map-get($button-large, font-weight);
-      line-height: map-get($button-large, line-height);
-      font-size: map-get($button-large, font-size);
-      letter-spacing: map-get($button-large, letter-spacing);
-      text-decoration: map-get($button-large, text-decoration);
-      text-align: left;
-    }
-  }
-
   .mat-flat-button, .mat-stroked-button {
-    font-family: map-get($button-medium, font-family);
-    font-weight: map-get($button-medium, font-weight);
-    line-height: map-get($button-medium, line-height);
-    font-size: map-get($button-medium, font-size);
-    letter-spacing: map-get($button-medium, letter-spacing);
-    text-decoration: map-get($button-medium, text-decoration);
+    font-family: map-get($button-small, font-family);
+    font-weight: map-get($button-small, font-weight);
+    line-height: map-get($button-small, line-height);
+    font-size: map-get($button-small, font-size);
+    letter-spacing: map-get($button-small, letter-spacing);
+    text-decoration: map-get($button-small, text-decoration);
     text-align: left;
+
+    @media #{$medium-and-up} {
+      font-family: map-get($button-medium, font-family);
+      font-weight: map-get($button-medium, font-weight);
+      line-height: map-get($button-medium, line-height);
+      font-size: map-get($button-medium, font-size);
+      letter-spacing: map-get($button-medium, letter-spacing);
+      text-decoration: map-get($button-medium, text-decoration);
+    }
 
     &.small {
       font-family: map-get($button-small, font-family);
@@ -185,7 +165,15 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
       font-size: map-get($button-small, font-size);
       letter-spacing: map-get($button-small, letter-spacing);
       text-decoration: map-get($button-small, text-decoration);
-      text-align: left;
+    }
+
+    &.medium {
+      font-family: map-get($button-medium, font-family);
+      font-weight: map-get($button-medium, font-weight);
+      line-height: map-get($button-medium, line-height);
+      font-size: map-get($button-medium, font-size);
+      letter-spacing: map-get($button-medium, letter-spacing);
+      text-decoration: map-get($button-medium, text-decoration);
     }
 
     &.large {
@@ -195,15 +183,22 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
       font-size: map-get($button-large, font-size);
       letter-spacing: map-get($button-large, letter-spacing);
       text-decoration: map-get($button-large, text-decoration);
-      text-align: left;
     }
   }
 
   .mat-icon {
-    font-size: map-get($button-medium, font-size);
+    font-size: map-get($button-small, font-size);
+
+    @media #{$medium-and-up} {
+      font-size: map-get($button-medium, font-size);
+    }
 
     &.small {
       font-size: map-get($button-small, font-size);
+    }
+
+    &.medium {
+      font-size: map-get($button-medium, font-size);
     }
 
     &.large {

@@ -13,6 +13,7 @@
 @use './components/stepper.scss' as stepper;
 @use './components/form.scss' as form;
 @use './components/tab.scss' as tab;
+@use './components/icon.scss' as icon;
 
 
 $recast-theme: mat.define-light-theme((
@@ -41,4 +42,5 @@ $recast-theme: mat.define-light-theme((
   @include chips.theme($recast-theme, colors.$background);
   @include form.theme($recast-theme);
   @include tab.theme($recast-theme);
+  @include icon.theme($recast-theme);
 }
