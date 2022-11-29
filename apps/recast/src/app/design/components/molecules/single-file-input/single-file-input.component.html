@@ -1,0 +1,23 @@
+<div class="single-file-input-container"
+     role="group"
+     [attr.aria-describedby]="userAriaDescribedBy"
+     [attr.aria-labelledby]="parentFormField.getLabelId()">
+  <div class="upload-file mat-body-1" appDragAndDrop
+       (filesDropped)="uploadDroppedFile($event)" (click)="fileUpload.click()">
+    <input id="file-input"
+           type="file"
+           class="file-input"
+           (change)="uploadFile($event)"
+           (blur)="onTouch()"
+           [formControl]="formControl"
+           #fileUpload
+    >
+    <div class="label mat-h6">
+      <p *ngIf="value?.name; else templateName">{{value?.name}}</p>
+      <ng-template #templateName>
+        <mat-icon matPrefix>upload</mat-icon>
+        <mat-placeholder>{{placeholder}}</mat-placeholder>
+      </ng-template>
+    </div>
+  </div>
+</div>

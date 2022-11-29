@@ -19,6 +19,7 @@ import { DeleteIconComponent } from './components/atoms/delete-icon/delete-icon.
 import { HttpClientModule } from '@angular/common/http';
 import { FileUploadComponent } from './components/organisms/file-upload/file-upload.component';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
+import { SingleFileInput } from './components/molecules/single-file-input/single-file-input.component';
 
 const COMPONENTS = [
   DemoComponent,
@@ -42,6 +43,7 @@ const COMPONENTS = [
 @NgModule({
   declarations: [
     ...COMPONENTS,
+    SingleFileInput,
   ],
   exports: [
     ...COMPONENTS,

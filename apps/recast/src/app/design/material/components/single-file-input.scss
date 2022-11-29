@@ -1,0 +1,92 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import "src/app/design/material/essentials/media-queries";
+
+@mixin color($theme) {
+  $primary-palette: map.get($theme, 'primary');
+  $primary-color: mat.get-color-from-palette($primary-palette, 500);
+  .mat-form-field-type-single-file-input {
+    .label {
+      color: $primary-color;
+    }
+    mat-placeholder {
+      color: $primary-color;
+    }
+    .upload-file {
+      border-color: $primary-color;
+    }
+  }
+}
+
+@mixin layout() {
+  .mat-form-field-type-single-file-input {
+    .label {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+      .mat-icon {
+        font-size: 24px;
+      }
+      .mat-h6 {
+        margin: 0;
+      }
+    }
+    width: 100%;
+    height: 100%;
+    #file-input {
+      display: none;
+    }
+    .mat-form-field-wrapper {
+      height: 100%;
+      .mat-form-field-flex {
+        height: 100%;
+      }
+      .mat-form-field-infix {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        @media #{$medium-and-up} {
+          justify-content: flex-start;
+        }
+        @media #{$large-and-up} {
+          justify-content: center;
+        }
+      }
+    }
+    .mat-form-field-label-wrapper {
+      .mat-form-field-label {
+        display: none;
+      }
+    }
+    .upload-file {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-style: dashed;
+      border-width: 2px;
+      cursor: pointer;
+      border-radius: 50px;
+      min-width: 388px;
+      min-height: 224px;
+
+      @media #{$medium-and-up} {
+        min-width: 903px;
+        min-height: 338px;
+      }
+      @media #{$large-and-up} {
+        min-width: 944px;
+        min-height: 338px;
+      }
+
+    }
+  }
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include color($theme);
+  @include layout();
+}

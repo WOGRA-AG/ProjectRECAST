@@ -1,9 +1,17 @@
 <form
   #f="ngForm"
-  (ngSubmit)="f.form.valid"
+  (ngSubmit)="f.form.valid && emitFile()"
   class="form-widget"
+  [formGroup]="uploadFileForm"
 >
-  <mat-form-field>
-    <input matInput type="file">
+  <mat-form-field appearance="legacy">
+    <app-single-file-input
+      formControlName="file"
+      [placeholder]="placeholder">
+    </app-single-file-input>
+    <div class="actions">
+      <app-button-unfilled size="medium" [bordered]="true">Zurück</app-button-unfilled>
+      <app-submit-button size="medium" [disabled]="f.form.invalid">Erstellen</app-submit-button>
+    </div>
   </mat-form-field>
 </form>
