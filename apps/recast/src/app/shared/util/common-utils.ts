@@ -28,7 +28,7 @@ export const yamlToProcess$ = (file: File): Observable<Process> => from(file.tex
     map(text => {
       const proc: Process  = parse(text);
       if (!proc.name) {
-        throw Error("No valid Process File");
+        throw Error('No valid Process File');
       }
       return proc;
     })
