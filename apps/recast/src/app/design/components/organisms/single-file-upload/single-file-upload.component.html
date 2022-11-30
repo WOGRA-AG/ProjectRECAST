@@ -1,7 +1,7 @@
 <form
   #f="ngForm"
   (ngSubmit)="f.form.valid && emitFile()"
-  (reset)="cancel.emit()"
+  (reset)="back.emit()"
   class="form-widget"
   [formGroup]="uploadFileForm"
 >
