@@ -14,9 +14,10 @@ import { TabGroupComponent } from './components/molecules/tab-group/tab-group.co
 import { PageHeaderComponent } from './components/atoms/page-header/page-header.component';
 import { CreateButtonComponent } from './components/molecules/create-button/create-button.component';
 import { TableComponent } from './components/organisms/table/table.component';
-import { EditIconComponent } from './components/atoms/edit-icon/edit-icon.component';
-import { DeleteIconComponent } from './components/atoms/delete-icon/delete-icon.component';
+import { IconComponent } from './components/atoms/icon/icon.component';
 import { HttpClientModule } from '@angular/common/http';
+import { SearchFieldComponent } from './components/molecules/search-field/search-field.component';
+import { IconButtonComponent } from './components/molecules/icon-button/icon-button.component';
 import { FileUploadComponent } from './components/organisms/file-upload/file-upload.component';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
 import { SingleFileInput } from './components/molecules/single-file-input/single-file-input.component';
@@ -34,16 +35,17 @@ const COMPONENTS = [
   PageHeaderComponent,
   CreateButtonComponent,
   TableComponent,
-  EditIconComponent,
-  DeleteIconComponent,
+  IconComponent,
+  SearchFieldComponent,
+  IconButtonComponent,
   FileUploadComponent,
   DragAndDropDirective,
+  SingleFileInput,
 ];
 
 @NgModule({
   declarations: [
     ...COMPONENTS,
-    SingleFileInput,
   ],
   exports: [
     ...COMPONENTS,
