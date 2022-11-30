@@ -12,7 +12,8 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class OverviewComponent {
   public tabs: string[] = ['Prozesse', 'Bauteile'];
-  public columns = ['name', 'edit', 'delete'];
+  public iconColumns = ['edit', 'delete'];
+  public dataColumns = [{key: 'name', title: 'Title'}];
   public tableData$: Observable<any> = new Observable<any>();
   public currentIndex = 0;
 
@@ -36,6 +37,7 @@ export class OverviewComponent {
   }
 
   public deleteTableRow(id: number): void {
+    //TODO
   }
 
   public editTableRow(id: number): void {

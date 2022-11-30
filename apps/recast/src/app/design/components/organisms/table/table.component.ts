@@ -9,16 +9,22 @@ import { Observable } from 'rxjs';
     styleUrls: ['./table.component.scss']
   })
 
-export class TableComponent implements OnChanges, AfterViewInit {
+export class TableComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort | null = null;
 
-  @Input() columns: string[] = [];
+  @Input() iconColumns: string[] = [];
+  @Input() dataColumns: TableColumn[] = [];
   @Input() data: Observable<any> = new Observable<any>();
 
   @Output() deleteClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() editClicked: EventEmitter<number> = new EventEmitter<number>();
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
+  columns: string[] = [];
+
+  ngOnInit(): void {
+    this.columns = this.dataColumns.map(column => column.key).concat(this.iconColumns);
+  }
 
   ngOnChanges(): void {
     this.data.subscribe(value => {
@@ -33,4 +39,9 @@ export class TableComponent implements OnChanges, AfterViewInit {
   applyFilter(filterValue: string | null) {
     this.dataSource.filter = filterValue?.trim().toLowerCase() || '';
   }
+}
+
+export interface TableColumn {
+  key: string;
+  title: string;
 }

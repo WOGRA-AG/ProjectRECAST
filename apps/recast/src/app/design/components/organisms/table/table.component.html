@@ -5,13 +5,15 @@
     matSort
     cdkFocusInitial
     matSortDisableClear>
-    <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='before'>
-            <div class="mat-subheading-2 primary">Title</div>
-        </th>
-        <td class="mat-body-2" mat-cell *matCellDef="let row">
-            {{row.name}}
-        </td>
+    <ng-container *ngFor="let column of dataColumns">
+        <ng-container matColumnDef="{{column.key}}">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='before'>
+                <div class="mat-subheading-2 primary">{{column.title}}</div>
+            </th>
+            <td class="mat-body-2" mat-cell *matCellDef="let row">
+                {{row[column.key]}}
+            </td>
+        </ng-container>
     </ng-container>
     <ng-container matColumnDef="edit">
         <th mat-header-cell *matHeaderCellDef class="icon"></th>
