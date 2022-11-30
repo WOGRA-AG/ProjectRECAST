@@ -29,7 +29,7 @@ export const yamlToProcess = (file: File): Observable<Process> => {
   return from(file.text()).pipe(
     tap(text => console.log(text)),
     map(text => {
-      const proc: Process = parse(text);
+      const proc: Process  = parse(text);
       return proc;
     })
   )

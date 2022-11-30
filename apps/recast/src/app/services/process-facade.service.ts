@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
@@ -55,6 +56,14 @@ export class ProcessFacadeService {
 
   get processes(): Process[] {
     return this._processes$.getValue();
+  }
+
+  public saveProcess({id, name}: Process): Observable<PostgrestError> {
+    const upsert_proc = {id: id, name: name}
+    const upsert = this._supabaseClient.from('Processes').upsert(upsert_proc);
+    return from(upsert).pipe(
+      map(({error}) => error!)
+    );
   }
 
   private processChanges$(): Observable<Process[]> {

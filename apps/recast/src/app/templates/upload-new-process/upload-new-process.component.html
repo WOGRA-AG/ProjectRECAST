@@ -1,4 +1,5 @@
 <div class="content-wrapper">
   <app-page-header id="header" header="Neuen Prozess erstellen"></app-page-header>
-  <app-file-upload id="upload" placeholder="Prozess-YAML Datei hochladen"></app-file-upload>
+  <app-file-upload id="upload" placeholder="Prozess-YAML Datei hochladen" (fileChange)="uploadFile($event)">
+  </app-file-upload>
 </div>

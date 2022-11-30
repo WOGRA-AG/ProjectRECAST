@@ -9,10 +9,11 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 export class FileUploadComponent implements OnInit {
 
   @Input() placeholder: string = '';
+  @Input() file: File | null = null;
   @Output() fileChange: EventEmitter<File | null> = new EventEmitter<File | null>();
 
   uploadFileForm: FormGroup = this.formBuilder.group({
-    file: new FormControl({value: null, disabled: false},
+    file: new FormControl({value: this.file, disabled: false},
       [Validators.minLength(3), Validators.required]
     ),
   });
@@ -25,6 +26,6 @@ export class FileUploadComponent implements OnInit {
   }
 
   emitFile() {
-    this.fileChange.emit(null);
+    this.fileChange.emit(this.uploadFileForm.value.file);
   }
 }
