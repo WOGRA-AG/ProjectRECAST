@@ -18,7 +18,7 @@
   }
 }
 
-@mixin layout() {
+@mixin layout($typography) {
   .mat-form-field-type-single-file-input {
     width: 100%;
     height: 100%;
@@ -28,7 +28,7 @@
       align-items: center;
       gap: 1rem;
       .mat-icon {
-        font-size: 24px;
+        font-size: inherit;
       }
     }
     #file-input {
@@ -97,5 +97,5 @@
 
 @mixin theme($theme, $typography-config, $variants) {
   @include color($theme);
-  @include layout();
+  @include layout($typography-config);
 }
