@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/member-ordering*/
 import {
   Component,
   EventEmitter,
@@ -18,25 +19,26 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
   selector: 'app-single-file-input',
   templateUrl: './single-file-input.component.html',
   styleUrls: ['./single-file-input.component.scss'],
-  providers: [{provide: MatFormFieldControl, useExisting: SingleFileInput}]
+  providers: [{provide: MatFormFieldControl, useExisting: SingleFileInputComponent}]
 })
-export class SingleFileInput implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy {
-  @Input('aria-describedby') userAriaDescribedBy: string = "";
+export class SingleFileInputComponent implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy {
+  static nextId = 0;
+  // eslint-disable-next-line  @angular-eslint/no-input-rename
+  @Input('aria-describedby') ariaDescribedBy = '';
   @Output() cancelUpload: EventEmitter<null> = new EventEmitter<null>();
 
   stateChanges: Subject<void> = new Subject<void>();
-  focused: boolean = false;
-  touched: boolean = false;
-  controlType = 'single-file-input'
-  static nextId = 0;
-  @HostBinding() id = `app-single-file-input-${SingleFileInput.nextId++}`;
+  focused = false;
+  touched = false;
+  controlType = 'single-file-input';
+  @HostBinding() id = `app-single-file-input-${SingleFileInputComponent.nextId++}`;
 
   onTouch: any;
   private _placeholder = '';
   private _value: File | null = null;
   private _onChange: any;
-  private _required: boolean = false;
-  private _disabled: boolean = false;
+  private _required = false;
+  private _disabled = false;
 
   constructor(
     @Optional() @Self() public ngControl: NgControl,
@@ -71,10 +73,6 @@ export class SingleFileInput implements ControlValueAccessor, MatFormFieldContro
     this.stateChanges.next();
   }
 
-  get empty() {
-    return !this.value;
-  }
-
   @HostBinding('class.floating')
   get shouldLabelFloat() {
     return this.focused || !this.empty;
@@ -94,6 +92,10 @@ export class SingleFileInput implements ControlValueAccessor, MatFormFieldContro
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
     this.stateChanges.next();
+  }
+
+  get empty() {
+    return !this.value;
   }
 
   get errorState(): boolean {
@@ -127,7 +129,7 @@ export class SingleFileInput implements ControlValueAccessor, MatFormFieldContro
   }
 
   onContainerClick(event: MouseEvent) {
-    if ((event.target as Element).tagName.toLowerCase() != 'input') {
+    if ((event.target as Element).tagName.toLowerCase() !== 'input') {
       this._elementRef.nativeElement.querySelector('input').focus();
     }
   }

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
@@ -6,9 +6,9 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss']
 })
-export class FileUploadComponent implements OnInit {
+export class FileUploadComponent {
 
-  @Input() placeholder: string = '';
+  @Input() placeholder = '';
   @Input() file: File | null = null;
   @Output() fileChange: EventEmitter<File | null> = new EventEmitter<File | null>();
 
@@ -21,9 +21,6 @@ export class FileUploadComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
   ) { }
-
-  ngOnInit(): void {
-  }
 
   emitFile() {
     this.fileChange.emit(this.uploadFileForm.value.file);

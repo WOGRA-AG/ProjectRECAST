@@ -20,7 +20,7 @@ import { SearchFieldComponent } from './components/molecules/search-field/search
 import { IconButtonComponent } from './components/molecules/icon-button/icon-button.component';
 import { FileUploadComponent } from './components/organisms/file-upload/file-upload.component';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
-import { SingleFileInput } from './components/molecules/single-file-input/single-file-input.component';
+import { SingleFileInputComponent } from './components/molecules/single-file-input/single-file-input.component';
 
 const COMPONENTS = [
   DemoComponent,
@@ -40,7 +40,7 @@ const COMPONENTS = [
   IconButtonComponent,
   FileUploadComponent,
   DragAndDropDirective,
-  SingleFileInput,
+  SingleFileInputComponent,
 ];
 
 @NgModule({

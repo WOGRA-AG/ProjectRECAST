@@ -1,24 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {yamlToProcess} from '../../shared/util/common-utils';
 import {ProcessFacadeService} from '../../services/process-facade.service';
+import {catchError, concatMap, filter, of} from 'rxjs';
 
 @Component({
   selector: 'app-upload-new-process',
   templateUrl: './upload-new-process.component.html',
   styleUrls: ['./upload-new-process.component.scss']
 })
-export class UploadNewProcessComponent implements OnInit {
+export class UploadNewProcessComponent {
 
   constructor(private processFacade: ProcessFacadeService) { }
 
-  ngOnInit(): void {
-  }
-
   uploadFile(file: File | null) {
-    if (!file) return;
-    yamlToProcess(file).subscribe(process => {
-      this.processFacade.saveProcess(process).subscribe(error => {console.error(error)});
-      console.log(process);
-    });
+    if (!file) {return;}
+    yamlToProcess(file).pipe(
+      filter(proc => !!proc.name),
+      concatMap(proc => this.processFacade.saveProcess$(proc)),
+      catchError(err => {
+        console.error(err);
+        return of(undefined);
+      })
+    ).subscribe();
   }
 }

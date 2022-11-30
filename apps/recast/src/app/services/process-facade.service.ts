@@ -9,14 +9,14 @@ import {SupabaseService} from './supabase.service';
 import {StepFacadeService} from './step-facade.service';
 import {
   BehaviorSubject,
-  catchError,
+  catchError, concatAll,
   concatMap,
   filter,
   from,
   map, merge,
   Observable,
   of,
-  skip, Subject
+  skip, Subject, tap, toArray
 } from 'rxjs';
 import {Process, Step} from '../../../build/openapi/recast';
 import {groupBy$} from '../shared/util/common-utils';
@@ -58,11 +58,37 @@ export class ProcessFacadeService {
     return this._processes$.getValue();
   }
 
-  public saveProcess({id, name}: Process): Observable<PostgrestError> {
-    const upsert_proc = {id: id, name: name}
-    const upsert = this._supabaseClient.from('Processes').upsert(upsert_proc);
+  public saveProcess$(proc: Process): Observable<Process> {
+    return this.upsertProcess$(proc).pipe(
+      concatMap((newProc) => {
+          const steps = proc.steps;
+          proc = newProc;
+          return steps?.map(val => this.stepFacade.saveStep$(val, proc.id))
+            || of([]);
+        }
+      ),
+      concatAll(),
+      toArray(),
+      map(steps => {
+        proc.steps = steps;
+        return proc;
+      })
+    );
+  }
+
+  private upsertProcess$({id, name}: Process): Observable<Process> {
+    const upsertStep = {id, name};
+    const upsert = this._supabaseClient.from('Processes')
+      .upsert(snakeCase(upsertStep))
+      .select();
     return from(upsert).pipe(
-      map(({error}) => error!)
+      filter(({data, error}) => !!data || !!error),
+      map(({data, error}) => {
+        if (!!error) {
+          throw error;
+        }
+        return camelCase(data[0]);
+      })
     );
   }
 

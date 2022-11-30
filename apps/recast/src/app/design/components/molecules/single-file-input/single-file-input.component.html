@@ -1,6 +1,6 @@
 <div class="single-file-input-container"
      role="group"
-     [attr.aria-describedby]="userAriaDescribedBy"
+     [attr.aria-describedby]="ariaDescribedBy"
      [attr.aria-labelledby]="parentFormField.getLabelId()">
   <div class="upload-file mat-body-1" appDragAndDrop
        (filesDropped)="uploadDroppedFile($event)" (click)="fileUpload.click()">
