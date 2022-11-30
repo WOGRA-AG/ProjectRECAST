@@ -10,7 +10,7 @@ import {
   skip,
   Subject, toArray
 } from 'rxjs';
-import {ElementProperty, Element, Step} from '../../../build/openapi/recast';
+import {ElementProperty, Element} from '../../../build/openapi/recast';
 import {
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,

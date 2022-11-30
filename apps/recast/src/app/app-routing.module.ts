@@ -25,7 +25,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/profile',
+    redirectTo: '/overview',
     pathMatch: 'full',
   },
   {

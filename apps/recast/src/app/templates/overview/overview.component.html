@@ -2,6 +2,13 @@
 
 <div class="content-wrapper">
     <app-tab-group class="tabs" [labels]="tabs" (indexChanged)="changeContent($event)"></app-tab-group>
-    <app-table class="table" [iconColumns]="iconColumns" [dataColumns]="dataColumns" [data]="tableData$" (deleteClicked)="deleteTableRow($event)" (editClicked)="editTableRow($event)"></app-table>
-    <app-create-button class="button">Erstellen</app-create-button>
+    <app-table
+      class="table"
+      [iconColumns]="iconColumns"
+      [dataColumns]="dataColumns"
+      [data]="tableData$"
+      (deleteClicked)="deleteTableRow($event)"
+      (editClicked)="editTableRow($event)"
+    ></app-table>
+    <app-create-button class="button" routerLink="/process">Erstellen</app-create-button>
 </div>

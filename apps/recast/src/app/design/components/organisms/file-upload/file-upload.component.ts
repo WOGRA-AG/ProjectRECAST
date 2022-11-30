@@ -11,6 +11,7 @@ export class FileUploadComponent {
   @Input() placeholder = '';
   @Input() file: File | null = null;
   @Output() fileChange: EventEmitter<File | null> = new EventEmitter<File | null>();
+  @Output() cancel: EventEmitter<void> = new EventEmitter<void>()
 
   uploadFileForm: FormGroup = this.formBuilder.group({
     file: new FormControl({value: this.file, disabled: false},
