@@ -213,6 +213,15 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     text-decoration: map-get($button-medium, text-decoration);
   }
 
+  .mat-form-field {
+    font-family: map-get($body-2, font-family);
+    font-weight: map-get($body-2, font-weight);
+    line-height: map-get($body-2, line-height);
+    font-size: map-get($body-2, font-size);
+    letter-spacing: map-get($body-2, letter-spacing);
+    text-decoration: map-get($body-2, text-decoration);
+  }
+
   .mat-caption {
     font-size: 12px;
     font-style: normal;

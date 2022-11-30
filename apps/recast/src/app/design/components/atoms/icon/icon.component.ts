@@ -3,10 +3,11 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-    selector: 'app-delete-icon',
-    templateUrl: './delete-icon.component.html'
+    selector: 'app-icon',
+    templateUrl: './icon.component.html'
   })
-  export class DeleteIconComponent {
+  export class IconComponent {
+  @Input() svgIcon = '';
   @Input() size = '';
   @Input() color = 'primary';
 
@@ -15,8 +16,12 @@ import { DomSanitizer } from '@angular/platform-browser';
     private sanitizer: DomSanitizer
   ) {
     this.matIconRegistry.addSvgIcon(
-    'rcst_delete',
-    sanitizer.bypassSecurityTrustResourceUrl('assets/icons/delete.svg')
+      'rcst_delete',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/delete.svg')
+    );
+    this.matIconRegistry.addSvgIcon(
+      'rcst_edit',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/edit.svg')
     );
   }
 }
