@@ -144,7 +144,7 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
       this.onTouch = fn;
   }
 
-  uploadFile(event: Event) {
+  changeFile(event: Event) {
     const element = event.currentTarget as HTMLInputElement;
     const fileList: FileList | null = element.files;
     if (!fileList) {return;}

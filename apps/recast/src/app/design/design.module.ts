@@ -18,7 +18,7 @@ import { IconComponent } from './components/atoms/icon/icon.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SearchFieldComponent } from './components/molecules/search-field/search-field.component';
 import { IconButtonComponent } from './components/molecules/icon-button/icon-button.component';
-import { FileUploadComponent } from './components/organisms/file-upload/file-upload.component';
+import { SingleFileUploadComponent } from './components/organisms/single-file-upload/single-file-upload.component';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
 import { SingleFileInputComponent } from './components/molecules/single-file-input/single-file-input.component';
 
@@ -38,7 +38,7 @@ const COMPONENTS = [
   IconComponent,
   SearchFieldComponent,
   IconButtonComponent,
-  FileUploadComponent,
+  SingleFileUploadComponent,
   DragAndDropDirective,
   SingleFileInputComponent,
 ];

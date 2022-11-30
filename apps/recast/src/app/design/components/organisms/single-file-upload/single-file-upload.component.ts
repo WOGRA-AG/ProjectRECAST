@@ -3,10 +3,10 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-file-upload',
-  templateUrl: './file-upload.component.html',
-  styleUrls: ['./file-upload.component.scss']
+  templateUrl: './single-file-upload.component.html',
+  styleUrls: ['./single-file-upload.component.scss']
 })
-export class FileUploadComponent {
+export class SingleFileUploadComponent {
 
   @Input() placeholder = '';
   @Input() file: File | null = null;
