@@ -1,12 +1,25 @@
 import {Injectable} from '@angular/core';
 import {SupabaseService} from './supabase.service';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {StepProperty} from '../../../build/openapi/recast';
-import {BehaviorSubject, catchError, concatMap, from, map, merge, Observable, of, Subject} from 'rxjs';
+import {Process, StepProperty} from '../../../build/openapi/recast';
+import {
+  BehaviorSubject,
+  catchError,
+  concatAll,
+  concatMap,
+  filter,
+  from,
+  map,
+  merge,
+  Observable,
+  of,
+  Subject
+} from 'rxjs';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -38,6 +51,26 @@ export class StepPropertyService {
 
   get stepProperties(): StepProperty[] {
     return this._stepProperties$.getValue();
+  }
+
+  public saveStepProp$(prop: StepProperty, stepId: number | undefined): Observable<StepProperty> {
+    return this.upsertStepProp$(prop, stepId);
+  }
+
+  private upsertStepProp$({id, name, defaultValue, description, type}: StepProperty, stepId: number | undefined): Observable<StepProperty> {
+    const upsertProp = {id, name, stepId, defaultValue, description, type};
+    const upsert = this._supabaseClient.from('StepProperties')
+      .upsert(snakeCase(upsertProp))
+      .select();
+    return from(upsert).pipe(
+      filter(({data, error}) => !!data || !!error),
+      map(({data, error}) => {
+        if (!!error) {
+          throw error;
+        }
+        return camelCase(data[0]);
+      })
+    );
   }
 
   private propertyChanges$(): Observable<StepProperty[]> {

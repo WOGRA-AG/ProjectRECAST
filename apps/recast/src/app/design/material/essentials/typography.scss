@@ -17,7 +17,7 @@
 }
 
 $custom-typography: mat.define-typography-config(
-  $font-family: 'Roboto, monospace',
+  $font-family: 'Avenir Roman',
   $display-1: mat.define-typography-level(60px, 60px, 700),
   $display-2: mat.define-typography-level(44px, 44px, 700),
   $display-3: mat.define-typography-level(33px, 33px, 700),
@@ -121,19 +121,35 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
   }
 
   .mat-body-1 {
+    font-size: map-get($body-1, font-size);
+
+    @media #{$medium-and-up} {
+      font-size: map-get($button-medium, font-size);
+    }
+
+    @media #{$large-and-up} {
+      font-size: map-get($button-large, font-size);
+    }
     font-family: map-get($body-1, font-family);
     font-weight: map-get($body-1, font-weight);
     line-height: map-get($body-1, line-height);
-    font-size: map-get($body-1, font-size);
     letter-spacing: map-get($body-1, letter-spacing);
     text-decoration: map-get($body-1, text-decoration);
   }
 
   .mat-body-2 {
+    font-size: map-get($body-2, font-size);
+
+    @media #{$medium-and-up} {
+      font-size: map-get($button-medium, font-size);
+    }
+
+    @media #{$large-and-up} {
+      font-size: map-get($button-large, font-size);
+    }
     font-family: map-get($body-2, font-family);
     font-weight: map-get($body-2, font-weight);
     line-height: map-get($body-2, line-height);
-    font-size: map-get($body-2, font-size);
     letter-spacing: map-get($body-2, letter-spacing);
     text-decoration: map-get($body-2, text-decoration);
   }
@@ -189,6 +205,10 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
 
     @media #{$medium-and-up} {
       font-size: map-get($button-medium, font-size);
+    }
+
+    @media #{$large-and-up} {
+      font-size: map-get($button-large, font-size);
     }
 
     &.small {

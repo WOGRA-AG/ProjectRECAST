@@ -10,12 +10,14 @@ import {SupabaseService} from './services/supabase.service';
 import { DesignModule } from './design/design.module';
 import { OverviewComponent } from './templates/overview/overview.component';
 import {SharedModule} from './shared/shared.module';
+import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PageNotFoundComponent,
     OverviewComponent,
+    UploadNewProcessComponent,
   ],
   imports: [
     BrowserModule,

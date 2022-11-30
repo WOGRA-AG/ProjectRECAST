@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  catchError,
+  catchError, concatAll,
   concatMap,
   filter,
   from,
   map, merge,
   Observable, of,
   skip,
-  Subject
+  Subject, toArray
 } from 'rxjs';
 import {ElementProperty, Element} from '../../../build/openapi/recast';
 import {
@@ -28,7 +28,7 @@ const camelCase = require('camelcase-keys');
 export class ElementFacadeService {
 
   private readonly _elements$: BehaviorSubject<Element[]> = new BehaviorSubject<Element[]>([]);
-  private supabaseClient: SupabaseClient = this.supabase.supabase;
+  private _supabaseClient: SupabaseClient = this.supabase.supabase;
 
   constructor(
     private readonly supabase: SupabaseService,
@@ -57,9 +57,43 @@ export class ElementFacadeService {
     return this._elements$.getValue();
   }
 
+  public saveElement$(elem: Element): Observable<Element> {
+    return this.upsertElement$(elem).pipe(
+      concatMap((newElem) => {
+          const props = elem.elementProperties;
+          elem = newElem;
+          return props?.map(val => this.elementPropertyService.saveElementProp$(val, newElem.id))
+            || of([]);
+        }
+      ),
+      concatAll(),
+      toArray(),
+      map(elemProps => {
+        elem.elementProperties = elemProps;
+        return elem;
+      })
+    );
+  }
+
+  private upsertElement$({id, name, processId}: Element): Observable<Element> {
+    const upsertElem = {id, name, processId};
+    const upsert = this._supabaseClient.from('Elements')
+      .upsert(snakeCase(upsertElem))
+      .select();
+    return from(upsert).pipe(
+      filter(({data, error}) => !!data || !!error),
+      map(({data, error}) => {
+        if (!!error) {
+          throw error;
+        }
+        return camelCase(data[0]);
+      })
+    );
+  }
+
   private elementChanges$(): Observable<Element[]> {
     const changes$: Subject<Element[]> = new Subject<Element[]>();
-    this.supabaseClient
+    this._supabaseClient
       .channel('element-change')
       .on(
         REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
@@ -100,7 +134,7 @@ export class ElementFacadeService {
   }
 
   private loadElements$(): Observable<Element[]> {
-    const select = this.supabaseClient
+    const select = this._supabaseClient
       .from('Elements')
       .select(`
         *,

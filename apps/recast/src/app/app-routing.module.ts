@@ -6,6 +6,8 @@ import {PageNotFoundComponent} from './templates/page-not-found/page-not-found.c
 import {AuthGuard} from './user/guards/auth.guard';
 import { DemoComponent } from './design/demo/demo.component';
 import { OverviewComponent } from './templates/overview/overview.component';
+import {SingleFileUploadComponent} from './design/components/organisms/single-file-upload/single-file-upload.component';
+import {UploadNewProcessComponent} from './templates/upload-new-process/upload-new-process.component';
 
 const routes: Routes = [
   {
@@ -23,12 +25,17 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/profile',
+    redirectTo: '/overview',
     pathMatch: 'full',
   },
   {
     path: 'overview',
     component: OverviewComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'process',
+    component: UploadNewProcessComponent,
     canActivate: [AuthGuard],
   },
   {

@@ -5,8 +5,8 @@ import {
   SupabaseClient
 } from '@supabase/supabase-js';
 import {SupabaseService} from './supabase.service';
-import {BehaviorSubject, catchError, concatMap, from, map, merge, Observable, of, Subject} from 'rxjs';
-import {ElementProperty} from '../../../build/openapi/recast';
+import {BehaviorSubject, catchError, concatMap, filter, from, map, merge, Observable, of, Subject} from 'rxjs';
+import {ElementProperty, StepProperty} from '../../../build/openapi/recast';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -38,6 +38,32 @@ export class ElementPropertyService {
 
   get elementProperties(): ElementProperty[] {
     return this._elementProperties$.getValue();
+  }
+
+  public saveElementProp$(
+    prop: ElementProperty,
+    elementId: number | undefined
+  ): Observable<ElementProperty> {
+    return this.upsertElementProp$(prop, elementId);
+  }
+
+  private upsertElementProp$(
+    {id, value, stepPropertyId}: ElementProperty,
+    elementId: number | undefined
+  ): Observable<ElementProperty> {
+    const upsertProp = {id, value, stepPropertyId, elementId};
+    const upsert = this._supabaseClient.from('ElementProperties')
+      .upsert(snakeCase(upsertProp))
+      .select();
+    return from(upsert).pipe(
+      filter(({data, error}) => !!data || !!error),
+      map(({data, error}) => {
+        if (!!error) {
+          throw error;
+        }
+        return camelCase(data[0]);
+      })
+    );
   }
 
   private propertyChanges$(): Observable<ElementProperty[]> {
