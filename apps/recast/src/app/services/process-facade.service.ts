@@ -61,11 +61,11 @@ export class ProcessFacadeService {
   public saveProcess$(proc: Process): Observable<Process> {
     return this.upsertProcess$(proc).pipe(
       concatMap((newProc) => {
-          const steps = proc.steps;
-          proc = newProc;
-          return steps?.map(val => this.stepFacade.saveStep$(val, proc.id))
+        const steps = proc.steps;
+        proc = newProc;
+        return steps?.map(val => this.stepFacade.saveStep$(val, proc.id))
             || of([]);
-        }
+      }
       ),
       concatAll(),
       toArray(),
@@ -117,26 +117,26 @@ export class ProcessFacadeService {
         payload => {
           const state = this._processes$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertProcess(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            const steps = this.stepFacade.steps;
+            this.updateProcessWithSteps$(state, camelCase(payload.new), steps)
+              .subscribe(processes => changes$.next(processes));
+            break;
+          case 'DELETE':
+            const step: Step = payload.old;
+            if (step.id) {
               changes$.next(
-                this.insertProcess(state, camelCase(payload.new))
+                this.deleteProcess(state, step.id)
               );
-              break;
-            case 'UPDATE':
-              const steps = this.stepFacade.steps;
-              this.updateProcessWithSteps$(state, camelCase(payload.new), steps)
-                .subscribe(processes => changes$.next(processes));
-              break;
-            case 'DELETE':
-              const step: Step = payload.old;
-              if (step.id) {
-                changes$.next(
-                  this.deleteProcess(state, step.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();

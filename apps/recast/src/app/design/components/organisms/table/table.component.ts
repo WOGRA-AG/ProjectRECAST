@@ -4,26 +4,25 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-table',
-    templateUrl: './table.component.html',
-    styleUrls: ['./table.component.scss']
-  })
+  selector: 'app-table',
+  templateUrl: './table.component.html',
+  styleUrls: ['./table.component.scss']
+})
 
-export class TableComponent implements OnInit, OnChanges, AfterViewInit {
+export class TableComponent<T> implements OnChanges, AfterViewInit, OnInit {
   @ViewChild(MatSort) sort: MatSort | null = null;
 
-  @Input() iconColumns: string[] = [];
-  @Input() dataColumns: TableColumn[] = [];
-  @Input() data: Observable<any> = new Observable<any>();
+  @Input() columnsSchema: TableColumn[] = [];
+  @Input() data: Observable<T[]> = new Observable<T[]>();
 
-  @Output() deleteClicked: EventEmitter<number> = new EventEmitter<number>();
-  @Output() editClicked: EventEmitter<number> = new EventEmitter<number>();
+  @Output() deleteClicked: EventEmitter<T> = new EventEmitter<T>();
+  @Output() saveClicked: EventEmitter<T> = new EventEmitter<T>();
 
-  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-  columns: string[] = [];
+  dataSource: MatTableDataSource<T> = new MatTableDataSource<T>();
+  columns: string[] = this.columnsSchema.map(col => col.key);
 
-  ngOnInit(): void {
-    this.columns = this.dataColumns.map(column => column.key).concat(this.iconColumns);
+  ngOnInit() {
+    this.columns = this.columnsSchema.map(col => col.key);
   }
 
   ngOnChanges(): void {
@@ -39,9 +38,16 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
   applyFilter(filterValue: string | null) {
     this.dataSource.filter = filterValue?.trim().toLowerCase() || '';
   }
+
+  saved(element: T): void {
+    delete (element as any).isEdit;
+    this.saveClicked.emit(element);
+  }
 }
 
 export interface TableColumn {
   key: string;
-  title: string;
+  type: 'isEdit' | 'isDelete' | 'text' | 'number';
+  label: string;
+  required?: boolean;
 }

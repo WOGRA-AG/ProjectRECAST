@@ -15,6 +15,8 @@ export class TextInputFieldComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() errMsg = '';
   @Input() hint = '';
+  @Input() appearance: 'outline' | 'fill' | 'legacy' | 'standard' = 'outline';
+  @Input() type: 'text' | 'number' = 'text';
 
   onTouch: any;
   private val = '';

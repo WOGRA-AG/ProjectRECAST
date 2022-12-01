@@ -115,28 +115,28 @@ export class StepFacadeService {
         payload => {
           const state = this._steps$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertStep(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            const props = this.stepPropertyService.stepProperties;
+            this.updateStepWithProperties$(state, camelCase(payload.new), props)
+              .subscribe(steps => {
+                changes$.next(steps);
+              });
+            break;
+          case 'DELETE':
+            const step: Step = payload.old;
+            if (step.id) {
               changes$.next(
-                this.insertStep(state, camelCase(payload.new))
+                this.deleteStep(state, step.id)
               );
-              break;
-            case 'UPDATE':
-              const props = this.stepPropertyService.stepProperties;
-              this.updateStepWithProperties$(state, camelCase(payload.new), props)
-                .subscribe(steps => {
-                  changes$.next(steps);
-                });
-              break;
-            case 'DELETE':
-              const step: Step = payload.old;
-              if (step.id) {
-                changes$.next(
-                  this.deleteStep(state, step.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();

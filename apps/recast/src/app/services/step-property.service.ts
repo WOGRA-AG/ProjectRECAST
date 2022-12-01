@@ -40,8 +40,8 @@ export class StepPropertyService {
     );
     merge(sessionChanges$, this.propertyChanges$())
       .subscribe(properties => {
-      this._stepProperties$.next(properties);
-    });
+        this._stepProperties$.next(properties);
+      });
   }
 
   get stepProperties$(): Observable<StepProperty[]> {
@@ -97,26 +97,26 @@ export class StepPropertyService {
         payload => {
           const state = this._stepProperties$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertProperty(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            changes$.next(
+              this.updateProperty(state, camelCase(payload.new))
+            );
+            break;
+          case 'DELETE':
+            const prop: StepProperty = payload.old;
+            if (prop.id) {
               changes$.next(
-                this.insertProperty(state, camelCase(payload.new))
+                this.deleteProperty(state, prop.id)
               );
-              break;
-            case 'UPDATE':
-              changes$.next(
-                this.updateProperty(state, camelCase(payload.new))
-              );
-              break;
-            case 'DELETE':
-              const prop: StepProperty = payload.old;
-              if (prop.id) {
-                changes$.next(
-                  this.deleteProperty(state, prop.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();

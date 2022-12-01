@@ -42,26 +42,26 @@ export class ProfileComponent {
   }
 
   updateProfile(): void {
-      this.loading = true;
-      const username = this.profile.username;
-      const email = this.profile.email;
-      const avatarUrl = this.profile.avatarUrl;
-      const id = this.profile.id;
-      this.userService.saveProfile({
-        id,
-        username,
-        email,
-        avatarUrl,
-      }).pipe(
-        catchError(err => {
-          if (err instanceof Error) {
-            alert(err.message);
-          }
-          return of({});
-        })
-      ).subscribe(() => {
-        this.loading = false;
-      });
+    this.loading = true;
+    const username = this.profile.username;
+    const email = this.profile.email;
+    const avatarUrl = this.profile.avatarUrl;
+    const id = this.profile.id;
+    this.userService.saveProfile({
+      id,
+      username,
+      email,
+      avatarUrl,
+    }).pipe(
+      catchError(err => {
+        if (err instanceof Error) {
+          alert(err.message);
+        }
+        return of({});
+      })
+    ).subscribe(() => {
+      this.loading = false;
+    });
   }
 
   signOut() {

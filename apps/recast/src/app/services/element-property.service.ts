@@ -92,26 +92,26 @@ export class ElementPropertyService {
         payload => {
           const state = this._elementProperties$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertElementProperty(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            changes$.next(
+              this.updateElementProperty(state, camelCase(payload.new))
+            );
+            break;
+          case 'DELETE':
+            const elemProp: ElementProperty = payload.old;
+            if (elemProp.id) {
               changes$.next(
-                this.insertElementProperty(state, camelCase(payload.new))
+                this.deleteElementProperty(state, elemProp.id)
               );
-              break;
-            case 'UPDATE':
-              changes$.next(
-                this.updateElementProperty(state, camelCase(payload.new))
-              );
-              break;
-            case 'DELETE':
-              const elemProp: ElementProperty = payload.old;
-              if (elemProp.id) {
-                changes$.next(
-                  this.deleteElementProperty(state, elemProp.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();

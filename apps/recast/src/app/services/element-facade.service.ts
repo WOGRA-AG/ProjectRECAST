@@ -61,11 +61,11 @@ export class ElementFacadeService {
   public saveElement$(elem: Element): Observable<Element> {
     return this.upsertElement$(elem).pipe(
       concatMap((newElem) => {
-          const props = elem.elementProperties;
-          elem = newElem;
-          return props?.map(val => this.elementPropertyService.saveElementProp$(val, newElem.id))
+        const props = elem.elementProperties;
+        elem = newElem;
+        return props?.map(val => this.elementPropertyService.saveElementProp$(val, newElem.id))
             || of([]);
-        }
+      }
       ),
       concatAll(),
       toArray(),
@@ -117,28 +117,28 @@ export class ElementFacadeService {
         payload => {
           const state = this._elements$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertElement(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            const props = this.elementPropertyService.elementProperties;
+            this.updateElementWithProperties$(state, camelCase(payload.new), props)
+              .subscribe(elements => {
+                changes$.next(elements);
+              });
+            break;
+          case 'DELETE':
+            const element: Element = payload.old;
+            if (element.id) {
               changes$.next(
-                this.insertElement(state, camelCase(payload.new))
+                this.deleteElement(state, element.id)
               );
-              break;
-            case 'UPDATE':
-              const props = this.elementPropertyService.elementProperties;
-              this.updateElementWithProperties$(state, camelCase(payload.new), props)
-                .subscribe(elements => {
-                  changes$.next(elements);
-                });
-              break;
-            case 'DELETE':
-              const element: Element = payload.old;
-              if (element.id) {
-                changes$.next(
-                  this.deleteElement(state, element.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();

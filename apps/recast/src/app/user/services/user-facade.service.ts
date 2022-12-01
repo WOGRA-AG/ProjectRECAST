@@ -60,12 +60,12 @@ export class UserFacadeService {
     const signout = this._supabaseClient.auth.signOut();
     return from(signout).pipe(
       map(({error}) => {
-      if (!!error) {
-        return error;
-      }
-      window.location.href = 'https://login.os4ml.wogra.com/logout';
-      return;
-    }));
+        if (!!error) {
+          return error;
+        }
+        window.location.href = 'https://login.os4ml.wogra.com/logout';
+        return;
+      }));
   }
 
   private profileChanges$(): Observable<Profile> {
