@@ -39,12 +39,12 @@ export class OverviewComponent {
   public deleteTableRow(id: number): void {
     switch (this.currentIndex) {
       case 0:
-        if (confirm("Delete Process and all corresponding data?")) {
+        if (confirm('Delete Process and all corresponding data?')) {
           this.processService.deleteProcess$(id).subscribe();
         }
         break;
       case 1:
-        if (confirm("Delete Element and all corresponding data?")) {
+        if (confirm('Delete Element and all corresponding data?')) {
           this.elementService.deleteElement$(id).subscribe();
         }
         break;

@@ -76,7 +76,7 @@ export class StepFacadeService {
 
   public deleteStep$(id: number): Observable<PostgrestError> {
     const del = this._supabaseClient
-      .from(Tables.Steps)
+      .from(Tables.steps)
       .delete()
       .eq('id', id);
     return from(del).pipe(
@@ -87,7 +87,7 @@ export class StepFacadeService {
 
   private upsertStep$({id, name}: Step, processId: number): Observable<Step> {
     const upsertStep = {id, name, processId};
-    const upsert = this._supabaseClient.from(Tables.Steps)
+    const upsert = this._supabaseClient.from(Tables.steps)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
@@ -110,7 +110,7 @@ export class StepFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.Steps
+          table: Tables.steps
         },
         payload => {
           const state = this._steps$.getValue();
@@ -145,10 +145,10 @@ export class StepFacadeService {
 
   private loadSteps$(): Observable<Step[]> {
     const select = this._supabaseClient
-      .from(Tables.Steps)
+      .from(Tables.steps)
       .select(`
         *,
-        step_properties: ${Tables.StepProperties} (*)
+        step_properties: ${Tables.stepProperties} (*)
       `);
     return from(select).pipe(
       map(({data, error}) => {

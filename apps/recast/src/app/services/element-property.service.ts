@@ -50,7 +50,7 @@ export class ElementPropertyService {
 
   public deleteElementProperty$(id: number): Observable<PostgrestError> {
     const del = this._supabaseClient
-      .from(Tables.ElementProperties)
+      .from(Tables.elementProperties)
       .delete()
       .eq('id', id);
     return from(del).pipe(
@@ -64,7 +64,7 @@ export class ElementPropertyService {
     elementId: number | undefined
   ): Observable<ElementProperty> {
     const upsertProp = {id, value, stepPropertyId, elementId};
-    const upsert = this._supabaseClient.from(Tables.ElementProperties)
+    const upsert = this._supabaseClient.from(Tables.elementProperties)
       .upsert(snakeCase(upsertProp))
       .select();
     return from(upsert).pipe(
@@ -87,7 +87,7 @@ export class ElementPropertyService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.ElementProperties
+          table: Tables.elementProperties
         },
         payload => {
           const state = this._elementProperties$.getValue();
@@ -120,7 +120,7 @@ export class ElementPropertyService {
 
   private loadProperties$(): Observable<ElementProperty[]> {
     const select = this._supabaseClient
-      .from(Tables.ElementProperties)
+      .from(Tables.elementProperties)
       .select();
     return from(select).pipe(
       map(({data, error}) => {

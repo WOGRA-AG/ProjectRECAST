@@ -78,7 +78,7 @@ export class ProcessFacadeService {
 
   public deleteProcess$(id: number): Observable<PostgrestError> {
     const del = this._supabaseClient
-      .from(Tables.Processes)
+      .from(Tables.processes)
       .delete()
       .eq('id', id);
     return from(del).pipe(
@@ -89,7 +89,7 @@ export class ProcessFacadeService {
 
   private upsertProcess$({id, name}: Process): Observable<Process> {
     const upsertStep = {id, name};
-    const upsert = this._supabaseClient.from(Tables.Processes)
+    const upsert = this._supabaseClient.from(Tables.processes)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
@@ -112,7 +112,7 @@ export class ProcessFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.Processes
+          table: Tables.processes
         },
         payload => {
           const state = this._processes$.getValue();
@@ -145,12 +145,12 @@ export class ProcessFacadeService {
 
   private loadProcesses$(): Observable<Process[]> {
     const select = this._supabaseClient
-      .from(Tables.Processes)
+      .from(Tables.processes)
       .select(`
         *,
-        steps: ${Tables.Steps}(
+        steps: ${Tables.steps}(
           *,
-          step_properties: ${Tables.StepProperties} (*)
+          step_properties: ${Tables.stepProperties} (*)
         )
       `);
     return from(select).pipe(

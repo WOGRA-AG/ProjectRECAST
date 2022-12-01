@@ -78,7 +78,7 @@ export class ElementFacadeService {
 
   public deleteElement$(id: number): Observable<PostgrestError> {
     const del = this._supabaseClient
-      .from(Tables.Elements)
+      .from(Tables.elements)
       .delete()
       .eq('id', id);
     return from(del).pipe(
@@ -89,7 +89,7 @@ export class ElementFacadeService {
 
   private upsertElement$({id, name, processId}: Element): Observable<Element> {
     const upsertElem = {id, name, processId};
-    const upsert = this._supabaseClient.from(Tables.Elements)
+    const upsert = this._supabaseClient.from(Tables.elements)
       .upsert(snakeCase(upsertElem))
       .select();
     return from(upsert).pipe(
@@ -112,7 +112,7 @@ export class ElementFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.Elements
+          table: Tables.elements
         },
         payload => {
           const state = this._elements$.getValue();
@@ -147,10 +147,10 @@ export class ElementFacadeService {
 
   private loadElements$(): Observable<Element[]> {
     const select = this._supabaseClient
-      .from(Tables.Elements)
+      .from(Tables.elements)
       .select(`
         *,
-        element_properties: ${Tables.ElementProperties} (*)
+        element_properties: ${Tables.elementProperties} (*)
       `);
     return from(select).pipe(
       map(({data, error}) => {

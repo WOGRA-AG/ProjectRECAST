@@ -58,7 +58,7 @@ export class StepPropertyService {
 
   public deleteProcess$(id: number): Observable<PostgrestError> {
     const del = this._supabaseClient
-      .from(Tables.StepProperties)
+      .from(Tables.stepProperties)
       .delete()
       .eq('id', id);
     return from(del).pipe(
@@ -69,7 +69,7 @@ export class StepPropertyService {
 
   private upsertStepProp$({id, name, defaultValue, description, type}: StepProperty, stepId: number | undefined): Observable<StepProperty> {
     const upsertProp = {id, name, stepId, defaultValue, description, type};
-    const upsert = this._supabaseClient.from(Tables.StepProperties)
+    const upsert = this._supabaseClient.from(Tables.stepProperties)
       .upsert(snakeCase(upsertProp))
       .select();
     return from(upsert).pipe(
@@ -92,7 +92,7 @@ export class StepPropertyService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.StepProperties
+          table: Tables.stepProperties
         },
         payload => {
           const state = this._stepProperties$.getValue();
@@ -125,7 +125,7 @@ export class StepPropertyService {
 
   private loadProperties$(): Observable<StepProperty[]> {
     const select = this._supabaseClient
-      .from(Tables.StepProperties)
+      .from(Tables.stepProperties)
       .select();
     return from(select).pipe(
       map(({data, error}) => {

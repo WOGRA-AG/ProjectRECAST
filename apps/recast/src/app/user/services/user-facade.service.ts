@@ -41,7 +41,7 @@ export class UserFacadeService {
       ...profile,
       updatedAt: new Date(),
     };
-    const upsert = this._supabaseClient.from(Tables.Profiles).upsert(snakeCase(update));
+    const upsert = this._supabaseClient.from(Tables.profiles).upsert(snakeCase(update));
     return from(upsert).pipe(
       map(({error}) => error!)
     );
@@ -73,7 +73,7 @@ export class UserFacadeService {
     this._supabaseClient.channel('profiles-changes')
       .on(
         'postgres_changes',
-        {event: 'UPDATE', schema: 'public', table: Tables.Profiles},
+        {event: 'UPDATE', schema: 'public', table: Tables.profiles},
         payload => {
           changes$.next(camelCase(payload.new));
         }
@@ -83,7 +83,7 @@ export class UserFacadeService {
 
   private updateProfile(): Observable<Profile> {
     const select = this._supabaseClient
-      .from(Tables.Profiles)
+      .from(Tables.profiles)
       .select(`id, username, email, avatar_url`)
       .single();
     return from(select).pipe(
