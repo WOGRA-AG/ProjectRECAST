@@ -141,7 +141,7 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
     this._onChange = fn;
   }
   registerOnTouched(fn: any): void {
-      this.onTouch = fn;
+    this.onTouch = fn;
   }
 
   changeFile(event: Event) {

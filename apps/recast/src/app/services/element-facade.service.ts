@@ -12,11 +12,12 @@ import {
 } from 'rxjs';
 import {ElementProperty, Element} from '../../../build/openapi/recast';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {ElementPropertyService} from './element-property.service';
 import {groupBy$} from '../shared/util/common-utils';
 const snakeCase = require('snakecase-keys');
@@ -60,11 +61,11 @@ export class ElementFacadeService {
   public saveElement$(elem: Element): Observable<Element> {
     return this.upsertElement$(elem).pipe(
       concatMap((newElem) => {
-          const props = elem.elementProperties;
-          elem = newElem;
-          return props?.map(val => this.elementPropertyService.saveElementProp$(val, newElem.id))
+        const props = elem.elementProperties;
+        elem = newElem;
+        return props?.map(val => this.elementPropertyService.saveElementProp$(val, newElem.id))
             || of([]);
-        }
+      }
       ),
       concatAll(),
       toArray(),
@@ -75,9 +76,20 @@ export class ElementFacadeService {
     );
   }
 
+  public deleteElement$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.elements)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
+  }
+
   private upsertElement$({id, name, processId}: Element): Observable<Element> {
     const upsertElem = {id, name, processId};
-    const upsert = this._supabaseClient.from('Elements')
+    const upsert = this._supabaseClient.from(Tables.elements)
       .upsert(snakeCase(upsertElem))
       .select();
     return from(upsert).pipe(
@@ -100,33 +112,33 @@ export class ElementFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'Elements'
+          table: Tables.elements
         },
         payload => {
           const state = this._elements$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertElement(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            const props = this.elementPropertyService.elementProperties;
+            this.updateElementWithProperties$(state, camelCase(payload.new), props)
+              .subscribe(elements => {
+                changes$.next(elements);
+              });
+            break;
+          case 'DELETE':
+            const element: Element = payload.old;
+            if (element.id) {
               changes$.next(
-                this.insertElement(state, camelCase(payload.new))
+                this.deleteElement(state, element.id)
               );
-              break;
-            case 'UPDATE':
-              const props = this.elementPropertyService.elementProperties;
-              this.updateElementWithProperties$(state, camelCase(payload.new), props)
-                .subscribe(elements => {
-                  changes$.next(elements);
-                });
-              break;
-            case 'DELETE':
-              const element: Element = payload.old;
-              if (element.id) {
-                changes$.next(
-                  this.deleteElement(state, element.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();
@@ -135,10 +147,10 @@ export class ElementFacadeService {
 
   private loadElements$(): Observable<Element[]> {
     const select = this._supabaseClient
-      .from('Elements')
+      .from(Tables.elements)
       .select(`
         *,
-        element_properties: ElementProperties (*)
+        element_properties: ${Tables.elementProperties} (*)
       `);
     return from(select).pipe(
       map(({data, error}) => {

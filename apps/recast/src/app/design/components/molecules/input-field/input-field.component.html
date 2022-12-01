@@ -1,9 +1,9 @@
-<mat-form-field appearance="outline">
+<mat-form-field [appearance]="appearance">
   <mat-label *ngIf="label">{{label}}</mat-label>
   <mat-hint>{{hint}}</mat-hint>
   <input
     matInput
-    type="text"
+    [type]="type"
     [formControl]="formControl"
     (change)="change($event)"
     (blur)="onTouch()"

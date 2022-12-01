@@ -6,15 +6,17 @@ import {ControlValueAccessor, FormControl, NgControl} from '@angular/forms';
 
 @Component({
   selector: 'app-text-input-field',
-  templateUrl: './text-input-field.component.html',
-  styleUrls: ['./text-input-field.component.scss'],
+  templateUrl: './input-field.component.html',
+  styleUrls: ['./input-field.component.scss'],
   providers: []
 })
-export class TextInputFieldComponent implements ControlValueAccessor {
+export class InputFieldComponent implements ControlValueAccessor {
 
   @Input() label = '';
   @Input() errMsg = '';
   @Input() hint = '';
+  @Input() appearance: 'outline' | 'fill' | 'legacy' | 'standard' = 'outline';
+  @Input() type: 'text' | 'number' = 'text';
 
   onTouch: any;
   private val = '';

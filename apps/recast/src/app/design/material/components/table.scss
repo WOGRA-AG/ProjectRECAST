@@ -38,6 +38,20 @@
     margin: 0;
   }
 
+  td.mat-cell {
+    .mat-form-field-wrapper {
+      padding: 0;
+      .mat-form-field-infix {
+        max-width: 183px;
+        width: 100%;
+      }
+      .mat-form-field-underline {
+        display: block;
+        bottom: 0.4em;
+      }
+    }
+  }
+
   td.mat-cell:first-of-type, th.mat-header-cell:first-of-type {
     padding-left: 1rem;
   }

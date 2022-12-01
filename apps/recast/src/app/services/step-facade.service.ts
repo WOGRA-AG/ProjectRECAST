@@ -1,18 +1,18 @@
 import {Injectable} from '@angular/core';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {Process, Step, StepProperty} from '../../../build/openapi/recast';
+import {Step, StepProperty} from '../../../build/openapi/recast';
 import {
   BehaviorSubject, catchError, concatAll, concatMap, filter,
   from,
-  map, merge, mergeAll,
+  map, merge,
   Observable, of,
-  skip, Subject, tap, toArray,
+  skip, Subject, toArray,
 } from 'rxjs';
 import {StepPropertyService} from './step-property.service';
 import {groupBy$} from '../shared/util/common-utils';
@@ -74,9 +74,20 @@ export class StepFacadeService {
     );
   }
 
+  public deleteStep$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.steps)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
+  }
+
   private upsertStep$({id, name}: Step, processId: number): Observable<Step> {
     const upsertStep = {id, name, processId};
-    const upsert = this._supabaseClient.from('Steps')
+    const upsert = this._supabaseClient.from(Tables.steps)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
@@ -99,33 +110,33 @@ export class StepFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'Steps'
+          table: Tables.steps
         },
         payload => {
           const state = this._steps$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertStep(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            const props = this.stepPropertyService.stepProperties;
+            this.updateStepWithProperties$(state, camelCase(payload.new), props)
+              .subscribe(steps => {
+                changes$.next(steps);
+              });
+            break;
+          case 'DELETE':
+            const step: Step = payload.old;
+            if (step.id) {
               changes$.next(
-                this.insertStep(state, camelCase(payload.new))
+                this.deleteStep(state, step.id)
               );
-              break;
-            case 'UPDATE':
-              const props = this.stepPropertyService.stepProperties;
-              this.updateStepWithProperties$(state, camelCase(payload.new), props)
-                .subscribe(steps => {
-                  changes$.next(steps);
-                });
-              break;
-            case 'DELETE':
-              const step: Step = payload.old;
-              if (step.id) {
-                changes$.next(
-                  this.deleteStep(state, step.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();
@@ -134,10 +145,10 @@ export class StepFacadeService {
 
   private loadSteps$(): Observable<Step[]> {
     const select = this._supabaseClient
-      .from('Steps')
+      .from(Tables.steps)
       .select(`
         *,
-        step_properties: StepProperties (*)
+        step_properties: ${Tables.stepProperties} (*)
       `);
     return from(select).pipe(
       map(({data, error}) => {

@@ -4,11 +4,10 @@
     <app-tab-group class="tabs" [labels]="tabs" (indexChanged)="changeContent($event)"></app-tab-group>
     <app-table
       class="table"
-      [iconColumns]="iconColumns"
-      [dataColumns]="dataColumns"
+      [columnsSchema]="dataColumns"
       [data]="tableData$"
       (deleteClicked)="deleteTableRow($event)"
-      (editClicked)="editTableRow($event)"
+      (saveClicked)="editTableRow($event)"
     ></app-table>
     <app-create-button class="button" routerLink="/process">Erstellen</app-create-button>
 </div>

@@ -21,6 +21,7 @@
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
+        "indent": ["warn", 2],
         "no-underscore-dangle": 0,
         "@typescript-eslint/no-non-null-assertion": 0,
         "@angular-eslint/directive-selector": [
