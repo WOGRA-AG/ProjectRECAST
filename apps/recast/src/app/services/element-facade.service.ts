@@ -150,7 +150,7 @@ export class ElementFacadeService {
       .from(Tables.Elements)
       .select(`
         *,
-        element_properties: ElementProperties (*)
+        element_properties: ${Tables.ElementProperties} (*)
       `);
     return from(select).pipe(
       map(({data, error}) => {

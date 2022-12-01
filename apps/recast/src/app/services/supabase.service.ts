@@ -47,10 +47,10 @@ export class SupabaseService {
 }
 
 export enum Tables {
-  Processes = 'Processes',
-  Steps = 'Steps',
-  StepProperties = 'StepProperties',
-  Elements = 'Elements',
-  ElementProperties = 'ElementProperties',
+  Processes = 'processes',
+  Steps = 'steps',
+  StepProperties = 'step_properties',
+  Elements = 'elements',
+  ElementProperties = 'element_properties',
   Profiles = 'profiles'
 }

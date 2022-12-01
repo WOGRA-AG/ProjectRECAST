@@ -39,10 +39,14 @@ export class OverviewComponent {
   public deleteTableRow(id: number): void {
     switch (this.currentIndex) {
       case 0:
-        this.processService.deleteProcess$(id).subscribe();
+        if (confirm("Delete Process and all corresponding data?")) {
+          this.processService.deleteProcess$(id).subscribe();
+        }
         break;
       case 1:
-        this.elementService.deleteElement$(id).subscribe();
+        if (confirm("Delete Element and all corresponding data?")) {
+          this.elementService.deleteElement$(id).subscribe();
+        }
         break;
       default:
         break;

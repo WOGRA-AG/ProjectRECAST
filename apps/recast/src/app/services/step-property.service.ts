@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {SupabaseService, Tables} from './supabase.service';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
@@ -53,6 +54,17 @@ export class StepPropertyService {
 
   public saveStepProp$(prop: StepProperty, stepId: number | undefined): Observable<StepProperty> {
     return this.upsertStepProp$(prop, stepId);
+  }
+
+  public deleteProcess$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.StepProperties)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
   }
 
   private upsertStepProp$({id, name, defaultValue, description, type}: StepProperty, stepId: number | undefined): Observable<StepProperty> {

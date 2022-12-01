@@ -6,13 +6,13 @@ import {
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {Process, Step, StepProperty} from '../../../build/openapi/recast';
+import {Step, StepProperty} from '../../../build/openapi/recast';
 import {
   BehaviorSubject, catchError, concatAll, concatMap, filter,
   from,
-  map, merge, mergeAll,
+  map, merge,
   Observable, of,
-  skip, Subject, tap, toArray,
+  skip, Subject, toArray,
 } from 'rxjs';
 import {StepPropertyService} from './step-property.service';
 import {groupBy$} from '../shared/util/common-utils';
@@ -71,6 +71,17 @@ export class StepFacadeService {
         step.stepProperties = stepProps;
         return step;
       })
+    );
+  }
+
+  public deleteStep$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.Steps)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
     );
   }
 
@@ -137,7 +148,7 @@ export class StepFacadeService {
       .from(Tables.Steps)
       .select(`
         *,
-        step_properties: StepProperties (*)
+        step_properties: ${Tables.StepProperties} (*)
       `);
     return from(select).pipe(
       map(({data, error}) => {

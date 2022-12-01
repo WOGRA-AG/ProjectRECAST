@@ -148,9 +148,9 @@ export class ProcessFacadeService {
       .from(Tables.Processes)
       .select(`
         *,
-        steps: Steps(
+        steps: ${Tables.Steps}(
           *,
-          step_properties: StepProperties (*)
+          step_properties: ${Tables.StepProperties} (*)
         )
       `);
     return from(select).pipe(

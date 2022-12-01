@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
@@ -45,6 +46,17 @@ export class ElementPropertyService {
     elementId: number | undefined
   ): Observable<ElementProperty> {
     return this.upsertElementProp$(prop, elementId);
+  }
+
+  public deleteElementProperty$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.ElementProperties)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
   }
 
   private upsertElementProp$(
