@@ -1,16 +1,14 @@
 import {Injectable} from '@angular/core';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {
-  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {Process, StepProperty} from '../../../build/openapi/recast';
+import {StepProperty} from '../../../build/openapi/recast';
 import {
   BehaviorSubject,
   catchError,
-  concatAll,
   concatMap,
   filter,
   from,
@@ -59,7 +57,7 @@ export class StepPropertyService {
 
   private upsertStepProp$({id, name, defaultValue, description, type}: StepProperty, stepId: number | undefined): Observable<StepProperty> {
     const upsertProp = {id, name, stepId, defaultValue, description, type};
-    const upsert = this._supabaseClient.from('StepProperties')
+    const upsert = this._supabaseClient.from(Tables.StepProperties)
       .upsert(snakeCase(upsertProp))
       .select();
     return from(upsert).pipe(
@@ -82,7 +80,7 @@ export class StepPropertyService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'StepProperties'
+          table: Tables.StepProperties
         },
         payload => {
           const state = this._stepProperties$.getValue();
@@ -115,7 +113,7 @@ export class StepPropertyService {
 
   private loadProperties$(): Observable<StepProperty[]> {
     const select = this._supabaseClient
-      .from('StepProperties')
+      .from(Tables.StepProperties)
       .select();
     return from(select).pipe(
       map(({data, error}) => {

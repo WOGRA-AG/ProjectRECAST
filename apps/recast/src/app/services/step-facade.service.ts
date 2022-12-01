@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
@@ -76,7 +76,7 @@ export class StepFacadeService {
 
   private upsertStep$({id, name}: Step, processId: number): Observable<Step> {
     const upsertStep = {id, name, processId};
-    const upsert = this._supabaseClient.from('Steps')
+    const upsert = this._supabaseClient.from(Tables.Steps)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
@@ -99,7 +99,7 @@ export class StepFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'Steps'
+          table: Tables.Steps
         },
         payload => {
           const state = this._steps$.getValue();
@@ -134,7 +134,7 @@ export class StepFacadeService {
 
   private loadSteps$(): Observable<Step[]> {
     const select = this._supabaseClient
-      .from('Steps')
+      .from(Tables.Steps)
       .select(`
         *,
         step_properties: StepProperties (*)

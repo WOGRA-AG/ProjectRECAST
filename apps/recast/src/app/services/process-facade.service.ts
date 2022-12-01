@@ -5,7 +5,7 @@ import {
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {StepFacadeService} from './step-facade.service';
 import {
   BehaviorSubject,
@@ -16,7 +16,7 @@ import {
   map, merge,
   Observable,
   of,
-  skip, Subject, tap, toArray
+  skip, Subject, toArray
 } from 'rxjs';
 import {Process, Step} from '../../../build/openapi/recast';
 import {groupBy$} from '../shared/util/common-utils';
@@ -76,9 +76,20 @@ export class ProcessFacadeService {
     );
   }
 
+  public deleteProcess$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.Processes)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
+  }
+
   private upsertProcess$({id, name}: Process): Observable<Process> {
     const upsertStep = {id, name};
-    const upsert = this._supabaseClient.from('Processes')
+    const upsert = this._supabaseClient.from(Tables.Processes)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
@@ -101,7 +112,7 @@ export class ProcessFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'Processes'
+          table: Tables.Processes
         },
         payload => {
           const state = this._processes$.getValue();
@@ -134,7 +145,7 @@ export class ProcessFacadeService {
 
   private loadProcesses$(): Observable<Process[]> {
     const select = this._supabaseClient
-      .from('Processes')
+      .from(Tables.Processes)
       .select(`
         *,
         steps: Steps(

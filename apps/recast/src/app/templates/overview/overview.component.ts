@@ -37,7 +37,16 @@ export class OverviewComponent {
   }
 
   public deleteTableRow(id: number): void {
-    //TODO
+    switch (this.currentIndex) {
+      case 0:
+        this.processService.deleteProcess$(id).subscribe();
+        break;
+      case 1:
+        this.elementService.deleteElement$(id).subscribe();
+        break;
+      default:
+        break;
+    }
   }
 
   public editTableRow(id: number): void {

@@ -12,11 +12,12 @@ import {
 } from 'rxjs';
 import {ElementProperty, Element} from '../../../build/openapi/recast';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {ElementPropertyService} from './element-property.service';
 import {groupBy$} from '../shared/util/common-utils';
 const snakeCase = require('snakecase-keys');
@@ -75,9 +76,20 @@ export class ElementFacadeService {
     );
   }
 
+  public deleteElement$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.Elements)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
+  }
+
   private upsertElement$({id, name, processId}: Element): Observable<Element> {
     const upsertElem = {id, name, processId};
-    const upsert = this._supabaseClient.from('Elements')
+    const upsert = this._supabaseClient.from(Tables.Elements)
       .upsert(snakeCase(upsertElem))
       .select();
     return from(upsert).pipe(
@@ -100,7 +112,7 @@ export class ElementFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'Elements'
+          table: Tables.Elements
         },
         payload => {
           const state = this._elements$.getValue();
@@ -135,7 +147,7 @@ export class ElementFacadeService {
 
   private loadElements$(): Observable<Element[]> {
     const select = this._supabaseClient
-      .from('Elements')
+      .from(Tables.Elements)
       .select(`
         *,
         element_properties: ElementProperties (*)

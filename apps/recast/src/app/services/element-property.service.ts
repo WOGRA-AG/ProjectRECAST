@@ -4,9 +4,9 @@ import {
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {BehaviorSubject, catchError, concatMap, filter, from, map, merge, Observable, of, Subject} from 'rxjs';
-import {ElementProperty, StepProperty} from '../../../build/openapi/recast';
+import {ElementProperty} from '../../../build/openapi/recast';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -52,7 +52,7 @@ export class ElementPropertyService {
     elementId: number | undefined
   ): Observable<ElementProperty> {
     const upsertProp = {id, value, stepPropertyId, elementId};
-    const upsert = this._supabaseClient.from('ElementProperties')
+    const upsert = this._supabaseClient.from(Tables.ElementProperties)
       .upsert(snakeCase(upsertProp))
       .select();
     return from(upsert).pipe(
@@ -75,7 +75,7 @@ export class ElementPropertyService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'ElementProperties'
+          table: Tables.ElementProperties
         },
         payload => {
           const state = this._elementProperties$.getValue();
@@ -108,7 +108,7 @@ export class ElementPropertyService {
 
   private loadProperties$(): Observable<ElementProperty[]> {
     const select = this._supabaseClient
-      .from('ElementProperties')
+      .from(Tables.ElementProperties)
       .select();
     return from(select).pipe(
       map(({data, error}) => {
