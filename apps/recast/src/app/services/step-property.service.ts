@@ -1,12 +1,24 @@
 import {Injectable} from '@angular/core';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
 import {StepProperty} from '../../../build/openapi/recast';
-import {BehaviorSubject, catchError, concatMap, from, map, merge, Observable, of, Subject} from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  concatMap,
+  filter,
+  from,
+  map,
+  merge,
+  Observable,
+  of,
+  Subject
+} from 'rxjs';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -28,8 +40,8 @@ export class StepPropertyService {
     );
     merge(sessionChanges$, this.propertyChanges$())
       .subscribe(properties => {
-      this._stepProperties$.next(properties);
-    });
+        this._stepProperties$.next(properties);
+      });
   }
 
   get stepProperties$(): Observable<StepProperty[]> {
@@ -38,6 +50,37 @@ export class StepPropertyService {
 
   get stepProperties(): StepProperty[] {
     return this._stepProperties$.getValue();
+  }
+
+  public saveStepProp$(prop: StepProperty, stepId: number | undefined): Observable<StepProperty> {
+    return this.upsertStepProp$(prop, stepId);
+  }
+
+  public deleteProcess$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.stepProperties)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
+  }
+
+  private upsertStepProp$({id, name, defaultValue, description, type}: StepProperty, stepId: number | undefined): Observable<StepProperty> {
+    const upsertProp = {id, name, stepId, defaultValue, description, type};
+    const upsert = this._supabaseClient.from(Tables.stepProperties)
+      .upsert(snakeCase(upsertProp))
+      .select();
+    return from(upsert).pipe(
+      filter(({data, error}) => !!data || !!error),
+      map(({data, error}) => {
+        if (!!error) {
+          throw error;
+        }
+        return camelCase(data[0]);
+      })
+    );
   }
 
   private propertyChanges$(): Observable<StepProperty[]> {
@@ -49,31 +92,31 @@ export class StepPropertyService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'StepProperties'
+          table: Tables.stepProperties
         },
         payload => {
           const state = this._stepProperties$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertProperty(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            changes$.next(
+              this.updateProperty(state, camelCase(payload.new))
+            );
+            break;
+          case 'DELETE':
+            const prop: StepProperty = payload.old;
+            if (prop.id) {
               changes$.next(
-                this.insertProperty(state, camelCase(payload.new))
+                this.deleteProperty(state, prop.id)
               );
-              break;
-            case 'UPDATE':
-              changes$.next(
-                this.updateProperty(state, camelCase(payload.new))
-              );
-              break;
-            case 'DELETE':
-              const prop: StepProperty = payload.old;
-              if (prop.id) {
-                changes$.next(
-                  this.deleteProperty(state, prop.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();
@@ -82,7 +125,7 @@ export class StepPropertyService {
 
   private loadProperties$(): Observable<StepProperty[]> {
     const select = this._supabaseClient
-      .from('StepProperties')
+      .from(Tables.stepProperties)
       .select();
     return from(select).pipe(
       map(({data, error}) => {

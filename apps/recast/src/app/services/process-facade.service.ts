@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService} from './supabase.service';
+import {SupabaseService, Tables} from './supabase.service';
 import {StepFacadeService} from './step-facade.service';
 import {
   BehaviorSubject,
-  catchError,
+  catchError, concatAll,
   concatMap,
   filter,
   from,
   map, merge,
   Observable,
   of,
-  skip, Subject
+  skip, Subject, toArray
 } from 'rxjs';
 import {Process, Step} from '../../../build/openapi/recast';
 import {groupBy$} from '../shared/util/common-utils';
@@ -57,6 +58,51 @@ export class ProcessFacadeService {
     return this._processes$.getValue();
   }
 
+  public saveProcess$(proc: Process): Observable<Process> {
+    return this.upsertProcess$(proc).pipe(
+      concatMap((newProc) => {
+        const steps = proc.steps;
+        proc = newProc;
+        return steps?.map(val => this.stepFacade.saveStep$(val, proc.id))
+            || of([]);
+      }
+      ),
+      concatAll(),
+      toArray(),
+      map(steps => {
+        proc.steps = steps;
+        return proc;
+      })
+    );
+  }
+
+  public deleteProcess$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.processes)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
+  }
+
+  private upsertProcess$({id, name}: Process): Observable<Process> {
+    const upsertStep = {id, name};
+    const upsert = this._supabaseClient.from(Tables.processes)
+      .upsert(snakeCase(upsertStep))
+      .select();
+    return from(upsert).pipe(
+      filter(({data, error}) => !!data || !!error),
+      map(({data, error}) => {
+        if (!!error) {
+          throw error;
+        }
+        return camelCase(data[0]);
+      })
+    );
+  }
+
   private processChanges$(): Observable<Process[]> {
     const changes$: Subject<Process[]> = new Subject<Process[]>();
     this._supabaseClient
@@ -66,31 +112,31 @@ export class ProcessFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'Processes'
+          table: Tables.processes
         },
         payload => {
           const state = this._processes$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertProcess(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            const steps = this.stepFacade.steps;
+            this.updateProcessWithSteps$(state, camelCase(payload.new), steps)
+              .subscribe(processes => changes$.next(processes));
+            break;
+          case 'DELETE':
+            const step: Step = payload.old;
+            if (step.id) {
               changes$.next(
-                this.insertProcess(state, camelCase(payload.new))
+                this.deleteProcess(state, step.id)
               );
-              break;
-            case 'UPDATE':
-              const steps = this.stepFacade.steps;
-              this.updateProcessWithSteps$(state, camelCase(payload.new), steps)
-                .subscribe(processes => changes$.next(processes));
-              break;
-            case 'DELETE':
-              const step: Step = payload.old;
-              if (step.id) {
-                changes$.next(
-                  this.deleteProcess(state, step.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();
@@ -99,12 +145,12 @@ export class ProcessFacadeService {
 
   private loadProcesses$(): Observable<Process[]> {
     const select = this._supabaseClient
-      .from('Processes')
+      .from(Tables.processes)
       .select(`
         *,
-        steps: Steps(
+        steps: ${Tables.steps}(
           *,
-          step_properties: StepProperties (*)
+          step_properties: ${Tables.stepProperties} (*)
         )
       `);
     return from(select).pipe(

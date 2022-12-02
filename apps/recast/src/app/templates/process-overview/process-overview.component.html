@@ -2,11 +2,10 @@
 
 <div class="content-wrapper">
     <app-table class="table"
-        [iconColumns]="iconColumns"
-        [dataColumns]="dataColumns"
+        [columnsSchema]="dataColumns"
         [data]="tableData$"
         (deleteClicked)="deleteTableRow($event)"
-        (editClicked)="editTableRow($event)">
+        (saveClicked)="editTableRow($event)">
     </app-table>
     <div class="buttons">
         <app-icon-button-unfilled [bordered]="true" svgIcon="rcst_scan" class="button">Bauteil scannen</app-icon-button-unfilled>

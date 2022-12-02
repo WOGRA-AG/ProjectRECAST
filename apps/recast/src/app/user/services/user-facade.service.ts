@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {SupabaseService} from '../../services/supabase.service';
+import {SupabaseService, Tables} from '../../services/supabase.service';
 import {AuthError, PostgrestError, SupabaseClient} from '@supabase/supabase-js';
 import {BehaviorSubject, catchError, concatMap, filter, from, map, Observable, of, Subject} from 'rxjs';
 import {Profile} from '../../../../build/openapi/recast';
@@ -41,7 +41,7 @@ export class UserFacadeService {
       ...profile,
       updatedAt: new Date(),
     };
-    const upsert = this._supabaseClient.from('profiles').upsert(snakeCase(update));
+    const upsert = this._supabaseClient.from(Tables.profiles).upsert(snakeCase(update));
     return from(upsert).pipe(
       map(({error}) => error!)
     );
@@ -60,12 +60,12 @@ export class UserFacadeService {
     const signout = this._supabaseClient.auth.signOut();
     return from(signout).pipe(
       map(({error}) => {
-      if (!!error) {
-        return error;
-      }
-      window.location.href = 'https://login.os4ml.wogra.com/logout';
-      return;
-    }));
+        if (!!error) {
+          return error;
+        }
+        window.location.href = 'https://login.os4ml.wogra.com/logout';
+        return;
+      }));
   }
 
   private profileChanges$(): Observable<Profile> {
@@ -73,7 +73,7 @@ export class UserFacadeService {
     this._supabaseClient.channel('profiles-changes')
       .on(
         'postgres_changes',
-        {event: 'UPDATE', schema: 'public', table: 'profiles'},
+        {event: 'UPDATE', schema: 'public', table: Tables.profiles},
         payload => {
           changes$.next(camelCase(payload.new));
         }
@@ -83,7 +83,7 @@ export class UserFacadeService {
 
   private updateProfile(): Observable<Profile> {
     const select = this._supabaseClient
-      .from('profiles')
+      .from(Tables.profiles)
       .select(`id, username, email, avatar_url`)
       .single();
     return from(select).pipe(

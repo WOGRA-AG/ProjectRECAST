@@ -1,0 +1,7 @@
+<div class="content-wrapper">
+  <app-page-header id="header" header="Neuen Prozess erstellen"></app-page-header>
+  <app-file-upload id="upload" placeholder="Prozess-YAML Datei hochladen" (fileChange)="uploadFile($event)" (back)="cancel()">
+    <ng-container back>Zurück</ng-container>
+    <ng-container submit>Erstellen</ng-container>
+  </app-file-upload>
+</div>

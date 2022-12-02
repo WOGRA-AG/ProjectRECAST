@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { Process, Step } from 'build/openapi/recast';
 import { Observable } from 'rxjs';
+import { TableColumn } from 'src/app/design/components/organisms/table/table.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 
 @Component({
@@ -8,8 +10,11 @@ import { ElementFacadeService } from 'src/app/services/element-facade.service';
   styleUrls: ['./process-overview.component.scss'],
 })
 export class ProcessOverviewComponent {
-  public iconColumns = ['edit', 'delete'];
-  public dataColumns = [{key: 'name', title: 'Title'}];
+  public dataColumns: TableColumn[] = [
+    {key: 'name', label: 'Title', type: 'text', required: true},
+    {key: 'isEdit', label: '', type: 'isEdit'},
+    {key: 'isDelete', label: '', type: 'isDelete'},
+  ];
   public tableData$: Observable<any> = new Observable<any>();
 
   constructor(
@@ -18,11 +23,11 @@ export class ProcessOverviewComponent {
     this.tableData$ = elementService.elements$;
   }
 
-  public deleteTableRow(id: number): void {
+  public deleteTableRow(element: Process | Element | Step): void {
     //TODO
   }
 
-  public editTableRow(id: number): void {
+  public editTableRow(element: Process | Element | Step): void {
     //TODO
   }
 }

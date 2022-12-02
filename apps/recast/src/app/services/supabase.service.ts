@@ -45,3 +45,12 @@ export class SupabaseService {
     this._session$.next(session);
   }
 }
+
+export enum Tables {
+  processes = 'processes',
+  steps = 'steps',
+  stepProperties = 'step_properties',
+  elements = 'elements',
+  elementProperties = 'element_properties',
+  profiles = 'profiles'
+}

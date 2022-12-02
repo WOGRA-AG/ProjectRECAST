@@ -6,7 +6,7 @@ import { ButtonUnfilledComponent } from './components/atoms/button-unfilled/butt
 import { IconButtonFilledComponent } from './components/molecules/icon-button-filled/icon-button-filled.component';
 import { DemoComponent } from './demo/demo.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {TextInputFieldComponent} from './components/molecules/text-input-field/text-input-field.component';
+import {InputFieldComponent} from './components/molecules/input-field/input-field.component';
 import {LogoutButtonComponent} from './components/molecules/logout-button/logout-button.component';
 import {SubmitButtonComponent} from './components/molecules/submit-button/submit-button.component';
 import { IconButtonUnfilledComponent } from './components/molecules/icon-button-unfilled/icon-button-unfilled.component';
@@ -18,6 +18,9 @@ import { IconComponent } from './components/atoms/icon/icon.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SearchFieldComponent } from './components/molecules/search-field/search-field.component';
 import { IconButtonComponent } from './components/molecules/icon-button/icon-button.component';
+import { SingleFileUploadComponent } from './components/organisms/single-file-upload/single-file-upload.component';
+import { DragAndDropDirective } from './directives/drag-and-drop.directive';
+import { SingleFileInputComponent } from './components/molecules/single-file-input/single-file-input.component';
 
 const COMPONENTS = [
   DemoComponent,
@@ -25,7 +28,7 @@ const COMPONENTS = [
   ButtonUnfilledComponent,
   IconButtonFilledComponent,
   IconButtonUnfilledComponent,
-  TextInputFieldComponent,
+  InputFieldComponent,
   LogoutButtonComponent,
   SubmitButtonComponent,
   TabGroupComponent,
@@ -34,7 +37,10 @@ const COMPONENTS = [
   TableComponent,
   IconComponent,
   SearchFieldComponent,
-  IconButtonComponent
+  IconButtonComponent,
+  SingleFileUploadComponent,
+  DragAndDropDirective,
+  SingleFileInputComponent,
 ];
 
 @NgModule({

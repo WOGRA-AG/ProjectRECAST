@@ -12,6 +12,7 @@
 @use 'tab.scss' as tab;
 @use 'button_variants.scss' as button_variants;
 @use 'icon.scss' as icon;
+@use 'single-file-input.scss' as single_file_input;
 
 @mixin theme($theme, $typography-config, $variants) {
   @include button.theme($theme, $typography-config, $variants);
@@ -28,4 +29,5 @@
   @include tab.theme($theme, $typography-config, $variants);
   @include button_variants.color($theme, $variants);
   @include icon.theme($theme, $typography-config, $variants);
+  @include single_file_input.theme($theme, $typography-config, $variants);
 }

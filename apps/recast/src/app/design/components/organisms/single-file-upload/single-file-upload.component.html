@@ -1,0 +1,24 @@
+<form
+  #f="ngForm"
+  (ngSubmit)="f.form.valid && emitFile()"
+  (reset)="back.emit()"
+  class="form-widget"
+  [formGroup]="uploadFileForm"
+>
+  <mat-form-field appearance="legacy">
+    <app-single-file-input
+      class="file-input"
+      formControlName="file"
+      [placeholder]="placeholder"
+    >
+    </app-single-file-input>
+    <div class="actions">
+      <app-button-unfilled type="reset" size="medium" [bordered]="true">
+        <ng-content select="[back]"></ng-content>
+      </app-button-unfilled>
+      <app-submit-button size="medium" [disabled]="f.form.invalid">
+        <ng-content select="[submit]"></ng-content>
+      </app-submit-button>
+    </div>
+  </mat-form-field>
+</form>

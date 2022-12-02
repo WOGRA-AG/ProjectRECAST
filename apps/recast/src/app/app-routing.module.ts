@@ -7,6 +7,8 @@ import {AuthGuard} from './user/guards/auth.guard';
 import { DemoComponent } from './design/demo/demo.component';
 import { OverviewComponent } from './templates/overview/overview.component';
 import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
+import {SingleFileUploadComponent} from './design/components/organisms/single-file-upload/single-file-upload.component';
+import {UploadNewProcessComponent} from './templates/upload-new-process/upload-new-process.component';
 
 const routes: Routes = [
   {
@@ -24,7 +26,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/profile',
+    redirectTo: '/overview',
     pathMatch: 'full',
   },
   {
@@ -35,6 +37,11 @@ const routes: Routes = [
   {
     path: 'process-overview',
     component: ProcessOverviewComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'process',
+    component: UploadNewProcessComponent,
     canActivate: [AuthGuard],
   },
   {

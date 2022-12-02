@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
 import {
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService} from './supabase.service';
-import {BehaviorSubject, catchError, concatMap, from, map, merge, Observable, of, Subject} from 'rxjs';
+import {SupabaseService, Tables} from './supabase.service';
+import {BehaviorSubject, catchError, concatMap, filter, from, map, merge, Observable, of, Subject} from 'rxjs';
 import {ElementProperty} from '../../../build/openapi/recast';
 
 const snakeCase = require('snakecase-keys');
@@ -40,6 +41,43 @@ export class ElementPropertyService {
     return this._elementProperties$.getValue();
   }
 
+  public saveElementProp$(
+    prop: ElementProperty,
+    elementId: number | undefined
+  ): Observable<ElementProperty> {
+    return this.upsertElementProp$(prop, elementId);
+  }
+
+  public deleteElementProperty$(id: number): Observable<PostgrestError> {
+    const del = this._supabaseClient
+      .from(Tables.elementProperties)
+      .delete()
+      .eq('id', id);
+    return from(del).pipe(
+      filter(({error}) => !!error),
+      map(({error}) => error!)
+    );
+  }
+
+  private upsertElementProp$(
+    {id, value, stepPropertyId}: ElementProperty,
+    elementId: number | undefined
+  ): Observable<ElementProperty> {
+    const upsertProp = {id, value, stepPropertyId, elementId};
+    const upsert = this._supabaseClient.from(Tables.elementProperties)
+      .upsert(snakeCase(upsertProp))
+      .select();
+    return from(upsert).pipe(
+      filter(({data, error}) => !!data || !!error),
+      map(({data, error}) => {
+        if (!!error) {
+          throw error;
+        }
+        return camelCase(data[0]);
+      })
+    );
+  }
+
   private propertyChanges$(): Observable<ElementProperty[]> {
     const changes$: Subject<ElementProperty[]> = new Subject<ElementProperty[]>();
     this._supabaseClient
@@ -49,31 +87,31 @@ export class ElementPropertyService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: 'ElementProperties'
+          table: Tables.elementProperties
         },
         payload => {
           const state = this._elementProperties$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+          case 'INSERT':
+            changes$.next(
+              this.insertElementProperty(state, camelCase(payload.new))
+            );
+            break;
+          case 'UPDATE':
+            changes$.next(
+              this.updateElementProperty(state, camelCase(payload.new))
+            );
+            break;
+          case 'DELETE':
+            const elemProp: ElementProperty = payload.old;
+            if (elemProp.id) {
               changes$.next(
-                this.insertElementProperty(state, camelCase(payload.new))
+                this.deleteElementProperty(state, elemProp.id)
               );
-              break;
-            case 'UPDATE':
-              changes$.next(
-                this.updateElementProperty(state, camelCase(payload.new))
-              );
-              break;
-            case 'DELETE':
-              const elemProp: ElementProperty = payload.old;
-              if (elemProp.id) {
-                changes$.next(
-                  this.deleteElementProperty(state, elemProp.id)
-                );
-              }
-              break;
-            default:
-              break;
+            }
+            break;
+          default:
+            break;
           }
         }
       ).subscribe();
@@ -82,7 +120,7 @@ export class ElementPropertyService {
 
   private loadProperties$(): Observable<ElementProperty[]> {
     const select = this._supabaseClient
-      .from('ElementProperties')
+      .from(Tables.elementProperties)
       .select();
     return from(select).pipe(
       map(({data, error}) => {

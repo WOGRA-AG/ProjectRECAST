@@ -3,10 +3,10 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-    selector: 'app-icon',
-    templateUrl: './icon.component.html'
-  })
-  export class IconComponent {
+  selector: 'app-icon',
+  templateUrl: './icon.component.html'
+})
+export class IconComponent {
   @Input() svgIcon = '';
   @Input() size = '';
   @Input() color = 'primary';
