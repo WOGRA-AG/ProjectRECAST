@@ -6,6 +6,7 @@ import {PageNotFoundComponent} from './templates/page-not-found/page-not-found.c
 import {AuthGuard} from './user/guards/auth.guard';
 import { DemoComponent } from './design/demo/demo.component';
 import { OverviewComponent } from './templates/overview/overview.component';
+import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
 
 const routes: Routes = [
   {
@@ -32,13 +33,18 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'process-overview',
+    component: ProcessOverviewComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: '**',
     component: PageNotFoundComponent
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes), RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

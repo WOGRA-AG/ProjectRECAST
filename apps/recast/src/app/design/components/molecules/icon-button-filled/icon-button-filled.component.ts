@@ -6,6 +6,7 @@ import { Component, Input } from '@angular/core';
   })
   export class IconButtonFilledComponent {
     @Input() icon = '';
+    @Input() svgIcon = '';
     @Input() disabled = false;
     @Input() size = '';
   }

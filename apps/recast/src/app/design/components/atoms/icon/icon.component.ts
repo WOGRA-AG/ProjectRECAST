@@ -23,6 +23,10 @@ import { DomSanitizer } from '@angular/platform-browser';
       'rcst_edit',
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/edit.svg')
     );
+    this.matIconRegistry.addSvgIcon(
+      'rcst_scan',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/scan.svg')
+    );
   }
 }
 

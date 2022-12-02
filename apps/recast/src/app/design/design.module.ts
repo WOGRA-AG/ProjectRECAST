@@ -34,7 +34,7 @@ const COMPONENTS = [
   TableComponent,
   IconComponent,
   SearchFieldComponent,
-  IconButtonComponent,
+  IconButtonComponent
 ];
 
 @NgModule({

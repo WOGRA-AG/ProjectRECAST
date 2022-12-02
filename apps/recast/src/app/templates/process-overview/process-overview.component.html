@@ -1,0 +1,15 @@
+<app-page-header header="Prozess 1"></app-page-header>
+
+<div class="content-wrapper">
+    <app-table class="table"
+        [iconColumns]="iconColumns"
+        [dataColumns]="dataColumns"
+        [data]="tableData$"
+        (deleteClicked)="deleteTableRow($event)"
+        (editClicked)="editTableRow($event)">
+    </app-table>
+    <div class="buttons">
+        <app-icon-button-unfilled [bordered]="true" svgIcon="rcst_scan" class="button">Bauteil scannen</app-icon-button-unfilled>
+        <app-button-filled class="button">Bauteil erstellen</app-button-filled>
+    </div>
+</div>

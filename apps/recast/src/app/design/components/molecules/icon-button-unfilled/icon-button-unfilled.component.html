@@ -1,4 +1,5 @@
-<app-button-unfilled [size]="size" [disabled]="disabled">
-    <mat-icon [class]="size">{{ icon }}</mat-icon>
+<app-button-unfilled [bordered]="bordered" [size]="size" [disabled]="disabled">
+    <mat-icon *ngIf="icon" [class]="size">{{ icon }}</mat-icon>
+    <app-icon *ngIf="svgIcon" [size]="size" [svgIcon]="svgIcon">{{ svgIcon }}</app-icon>
     <ng-content></ng-content>
 </app-button-unfilled>

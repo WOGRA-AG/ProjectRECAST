@@ -1,0 +1,40 @@
+@import "src/app/design/material/essentials/media-queries";
+
+.content-wrapper {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto;
+    row-gap: 2rem;
+    grid-template-areas:
+        "tabs"
+        "table"
+        "buttons";
+
+    @media #{$medium-and-up} {
+        grid-template-columns: auto auto;
+        grid-template-rows: auto auto;
+        grid-template-areas:
+        "tabs buttons"
+        "table table";
+    }
+
+    .tabs {
+        grid-area: tabs;
+    }
+
+    .table {
+        grid-area: table;
+    }
+
+    .buttons {
+        grid-area: buttons;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+
+        @media #{$medium-and-up} {
+            justify-self: end;
+        }
+    }
+}
