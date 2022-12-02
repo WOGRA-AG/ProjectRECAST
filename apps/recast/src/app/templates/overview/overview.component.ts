@@ -13,9 +13,9 @@ import { Process, Step, Element } from '../../../../build/openapi/recast';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent {
-  public tabs: string[] = ['Prozesse', 'Bauteile'];
+  public tabs: string[] = [$localize`:@@label.processes:Prozesse`, $localize`:@@label.elements:Bauteile`];
   public dataColumns: TableColumn[] = [
-    { key: 'name', label: 'Title', type: 'text', required: true },
+    { key: 'name', label: $localize`:@@label.title:Title`, type: 'text', required: true },
     { key: 'isEdit', label: '', type: 'isEdit' },
     { key: 'isDelete', label: '', type: 'isDelete' },
   ];

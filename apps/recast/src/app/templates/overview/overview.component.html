@@ -1,4 +1,4 @@
-<app-page-header header="Übersicht"></app-page-header>
+<app-page-header i18n-header="@@header.overview" header="Overview"></app-page-header>
 
 <div class="content-wrapper">
     <app-tab-group class="tabs" [labels]="tabs" (indexChanged)="changeContent($event)"></app-tab-group>
@@ -9,5 +9,9 @@
       (deleteClicked)="deleteTableRow($event)"
       (saveClicked)="editTableRow($event)"
     ></app-table>
-    <app-create-button class="button" routerLink="/process">Erstellen</app-create-button>
+    <app-create-button
+      class="button"
+      routerLink="/process"
+      i18n="@@actions.create"
+    >Erstellen</app-create-button>
 </div>

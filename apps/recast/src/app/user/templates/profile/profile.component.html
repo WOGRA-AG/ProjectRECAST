@@ -5,19 +5,19 @@
   [formGroup]="updateProfileForm"
 >
   <div>
-    <app-text-input-field
-      [label]="'id'"
+    <app-text-input-field i18n-label="@@label.id"
+      label="id"
       formControlName="id"
     ></app-text-input-field>
   </div>
   <div>
-    <app-text-input-field
+    <app-text-input-field i18n-label="@@label.email"
       formControlName="email"
-      [label]="'email'"
+      label="email"
     ></app-text-input-field>
   </div>
   <div>
-    <app-text-input-field
+    <app-text-input-field i18n-label="@@label.username" i18n-errMsg="@@err.min_char"
       formControlName="username"
       label="username"
       errMsg="Minimum of 3 characters"
