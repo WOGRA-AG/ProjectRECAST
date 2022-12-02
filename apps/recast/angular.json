@@ -47,6 +47,7 @@
               "src/styles.scss"
             ],
             "scripts": [],
+            "baseHref": ".",
             "customWebpackConfig": {
               "path": "config/webpack.config.js"
             }
