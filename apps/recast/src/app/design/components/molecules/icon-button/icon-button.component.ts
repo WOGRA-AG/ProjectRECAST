@@ -9,6 +9,5 @@ export class IconButtonComponent {
     @Input() svgIcon = '';
     @Input() size: 'small' | 'medium' | 'large' | '' = '';
     @Input() type: 'button' | 'submit' | 'reset' = 'button';
-
-    @Input() color: string = 'primary';
+    @Input() color = 'primary';
 }
