@@ -27,6 +27,6 @@
       <app-submit-button [disabled]="loading">
         {{ loading ? 'Loading ...' : 'Update' }}
       </app-submit-button>
-      <app-logout-button (click)="signOut()">Sign Out</app-logout-button>
+      <app-logout-button (click)="signOut()" i18n="@@actions.sign_out">Sign Out</app-logout-button>
   </div>
 </form>

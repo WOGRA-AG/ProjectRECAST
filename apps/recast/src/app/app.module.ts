@@ -1,7 +1,6 @@
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { UserModule } from './user/user.module';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,6 +10,7 @@ import { DesignModule } from './design/design.module';
 import { OverviewComponent } from './templates/overview/overview.component';
 import { SharedModule } from './shared/shared.module';
 import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
+import { i18nModule } from './i18n/i18n.module';
 
 @NgModule({
   declarations: [
@@ -28,7 +28,9 @@ import { UploadNewProcessComponent } from './templates/upload-new-process/upload
     SharedModule,
   ],
   providers: [
-    SupabaseService
+    SupabaseService,
+    i18nModule.setLocale(),
+    i18nModule.setLocaleId(),
   ],
   bootstrap: [AppComponent]
 })

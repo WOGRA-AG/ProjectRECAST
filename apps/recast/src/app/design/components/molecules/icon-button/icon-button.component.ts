@@ -7,5 +7,6 @@ import { Component, Input } from '@angular/core';
 export class IconButtonComponent {
     @Input() matIcon = '';
     @Input() svgIcon = '';
-    @Input() size = '';
+    @Input() size: 'small' | 'medium' | 'large' | '' = '';
+    @Input() type: 'button' | 'submit' | 'reset' = 'button';
 }
