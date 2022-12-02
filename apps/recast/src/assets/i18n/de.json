@@ -1,0 +1,19 @@
+{
+  "actions.sign_out": "Ausloggen",
+  "actions.update": "Update",
+  "actions.back": "Zurück",
+  "actions.create": "Erstellen",
+
+  "label.username": "Username",
+  "label.email": "Email",
+  "label.id": "Id",
+  "label.elements": "Bauteile",
+  "label.processes": "Prozesse",
+  "label.title": "Titel",
+  "label.search": "Suche",
+
+  "placeholder.upload_yaml": "Prozess-YAML Hochladen",
+
+  "header.new_process": "Prozess Erstellen",
+  "header.overview": "Übersicht"
+}

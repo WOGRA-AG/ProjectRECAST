@@ -6,7 +6,7 @@ import { loadTranslations } from '@angular/localize';
   providedIn: 'root',
 })
 class I18n {
-  locale = 'en';
+  locale = 'de';
 
   async setLocale() {
     const userLocale = localStorage.getItem('locale');
