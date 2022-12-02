@@ -31,13 +31,17 @@ const routes: Routes = [
   },
   {
     path: 'overview',
-    component: OverviewComponent,
     canActivate: [AuthGuard],
-  },
-  {
-    path: 'process-overview',
-    component: ProcessOverviewComponent,
-    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        component: OverviewComponent,
+      },
+      {
+        path: 'process-overview',
+        component: ProcessOverviewComponent,
+      },
+    ],
   },
   {
     path: 'process',
