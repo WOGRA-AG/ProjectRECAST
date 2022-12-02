@@ -1,13 +1,13 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService, Tables} from './supabase.service';
-import {BehaviorSubject, catchError, concatMap, filter, from, map, merge, Observable, of, Subject} from 'rxjs';
-import {ElementProperty} from '../../../build/openapi/recast';
+import { SupabaseService, Tables } from './supabase.service';
+import { BehaviorSubject, catchError, concatMap, filter, from, map, merge, Observable, of, Subject } from 'rxjs';
+import { ElementProperty } from '../../../build/openapi/recast';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -54,22 +54,22 @@ export class ElementPropertyService {
       .delete()
       .eq('id', id);
     return from(del).pipe(
-      filter(({error}) => !!error),
-      map(({error}) => error!)
+      filter(({ error }) => !!error),
+      map(({ error }) => error!)
     );
   }
 
   private upsertElementProp$(
-    {id, value, stepPropertyId}: ElementProperty,
+    { id, value, stepPropertyId }: ElementProperty,
     elementId: number | undefined
   ): Observable<ElementProperty> {
-    const upsertProp = {id, value, stepPropertyId, elementId};
+    const upsertProp = { id, value, stepPropertyId, elementId };
     const upsert = this._supabaseClient.from(Tables.elementProperties)
       .upsert(snakeCase(upsertProp))
       .select();
     return from(upsert).pipe(
-      filter(({data, error}) => !!data || !!error),
-      map(({data, error}) => {
+      filter(({ data, error }) => !!data || !!error),
+      map(({ data, error }) => {
         if (!!error) {
           throw error;
         }
@@ -123,7 +123,7 @@ export class ElementPropertyService {
       .from(Tables.elementProperties)
       .select();
     return from(select).pipe(
-      map(({data, error}) => {
+      map(({ data, error }) => {
         if (error) {
           throw error;
         }

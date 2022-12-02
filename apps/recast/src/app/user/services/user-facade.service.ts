@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {SupabaseService, Tables} from '../../services/supabase.service';
-import {AuthError, PostgrestError, SupabaseClient} from '@supabase/supabase-js';
-import {BehaviorSubject, catchError, concatMap, filter, from, map, Observable, of, Subject} from 'rxjs';
-import {Profile} from '../../../../build/openapi/recast';
+import { SupabaseService, Tables } from '../../services/supabase.service';
+import { AuthError, PostgrestError, SupabaseClient } from '@supabase/supabase-js';
+import { BehaviorSubject, catchError, concatMap, filter, from, map, Observable, of, Subject } from 'rxjs';
+import { Profile } from '../../../../build/openapi/recast';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -43,23 +43,23 @@ export class UserFacadeService {
     };
     const upsert = this._supabaseClient.from(Tables.profiles).upsert(snakeCase(update));
     return from(upsert).pipe(
-      map(({error}) => error!)
+      map(({ error }) => error!)
     );
   }
 
   signIn(): Observable<AuthError> {
     const signIn = this._supabaseClient.auth.signInWithOAuth({
-      provider: 'keycloak', options: {redirectTo: window.location.origin}
+      provider: 'keycloak', options: { redirectTo: window.location.origin }
     });
     return from(signIn).pipe(
-      map(({error}) => error!)
+      map(({ error }) => error!)
     );
   }
 
   signOut(): Observable<AuthError | undefined> {
     const signout = this._supabaseClient.auth.signOut();
     return from(signout).pipe(
-      map(({error}) => {
+      map(({ error }) => {
         if (!!error) {
           return error;
         }
@@ -73,7 +73,7 @@ export class UserFacadeService {
     this._supabaseClient.channel('profiles-changes')
       .on(
         'postgres_changes',
-        {event: 'UPDATE', schema: 'public', table: Tables.profiles},
+        { event: 'UPDATE', schema: 'public', table: Tables.profiles },
         payload => {
           changes$.next(camelCase(payload.new));
         }
@@ -87,7 +87,7 @@ export class UserFacadeService {
       .select(`id, username, email, avatar_url`)
       .single();
     return from(select).pipe(
-      map(({data: profile, error}) => {
+      map(({ data: profile, error }) => {
         if (error) {
           throw error;
         }

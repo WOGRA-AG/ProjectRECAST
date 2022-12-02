@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {yamlToProcess$} from '../../shared/util/common-utils';
-import {ProcessFacadeService} from '../../services/process-facade.service';
-import {catchError, concatMap, filter, of} from 'rxjs';
-import {Router} from '@angular/router';
+import { yamlToProcess$ } from '../../shared/util/common-utils';
+import { ProcessFacadeService } from '../../services/process-facade.service';
+import { catchError, concatMap, filter, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-upload-new-process',

@@ -1,12 +1,12 @@
-import {Injectable} from '@angular/core';
-import {SupabaseService, Tables} from './supabase.service';
+import { Injectable } from '@angular/core';
+import { SupabaseService, Tables } from './supabase.service';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {StepProperty} from '../../../build/openapi/recast';
+import { StepProperty } from '../../../build/openapi/recast';
 import {
   BehaviorSubject,
   catchError,
@@ -62,19 +62,21 @@ export class StepPropertyService {
       .delete()
       .eq('id', id);
     return from(del).pipe(
-      filter(({error}) => !!error),
-      map(({error}) => error!)
+      filter(({ error }) => !!error),
+      map(({ error }) => error!)
     );
   }
 
-  private upsertStepProp$({id, name, defaultValue, description, type}: StepProperty, stepId: number | undefined): Observable<StepProperty> {
-    const upsertProp = {id, name, stepId, defaultValue, description, type};
+  private upsertStepProp$(
+    { id, name, defaultValue, description, type }: StepProperty, stepId: number | undefined
+  ): Observable<StepProperty> {
+    const upsertProp = { id, name, stepId, defaultValue, description, type };
     const upsert = this._supabaseClient.from(Tables.stepProperties)
       .upsert(snakeCase(upsertProp))
       .select();
     return from(upsert).pipe(
-      filter(({data, error}) => !!data || !!error),
-      map(({data, error}) => {
+      filter(({ data, error }) => !!data || !!error),
+      map(({ data, error }) => {
         if (!!error) {
           throw error;
         }
@@ -128,7 +130,7 @@ export class StepPropertyService {
       .from(Tables.stepProperties)
       .select();
     return from(select).pipe(
-      map(({data, error}) => {
+      map(({ data, error }) => {
         if (error) {
           throw error;
         }

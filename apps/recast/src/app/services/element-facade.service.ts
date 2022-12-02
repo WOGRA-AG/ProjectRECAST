@@ -10,16 +10,16 @@ import {
   skip,
   Subject, toArray
 } from 'rxjs';
-import {ElementProperty, Element} from '../../../build/openapi/recast';
+import { ElementProperty, Element } from '../../../build/openapi/recast';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService, Tables} from './supabase.service';
-import {ElementPropertyService} from './element-property.service';
-import {groupBy$} from '../shared/util/common-utils';
+import { SupabaseService, Tables } from './supabase.service';
+import { ElementPropertyService } from './element-property.service';
+import { groupBy$ } from '../shared/util/common-utils';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -42,8 +42,8 @@ export class ElementFacadeService {
     const elemPropChanges$ = elementPropertyService.elementProperties$.pipe(
       skip(2),
       concatMap(value => groupBy$(value, 'elementId')),
-      filter(({key, values}) => !!key),
-      map(({key, values}) => this.addPropertiesToElements(this._elements$.getValue(), key!, values))
+      filter(({ key, values }) => !!key),
+      map(({ key, values }) => this.addPropertiesToElements(this._elements$.getValue(), key!, values))
     );
     merge(this.elementChanges$(), sessionChanges$, elemPropChanges$).subscribe(properties => {
       this._elements$.next(properties);
@@ -82,19 +82,19 @@ export class ElementFacadeService {
       .delete()
       .eq('id', id);
     return from(del).pipe(
-      filter(({error}) => !!error),
-      map(({error}) => error!)
+      filter(({ error }) => !!error),
+      map(({ error }) => error!)
     );
   }
 
-  private upsertElement$({id, name, processId}: Element): Observable<Element> {
-    const upsertElem = {id, name, processId};
+  private upsertElement$({ id, name, processId }: Element): Observable<Element> {
+    const upsertElem = { id, name, processId };
     const upsert = this._supabaseClient.from(Tables.elements)
       .upsert(snakeCase(upsertElem))
       .select();
     return from(upsert).pipe(
-      filter(({data, error}) => !!data || !!error),
-      map(({data, error}) => {
+      filter(({ data, error }) => !!data || !!error),
+      map(({ data, error }) => {
         if (!!error) {
           throw error;
         }
@@ -153,7 +153,7 @@ export class ElementFacadeService {
         element_properties: ${Tables.elementProperties} (*)
       `);
     return from(select).pipe(
-      map(({data, error}) => {
+      map(({ data, error }) => {
         if (error) {
           throw error;
         }
@@ -178,10 +178,14 @@ export class ElementFacadeService {
     return state.concat(element);
   }
 
-  private updateElementWithProperties$(state: Element[], element: Element, props: ElementProperty[]): Observable<Element[]> {
+  private updateElementWithProperties$(
+    state: Element[],
+    element: Element,
+    props: ElementProperty[],
+  ): Observable<Element[]> {
     return groupBy$(props, 'elementId').pipe(
-      filter(({key, values}) => !!key),
-      map(({key, values}) => {
+      filter(({ key, values }) => !!key),
+      map(({ key, values }) => {
         element = this.addPropertiesToElement(element, key!, values);
         return state.map(value => value.id === element.id ? element : value);
       })

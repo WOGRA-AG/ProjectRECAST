@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
-import {from, map, Observable} from 'rxjs';
-import {SupabaseService} from '../../services/supabase.service';
-import {SupabaseClient} from '@supabase/supabase-js';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { from, map, Observable } from 'rxjs';
+import { SupabaseService } from '../../services/supabase.service';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return from(this._supabaseClient.auth.getSession()).pipe(
-      map(({data}) => {
+      map(({ data }) => {
         if(!data.session) {
           return this.router.createUrlTree(['/login']);
         }

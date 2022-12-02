@@ -2,7 +2,7 @@ import {
   Component,
   Input, Optional, Self,
 } from '@angular/core';
-import {ControlValueAccessor, FormControl, NgControl} from '@angular/forms';
+import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 
 @Component({
   selector: 'app-text-input-field',

@@ -1,12 +1,15 @@
-import {from, mergeMap, Observable, reduce, groupBy as rxGroup, map} from 'rxjs';
-import {parse} from 'yaml';
-import {Process} from '../../../../build/openapi/recast';
+import { from, mergeMap, Observable, reduce, groupBy as rxGroup, map } from 'rxjs';
+import { parse } from 'yaml';
+import { Process } from '../../../../build/openapi/recast';
 
-export const groupBy = <T extends Include<any, string | number | symbol>, G extends keyof T>(elements: T[], key: G): Record<T[G], T[]> =>
-  elements.reduce((prev, current) => {
-    (prev[current[key]] = prev[current[key]] || []).push(current);
-    return prev;
-  }, {} as Record<T[G], T[]>);
+export const groupBy = <T extends Include<any, string | number | symbol>, G extends keyof T>(
+  elements: T[],
+  key: G
+): Record<T[G], T[]> =>
+    elements.reduce((prev, current) => {
+      (prev[current[key]] = prev[current[key]] || []).push(current);
+      return prev;
+    }, {} as Record<T[G], T[]>);
 
 export const groupBy$ = <T extends Include<any, string | number | symbol>, G extends keyof T>(val: T[], key: G):
 Observable<{key: T[G]; values: T[]}> =>
@@ -17,7 +20,7 @@ Observable<{key: T[G]; values: T[]}> =>
           reduce((acc, cur) => {
             acc.values.push(cur);
             return acc;
-          }, {key: group$.key, values: [] as T[]})
+          }, { key: group$.key, values: [] as T[] })
         )
       )
     );

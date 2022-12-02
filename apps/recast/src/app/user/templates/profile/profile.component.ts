@@ -1,8 +1,8 @@
-import {Component} from '@angular/core';
-import {FormBuilder, FormControl, Validators} from '@angular/forms';
-import {Profile} from '../../../../../build/openapi/recast';
-import {UserFacadeService} from '../../services/user-facade.service';
-import {catchError, filter, of} from 'rxjs';
+import { Component } from '@angular/core';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Profile } from '../../../../../build/openapi/recast';
+import { UserFacadeService } from '../../services/user-facade.service';
+import { catchError, filter, of } from 'rxjs';
 
 @Component({
   selector: 'app-account',
@@ -14,8 +14,8 @@ export class ProfileComponent {
   profile!: Profile;
 
   updateProfileForm = this.formBuilder.group({
-    id: new FormControl({value: '', disabled: true}),
-    email: new FormControl({value: '', disabled: true}),
+    id: new FormControl({ value: '', disabled: true }),
+    email: new FormControl({ value: '', disabled: true }),
     username: new FormControl(
       '',
       [Validators.minLength(3), Validators.required]
