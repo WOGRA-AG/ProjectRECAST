@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from './material/material.module';
-import { DemoComponent } from './demo/demo.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputFieldComponent } from './components/molecules/input-field/input-field.component';
 import { LogoutButtonComponent } from './components/molecules/logout-button/logout-button.component';
@@ -23,7 +22,6 @@ import { ButtonFilledComponent } from './components/molecules/button-filled/butt
 import { ButtonUnfilledComponent } from './components/molecules/button-unfilled/button-unfilled.component';
 
 const COMPONENTS = [
-  DemoComponent,
   ButtonFilledComponent,
   ButtonUnfilledComponent,
   InputFieldComponent,
