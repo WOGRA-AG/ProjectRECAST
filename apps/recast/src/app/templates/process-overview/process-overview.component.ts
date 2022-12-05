@@ -13,13 +13,13 @@ import { ProcessFacadeService } from 'src/app/services/process-facade.service';
   styleUrls: ['./process-overview.component.scss'],
 })
 export class ProcessOverviewComponent {
-  public title: string = '';
+  public title = '';
   public processId: any = '';
   public breadcrumbs: Breadcrumb[] = [];
   public dataColumns: TableColumn[] = [
-    {key: 'name', label: 'Title', type: 'text', required: true},
-    {key: 'isEdit', label: '', type: 'isEdit'},
-    {key: 'isDelete', label: '', type: 'isDelete'},
+    { key: 'name', label: 'Title', type: 'text', required: true },
+    { key: 'isEdit', label: '', type: 'isEdit' },
+    { key: 'isDelete', label: '', type: 'isDelete' },
   ];
   public tableData$: Observable<any> = new Observable<any>();
 
@@ -33,8 +33,8 @@ export class ProcessOverviewComponent {
       const processId = +param.get('id')!;
       this.processService.processes$.subscribe(processes => {
         this.title =  processes.find(p => p.id === processId)?.name!;
-        this.breadcrumbs = [{label: 'Übersicht', link: '/overview'}, {label: this.title}];
-      })
+        this.breadcrumbs = [{ label: 'Übersicht', link: '/overview' }, { label: this.title }];
+      });
     });
   }
 

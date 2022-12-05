@@ -13,4 +13,4 @@ export class ButtonUnfilledComponent {
     @Input() size = '';
     @Input() bordered = false;
     @Input() caption = '';
-  }
+}
