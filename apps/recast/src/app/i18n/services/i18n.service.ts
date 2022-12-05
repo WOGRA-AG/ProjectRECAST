@@ -10,7 +10,7 @@ export class I18nService {
   ) {
   }
 
-  setLocale(locale: string) {
+  setLocale(locale: string): void {
     localStorage.setItem('locale', locale);
     window.location.reload();
   }
