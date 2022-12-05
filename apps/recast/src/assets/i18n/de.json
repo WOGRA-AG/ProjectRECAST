@@ -12,6 +12,8 @@
   "label.title": "Titel",
   "label.search": "Suche",
 
+  "err.min_char": "Mindestens {$INTERPOLATION} Buchstaben",
+
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
 
   "header.new_process": "Prozess Erstellen",

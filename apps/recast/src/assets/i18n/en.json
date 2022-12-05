@@ -12,6 +12,8 @@
   "label.title": "Title",
   "label.search": "Search",
 
+  "err.min_char": "Minimum of {$INTERPOLATION} characters",
+
   "placeholder.upload_yaml": "Upload Process-YAML",
 
   "header.new_process": "New Process",

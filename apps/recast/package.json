@@ -13,7 +13,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "npx cypress run",
-    "prepare": "cd ../.. && husky install ./apps/recast/.husky"
+    "prepare": "cd ../.. && husky install ./apps/recast/.husky",
+    "i18n": "ng extract-i18n"
   },
   "private": true,
   "dependencies": {
