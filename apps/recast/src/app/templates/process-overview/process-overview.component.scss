@@ -4,9 +4,9 @@
     display: grid;
     grid-template-columns: auto;
     grid-template-rows: auto auto auto;
-    row-gap: 2rem;
+    row-gap: 1.5rem;
     grid-template-areas:
-        "tabs"
+        "title"
         "table"
         "buttons";
 
@@ -14,12 +14,17 @@
         grid-template-columns: auto auto;
         grid-template-rows: auto auto;
         grid-template-areas:
-        "tabs buttons"
+        "title buttons"
         "table table";
     }
 
-    .tabs {
-        grid-area: tabs;
+    .title {
+        grid-area: title;
+        align-self: flex-end;
+    }
+
+    h5 {
+        margin-bottom: 0;
     }
 
     .table {
@@ -32,9 +37,10 @@
         flex-wrap: wrap;
         justify-content: center;
         gap: 1rem;
+        margin: 0.5rem 0;
 
         @media #{$medium-and-up} {
-            justify-self: end;
+            justify-content: flex-end;
         }
     }
 }

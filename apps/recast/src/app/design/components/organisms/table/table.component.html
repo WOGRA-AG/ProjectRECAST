@@ -29,9 +29,9 @@
           <app-icon-button svgIcon="rcst_edit" size="medium" (click)="element.isEdit = !element.isEdit">
           </app-icon-button>
         </ng-container>
-        <span *ngSwitchDefault>
+        <div *ngSwitchDefault class="text" (click)="rowClicked.emit(element)">
            {{ element[column.key] }}
-        </span>
+        </div>
       </div>
       <div [ngSwitch]="column.type" *ngIf="element.isEdit">
         <ng-container *ngSwitchCase="'isEdit'">

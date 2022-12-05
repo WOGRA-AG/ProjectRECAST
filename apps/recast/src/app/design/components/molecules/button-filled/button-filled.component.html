@@ -1,5 +1,5 @@
-<app-button-unfilled [bordered]="bordered" [size]="size" [disabled]="disabled">
+<button mat-flat-button [color]="color" [class]="size" [disabled]="disabled" [type]="type">
     <mat-icon *ngIf="icon" [class]="size">{{ icon }}</mat-icon>
     <app-icon *ngIf="svgIcon" [size]="size" [svgIcon]="svgIcon">{{ svgIcon }}</app-icon>
-    <ng-content></ng-content>
-</app-button-unfilled>
+    <span>{{ caption }}</span>
+</button>

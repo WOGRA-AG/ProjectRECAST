@@ -8,6 +8,7 @@
       [data]="tableData$"
       (deleteClicked)="deleteTableRow($event)"
       (saveClicked)="editTableRow($event)"
+      (rowClicked)="navigateTo($event)"
     ></app-table>
-    <app-create-button class="button" routerLink="/process">Erstellen</app-create-button>
+    <app-create-button class="button" routerLink="/overview/process" caption="Erstellen"></app-create-button>
 </div>

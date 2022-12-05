@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-logout-button',
@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./logout-button.component.scss']
 })
 export class LogoutButtonComponent {
-
+  @Input() caption = '';
 }

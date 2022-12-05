@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-page-header',
@@ -7,4 +8,5 @@ import { Component, Input } from '@angular/core';
 })
 export class PageHeaderComponent {
     @Input() header = '';
+    @Input() breadcrumbs: Breadcrumb[] = [];
 }

@@ -8,4 +8,5 @@ import {Component, Input} from '@angular/core';
 export class SubmitButtonComponent {
   @Input() disabled = false;
   @Input() size = 'medium';
+  @Input() caption = '';
 }

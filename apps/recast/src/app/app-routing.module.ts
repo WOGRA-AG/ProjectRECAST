@@ -7,7 +7,6 @@ import {AuthGuard} from './user/guards/auth.guard';
 import { DemoComponent } from './design/demo/demo.component';
 import { OverviewComponent } from './templates/overview/overview.component';
 import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
-import {SingleFileUploadComponent} from './design/components/organisms/single-file-upload/single-file-upload.component';
 import {UploadNewProcessComponent} from './templates/upload-new-process/upload-new-process.component';
 
 const routes: Routes = [
@@ -38,15 +37,19 @@ const routes: Routes = [
         component: OverviewComponent,
       },
       {
-        path: 'process-overview',
-        component: ProcessOverviewComponent,
+        path: 'process',
+        children: [
+          {
+            path: '',
+            component: UploadNewProcessComponent,
+          },
+          {
+            path: ':id',
+            component: ProcessOverviewComponent,
+          }
+        ]
       },
     ],
-  },
-  {
-    path: 'process',
-    component: UploadNewProcessComponent,
-    canActivate: [AuthGuard],
   },
   {
     path: '**',

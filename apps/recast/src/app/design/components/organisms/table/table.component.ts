@@ -17,6 +17,7 @@ export class TableComponent<T> implements OnChanges, AfterViewInit, OnInit {
 
   @Output() deleteClicked: EventEmitter<T> = new EventEmitter<T>();
   @Output() saveClicked: EventEmitter<T> = new EventEmitter<T>();
+  @Output() rowClicked: EventEmitter<T> = new EventEmitter<T>();
 
   dataSource: MatTableDataSource<T> = new MatTableDataSource<T>();
   columns: string[] = this.columnsSchema.map(col => col.key);

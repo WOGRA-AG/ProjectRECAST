@@ -6,6 +6,7 @@ import { ProcessFacadeService } from '../../services/process-facade.service';
 import { MatDialog } from '@angular/material/dialog';
 import {TableColumn} from '../../design/components/organisms/table/table.component';
 import {Process, Step, Element} from '../../../../build/openapi/recast';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-overview',
@@ -27,6 +28,7 @@ export class OverviewComponent {
     public readonly elementService: ElementFacadeService,
     public readonly stepService: StepFacadeService,
     public dialog: MatDialog,
+    public router: Router,
   ) {
     this.tableData$ = processService.processes$;
   }
@@ -67,6 +69,20 @@ export class OverviewComponent {
       break;
     case 1:
       this.elementService.saveElement$(element as Element).subscribe();
+      break;
+    default:
+      break;
+    }
+  }
+
+  public navigateTo(element: Process | Element | Step): void {
+    if (!element) {return;}
+    switch (this.currentIndex) {
+    case 0:
+      this.router.navigateByUrl('overview/process/' + element.id);
+      break;
+    case 1:
+      // TODO navigate to element page
       break;
     default:
       break;

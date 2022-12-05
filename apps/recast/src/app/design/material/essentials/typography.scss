@@ -211,6 +211,10 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
       font-size: map-get($button-large, font-size);
     }
 
+    &.mini {
+      font-size: calc(map-get($button-small, font-size) / 2);
+    }
+
     &.small {
       font-size: map-get($button-small, font-size);
     }

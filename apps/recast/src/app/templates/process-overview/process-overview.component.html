@@ -1,6 +1,7 @@
-<app-page-header header="Prozess 1"></app-page-header>
+<app-page-header [header]="title" [breadcrumbs]="breadcrumbs"></app-page-header>
 
 <div class="content-wrapper">
+    <h5 class="title primary">Bauteile</h5>
     <app-table class="table"
         [columnsSchema]="dataColumns"
         [data]="tableData$"
@@ -8,7 +9,7 @@
         (saveClicked)="editTableRow($event)">
     </app-table>
     <div class="buttons">
-        <app-icon-button-unfilled [bordered]="true" svgIcon="rcst_scan" class="button">Bauteil scannen</app-icon-button-unfilled>
-        <app-button-filled class="button">Bauteil erstellen</app-button-filled>
+        <app-button-unfilled [bordered]="true" svgIcon="rcst_scan" class="button" caption="Bauteil scannen"></app-button-unfilled>
+        <app-button-filled class="button" caption="Bauteil erstellen"></app-button-filled>
     </div>
 </div>

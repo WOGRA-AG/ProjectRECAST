@@ -5,9 +5,12 @@ import { Component, Input } from '@angular/core';
   templateUrl: './button-unfilled.component.html'
 })
 export class ButtonUnfilledComponent {
-    @Input() disabled = false;
-    @Input() bordered = false;
-    @Input() size = '';
     @Input() type = 'button';
     @Input() color = 'primary';
-}
+    @Input() icon = '';
+    @Input() svgIcon = '';
+    @Input() disabled = false;
+    @Input() size = '';
+    @Input() bordered = false;
+    @Input() caption = '';
+  }

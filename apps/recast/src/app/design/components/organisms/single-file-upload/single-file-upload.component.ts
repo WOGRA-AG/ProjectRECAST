@@ -12,6 +12,7 @@ export class SingleFileUploadComponent {
   @Input() file: File | null = null;
   @Output() fileChange: EventEmitter<File | null> = new EventEmitter<File | null>();
   @Output() back: EventEmitter<void> = new EventEmitter<void>();
+  @Output() isValid: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   uploadFileForm: FormGroup = this.formBuilder.group({
     file: new FormControl({value: this.file, disabled: false},
@@ -21,7 +22,9 @@ export class SingleFileUploadComponent {
 
   constructor(
     private formBuilder: FormBuilder,
-  ) { }
+  ) {
+    this.uploadFileForm.statusChanges.subscribe(status => this.isValid.emit(status === 'VALID'));
+  }
 
   emitFile() {
     this.fileChange.emit(this.uploadFileForm.value.file);
