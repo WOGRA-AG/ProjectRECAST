@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import {UserFacadeService} from '../../services/user-facade.service';
+import { UserFacadeService } from '../../services/user-facade.service';
 
 @Component({
   selector: 'app-auth',

@@ -103,7 +103,9 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "recast:build"
+            "browserTarget": "recast:build",
+            "outputPath": "src/assets/i18n",
+            "format": "json"
           }
         },
         "test": {

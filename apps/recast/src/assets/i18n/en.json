@@ -1,0 +1,21 @@
+{
+  "actions.sign_out": "Sign Out",
+  "actions.update": "Update",
+  "actions.back": "Back",
+  "actions.create": "Create",
+
+  "label.username": "Username",
+  "label.email": "Email",
+  "label.id": "Id",
+  "label.elements": "Elements",
+  "label.processes": "Processes",
+  "label.title": "Title",
+  "label.search": "Search",
+
+  "err.min_char": "Minimum of {$INTERPOLATION} characters",
+
+  "placeholder.upload_yaml": "Upload Process-YAML",
+
+  "header.new_process": "New Process",
+  "header.overview": "Overview"
+}

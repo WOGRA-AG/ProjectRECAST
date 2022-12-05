@@ -10,16 +10,16 @@ import {
   HostBinding,
   ElementRef
 } from '@angular/core';
-import {ControlValueAccessor, FormControl, NgControl} from '@angular/forms';
-import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
-import {Subject} from 'rxjs';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
+import { MatFormField, MatFormFieldControl } from '@angular/material/form-field';
+import { Subject } from 'rxjs';
+import { coerceBooleanProperty } from '@angular/cdk/coercion';
 
 @Component({
   selector: 'app-single-file-input',
   templateUrl: './single-file-input.component.html',
   styleUrls: ['./single-file-input.component.scss'],
-  providers: [{provide: MatFormFieldControl, useExisting: SingleFileInputComponent}]
+  providers: [{ provide: MatFormFieldControl, useExisting: SingleFileInputComponent }]
 })
 export class SingleFileInputComponent implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy {
   static nextId = 0;

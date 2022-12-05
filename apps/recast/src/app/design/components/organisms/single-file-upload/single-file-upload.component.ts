@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-file-upload',
@@ -15,7 +15,7 @@ export class SingleFileUploadComponent {
   @Output() isValid: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   uploadFileForm: FormGroup = this.formBuilder.group({
-    file: new FormControl({value: this.file, disabled: false},
+    file: new FormControl({ value: this.file, disabled: false },
       [Validators.minLength(3), Validators.required]
     ),
   });
