@@ -21,7 +21,11 @@
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
-        "indent": ["warn", 2],
+        "max-len": ["error", 120],
+        "indent": ["error", 2],
+        "object-curly-spacing": ["error", "always"],
+        "array-bracket-spacing": ["error", "never"],
+        "computed-property-spacing": ["error", "never"],
         "no-underscore-dangle": 0,
         "@typescript-eslint/no-non-null-assertion": 0,
         "@angular-eslint/directive-selector": [

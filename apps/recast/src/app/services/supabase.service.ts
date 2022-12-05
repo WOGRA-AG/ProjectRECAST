@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   AuthSession,
   createClient,
   SupabaseClient,
 } from '@supabase/supabase-js';
-import {environment} from 'src/environments/environment';
-import {BehaviorSubject, filter, map, Observable} from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +20,7 @@ export class SupabaseService {
       environment.supabaseKey
     );
     this.supabase.auth.getSession()
-      .then(({data}) => this.updateSession(data.session));
+      .then(({ data }) => this.updateSession(data.session));
     this.supabase.auth.onAuthStateChange(
       (_, session) => this.updateSession(session)
     );

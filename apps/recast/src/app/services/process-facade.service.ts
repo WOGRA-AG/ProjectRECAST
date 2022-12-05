@@ -5,8 +5,8 @@ import {
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {SupabaseService, Tables} from './supabase.service';
-import {StepFacadeService} from './step-facade.service';
+import { SupabaseService, Tables } from './supabase.service';
+import { StepFacadeService } from './step-facade.service';
 import {
   BehaviorSubject,
   catchError, concatAll,
@@ -18,8 +18,8 @@ import {
   of,
   skip, Subject, toArray
 } from 'rxjs';
-import {Process, Step} from '../../../build/openapi/recast';
-import {groupBy$} from '../shared/util/common-utils';
+import { Process, Step } from '../../../build/openapi/recast';
+import { groupBy$ } from '../shared/util/common-utils';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -42,8 +42,8 @@ export class ProcessFacadeService {
     const stepChanges$ = stepFacade.steps$.pipe(
       skip(2),
       concatMap(value => groupBy$(value, 'processId')),
-      filter(({key, values}) => !!key),
-      map(({key, values}) => this.addStepsToProcesses(this._processes$.getValue(), key!, values))
+      filter(({ key, values }) => !!key),
+      map(({ key, values }) => this.addStepsToProcesses(this._processes$.getValue(), key!, values))
     );
     merge(this.processChanges$(), stepChanges$, sessionChanges$).subscribe(properties => {
       this._processes$.next(properties);
@@ -82,19 +82,19 @@ export class ProcessFacadeService {
       .delete()
       .eq('id', id);
     return from(del).pipe(
-      filter(({error}) => !!error),
-      map(({error}) => error!)
+      filter(({ error }) => !!error),
+      map(({ error }) => error!)
     );
   }
 
-  private upsertProcess$({id, name}: Process): Observable<Process> {
-    const upsertStep = {id, name};
+  private upsertProcess$({ id, name }: Process): Observable<Process> {
+    const upsertStep = { id, name };
     const upsert = this._supabaseClient.from(Tables.processes)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
-      filter(({data, error}) => !!data || !!error),
-      map(({data, error}) => {
+      filter(({ data, error }) => !!data || !!error),
+      map(({ data, error }) => {
         if (!!error) {
           throw error;
         }
@@ -154,7 +154,7 @@ export class ProcessFacadeService {
         )
       `);
     return from(select).pipe(
-      map(({data, error}) => {
+      map(({ data, error }) => {
         if (error) {
           throw error;
         }
@@ -185,8 +185,8 @@ export class ProcessFacadeService {
 
   private updateProcessWithSteps$(state: Process[], process: Process, steps: Step[]): Observable<Process[]> {
     return groupBy$(steps, 'processId').pipe(
-      filter(({key, values}) => !!key),
-      map(({key, values}) => {
+      filter(({ key, values }) => !!key),
+      map(({ key, values }) => {
         process = this.addStepsToProcess(process, key!, values);
         return state.map(value => value.id === process.id ? process : value);
       })

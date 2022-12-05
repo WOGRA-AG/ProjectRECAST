@@ -1,12 +1,12 @@
-import {Injectable} from '@angular/core';
-import {SupabaseService, Tables} from './supabase.service';
+import { Injectable } from '@angular/core';
+import { SupabaseService, Tables } from './supabase.service';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient
 } from '@supabase/supabase-js';
-import {Step, StepProperty} from '../../../build/openapi/recast';
+import { Step, StepProperty } from '../../../build/openapi/recast';
 import {
   BehaviorSubject, catchError, concatAll, concatMap, filter,
   from,
@@ -14,8 +14,8 @@ import {
   Observable, of,
   skip, Subject, toArray,
 } from 'rxjs';
-import {StepPropertyService} from './step-property.service';
-import {groupBy$} from '../shared/util/common-utils';
+import { StepPropertyService } from './step-property.service';
+import { groupBy$ } from '../shared/util/common-utils';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -39,8 +39,8 @@ export class StepFacadeService {
     const stepPropChanges$ = stepPropertyService.stepProperties$.pipe(
       skip(2),
       concatMap(value => groupBy$(value, 'stepId')),
-      filter(({key, values}) => !!key),
-      map(({key, values}) => this.addPropertiesToSteps(this._steps$.getValue(), key!, values))
+      filter(({ key, values }) => !!key),
+      map(({ key, values }) => this.addPropertiesToSteps(this._steps$.getValue(), key!, values))
     );
     merge(this.stepsChanges$(), sessionChanges$, stepPropChanges$)
       .subscribe(properties => {
@@ -80,19 +80,19 @@ export class StepFacadeService {
       .delete()
       .eq('id', id);
     return from(del).pipe(
-      filter(({error}) => !!error),
-      map(({error}) => error!)
+      filter(({ error }) => !!error),
+      map(({ error }) => error!)
     );
   }
 
-  private upsertStep$({id, name}: Step, processId: number): Observable<Step> {
-    const upsertStep = {id, name, processId};
+  private upsertStep$({ id, name }: Step, processId: number): Observable<Step> {
+    const upsertStep = { id, name, processId };
     const upsert = this._supabaseClient.from(Tables.steps)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
-      filter(({data, error}) => !!data || !!error),
-      map(({data, error}) => {
+      filter(({ data, error }) => !!data || !!error),
+      map(({ data, error }) => {
         if (!!error) {
           throw error;
         }
@@ -151,7 +151,7 @@ export class StepFacadeService {
         step_properties: ${Tables.stepProperties} (*)
       `);
     return from(select).pipe(
-      map(({data, error}) => {
+      map(({ data, error }) => {
         if (error) {
           throw error;
         }
@@ -178,8 +178,8 @@ export class StepFacadeService {
 
   private updateStepWithProperties$(state: Step[], step: Step, props: StepProperty[]): Observable<Step[]> {
     return groupBy$(props, 'stepId').pipe(
-      filter(({key, values}) => !!key),
-      map(({key, values}) => {
+      filter(({ key, values }) => !!key),
+      map(({ key, values }) => {
         step = this.addPropertiesToStep(step, key, values);
         return state.map(value => value.id === step.id ? step : value);
       })
