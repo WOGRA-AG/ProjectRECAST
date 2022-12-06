@@ -1,6 +1,6 @@
-@use "sass:map";
-@use "sass:meta";
-@use "@angular/material" as mat;
+@use 'sass:map';
+@use 'sass:meta';
+@use '@angular/material' as mat;
 
 $_ripple-opacity: 0.1;
 
@@ -43,7 +43,7 @@ $_ripple-opacity: 0.1;
 
     &.mat-#{$variant} {
       &.mat-button-disabled {
-        $palette: if($property == "color", $foreground, $background);
+        $palette: if($property == 'color', $foreground, $background);
         #{$property}: mat.get-color-from-palette($palette, disabled-button);
       }
     }
@@ -58,7 +58,7 @@ $_ripple-opacity: 0.1;
   .mat-button,
   .mat-icon-button,
   .mat-stroked-button {
-    @include _theme-property($config, "color", text, $variants);
+    @include _theme-property($config, 'color', text, $variants);
     @include _focus-overlay-color($config, $variants);
   }
 
@@ -66,13 +66,13 @@ $_ripple-opacity: 0.1;
   .mat-raised-button,
   .mat-fab,
   .mat-mini-fab {
-    @include _theme-property($config, "color", default-contrast, $variants);
-    @include _theme-property($config, "background-color", default, $variants);
+    @include _theme-property($config, 'color', default-contrast, $variants);
+    @include _theme-property($config, 'background-color', default, $variants);
     @include _ripple-color(
-        $config,
-        default-contrast,
-        $_ripple-opacity,
-        $variants
+      $config,
+      default-contrast,
+      $_ripple-opacity,
+      $variants
     );
   }
 }

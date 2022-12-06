@@ -1,14 +1,10 @@
 import { Inject, Injectable, LOCALE_ID } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class I18nService {
-
-  constructor(
-    @Inject(LOCALE_ID) private readonly locale: string,
-  ) {
-  }
+  constructor(@Inject(LOCALE_ID) private readonly locale: string) {}
 
   setLocale(locale: string): void {
     localStorage.setItem('locale', locale);

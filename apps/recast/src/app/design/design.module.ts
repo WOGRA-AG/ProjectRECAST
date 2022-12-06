@@ -1,19 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from './material/material.module';
-import { ButtonFilledComponent } from './components/atoms/button-filled/button-filled.component';
-import { ButtonUnfilledComponent } from './components/atoms/button-unfilled/button-unfilled.component';
-import { IconButtonFilledComponent } from './components/molecules/icon-button-filled/icon-button-filled.component';
-import { DemoComponent } from './demo/demo.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputFieldComponent } from './components/molecules/input-field/input-field.component';
 import { LogoutButtonComponent } from './components/molecules/logout-button/logout-button.component';
 import { SubmitButtonComponent } from './components/molecules/submit-button/submit-button.component';
-import {
-  IconButtonUnfilledComponent
-} from './components/molecules/icon-button-unfilled/icon-button-unfilled.component';
 import { TabGroupComponent } from './components/molecules/tab-group/tab-group.component';
-import { PageHeaderComponent } from './components/atoms/page-header/page-header.component';
+import { PageHeaderComponent } from './components/organisms/page-header/page-header.component';
 import { CreateButtonComponent } from './components/molecules/create-button/create-button.component';
 import { TableComponent } from './components/organisms/table/table.component';
 import { IconComponent } from './components/atoms/icon/icon.component';
@@ -23,13 +16,14 @@ import { IconButtonComponent } from './components/molecules/icon-button/icon-but
 import { SingleFileUploadComponent } from './components/organisms/single-file-upload/single-file-upload.component';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
 import { SingleFileInputComponent } from './components/molecules/single-file-input/single-file-input.component';
+import { BreadcrumbComponent } from './components/molecules/breadcrumb/breadcrumb.component';
+import { AppRoutingModule } from '../app-routing.module';
+import { ButtonFilledComponent } from './components/molecules/button-filled/button-filled.component';
+import { ButtonUnfilledComponent } from './components/molecules/button-unfilled/button-unfilled.component';
 
 const COMPONENTS = [
-  DemoComponent,
   ButtonFilledComponent,
   ButtonUnfilledComponent,
-  IconButtonFilledComponent,
-  IconButtonUnfilledComponent,
   InputFieldComponent,
   LogoutButtonComponent,
   SubmitButtonComponent,
@@ -43,24 +37,19 @@ const COMPONENTS = [
   SingleFileUploadComponent,
   DragAndDropDirective,
   SingleFileInputComponent,
+  BreadcrumbComponent,
 ];
 
 @NgModule({
-  declarations: [
-    ...COMPONENTS,
-  ],
-  exports: [
-    ...COMPONENTS,
-    MaterialModule,
-    FormsModule,
-    ReactiveFormsModule
-  ],
+  declarations: [...COMPONENTS],
+  exports: [...COMPONENTS, MaterialModule, FormsModule, ReactiveFormsModule],
   imports: [
     CommonModule,
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-  ]
+    AppRoutingModule,
+  ],
 })
-export class DesignModule { }
+export class DesignModule {}

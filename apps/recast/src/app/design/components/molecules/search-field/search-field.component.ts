@@ -1,14 +1,22 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
 
 @Component({
   selector: 'app-search-field',
   templateUrl: './search-field.component.html',
   styleUrls: ['./search-field.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class SearchFieldComponent {
   @Input() value: string | null = null;
-  @Output() valueChange: EventEmitter<string | null> = new EventEmitter<string | null>();
+  @Output() valueChange: EventEmitter<string | null> = new EventEmitter<
+    string | null
+  >();
 
   public searchMode = false;
 

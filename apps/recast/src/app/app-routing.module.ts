@@ -4,18 +4,14 @@ import { AuthComponent } from './user/templates/auth/auth.component';
 import { ProfileComponent } from './user/templates/profile/profile.component';
 import { PageNotFoundComponent } from './templates/page-not-found/page-not-found.component';
 import { AuthGuard } from './user/guards/auth.guard';
-import { DemoComponent } from './design/demo/demo.component';
 import { OverviewComponent } from './templates/overview/overview.component';
+import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
 import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
 
 const routes: Routes = [
   {
     path: 'login',
     component: AuthComponent,
-  },
-  {
-    path: 'demo',
-    component: DemoComponent,
   },
   {
     path: 'profile',
@@ -29,22 +25,35 @@ const routes: Routes = [
   },
   {
     path: 'overview',
-    component: OverviewComponent,
     canActivate: [AuthGuard],
-  },
-  {
-    path: 'process',
-    component: UploadNewProcessComponent,
-    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        component: OverviewComponent,
+      },
+      {
+        path: 'process',
+        children: [
+          {
+            path: '',
+            component: UploadNewProcessComponent,
+          },
+          {
+            path: ':id',
+            component: ProcessOverviewComponent,
+          },
+        ],
+      },
+    ],
   },
   {
     path: '**',
-    component: PageNotFoundComponent
-  }
+    component: PageNotFoundComponent,
+  },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes), RouterModule.forChild(routes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

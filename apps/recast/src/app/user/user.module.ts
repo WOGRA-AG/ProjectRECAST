@@ -5,17 +5,8 @@ import { ProfileComponent } from './templates/profile/profile.component';
 import { DesignModule } from '../design/design.module';
 
 @NgModule({
-  declarations: [
-    AuthComponent,
-    ProfileComponent,
-  ],
-  exports: [
-    ProfileComponent,
-    AuthComponent,
-  ],
-  imports: [
-    CommonModule,
-    DesignModule,
-  ]
+  declarations: [AuthComponent, ProfileComponent],
+  exports: [ProfileComponent, AuthComponent],
+  imports: [CommonModule, DesignModule],
 })
-export class UserModule { }
+export class UserModule {}

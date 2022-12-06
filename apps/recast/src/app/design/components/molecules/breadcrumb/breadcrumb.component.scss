@@ -1,0 +1,17 @@
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+
+  .link-wrapper {
+    display: flex;
+
+    .link {
+      cursor: pointer;
+    }
+
+    .icon {
+      display: flex;
+      padding: 0 0.5em;
+    }
+  }
+}

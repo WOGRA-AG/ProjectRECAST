@@ -4,7 +4,7 @@ import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
-  SupabaseClient
+  SupabaseClient,
 } from '@supabase/supabase-js';
 import { StepProperty } from '../../../build/openapi/recast';
 import {
@@ -17,31 +17,28 @@ import {
   merge,
   Observable,
   of,
-  Subject
+  Subject,
 } from 'rxjs';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StepPropertyService {
-
-  private readonly _stepProperties$: BehaviorSubject<StepProperty[]> = new BehaviorSubject<StepProperty[]>([]);
+  private readonly _stepProperties$: BehaviorSubject<StepProperty[]> =
+    new BehaviorSubject<StepProperty[]>([]);
   private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
 
-  constructor(
-    private readonly supabase: SupabaseService,
-  ) {
+  constructor(private readonly supabase: SupabaseService) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadProperties$()),
       catchError(() => of([]))
     );
-    merge(sessionChanges$, this.propertyChanges$())
-      .subscribe(properties => {
-        this._stepProperties$.next(properties);
-      });
+    merge(sessionChanges$, this.propertyChanges$()).subscribe(properties => {
+      this._stepProperties$.next(properties);
+    });
   }
 
   get stepProperties$(): Observable<StepProperty[]> {
@@ -52,7 +49,10 @@ export class StepPropertyService {
     return this._stepProperties$.getValue();
   }
 
-  public saveStepProp$(prop: StepProperty, stepId: number | undefined): Observable<StepProperty> {
+  public saveStepProp$(
+    prop: StepProperty,
+    stepId: number | undefined
+  ): Observable<StepProperty> {
     return this.upsertStepProp$(prop, stepId);
   }
 
@@ -68,10 +68,12 @@ export class StepPropertyService {
   }
 
   private upsertStepProp$(
-    { id, name, defaultValue, description, type }: StepProperty, stepId: number | undefined
+    { id, name, defaultValue, description, type }: StepProperty,
+    stepId: number | undefined
   ): Observable<StepProperty> {
     const upsertProp = { id, name, stepId, defaultValue, description, type };
-    const upsert = this._supabaseClient.from(Tables.stepProperties)
+    const upsert = this._supabaseClient
+      .from(Tables.stepProperties)
       .upsert(snakeCase(upsertProp))
       .select();
     return from(upsert).pipe(
@@ -94,41 +96,34 @@ export class StepPropertyService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.stepProperties
+          table: Tables.stepProperties,
         },
         payload => {
           const state = this._stepProperties$.getValue();
           switch (payload.eventType) {
-          case 'INSERT':
-            changes$.next(
-              this.insertProperty(state, camelCase(payload.new))
-            );
-            break;
-          case 'UPDATE':
-            changes$.next(
-              this.updateProperty(state, camelCase(payload.new))
-            );
-            break;
-          case 'DELETE':
-            const prop: StepProperty = payload.old;
-            if (prop.id) {
-              changes$.next(
-                this.deleteProperty(state, prop.id)
-              );
-            }
-            break;
-          default:
-            break;
+            case 'INSERT':
+              changes$.next(this.insertProperty(state, camelCase(payload.new)));
+              break;
+            case 'UPDATE':
+              changes$.next(this.updateProperty(state, camelCase(payload.new)));
+              break;
+            case 'DELETE':
+              const prop: StepProperty = payload.old;
+              if (prop.id) {
+                changes$.next(this.deleteProperty(state, prop.id));
+              }
+              break;
+            default:
+              break;
           }
         }
-      ).subscribe();
+      )
+      .subscribe();
     return changes$;
   }
 
   private loadProperties$(): Observable<StepProperty[]> {
-    const select = this._supabaseClient
-      .from(Tables.stepProperties)
-      .select();
+    const select = this._supabaseClient.from(Tables.stepProperties).select();
     return from(select).pipe(
       map(({ data, error }) => {
         if (error) {
@@ -139,15 +134,21 @@ export class StepPropertyService {
     );
   }
 
-  private updateProperty(state: StepProperty[], prop: StepProperty): StepProperty[] {
-    return state.map(value => value.id === prop.id ? prop : value);
+  private updateProperty(
+    state: StepProperty[],
+    prop: StepProperty
+  ): StepProperty[] {
+    return state.map(value => (value.id === prop.id ? prop : value));
   }
 
   private deleteProperty(state: StepProperty[], id: number): StepProperty[] {
     return state.filter(prop => prop.id !== id);
   }
 
-  private insertProperty(state: StepProperty[], prop: StepProperty): StepProperty[] {
+  private insertProperty(
+    state: StepProperty[],
+    prop: StepProperty
+  ): StepProperty[] {
     return state.concat(prop);
   }
 }

@@ -5,11 +5,10 @@
   $primary-palette: map.get($theme, 'primary');
   $primary-color: mat.get-color-from-palette($primary-palette, 500);
   $on-surface: mat.get-color-from-palette($primary-palette, '50-contrast');
-  $on-surface-high: rgba($on-surface, .87);
+  $on-surface-high: rgba($on-surface, 0.87);
 
   .mat-dialog-container {
     .mat-dialog-header {
-
       .mat-icon-button {
         color: $on-surface-high;
       }
@@ -41,7 +40,7 @@
   }
 
   .mat-dialog-title {
-    margin-bottom: 0px
+    margin-bottom: 0px;
   }
 
   .mat-dialog-header {
@@ -71,12 +70,11 @@
     overflow: auto;
     padding: 0px 0px 0px 0px;
     margin-left: 0px;
-    margin-right:0px;
+    margin-right: 0px;
     .mat-form-field {
       margin-bottom: -1.25em;
       width: 100%;
     }
-
   }
 }
 

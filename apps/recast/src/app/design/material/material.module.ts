@@ -48,12 +48,7 @@ export const MATERIAL_MODULES: typeof MatInputModule[] = [
 
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-    ...MATERIAL_MODULES,
-  ],
-  exports: [
-    ...MATERIAL_MODULES,
-  ]
+  imports: [CommonModule, ...MATERIAL_MODULES],
+  exports: [...MATERIAL_MODULES],
 })
-export class MaterialModule { }
+export class MaterialModule {}

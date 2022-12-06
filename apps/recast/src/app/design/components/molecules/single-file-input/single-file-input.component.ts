@@ -8,10 +8,13 @@ import {
   Self,
   OnDestroy,
   HostBinding,
-  ElementRef
+  ElementRef,
 } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
-import { MatFormField, MatFormFieldControl } from '@angular/material/form-field';
+import {
+  MatFormField,
+  MatFormFieldControl,
+} from '@angular/material/form-field';
 import { Subject } from 'rxjs';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 
@@ -19,9 +22,13 @@ import { coerceBooleanProperty } from '@angular/cdk/coercion';
   selector: 'app-single-file-input',
   templateUrl: './single-file-input.component.html',
   styleUrls: ['./single-file-input.component.scss'],
-  providers: [{ provide: MatFormFieldControl, useExisting: SingleFileInputComponent }]
+  providers: [
+    { provide: MatFormFieldControl, useExisting: SingleFileInputComponent },
+  ],
 })
-export class SingleFileInputComponent implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy {
+export class SingleFileInputComponent
+  implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy
+{
   static nextId = 0;
   // eslint-disable-next-line  @angular-eslint/no-input-rename
   @Input('aria-describedby') ariaDescribedBy = '';
@@ -31,7 +38,8 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
   focused = false;
   touched = false;
   controlType = 'single-file-input';
-  @HostBinding() id = `app-single-file-input-${SingleFileInputComponent.nextId++}`;
+  @HostBinding()
+  id = `app-single-file-input-${SingleFileInputComponent.nextId++}`;
 
   onTouch: any;
   private _placeholder = '';
@@ -43,7 +51,7 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
   constructor(
     @Optional() @Self() public ngControl: NgControl,
     private _elementRef: ElementRef,
-    @Optional() public parentFormField: MatFormField,
+    @Optional() public parentFormField: MatFormField
   ) {
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
@@ -59,8 +67,12 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
       return;
     }
     this._value = val;
-    if (this._onChange) {this._onChange(val);}
-    if (this.onTouch) {this.onTouch();}
+    if (this._onChange) {
+      this._onChange(val);
+    }
+    if (this.onTouch) {
+      this.onTouch();
+    }
     this.stateChanges.next();
   }
 
@@ -88,7 +100,9 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
   }
 
   @Input()
-  get disabled(): boolean {return this._disabled;}
+  get disabled(): boolean {
+    return this._disabled;
+  }
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
     this.stateChanges.next();
@@ -114,7 +128,9 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
   }
 
   onFocusOut(event: FocusEvent) {
-    if (!this._elementRef.nativeElement.contains(event.relatedTarget as Element)) {
+    if (
+      !this._elementRef.nativeElement.contains(event.relatedTarget as Element)
+    ) {
       this.touched = true;
       this.focused = false;
       this.onTouch();
@@ -123,8 +139,9 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
   }
 
   setDescribedByIds(ids: string[]) {
-    const controlElement = this._elementRef.nativeElement
-      .querySelector('.single-file-input-container')!;
+    const controlElement = this._elementRef.nativeElement.querySelector(
+      '.single-file-input-container'
+    )!;
     controlElement.setAttribute('aria-describedby', ids.join(' '));
   }
 
@@ -147,18 +164,30 @@ export class SingleFileInputComponent implements ControlValueAccessor, MatFormFi
   changeFile(event: Event) {
     const element = event.currentTarget as HTMLInputElement;
     const fileList: FileList | null = element.files;
-    if (!fileList) {return;}
+    if (!fileList) {
+      return;
+    }
     this.value = fileList[0];
-    if (this._onChange) {this._onChange(this.value);}
-    if (this.onTouch) {this.onTouch();}
+    if (this._onChange) {
+      this._onChange(this.value);
+    }
+    if (this.onTouch) {
+      this.onTouch();
+    }
     this.stateChanges.next();
   }
 
   uploadDroppedFile(files: File[]) {
-    if (!files) {return;}
+    if (!files) {
+      return;
+    }
     this.value = files[0];
-    if (this._onChange) {this._onChange(this.value);}
-    if (this.onTouch) {this.onTouch();}
+    if (this._onChange) {
+      this._onChange(this.value);
+    }
+    if (this.onTouch) {
+      this.onTouch();
+    }
     this.stateChanges.next();
   }
 

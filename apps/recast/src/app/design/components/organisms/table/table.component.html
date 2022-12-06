@@ -1,11 +1,16 @@
-<app-search-field class="search" (valueChange)="applyFilter($event)"></app-search-field>
+<app-search-field
+  class="search"
+  (valueChange)="applyFilter($event)"></app-search-field>
 
-<table mat-table
+<table
+  mat-table
   [dataSource]="dataSource"
   matSort
   cdkFocusInitial
   matSortDisableClear>
-  <ng-container matColumnDef="{{column.key}}" *ngFor="let column of columnsSchema">
+  <ng-container
+    matColumnDef="{{ column.key }}"
+    *ngFor="let column of columnsSchema">
     <ng-container [ngSwitch]="column.type">
       <ng-container *ngSwitchCase="'isEdit'">
         <th mat-header-cell *matHeaderCellDef class="icon"></th>
@@ -14,39 +19,47 @@
         <th mat-header-cell *matHeaderCellDef class="icon"></th>
       </ng-container>
       <ng-container *ngSwitchDefault>
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='before'>
-          <div class="mat-subheading-2 primary">{{column.label}}</div>
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          arrowPosition="before">
+          <div class="mat-subheading-2 primary">{{ column.label }}</div>
         </th>
       </ng-container>
     </ng-container>
     <td class="mat-body-2" mat-cell *matCellDef="let element">
       <div [ngSwitch]="column.type" *ngIf="!element.isEdit">
         <ng-container *ngSwitchCase="'isDelete'">
-          <app-icon-button svgIcon="rcst_delete" size="medium" (click)="deleteClicked.emit(element)">
+          <app-icon-button
+            svgIcon="rcst_delete"
+            size="medium"
+            (click)="deleteClicked.emit(element)">
           </app-icon-button>
         </ng-container>
         <ng-container *ngSwitchCase="'isEdit'">
-          <app-icon-button svgIcon="rcst_edit" size="medium" (click)="element.isEdit = !element.isEdit">
+          <app-icon-button
+            svgIcon="rcst_edit"
+            size="medium"
+            (click)="element.isEdit = !element.isEdit">
           </app-icon-button>
         </ng-container>
-        <span *ngSwitchDefault>
-           {{ element[column.key] }}
-        </span>
+        <div *ngSwitchDefault class="text" (click)="rowClicked.emit(element)">
+          {{ element[column.key] }}
+        </div>
       </div>
       <div [ngSwitch]="column.type" *ngIf="element.isEdit">
         <ng-container *ngSwitchCase="'isEdit'">
           <app-icon-button
             matIcon="save"
             size="medium"
-            (click)="saved(element)"
-          ></app-icon-button>
+            (click)="saved(element)"></app-icon-button>
         </ng-container>
         <ng-container *ngSwitchCase="'isDelete'">
           <app-icon-button
             svgIcon="rcst_delete"
             size="medium"
-            (click)="deleteClicked.emit(element)"
-          ></app-icon-button>
+            (click)="deleteClicked.emit(element)"></app-icon-button>
         </ng-container>
         <ng-container *ngSwitchDefault>
           <app-text-input-field
@@ -54,12 +67,15 @@
             [label]="column.key"
             [required]="!!column.required"
             appearance="outline"
-            [type]="column.type === 'text' || column.type === 'number' ? column.type : 'text'"
-          ></app-text-input-field>
+            [type]="
+              column.type === 'text' || column.type === 'number'
+                ? column.type
+                : 'text'
+            "></app-text-input-field>
         </ng-container>
       </div>
     </td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="columns"></tr>
-  <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+  <tr mat-row *matRowDef="let row; columns: columns"></tr>
 </table>

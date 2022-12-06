@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  catchError, concatAll,
+  catchError,
+  concatAll,
   concatMap,
   filter,
   from,
-  map, merge,
-  Observable, of,
+  map,
+  merge,
+  Observable,
+  of,
   skip,
-  Subject, toArray
+  Subject,
+  toArray,
 } from 'rxjs';
 import { ElementProperty, Element } from '../../../build/openapi/recast';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
-  SupabaseClient
+  SupabaseClient,
 } from '@supabase/supabase-js';
 import { SupabaseService, Tables } from './supabase.service';
 import { ElementPropertyService } from './element-property.service';
@@ -24,16 +28,17 @@ const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ElementFacadeService {
-
-  private readonly _elements$: BehaviorSubject<Element[]> = new BehaviorSubject<Element[]>([]);
+  private readonly _elements$: BehaviorSubject<Element[]> = new BehaviorSubject<
+    Element[]
+  >([]);
   private _supabaseClient: SupabaseClient = this.supabase.supabase;
 
   constructor(
     private readonly supabase: SupabaseService,
-    private readonly elementPropertyService: ElementPropertyService,
+    private readonly elementPropertyService: ElementPropertyService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadElements$()),
@@ -43,11 +48,15 @@ export class ElementFacadeService {
       skip(2),
       concatMap(value => groupBy$(value, 'elementId')),
       filter(({ key, values }) => !!key),
-      map(({ key, values }) => this.addPropertiesToElements(this._elements$.getValue(), key!, values))
+      map(({ key, values }) =>
+        this.addPropertiesToElements(this._elements$.getValue(), key!, values)
+      )
     );
-    merge(this.elementChanges$(), sessionChanges$, elemPropChanges$).subscribe(properties => {
-      this._elements$.next(properties);
-    });
+    merge(this.elementChanges$(), sessionChanges$, elemPropChanges$).subscribe(
+      properties => {
+        this._elements$.next(properties);
+      }
+    );
   }
 
   get elements$(): Observable<Element[]> {
@@ -60,13 +69,15 @@ export class ElementFacadeService {
 
   public saveElement$(elem: Element): Observable<Element> {
     return this.upsertElement$(elem).pipe(
-      concatMap((newElem) => {
+      concatMap(newElem => {
         const props = elem.elementProperties;
         elem = newElem;
-        return props?.map(val => this.elementPropertyService.saveElementProp$(val, newElem.id))
-            || of([]);
-      }
-      ),
+        return (
+          props?.map(val =>
+            this.elementPropertyService.saveElementProp$(val, newElem.id)
+          ) || of([])
+        );
+      }),
       concatAll(),
       toArray(),
       map(elemProps => {
@@ -87,9 +98,14 @@ export class ElementFacadeService {
     );
   }
 
-  private upsertElement$({ id, name, processId }: Element): Observable<Element> {
+  private upsertElement$({
+    id,
+    name,
+    processId,
+  }: Element): Observable<Element> {
     const upsertElem = { id, name, processId };
-    const upsert = this._supabaseClient.from(Tables.elements)
+    const upsert = this._supabaseClient
+      .from(Tables.elements)
       .upsert(snakeCase(upsertElem))
       .select();
     return from(upsert).pipe(
@@ -112,43 +128,41 @@ export class ElementFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.elements
+          table: Tables.elements,
         },
         payload => {
           const state = this._elements$.getValue();
           switch (payload.eventType) {
-          case 'INSERT':
-            changes$.next(
-              this.insertElement(state, camelCase(payload.new))
-            );
-            break;
-          case 'UPDATE':
-            const props = this.elementPropertyService.elementProperties;
-            this.updateElementWithProperties$(state, camelCase(payload.new), props)
-              .subscribe(elements => {
+            case 'INSERT':
+              changes$.next(this.insertElement(state, camelCase(payload.new)));
+              break;
+            case 'UPDATE':
+              const props = this.elementPropertyService.elementProperties;
+              this.updateElementWithProperties$(
+                state,
+                camelCase(payload.new),
+                props
+              ).subscribe(elements => {
                 changes$.next(elements);
               });
-            break;
-          case 'DELETE':
-            const element: Element = payload.old;
-            if (element.id) {
-              changes$.next(
-                this.deleteElement(state, element.id)
-              );
-            }
-            break;
-          default:
-            break;
+              break;
+            case 'DELETE':
+              const element: Element = payload.old;
+              if (element.id) {
+                changes$.next(this.deleteElement(state, element.id));
+              }
+              break;
+            default:
+              break;
           }
         }
-      ).subscribe();
+      )
+      .subscribe();
     return changes$;
   }
 
   private loadElements$(): Observable<Element[]> {
-    const select = this._supabaseClient
-      .from(Tables.elements)
-      .select(`
+    const select = this._supabaseClient.from(Tables.elements).select(`
         *,
         element_properties: ${Tables.elementProperties} (*)
       `);
@@ -181,22 +195,32 @@ export class ElementFacadeService {
   private updateElementWithProperties$(
     state: Element[],
     element: Element,
-    props: ElementProperty[],
+    props: ElementProperty[]
   ): Observable<Element[]> {
     return groupBy$(props, 'elementId').pipe(
       filter(({ key, values }) => !!key),
       map(({ key, values }) => {
         element = this.addPropertiesToElement(element, key!, values);
-        return state.map(value => value.id === element.id ? element : value);
+        return state.map(value => (value.id === element.id ? element : value));
       })
     );
   }
 
-  private addPropertiesToElements(state: Element[], elementId: number, values: ElementProperty[]): Element[] {
-    return state.map(element => this.addPropertiesToElement(element, elementId, values));
+  private addPropertiesToElements(
+    state: Element[],
+    elementId: number,
+    values: ElementProperty[]
+  ): Element[] {
+    return state.map(element =>
+      this.addPropertiesToElement(element, elementId, values)
+    );
   }
 
-  private addPropertiesToElement(element: Element, elementId: number, values: ElementProperty[]): Element {
+  private addPropertiesToElement(
+    element: Element,
+    elementId: number,
+    values: ElementProperty[]
+  ): Element {
     if (element.id === elementId) {
       element.elementProperties = values;
     }

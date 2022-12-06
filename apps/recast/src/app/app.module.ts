@@ -8,6 +8,7 @@ import { PageNotFoundComponent } from './templates/page-not-found/page-not-found
 import { SupabaseService } from './services/supabase.service';
 import { DesignModule } from './design/design.module';
 import { OverviewComponent } from './templates/overview/overview.component';
+import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
 import { SharedModule } from './shared/shared.module';
 import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
 import { i18nModule } from './i18n/i18n.module';
@@ -17,6 +18,7 @@ import { i18nModule } from './i18n/i18n.module';
     AppComponent,
     PageNotFoundComponent,
     OverviewComponent,
+    ProcessOverviewComponent,
     UploadNewProcessComponent,
   ],
   imports: [
@@ -32,6 +34,6 @@ import { i18nModule } from './i18n/i18n.module';
     i18nModule.setLocale(),
     i18nModule.setLocaleId(),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

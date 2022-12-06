@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
-@import "src/app/design/material/essentials/media-queries";
+@import 'src/app/design/material/essentials/media-queries';
 
 @mixin color($theme) {
   $primary-palette: map.get($theme, 'primary');
@@ -78,7 +78,7 @@
         border-radius: 50px;
         height: 100%;
         width: 100%;
-        min-width: 388px;
+        min-width: 300px;
         max-width: 388px;
         min-height: 224px;
         max-height: 224px;

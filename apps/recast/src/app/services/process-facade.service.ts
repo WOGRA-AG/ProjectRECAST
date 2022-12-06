@@ -3,20 +3,25 @@ import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
-  SupabaseClient
+  SupabaseClient,
 } from '@supabase/supabase-js';
 import { SupabaseService, Tables } from './supabase.service';
 import { StepFacadeService } from './step-facade.service';
 import {
   BehaviorSubject,
-  catchError, concatAll,
+  catchError,
+  concatAll,
   concatMap,
   filter,
   from,
-  map, merge,
+  map,
+  merge,
+  mergeAll,
   Observable,
   of,
-  skip, Subject, toArray
+  skip,
+  Subject,
+  toArray,
 } from 'rxjs';
 import { Process, Step } from '../../../build/openapi/recast';
 import { groupBy$ } from '../shared/util/common-utils';
@@ -24,16 +29,16 @@ const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProcessFacadeService {
-
-  private readonly _processes$: BehaviorSubject<Process[]> = new BehaviorSubject<Process[]>([]);
+  private readonly _processes$: BehaviorSubject<Process[]> =
+    new BehaviorSubject<Process[]>([]);
   private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
 
   constructor(
     private readonly supabase: SupabaseService,
-    private readonly stepFacade: StepFacadeService,
+    private readonly stepFacade: StepFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadProcesses$()),
@@ -43,11 +48,15 @@ export class ProcessFacadeService {
       skip(2),
       concatMap(value => groupBy$(value, 'processId')),
       filter(({ key, values }) => !!key),
-      map(({ key, values }) => this.addStepsToProcesses(this._processes$.getValue(), key!, values))
+      map(({ key, values }) =>
+        this.addStepsToProcesses(this._processes$.getValue(), key!, values)
+      )
     );
-    merge(this.processChanges$(), stepChanges$, sessionChanges$).subscribe(properties => {
-      this._processes$.next(properties);
-    });
+    merge(this.processChanges$(), stepChanges$, sessionChanges$).subscribe(
+      properties => {
+        this._processes$.next(properties);
+      }
+    );
   }
 
   get processes$(): Observable<Process[]> {
@@ -60,13 +69,13 @@ export class ProcessFacadeService {
 
   public saveProcess$(proc: Process): Observable<Process> {
     return this.upsertProcess$(proc).pipe(
-      concatMap((newProc) => {
+      concatMap(newProc => {
         const steps = proc.steps;
         proc = newProc;
-        return steps?.map(val => this.stepFacade.saveStep$(val, proc.id))
-            || of([]);
-      }
-      ),
+        return (
+          steps?.map(val => this.stepFacade.saveStep$(val, proc.id)) || of([])
+        );
+      }),
       concatAll(),
       toArray(),
       map(steps => {
@@ -87,9 +96,16 @@ export class ProcessFacadeService {
     );
   }
 
+  public processById$(id: number): Observable<Process> {
+    return this._processes$.pipe(
+      mergeAll(),
+      filter(process => process.id === id)
+    );
+  }
   private upsertProcess$({ id, name }: Process): Observable<Process> {
     const upsertStep = { id, name };
-    const upsert = this._supabaseClient.from(Tables.processes)
+    const upsert = this._supabaseClient
+      .from(Tables.processes)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
@@ -112,41 +128,39 @@ export class ProcessFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.processes
+          table: Tables.processes,
         },
         payload => {
           const state = this._processes$.getValue();
           switch (payload.eventType) {
-          case 'INSERT':
-            changes$.next(
-              this.insertProcess(state, camelCase(payload.new))
-            );
-            break;
-          case 'UPDATE':
-            const steps = this.stepFacade.steps;
-            this.updateProcessWithSteps$(state, camelCase(payload.new), steps)
-              .subscribe(processes => changes$.next(processes));
-            break;
-          case 'DELETE':
-            const step: Step = payload.old;
-            if (step.id) {
-              changes$.next(
-                this.deleteProcess(state, step.id)
-              );
-            }
-            break;
-          default:
-            break;
+            case 'INSERT':
+              changes$.next(this.insertProcess(state, camelCase(payload.new)));
+              break;
+            case 'UPDATE':
+              const steps = this.stepFacade.steps;
+              this.updateProcessWithSteps$(
+                state,
+                camelCase(payload.new),
+                steps
+              ).subscribe(processes => changes$.next(processes));
+              break;
+            case 'DELETE':
+              const step: Step = payload.old;
+              if (step.id) {
+                changes$.next(this.deleteProcess(state, step.id));
+              }
+              break;
+            default:
+              break;
           }
         }
-      ).subscribe();
+      )
+      .subscribe();
     return changes$;
   }
 
   private loadProcesses$(): Observable<Process[]> {
-    const select = this._supabaseClient
-      .from(Tables.processes)
-      .select(`
+    const select = this._supabaseClient.from(Tables.processes).select(`
         *,
         steps: ${Tables.steps}(
           *,
@@ -183,21 +197,35 @@ export class ProcessFacadeService {
     return state.concat(step);
   }
 
-  private updateProcessWithSteps$(state: Process[], process: Process, steps: Step[]): Observable<Process[]> {
+  private updateProcessWithSteps$(
+    state: Process[],
+    process: Process,
+    steps: Step[]
+  ): Observable<Process[]> {
     return groupBy$(steps, 'processId').pipe(
       filter(({ key, values }) => !!key),
       map(({ key, values }) => {
         process = this.addStepsToProcess(process, key!, values);
-        return state.map(value => value.id === process.id ? process : value);
+        return state.map(value => (value.id === process.id ? process : value));
       })
     );
   }
 
-  private addStepsToProcesses(state: Process[], processId: number, steps: Step[]): Process[] {
-    return state.map(process => this.addStepsToProcess(process, processId, steps));
+  private addStepsToProcesses(
+    state: Process[],
+    processId: number,
+    steps: Step[]
+  ): Process[] {
+    return state.map(process =>
+      this.addStepsToProcess(process, processId, steps)
+    );
   }
 
-  private addStepsToProcess(process: Process, processId: number, values: Step[]): Process {
+  private addStepsToProcess(
+    process: Process,
+    processId: number,
+    values: Step[]
+  ): Process {
     if (process.id === processId) {
       process.steps = values;
     }

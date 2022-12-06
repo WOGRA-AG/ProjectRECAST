@@ -4,9 +4,9 @@
     <p class="description">Press the button to login via keycloak</p>
     <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="form-widget">
       <div>
-        <app-submit-button
-          [disabled]="loading"
-        >{{ loading ? 'Loading' : 'Log In' }}</app-submit-button>
+        <app-submit-button [disabled]="loading">{{
+          loading ? 'Loading' : 'Log In'
+        }}</app-submit-button>
       </div>
     </form>
   </div>

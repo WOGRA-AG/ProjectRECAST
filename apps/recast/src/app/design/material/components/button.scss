@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 @import '../essentials/button-layout.scss';
-@import "src/app/design/material/essentials/media-queries";
+@import 'src/app/design/material/essentials/media-queries';
 
 @mixin color($theme) {
   .mat-stroked-button:not(.mat-button-disabled) {
@@ -10,14 +10,19 @@
 }
 
 @mixin layout() {
-
-  .mat-flat-button, .mat-stroked-button {
+  .mat-flat-button,
+  .mat-stroked-button {
     border-radius: $btn-small-border-radius;
     border-width: $btn-small-border-widht;
     padding-top: $btn-small-padding-top;
     padding-bottom: $btn-small-padding-bottom;
     padding-left: $btn-small-padding-left;
     padding-right: $btn-small-padding-right;
+
+    &.bordered {
+      padding-top: calc($btn-small-padding-top - $btn-small-border-widht);
+      padding-bottom: calc($btn-small-padding-bottom - $btn-small-border-widht);
+    }
 
     @media #{$medium-and-up} {
       border-radius: $btn-medium-border-radius;
@@ -26,6 +31,13 @@
       padding-bottom: $btn-medium-padding-bottom;
       padding-left: $btn-medium-padding-left;
       padding-right: $btn-medium-padding-right;
+
+      &.bordered {
+        padding-top: calc($btn-medium-padding-top - $btn-medium-border-widht);
+        padding-bottom: calc(
+          $btn-medium-padding-bottom - $btn-medium-border-widht
+        );
+      }
     }
 
     &.small {
@@ -35,6 +47,13 @@
       padding-bottom: $btn-small-padding-bottom;
       padding-left: $btn-small-padding-left;
       padding-right: $btn-small-padding-right;
+
+      &.bordered {
+        padding-top: calc($btn-small-padding-top - $btn-small-border-widht);
+        padding-bottom: calc(
+          $btn-small-padding-bottom - $btn-small-border-widht
+        );
+      }
     }
 
     &.medium {
@@ -44,6 +63,13 @@
       padding-bottom: $btn-medium-padding-bottom;
       padding-left: $btn-medium-padding-left;
       padding-right: $btn-medium-padding-right;
+
+      &.bordered {
+        padding-top: calc($btn-medium-padding-top - $btn-medium-border-widht);
+        padding-bottom: calc(
+          $btn-medium-padding-bottom - $btn-medium-border-widht
+        );
+      }
     }
 
     &.large {
@@ -53,6 +79,13 @@
       padding-bottom: $btn-large-padding-bottom;
       padding-left: $btn-large-padding-left;
       padding-right: $btn-large-padding-right;
+
+      &.bordered {
+        padding-top: calc($btn-large-padding-top - $btn-large-border-widht);
+        padding-bottom: calc(
+          $btn-large-padding-bottom - $btn-large-border-widht
+        );
+      }
     }
 
     &.text {
@@ -92,7 +125,8 @@
     }
 
     .mat-icon {
-      height: 100%;
+      height: 1em;
+      width: 1em;
       padding-right: 0.5em;
     }
   }
