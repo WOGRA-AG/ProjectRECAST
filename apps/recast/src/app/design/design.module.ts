@@ -48,7 +48,7 @@ const COMPONENTS = [
     ...COMPONENTS,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   imports: [
     CommonModule,
@@ -56,7 +56,7 @@ const COMPONENTS = [
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
   ]
 })
 export class DesignModule { }

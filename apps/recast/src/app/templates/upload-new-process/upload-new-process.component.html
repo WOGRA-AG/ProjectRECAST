@@ -1,18 +1,32 @@
-<app-page-header i18n-header="@@header.new_process" header="New Process" [breadcrumbs]="breadcrumbs"></app-page-header>
-
 <div class="content-wrapper">
-  <app-file-upload 
-    id="upload" 
+  <app-page-header
+    class="header"
+    i18n-header="@@header.new_process"
+    header="New Process"
+    [breadcrumbs]="breadcrumbs">
+  </app-page-header>
+
+  <app-file-upload
+    id="upload"
     i18n-placeholder="@@placeholder.upload_yaml"
-    id="upload" placeholder="Upload Process-YAML"
+    placeholder="Upload Process-YAML"
     (fileChange)="uploadFile($event)"
     (back)="cancel()"
     (isValid)="isValid = $event">
-    <ng-container back>
-      <app-button-unfilled type="reset" size="medium" [bordered]="true" i18n="@@actions.back" caption="Back"></app-button-unfilled>
-    </ng-container>
-    <ng-container submit>
-      <app-submit-button size="medium" [disabled]="!isValid" i18n="@@actions.create" caption="Create"></app-submit-button>
+    <ng-container actions>
+      <app-button-unfilled
+        type="reset"
+        size="medium"
+        [bordered]="true"
+        i18n="@@actions.back">
+        Back
+      </app-button-unfilled>
+      <app-submit-button
+        size="medium"
+        [disabled]="!isValid"
+        i18n="@@actions.create">
+        Create
+      </app-submit-button>
     </ng-container>
   </app-file-upload>
 </div>

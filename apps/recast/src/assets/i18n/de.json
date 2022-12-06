@@ -3,6 +3,8 @@
   "actions.update": "Update",
   "actions.back": "Zurück",
   "actions.create": "Erstellen",
+  "action.scan_element": "Bauteil scannen",
+  "action.create_element": "Bauteil erstellen",
 
   "label.username": "Username",
   "label.email": "Email",

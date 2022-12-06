@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Process, Step } from 'build/openapi/recast';
-import { Observable } from 'rxjs';
+import { concatMap, filter, map, Observable } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { TableColumn } from 'src/app/design/components/organisms/table/table.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
@@ -29,12 +29,13 @@ export class ProcessOverviewComponent {
     public route: ActivatedRoute,
   ) {
     this.tableData$ = elementService.elements$;
-    route.paramMap.subscribe(param => {
-      const processId = +param.get('id')!;
-      this.processService.processes$.subscribe(processes => {
-        this.title =  processes.find(p => p.id === processId)?.name!;
-        this.breadcrumbs = [{ label: 'Übersicht', link: '/overview' }, { label: this.title }];
-      });
+    route.paramMap.pipe(
+      filter(param => !!param.get('id')),
+      map((param, index) => +param.get('id')!),
+      concatMap((id) => this.processService.processById$(id))
+    ).subscribe(process => {
+      this.title = process.name!;
+      this.breadcrumbs = [{ label: $localize `:@@header.overview:Overview`, link: '/overview' }, { label: this.title }];
     });
   }
 

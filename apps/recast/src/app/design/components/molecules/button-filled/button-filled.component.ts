@@ -5,11 +5,10 @@ import { Component, Input } from '@angular/core';
   templateUrl: './button-filled.component.html'
 })
 export class ButtonFilledComponent {
-    @Input() type = 'button';
+    @Input() type: 'button' | 'submit' | 'reset' = 'button';
     @Input() color = 'primary';
     @Input() icon = '';
     @Input() svgIcon = '';
     @Input() disabled = false;
-    @Input() size = '';
-    @Input() caption = '';
+    @Input() size: 'small' | 'medium' | 'large' = 'medium';
 }

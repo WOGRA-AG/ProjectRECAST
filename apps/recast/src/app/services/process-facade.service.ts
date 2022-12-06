@@ -13,7 +13,7 @@ import {
   concatMap,
   filter,
   from,
-  map, merge,
+  map, merge, mergeAll,
   Observable,
   of,
   skip, Subject, toArray
@@ -87,6 +87,12 @@ export class ProcessFacadeService {
     );
   }
 
+  public processById$(id: number): Observable<Process> {
+    return this._processes$.pipe(
+      mergeAll(),
+      filter(process => process.id === id)
+    );
+  }
   private upsertProcess$({ id, name }: Process): Observable<Process> {
     const upsertStep = { id, name };
     const upsert = this._supabaseClient.from(Tables.processes)

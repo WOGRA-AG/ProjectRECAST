@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { IconSize, ThemePalette } from '../../../types';
 
 @Component({
   selector: 'app-icon',
@@ -8,8 +9,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class IconComponent {
   @Input() svgIcon = '';
-  @Input() size = '';
-  @Input() color = 'primary';
+  @Input() size: IconSize = 'medium';
+  @Input() color: ThemePalette = 'primary';
 
   constructor(
     private matIconRegistry: MatIconRegistry,

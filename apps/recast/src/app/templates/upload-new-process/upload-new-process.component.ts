@@ -11,7 +11,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./upload-new-process.component.scss']
 })
 export class UploadNewProcessComponent {
-  public breadcrumbs: Breadcrumb[] = [{ label: 'Übersicht', link: '/overview' }, { label: 'Neuen Prozess erstellen' }];
+  public breadcrumbs: Breadcrumb[] = [
+    { label: $localize `:@@header.overview:Overview`, link: '/overview' },
+    { label: $localize `:@@header.new_process:New Process` }
+  ];
   public isValid = false;
 
   constructor(

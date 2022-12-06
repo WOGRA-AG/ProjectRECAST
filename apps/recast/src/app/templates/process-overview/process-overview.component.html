@@ -1,15 +1,19 @@
-<app-page-header [header]="title" [breadcrumbs]="breadcrumbs"></app-page-header>
-
 <div class="content-wrapper">
-    <h5 class="title primary">Bauteile</h5>
-    <app-table class="table"
-        [columnsSchema]="dataColumns"
-        [data]="tableData$"
-        (deleteClicked)="deleteTableRow($event)"
-        (saveClicked)="editTableRow($event)">
-    </app-table>
-    <div class="buttons">
-        <app-button-unfilled [bordered]="true" svgIcon="rcst_scan" class="button" caption="Bauteil scannen"></app-button-unfilled>
-        <app-button-filled class="button" caption="Bauteil erstellen"></app-button-filled>
-    </div>
+  <app-page-header [header]="title" [breadcrumbs]="breadcrumbs"></app-page-header>
+
+  <div class="grid-wrapper">
+      <h5 class="title primary" i18n="@@label.elements">Bauteile</h5>
+      <app-table class="table"
+          [columnsSchema]="dataColumns"
+          [data]="tableData$"
+          (deleteClicked)="deleteTableRow($event)"
+          (saveClicked)="editTableRow($event)">
+      </app-table>
+      <div class="buttons">
+          <app-button-unfilled [bordered]="true" svgIcon="rcst_scan" class="button" i18n="@@action.scan_element">
+            Bauteil scannen
+          </app-button-unfilled>
+          <app-button-filled class="button" i18n="@@action.create_element">Bauteil erstellen</app-button-filled>
+      </div>
+  </div>
 </div>

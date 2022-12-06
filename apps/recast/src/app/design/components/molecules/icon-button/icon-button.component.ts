@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { ButtonSize, ThemePalette } from '../../../types';
 
 @Component({
   selector: 'app-icon-button',
@@ -7,7 +8,7 @@ import { Component, Input } from '@angular/core';
 export class IconButtonComponent {
     @Input() matIcon = '';
     @Input() svgIcon = '';
-    @Input() size: 'small' | 'medium' | 'large' | '' = '';
+    @Input() size: ButtonSize = 'medium';
     @Input() type: 'button' | 'submit' | 'reset' = 'button';
-    @Input() color = 'primary';
+    @Input() color: ThemePalette = 'primary';
 }
