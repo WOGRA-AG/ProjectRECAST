@@ -26,17 +26,22 @@ export class ProcessOverviewComponent {
   constructor(
     public readonly processService: ProcessFacadeService,
     public readonly elementService: ElementFacadeService,
-    public route: ActivatedRoute,
+    public route: ActivatedRoute
   ) {
     this.tableData$ = elementService.elements$;
-    route.paramMap.pipe(
-      filter(param => !!param.get('id')),
-      map((param, index) => +param.get('id')!),
-      concatMap((id) => this.processService.processById$(id))
-    ).subscribe(process => {
-      this.title = process.name!;
-      this.breadcrumbs = [{ label: $localize `:@@header.overview:Overview`, link: '/overview' }, { label: this.title }];
-    });
+    route.paramMap
+      .pipe(
+        filter(param => !!param.get('id')),
+        map((param, index) => +param.get('id')!),
+        concatMap(id => this.processService.processById$(id))
+      )
+      .subscribe(process => {
+        this.title = process.name!;
+        this.breadcrumbs = [
+          { label: $localize`:@@header.overview:Overview`, link: '/overview' },
+          { label: this.title },
+        ];
+      });
   }
 
   public deleteTableRow(element: Process | Element | Step): void {

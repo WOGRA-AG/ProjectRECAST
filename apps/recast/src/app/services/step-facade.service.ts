@@ -4,15 +4,23 @@ import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
-  SupabaseClient
+  SupabaseClient,
 } from '@supabase/supabase-js';
 import { Step, StepProperty } from '../../../build/openapi/recast';
 import {
-  BehaviorSubject, catchError, concatAll, concatMap, filter,
+  BehaviorSubject,
+  catchError,
+  concatAll,
+  concatMap,
+  filter,
   from,
-  map, merge,
-  Observable, of,
-  skip, Subject, toArray,
+  map,
+  merge,
+  Observable,
+  of,
+  skip,
+  Subject,
+  toArray,
 } from 'rxjs';
 import { StepPropertyService } from './step-property.service';
 import { groupBy$ } from '../shared/util/common-utils';
@@ -21,16 +29,17 @@ const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StepFacadeService {
-
-  private readonly _steps$: BehaviorSubject<Step[]> = new BehaviorSubject<Step[]>([]);
+  private readonly _steps$: BehaviorSubject<Step[]> = new BehaviorSubject<
+    Step[]
+  >([]);
   private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
 
   constructor(
     private readonly supabase: SupabaseService,
-    private readonly stepPropertyService: StepPropertyService,
+    private readonly stepPropertyService: StepPropertyService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadSteps$()),
@@ -40,12 +49,15 @@ export class StepFacadeService {
       skip(2),
       concatMap(value => groupBy$(value, 'stepId')),
       filter(({ key, values }) => !!key),
-      map(({ key, values }) => this.addPropertiesToSteps(this._steps$.getValue(), key!, values))
+      map(({ key, values }) =>
+        this.addPropertiesToSteps(this._steps$.getValue(), key!, values)
+      )
     );
-    merge(this.stepsChanges$(), sessionChanges$, stepPropChanges$)
-      .subscribe(properties => {
+    merge(this.stepsChanges$(), sessionChanges$, stepPropChanges$).subscribe(
+      properties => {
         this._steps$.next(properties);
-      });
+      }
+    );
   }
 
   get steps$(): Observable<Step[]> {
@@ -58,13 +70,15 @@ export class StepFacadeService {
 
   public saveStep$(step: Step, processId: number): Observable<Step> {
     return this.upsertStep$(step, processId).pipe(
-      concatMap((newStep) => {
+      concatMap(newStep => {
         const props = step.stepProperties;
         step = newStep;
-        return props?.map(val => this.stepPropertyService.saveStepProp$(val, newStep.id))
-          || of([]);
-      }
-      ),
+        return (
+          props?.map(val =>
+            this.stepPropertyService.saveStepProp$(val, newStep.id)
+          ) || of([])
+        );
+      }),
       concatAll(),
       toArray(),
       map(stepProps => {
@@ -75,10 +89,7 @@ export class StepFacadeService {
   }
 
   public deleteStep$(id: number): Observable<PostgrestError> {
-    const del = this._supabaseClient
-      .from(Tables.steps)
-      .delete()
-      .eq('id', id);
+    const del = this._supabaseClient.from(Tables.steps).delete().eq('id', id);
     return from(del).pipe(
       filter(({ error }) => !!error),
       map(({ error }) => error!)
@@ -87,7 +98,8 @@ export class StepFacadeService {
 
   private upsertStep$({ id, name }: Step, processId: number): Observable<Step> {
     const upsertStep = { id, name, processId };
-    const upsert = this._supabaseClient.from(Tables.steps)
+    const upsert = this._supabaseClient
+      .from(Tables.steps)
       .upsert(snakeCase(upsertStep))
       .select();
     return from(upsert).pipe(
@@ -110,43 +122,41 @@ export class StepFacadeService {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: 'public',
-          table: Tables.steps
+          table: Tables.steps,
         },
         payload => {
           const state = this._steps$.getValue();
           switch (payload.eventType) {
-          case 'INSERT':
-            changes$.next(
-              this.insertStep(state, camelCase(payload.new))
-            );
-            break;
-          case 'UPDATE':
-            const props = this.stepPropertyService.stepProperties;
-            this.updateStepWithProperties$(state, camelCase(payload.new), props)
-              .subscribe(steps => {
+            case 'INSERT':
+              changes$.next(this.insertStep(state, camelCase(payload.new)));
+              break;
+            case 'UPDATE':
+              const props = this.stepPropertyService.stepProperties;
+              this.updateStepWithProperties$(
+                state,
+                camelCase(payload.new),
+                props
+              ).subscribe(steps => {
                 changes$.next(steps);
               });
-            break;
-          case 'DELETE':
-            const step: Step = payload.old;
-            if (step.id) {
-              changes$.next(
-                this.deleteStep(state, step.id)
-              );
-            }
-            break;
-          default:
-            break;
+              break;
+            case 'DELETE':
+              const step: Step = payload.old;
+              if (step.id) {
+                changes$.next(this.deleteStep(state, step.id));
+              }
+              break;
+            default:
+              break;
           }
         }
-      ).subscribe();
+      )
+      .subscribe();
     return changes$;
   }
 
   private loadSteps$(): Observable<Step[]> {
-    const select = this._supabaseClient
-      .from(Tables.steps)
-      .select(`
+    const select = this._supabaseClient.from(Tables.steps).select(`
         *,
         step_properties: ${Tables.stepProperties} (*)
       `);
@@ -176,21 +186,33 @@ export class StepFacadeService {
     return state.concat(step);
   }
 
-  private updateStepWithProperties$(state: Step[], step: Step, props: StepProperty[]): Observable<Step[]> {
+  private updateStepWithProperties$(
+    state: Step[],
+    step: Step,
+    props: StepProperty[]
+  ): Observable<Step[]> {
     return groupBy$(props, 'stepId').pipe(
       filter(({ key, values }) => !!key),
       map(({ key, values }) => {
         step = this.addPropertiesToStep(step, key, values);
-        return state.map(value => value.id === step.id ? step : value);
+        return state.map(value => (value.id === step.id ? step : value));
       })
     );
   }
 
-  private addPropertiesToSteps(state: Step[], stepId: number, values: StepProperty[]): Step[] {
+  private addPropertiesToSteps(
+    state: Step[],
+    stepId: number,
+    values: StepProperty[]
+  ): Step[] {
     return state.map(step => this.addPropertiesToStep(step, stepId, values));
   }
 
-  private addPropertiesToStep(step: Step, stepId: number | undefined, values: StepProperty[]): Step {
+  private addPropertiesToStep(
+    step: Step,
+    stepId: number | undefined,
+    values: StepProperty[]
+  ): Step {
     if (step.id === stepId) {
       step.stepProperties = values;
     }

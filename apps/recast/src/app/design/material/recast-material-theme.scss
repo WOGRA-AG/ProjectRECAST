@@ -1,16 +1,18 @@
 @use '@angular/material' as mat;
-@use "./components" as components;
+@use './components' as components;
 @use './essentials/typography' as typography;
 @use './essentials/color.scss' as colors;
 
-$recast-light-theme: mat.define-light-theme((
-  color: (
-    primary: colors.$recast-light-primary,
-    accent: colors.$recast-light-accent,
-    warn: colors.$recast-light-warn,
-  ),
-  typography: typography.$custom-typography,
-));
+$recast-light-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: colors.$recast-light-primary,
+      accent: colors.$recast-light-accent,
+      warn: colors.$recast-light-warn,
+    ),
+    typography: typography.$custom-typography,
+  )
+);
 
 $recast-light-variants: (
   success: colors.$recast-light-success,
@@ -24,5 +26,9 @@ $recast-light-variants: (
 .recast-light-theme {
   @include mat.all-component-themes($recast-light-theme);
   @include typography.additional-typography-settings;
-  @include components.theme($recast-light-theme, typography.$custom-typography, $recast-light-variants);
+  @include components.theme(
+    $recast-light-theme,
+    typography.$custom-typography,
+    $recast-light-variants
+  );
 }

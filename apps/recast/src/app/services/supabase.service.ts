@@ -12,17 +12,19 @@ import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 })
 export class SupabaseService {
   private readonly _supabase: SupabaseClient;
-  private readonly _session$: BehaviorSubject<AuthSession | null> = new BehaviorSubject<AuthSession | null>(null);
+  private readonly _session$: BehaviorSubject<AuthSession | null> =
+    new BehaviorSubject<AuthSession | null>(null);
 
   constructor() {
     this._supabase = createClient(
       environment.supabaseUrl,
       environment.supabaseKey
     );
-    this.supabase.auth.getSession()
+    this.supabase.auth
+      .getSession()
       .then(({ data }) => this.updateSession(data.session));
-    this.supabase.auth.onAuthStateChange(
-      (_, session) => this.updateSession(session)
+    this.supabase.auth.onAuthStateChange((_, session) =>
+      this.updateSession(session)
     );
   }
 
@@ -52,5 +54,5 @@ export enum Tables {
   stepProperties = 'step_properties',
   elements = 'elements',
   elementProperties = 'element_properties',
-  profiles = 'profiles'
+  profiles = 'profiles',
 }

@@ -17,29 +17,29 @@ export class ProfileComponent {
   updateProfileForm = this.formBuilder.group({
     id: new FormControl({ value: '', disabled: true }),
     email: new FormControl({ value: '', disabled: true }),
-    username: new FormControl(
-      '',
-      [Validators.minLength(this._minlength), Validators.required]
-    ),
+    username: new FormControl('', [
+      Validators.minLength(this._minlength),
+      Validators.required,
+    ]),
     avatarUrl: '',
   });
 
   constructor(
     private formBuilder: FormBuilder,
-    private readonly userService: UserFacadeService,
+    private readonly userService: UserFacadeService
   ) {
     userService.currentProfile$.subscribe(value => {
       this.updateProfileForm.patchValue(value);
       this.profile = value;
     });
-    this.updateProfileForm.valueChanges.pipe(
-      filter(() => !!this.profile)
-    ).subscribe(values => {
-      this.profile.username = values.username || this.profile.username;
-      this.profile.id = values.id || this.profile.id;
-      this.profile.email = values.email || this.profile.email;
-      this.profile.avatarUrl = values.avatarUrl || this.profile.avatarUrl;
-    });
+    this.updateProfileForm.valueChanges
+      .pipe(filter(() => !!this.profile))
+      .subscribe(values => {
+        this.profile.username = values.username || this.profile.username;
+        this.profile.id = values.id || this.profile.id;
+        this.profile.email = values.email || this.profile.email;
+        this.profile.avatarUrl = values.avatarUrl || this.profile.avatarUrl;
+      });
   }
 
   updateProfile(): void {
@@ -48,21 +48,24 @@ export class ProfileComponent {
     const email = this.profile.email;
     const avatarUrl = this.profile.avatarUrl;
     const id = this.profile.id;
-    this.userService.saveProfile({
-      id,
-      username,
-      email,
-      avatarUrl,
-    }).pipe(
-      catchError(err => {
-        if (err instanceof Error) {
-          alert(err.message);
-        }
-        return of({});
+    this.userService
+      .saveProfile({
+        id,
+        username,
+        email,
+        avatarUrl,
       })
-    ).subscribe(() => {
-      this.loading = false;
-    });
+      .pipe(
+        catchError(err => {
+          if (err instanceof Error) {
+            alert(err.message);
+          }
+          return of({});
+        })
+      )
+      .subscribe(() => {
+        this.loading = false;
+      });
   }
 
   signOut() {

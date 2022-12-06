@@ -34,6 +34,6 @@ import { i18nModule } from './i18n/i18n.module';
     i18nModule.setLocale(),
     i18nModule.setLocaleId(),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

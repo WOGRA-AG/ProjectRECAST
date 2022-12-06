@@ -1,12 +1,29 @@
 <div *ngIf="searchMode" class="search">
-  <mat-form-field autoFocus color="primary" class="search-input" (focusout)="onFocusOut()">
-    <input autoFocus matInput autocomplete="off" [(ngModel)]="value" (ngModelChange)="valueChange.emit($event)">
+  <mat-form-field
+    autoFocus
+    color="primary"
+    class="search-input"
+    (focusout)="onFocusOut()">
+    <input
+      autoFocus
+      matInput
+      autocomplete="off"
+      [(ngModel)]="value"
+      (ngModelChange)="valueChange.emit($event)" />
   </mat-form-field>
-  <app-icon-button color="primary" (click)="onClear()" matIcon="close" size="large"></app-icon-button>
+  <app-icon-button
+    color="primary"
+    (click)="onClear()"
+    matIcon="close"
+    size="large"></app-icon-button>
 </div>
 
 <div *ngIf="!searchMode" class="search">
   <div class="mat-subheading-2 primary" i18n="@@label.search">Search</div>
-  <app-icon-button class="icon" color="primary" (click)="searchMode = true" matIcon="search" size="large"
-  ></app-icon-button>
+  <app-icon-button
+    class="icon"
+    color="primary"
+    (click)="searchMode = true"
+    matIcon="search"
+    size="large"></app-icon-button>
 </div>

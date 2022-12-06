@@ -1,46 +1,46 @@
-@import "src/app/design/material/essentials/media-queries";
+@import 'src/app/design/material/essentials/media-queries';
 
 .grid-wrapper {
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: auto auto auto;
-    row-gap: 1.5rem;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto auto auto;
+  row-gap: 1.5rem;
+  grid-template-areas:
+    'title'
+    'table'
+    'buttons';
+
+  @media #{$medium-and-up} {
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
     grid-template-areas:
-        "title"
-        "table"
-        "buttons";
+      'title buttons'
+      'table table';
+  }
+
+  .title {
+    grid-area: title;
+    align-self: flex-end;
+  }
+
+  h5 {
+    margin-bottom: 0;
+  }
+
+  .table {
+    grid-area: table;
+  }
+
+  .buttons {
+    grid-area: buttons;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0.5rem 0;
 
     @media #{$medium-and-up} {
-        grid-template-columns: auto auto;
-        grid-template-rows: auto auto;
-        grid-template-areas:
-        "title buttons"
-        "table table";
+      justify-content: flex-end;
     }
-
-    .title {
-        grid-area: title;
-        align-self: flex-end;
-    }
-
-    h5 {
-        margin-bottom: 0;
-    }
-
-    .table {
-        grid-area: table;
-    }
-
-    .buttons {
-        grid-area: buttons;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-        margin: 0.5rem 0;
-
-        @media #{$medium-and-up} {
-            justify-content: flex-end;
-        }
-    }
+  }
 }

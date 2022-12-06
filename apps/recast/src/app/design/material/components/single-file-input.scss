@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
-@import "src/app/design/material/essentials/media-queries";
+@import 'src/app/design/material/essentials/media-queries';
 
 @mixin color($theme) {
   $primary-palette: map.get($theme, 'primary');

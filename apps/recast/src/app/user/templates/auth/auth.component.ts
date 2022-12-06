@@ -16,14 +16,13 @@ export class AuthComponent {
 
   constructor(
     private readonly userService: UserFacadeService,
-    private readonly formBuilder: FormBuilder,
-  ) {
-  }
+    private readonly formBuilder: FormBuilder
+  ) {}
 
   onSubmit(): void {
     this.loading = true;
     this.userService.signIn().subscribe(err => {
-      if(err) {
+      if (err) {
         alert(err.message);
       }
       this.signInForm.reset();

@@ -1,17 +1,13 @@
-import {
-  Component,
-  Input, Optional, Self,
-} from '@angular/core';
+import { Component, Input, Optional, Self } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 
 @Component({
   selector: 'app-text-input-field',
   templateUrl: './input-field.component.html',
   styleUrls: ['./input-field.component.scss'],
-  providers: []
+  providers: [],
 })
 export class InputFieldComponent implements ControlValueAccessor {
-
   @Input() label = '';
   @Input() errMsg = '';
   @Input() hint = '';
@@ -37,8 +33,12 @@ export class InputFieldComponent implements ControlValueAccessor {
       return;
     }
     this.val = val;
-    if (this.onChange) {this.onChange(val);}
-    if (this.onTouch) {this.onTouch();}
+    if (this.onChange) {
+      this.onChange(val);
+    }
+    if (this.onTouch) {
+      this.onTouch();
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -55,7 +55,9 @@ export class InputFieldComponent implements ControlValueAccessor {
   }
 
   writeValue(val: any): void {
-    if (!val) {return;}
+    if (!val) {
+      return;
+    }
     this.value = val;
     this.onChange(val);
     this.onTouch();

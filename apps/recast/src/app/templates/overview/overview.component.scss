@@ -1,37 +1,37 @@
-@import "src/app/design/material/essentials/media-queries";
+@import 'src/app/design/material/essentials/media-queries';
 
 .grid-wrapper {
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: auto auto auto;
-    row-gap: 2rem;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto auto auto;
+  row-gap: 2rem;
+  grid-template-areas:
+    'tabs'
+    'table'
+    'button';
+
+  @media #{$medium-and-up} {
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
     grid-template-areas:
-        "tabs"
-        "table"
-        "button";
+      'tabs button'
+      'table table';
+  }
+
+  .tabs {
+    grid-area: tabs;
+  }
+
+  .table {
+    grid-area: table;
+  }
+
+  .button {
+    grid-area: button;
+    justify-self: center;
 
     @media #{$medium-and-up} {
-        grid-template-columns: auto auto;
-        grid-template-rows: auto auto;
-        grid-template-areas:
-        "tabs button"
-        "table table";
+      justify-self: end;
     }
-
-    .tabs {
-        grid-area: tabs;
-    }
-
-    .table {
-        grid-area: table;
-    }
-
-    .button {
-        grid-area: button;
-        justify-self: center;
-
-        @media #{$medium-and-up} {
-            justify-self: end;
-        }
-    }
+  }
 }

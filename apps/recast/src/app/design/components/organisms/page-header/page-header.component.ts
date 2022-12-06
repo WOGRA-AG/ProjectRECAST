@@ -4,9 +4,9 @@ import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/bread
 @Component({
   selector: 'app-page-header',
   templateUrl: './page-header.component.html',
-  styleUrls: ['./page-header.component.scss']
+  styleUrls: ['./page-header.component.scss'],
 })
 export class PageHeaderComponent {
-    @Input() header = '';
-    @Input() breadcrumbs: Breadcrumb[] = [];
+  @Input() header = '';
+  @Input() breadcrumbs: Breadcrumb[] = [];
 }

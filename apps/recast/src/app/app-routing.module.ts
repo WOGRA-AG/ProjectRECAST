@@ -41,19 +41,19 @@ const routes: Routes = [
           {
             path: ':id',
             component: ProcessOverviewComponent,
-          }
-        ]
+          },
+        ],
       },
     ],
   },
   {
     path: '**',
-    component: PageNotFoundComponent
-  }
+    component: PageNotFoundComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes), RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

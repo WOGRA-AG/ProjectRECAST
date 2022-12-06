@@ -41,15 +41,8 @@ const COMPONENTS = [
 ];
 
 @NgModule({
-  declarations: [
-    ...COMPONENTS,
-  ],
-  exports: [
-    ...COMPONENTS,
-    MaterialModule,
-    FormsModule,
-    ReactiveFormsModule,
-  ],
+  declarations: [...COMPONENTS],
+  exports: [...COMPONENTS, MaterialModule, FormsModule, ReactiveFormsModule],
   imports: [
     CommonModule,
     MaterialModule,
@@ -57,6 +50,6 @@ const COMPONENTS = [
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
-  ]
+  ],
 })
-export class DesignModule { }
+export class DesignModule {}

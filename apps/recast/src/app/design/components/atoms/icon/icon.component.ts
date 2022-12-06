@@ -5,7 +5,7 @@ import { IconSize, ThemePalette } from '../../../types';
 
 @Component({
   selector: 'app-icon',
-  templateUrl: './icon.component.html'
+  templateUrl: './icon.component.html',
 })
 export class IconComponent {
   @Input() svgIcon = '';
@@ -34,4 +34,3 @@ export class IconComponent {
     );
   }
 }
-

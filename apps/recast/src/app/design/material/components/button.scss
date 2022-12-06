@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 @import '../essentials/button-layout.scss';
-@import "src/app/design/material/essentials/media-queries";
+@import 'src/app/design/material/essentials/media-queries';
 
 @mixin color($theme) {
   .mat-stroked-button:not(.mat-button-disabled) {
@@ -10,8 +10,8 @@
 }
 
 @mixin layout() {
-
-  .mat-flat-button, .mat-stroked-button {
+  .mat-flat-button,
+  .mat-stroked-button {
     border-radius: $btn-small-border-radius;
     border-width: $btn-small-border-widht;
     padding-top: $btn-small-padding-top;
@@ -34,7 +34,9 @@
 
       &.bordered {
         padding-top: calc($btn-medium-padding-top - $btn-medium-border-widht);
-        padding-bottom: calc($btn-medium-padding-bottom - $btn-medium-border-widht);
+        padding-bottom: calc(
+          $btn-medium-padding-bottom - $btn-medium-border-widht
+        );
       }
     }
 
@@ -48,7 +50,9 @@
 
       &.bordered {
         padding-top: calc($btn-small-padding-top - $btn-small-border-widht);
-        padding-bottom: calc($btn-small-padding-bottom - $btn-small-border-widht);
+        padding-bottom: calc(
+          $btn-small-padding-bottom - $btn-small-border-widht
+        );
       }
     }
 
@@ -62,7 +66,9 @@
 
       &.bordered {
         padding-top: calc($btn-medium-padding-top - $btn-medium-border-widht);
-        padding-bottom: calc($btn-medium-padding-bottom - $btn-medium-border-widht);
+        padding-bottom: calc(
+          $btn-medium-padding-bottom - $btn-medium-border-widht
+        );
       }
     }
 
@@ -76,7 +82,9 @@
 
       &.bordered {
         padding-top: calc($btn-large-padding-top - $btn-large-border-widht);
-        padding-bottom: calc($btn-large-padding-bottom - $btn-large-border-widht);
+        padding-bottom: calc(
+          $btn-large-padding-bottom - $btn-large-border-widht
+        );
       }
     }
 
