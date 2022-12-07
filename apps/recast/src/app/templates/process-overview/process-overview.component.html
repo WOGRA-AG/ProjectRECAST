@@ -1,7 +1,10 @@
 <div class="content-wrapper">
   <app-page-header
     [header]="title"
-    [breadcrumbs]="breadcrumbs"></app-page-header>
+    [breadcrumbs]="breadcrumbs">
+  </app-page-header>
+
+  <app-stepper [steps]="stepTitles" (stepChanged)="changeContent($event)"></app-stepper>
 
   <div class="grid-wrapper">
     <h5 class="title primary" i18n="@@label.elements">Bauteile</h5>

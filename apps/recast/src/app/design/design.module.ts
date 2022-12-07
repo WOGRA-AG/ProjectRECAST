@@ -20,6 +20,7 @@ import { BreadcrumbComponent } from './components/molecules/breadcrumb/breadcrum
 import { AppRoutingModule } from '../app-routing.module';
 import { ButtonFilledComponent } from './components/molecules/button-filled/button-filled.component';
 import { ButtonUnfilledComponent } from './components/molecules/button-unfilled/button-unfilled.component';
+import { StepperComponent } from './components/molecules/stepper/stepper.component';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -38,6 +39,7 @@ const COMPONENTS = [
   DragAndDropDirective,
   SingleFileInputComponent,
   BreadcrumbComponent,
+  StepperComponent
 ];
 
 @NgModule({

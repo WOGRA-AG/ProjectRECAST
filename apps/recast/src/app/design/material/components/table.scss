@@ -5,6 +5,8 @@
   $primary-palette: map.get($theme, 'primary');
   $primary-color: mat.get-color-from-palette($primary-palette, 500);
   $primary-color-50: mat.get-color-from-palette($primary-palette, 50);
+  $accent-palette: map.get($theme, 'accent');
+  $accent-color: mat.get-color-from-palette($accent-palette);
 
   tr.mat-header-row {
     background-color: $primary-color-50;
@@ -18,6 +20,7 @@
 
   td.mat-cell {
     border-color: $primary-color;
+    color: $accent-color;
   }
 
   .mat-sort-header-arrow {

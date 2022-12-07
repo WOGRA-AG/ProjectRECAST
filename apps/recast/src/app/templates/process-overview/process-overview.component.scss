@@ -1,6 +1,7 @@
 @import 'src/app/design/material/essentials/media-queries';
 
 .grid-wrapper {
+  margin-top: 3rem;
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: auto auto auto;
