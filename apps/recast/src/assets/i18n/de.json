@@ -19,6 +19,8 @@
 
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
 
+  "info.no_data_text": "Noch keine Bauteile vorhanden",
+
   "header.new_process": "Prozess Erstellen",
   "header.overview": "Übersicht",
   "header.create_element": "Bauteil erstellen"

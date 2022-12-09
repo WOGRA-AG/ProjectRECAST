@@ -22,6 +22,7 @@ export class TableComponent<T> implements OnChanges, AfterViewInit, OnInit {
 
   @Input() columnsSchema: TableColumn[] = [];
   @Input() data: Observable<T[]> = new Observable<T[]>();
+  @Input() noDataText = '';
 
   @Output() deleteClicked: EventEmitter<T> = new EventEmitter<T>();
   @Output() saveClicked: EventEmitter<T> = new EventEmitter<T>();
