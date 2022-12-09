@@ -18,6 +18,8 @@
 
   "placeholder.upload_yaml": "Upload Process-YAML",
 
+  "info.no_data_text": "No parts available yet",
+
   "header.new_process": "New Process",
   "header.overview": "Overview"
 }

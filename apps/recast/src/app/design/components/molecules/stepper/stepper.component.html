@@ -1,4 +1,5 @@
-<mat-horizontal-stepper class="stepper"
+<mat-horizontal-stepper
+  [@.disabled]="true"
   labelPosition="bottom"
   (selectionChange)="stepChanged.emit($event.selectedIndex)">
   <ng-container *ngFor="let step of steps">

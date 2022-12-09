@@ -43,6 +43,12 @@
     .mat-step-icon-selected {
       background-color: $primary-color;
     }
+
+    .mat-step-header {
+      &:hover, &.cdk-program-focused, &.cdk-mouse-focused, &.cdk-focuse {
+        background-color: transparent !important;
+      }
+    }
   }
 }
 
@@ -113,6 +119,10 @@
       .mat-step-label-selected {
         font-size: inherit;
       }
+    }
+
+    .mat-horizontal-stepper-header {
+      padding-bottom: 10px;
     }
 
     .mat-horizontal-stepper-header-container {

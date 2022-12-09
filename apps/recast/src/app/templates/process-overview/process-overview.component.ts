@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Process, Step } from 'build/openapi/recast';
 import { concatMap, filter, map, Observable } from 'rxjs';
@@ -6,7 +6,6 @@ import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/bread
 import { TableColumn } from 'src/app/design/components/organisms/table/table.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
-import { MatStepper } from '@angular/material/stepper';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 
 @Component({
@@ -15,10 +14,7 @@ import { StepFacadeService } from 'src/app/services/step-facade.service';
   styleUrls: ['./process-overview.component.scss'],
 })
 export class ProcessOverviewComponent {
-  @ViewChild(MatStepper) stepper: MatStepper | undefined;
-
   public title = '';
-  public processId: any = '';
   public breadcrumbs: Breadcrumb[] = [];
   public steps: Step[] = [];
   public stepTitles: string[] = [];
@@ -35,14 +31,9 @@ export class ProcessOverviewComponent {
     public readonly stepService: StepFacadeService,
     public route: ActivatedRoute
   ) {
-    this.tableData$ = elementService.elements$;
-    const processId$ = route.paramMap.pipe(
-      filter(param => !!param.get('id')),
-      map((param, index) => +param.get('id')!),
-    );
-
-    processId$.pipe(concatMap(id => this.processService.processById$(id)))
-      .subscribe(process => {
+    this.processId.pipe(
+      concatMap(id => this.processService.processById$(id))
+    ).subscribe(process => {
         this.title = process.name!;
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },
@@ -50,15 +41,29 @@ export class ProcessOverviewComponent {
         ];
     });
 
-    processId$.pipe(concatMap(id => this.stepService.stepsByProcessId$(id)))
-      .subscribe(steps => {
+    this.processId.pipe(
+      concatMap(id => this.stepService.stepsByProcessId$(id))
+    ).subscribe(steps => {
         this.steps = steps;
         this.stepTitles = steps.map(step => step.name!);
     });
+
+    this.processId.pipe(
+      concatMap(id => this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.steps[0]?.id!))
+    ).subscribe();
   }
 
-  public changeContent(id: number) {
-    //TODO
+  private get processId(): Observable<number> {
+    return this.route.paramMap.pipe(
+      filter(param => !!param.get('id')),
+      map((param, index) => +param.get('id')!),
+    );
+  }
+
+  public changeContent(index: number) {
+    this.processId.pipe(
+      concatMap(id => this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.steps[index]?.id!))
+    ).subscribe();
   }
 
   public deleteTableRow(element: Process | Element | Step): void {
