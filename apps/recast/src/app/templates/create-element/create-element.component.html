@@ -14,7 +14,8 @@
       <app-input-field
         class="input"
         [label]="prop.name!"
-        [formControlName]="prop.id!">
+        [formControlName]="prop.id!"
+        svgIcon="rcst_chart">
       </app-input-field>
     </div>
   </form>
@@ -23,7 +24,7 @@
     <app-button-unfilled
       type="reset"
       [bordered]="true"
-      routerLink="../"
+      routerLink="/overview/process/{{ processId }}"
       i18n="@@actions.back">
       Back
     </app-button-unfilled>

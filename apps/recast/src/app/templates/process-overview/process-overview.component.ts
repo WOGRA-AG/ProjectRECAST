@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Process, Step } from 'build/openapi/recast';
 import { concatMap, filter, map, Observable } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
@@ -15,7 +15,7 @@ import { StepFacadeService } from 'src/app/services/step-facade.service';
 })
 export class ProcessOverviewComponent {
   public title = '';
-  public stepId: number = 1; // TODO
+  public currentStepId: number | undefined;
   public breadcrumbs: Breadcrumb[] = [];
   public steps: Step[] = [];
   public stepTitles: string[] = [];
@@ -30,7 +30,8 @@ export class ProcessOverviewComponent {
     public readonly processService: ProcessFacadeService,
     public readonly elementService: ElementFacadeService,
     public readonly stepService: StepFacadeService,
-    public route: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    private router: Router,
   ) {
     this.tableData$ = elementService.elements$;
 
@@ -52,21 +53,29 @@ export class ProcessOverviewComponent {
     });
 
     this.processId.pipe(
-      concatMap(id => this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.steps[0]?.id!))
+      concatMap(id => {
+        this.currentStepId = this.steps[0]?.id!;
+        return this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.currentStepId!);
+      })
     ).subscribe();
   }
 
   private get processId(): Observable<number> {
-    return this.route.paramMap.pipe(
+    return this.activatedRoute.paramMap.pipe(
       filter(param => !!param.get('id')),
       map((param, index) => +param.get('id')!),
     );
   }
 
-  public changeContent(index: number) {
+  public changeContent(index: number): void {
+    this.currentStepId = this.steps[index]?.id!;
     this.processId.pipe(
-      concatMap(id => this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.steps[index]?.id!))
+      concatMap(id => this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.currentStepId!))
     ).subscribe();
+  }
+
+  public navigateToCreateElement(): void {
+    this.router.navigate(['./step/' + this.currentStepId + '/element'], {relativeTo: this.activatedRoute});
   }
 
   public deleteTableRow(element: Process | Element | Step): void {

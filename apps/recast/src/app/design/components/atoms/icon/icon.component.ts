@@ -32,5 +32,9 @@ export class IconComponent {
       'rcst_arrow',
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/arrow.svg')
     );
+    this.matIconRegistry.addSvgIcon(
+      'rcst_chart',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/chart.svg')
+    );
   }
 }
