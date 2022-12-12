@@ -1,0 +1,22 @@
+@import 'src/app/design/material/essentials/media-queries';
+
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 1rem;
+
+  @media #{$medium-and-up} {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .input-wrapper {
+    width: 100%;
+  }
+}
+
+.buttons {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

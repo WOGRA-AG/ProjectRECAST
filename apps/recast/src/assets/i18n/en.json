@@ -3,6 +3,7 @@
   "actions.update": "Update",
   "actions.back": "Back",
   "actions.create": "Create",
+  "actions.save": "Save",
   "action.scan_element": "Scan Element",
   "action.create_element": "Create Element",
 
@@ -19,5 +20,6 @@
   "placeholder.upload_yaml": "Upload Process-YAML",
 
   "header.new_process": "New Process",
-  "header.overview": "Overview"
+  "header.overview": "Overview",
+  "header.create_element": "Create Element"
 }

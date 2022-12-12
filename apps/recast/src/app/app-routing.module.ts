@@ -7,6 +7,7 @@ import { AuthGuard } from './user/guards/auth.guard';
 import { OverviewComponent } from './templates/overview/overview.component';
 import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
 import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
+import { CreateElementComponent } from './templates/create-element/create-element.component';
 
 const routes: Routes = [
   {
@@ -40,7 +41,31 @@ const routes: Routes = [
           },
           {
             path: ':id',
-            component: ProcessOverviewComponent,
+            children: [
+              {
+                path: '',
+                component: ProcessOverviewComponent,
+              },
+              {
+                path: 'step',
+                children: [
+                  {
+                    path: ':stepId',
+                    children: [
+                      {
+                        path: 'element',
+                        children: [
+                          {
+                            path: '',
+                            component: CreateElementComponent,
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           },
         ],
       },

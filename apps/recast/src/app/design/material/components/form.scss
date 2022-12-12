@@ -30,13 +30,24 @@
     }
   }
   .mat-form-field {
+    width: 100%;
+
     .mat-form-field-wrapper {
+      width: 100%;
+      margin: 0;
+
       .mat-form-field-infix {
         padding: 0.5em 0 0.5em 0;
         .mat-form-field-label-wrapper .mat-empty {
           top: 1.35em;
         }
       }
+    }
+  }
+
+  .mat-form-field-flex {
+    .mat-form-field-outline {
+      width: 100%;
     }
   }
 

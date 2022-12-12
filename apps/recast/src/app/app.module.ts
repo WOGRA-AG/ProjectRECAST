@@ -12,6 +12,7 @@ import { ProcessOverviewComponent } from './templates/process-overview/process-o
 import { SharedModule } from './shared/shared.module';
 import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
 import { i18nModule } from './i18n/i18n.module';
+import { CreateElementComponent } from './templates/create-element/create-element.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { i18nModule } from './i18n/i18n.module';
     OverviewComponent,
     ProcessOverviewComponent,
     UploadNewProcessComponent,
+    CreateElementComponent
   ],
   imports: [
     BrowserModule,

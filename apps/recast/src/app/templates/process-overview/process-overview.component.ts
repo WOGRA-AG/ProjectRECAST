@@ -14,7 +14,8 @@ import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 })
 export class ProcessOverviewComponent {
   public title = '';
-  public processId: any = '';
+  public processId: number | undefined;
+  public stepId: number = 1; // TODO
   public breadcrumbs: Breadcrumb[] = [];
   public dataColumns: TableColumn[] = [
     { key: 'name', label: 'Title', type: 'text', required: true },
@@ -36,6 +37,7 @@ export class ProcessOverviewComponent {
         concatMap(id => this.processService.processById$(id))
       )
       .subscribe(process => {
+        this.processId = process.id;
         this.title = process.name!;
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },

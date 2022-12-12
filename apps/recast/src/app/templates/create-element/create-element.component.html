@@ -1,0 +1,37 @@
+<div class="content-wrapper">
+  <app-page-header
+    i18n-header="@@header.create_element"
+    header="Bauteil erstellen"
+    [breadcrumbs]="breadcrumbs">
+  </app-page-header>
+
+  <form
+    #f="ngForm"
+    (ngSubmit)="f.form.valid"
+    class="grid-wrapper"
+    [formGroup]="propertiesForm">
+    <div class="input-wrapper" *ngFor="let prop of properties">
+      <app-input-field
+        class="input"
+        [label]="prop.name!"
+        [formControlName]="prop.id!">
+      </app-input-field>
+    </div>
+  </form>
+
+  <div class="buttons">
+    <app-button-unfilled
+      type="reset"
+      [bordered]="true"
+      routerLink="../"
+      i18n="@@actions.back">
+      Back
+    </app-button-unfilled>
+    <app-submit-button
+      class="button"
+      routerLink="/overview/process/{{ processId }}"
+      i18n="@@actions.save">
+      Save
+    </app-submit-button>
+  </div>
+</div>
