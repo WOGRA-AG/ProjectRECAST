@@ -90,7 +90,7 @@ export class StepFacadeService {
 
   public stepsByProcessId$(id: number): Observable<Step[]> {
     return this._steps$.pipe(
-      map(steps => steps.filter(s => s.processId === id))
+      map(steps => steps.filter(s => s.processId === id).sort((a, b) => a.id! - b.id!))
     );
   }
 

@@ -12,6 +12,8 @@
       class="table"
       [columnsSchema]="dataColumns"
       [data]="tableData$"
+      i18n-noDataText="@@info.no_data_text"
+      noDataText="Noch keine Bauteile vorhanden"
       (deleteClicked)="deleteTableRow($event)"
       (saveClicked)="editTableRow($event)">
     </app-table>
