@@ -108,8 +108,9 @@ export class ElementFacadeService {
     id,
     name,
     processId,
+    currentStepId
   }: Element): Observable<Element> {
-    const upsertElem = { id, name, processId };
+    const upsertElem = { id, name, processId, currentStepId};
     const upsert = this._supabaseClient
       .from(Tables.elements)
       .upsert(snakeCase(upsertElem))

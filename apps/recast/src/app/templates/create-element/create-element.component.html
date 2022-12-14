@@ -7,32 +7,40 @@
 
   <form
     #f="ngForm"
-    (ngSubmit)="f.form.valid"
-    class="grid-wrapper"
     [formGroup]="propertiesForm">
-    <div class="input-wrapper" *ngFor="let prop of properties">
-      <app-input-field
-        class="input"
-        [label]="prop.name!"
-        [formControlName]="prop.id!"
-        svgIcon="rcst_chart">
-      </app-input-field>
+    <div class="grid-wrapper">
+      <div class="input-wrapper">
+        <app-input-field
+          class="input"
+          label="Name"
+          formControlName="name"
+          svgIcon="rcst_chart">
+        </app-input-field>
+      </div>
+      <div class="input-wrapper" *ngFor="let prop of properties">
+        <app-input-field
+          class="input"
+          [label]="prop.name!"
+          [formControlName]="prop.id!"
+          svgIcon="rcst_chart">
+        </app-input-field>
+      </div>
+    </div>
+    <div class="actions">
+      <app-button-unfilled
+        type="reset"
+        [bordered]="true"
+        routerLink="/overview/process/{{ processId }}"
+        i18n="@@actions.back">
+        Back
+      </app-button-unfilled>
+      <app-submit-button
+        class="button"
+        routerLink="/overview/process/{{ processId }}"
+        i18n="@@actions.save"
+        (click)="saveElement()">
+        Save
+      </app-submit-button>
     </div>
   </form>
-
-  <div class="buttons">
-    <app-button-unfilled
-      type="reset"
-      [bordered]="true"
-      routerLink="/overview/process/{{ processId }}"
-      i18n="@@actions.back">
-      Back
-    </app-button-unfilled>
-    <app-submit-button
-      class="button"
-      routerLink="/overview/process/{{ processId }}"
-      i18n="@@actions.save">
-      Save
-    </app-submit-button>
-  </div>
 </div>
