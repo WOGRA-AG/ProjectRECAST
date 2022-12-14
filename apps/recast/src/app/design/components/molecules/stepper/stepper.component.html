@@ -1,0 +1,10 @@
+<mat-horizontal-stepper
+  [@.disabled]="true"
+  labelPosition="bottom"
+  (selectionChange)="stepChanged.emit($event.selectedIndex)">
+  <ng-container *ngFor="let step of steps">
+    <mat-step [label]="step" class="step">
+      <div class="mat-subheading-1 primary left-label">{{step}}</div>
+    </mat-step>
+  </ng-container>
+</mat-horizontal-stepper>

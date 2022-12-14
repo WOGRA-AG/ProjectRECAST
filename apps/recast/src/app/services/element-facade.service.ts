@@ -98,6 +98,12 @@ export class ElementFacadeService {
     );
   }
 
+  public elementsByProcessIdAndStepId$(processId: number, stepId: number): Observable<Element[]> {
+    return this._elements$.pipe(
+      map(elements => elements.filter(e => e.processId === processId && e.currentStepId === stepId))
+    );
+  }
+
   private upsertElement$({
     id,
     name,
