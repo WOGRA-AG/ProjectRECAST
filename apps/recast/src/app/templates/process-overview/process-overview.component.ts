@@ -31,7 +31,7 @@ export class ProcessOverviewComponent {
     public readonly stepService: StepFacadeService,
     public route: ActivatedRoute
   ) {
-    this.processId.pipe(
+    this.processId$.pipe(
       concatMap(id => this.processService.processById$(id))
     ).subscribe(process => {
         this.title = process.name!;
@@ -41,19 +41,18 @@ export class ProcessOverviewComponent {
         ];
     });
 
-    this.processId.pipe(
+    this.processId$.pipe(
       concatMap(id => this.stepService.stepsByProcessId$(id))
     ).subscribe(steps => {
         this.steps = steps;
         this.stepTitles = steps.map(step => step.name!);
+        if (steps[0]) {
+          this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(steps[0].processId!, steps[0].id!);
+        }
     });
-
-    this.processId.pipe(
-      concatMap(id => this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.steps[0]?.id!))
-    ).subscribe();
   }
 
-  private get processId(): Observable<number> {
+  private get processId$(): Observable<number> {
     return this.route.paramMap.pipe(
       filter(param => !!param.get('id')),
       map((param, index) => +param.get('id')!),
@@ -61,7 +60,7 @@ export class ProcessOverviewComponent {
   }
 
   public changeContent(index: number) {
-    this.processId.pipe(
+    this.processId$.pipe(
       concatMap(id => this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.steps[index]?.id!))
     ).subscribe();
   }
