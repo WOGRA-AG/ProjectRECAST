@@ -12,7 +12,7 @@ components:
       type: integer
       format: int64
 
-    UserId:
+    UuId:
       type: string
       format: uuid
 
@@ -28,7 +28,7 @@ components:
         name:
           type: string
         ownerId:
-          $ref: '#/components/schemas/UserId'
+          $ref: '#/components/schemas/UuId'
         steps:
           nullable: true
           type: array
@@ -103,7 +103,7 @@ components:
         stepPropertyId:
           $ref: '#/components/schemas/Id'
         value:
-          type: string
+          $ref: '#/components/schemas/UuId'
 
     Profile:
       required:
@@ -111,7 +111,7 @@ components:
         - email
       properties:
         id:
-          $ref: '#/components/schemas/UserId'
+          $ref: '#/components/schemas/UuId'
         updatedAt:
           type: string
           format: date-time

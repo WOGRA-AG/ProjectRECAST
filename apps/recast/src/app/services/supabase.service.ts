@@ -55,4 +55,5 @@ export enum Tables {
   elements = 'elements',
   elementProperties = 'element_properties',
   profiles = 'profiles',
+  values = 'values',
 }
