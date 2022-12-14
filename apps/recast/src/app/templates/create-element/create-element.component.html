@@ -14,7 +14,7 @@
           class="input"
           label="Name"
           formControlName="name"
-          svgIcon="rcst_chart">
+          icon="bar_chart">
         </app-input-field>
       </div>
       <div class="input-wrapper" *ngFor="let prop of properties">
@@ -22,7 +22,7 @@
           class="input"
           [label]="prop.name!"
           [formControlName]="prop.id!"
-          svgIcon="rcst_chart">
+          icon="bar_chart">
         </app-input-field>
       </div>
     </div>

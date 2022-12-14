@@ -14,7 +14,6 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() appearance: 'outline' | 'fill' | 'legacy' | 'standard' = 'outline';
   @Input() type: 'text' | 'number' = 'text';
   @Input() icon = '';
-  @Input() svgIcon = '';
 
   onTouch: any;
   private val = '';
