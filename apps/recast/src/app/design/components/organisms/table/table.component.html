@@ -62,7 +62,7 @@
             (click)="deleteClicked.emit(element)"></app-icon-button>
         </ng-container>
         <ng-container *ngSwitchDefault>
-          <app-text-input-field
+          <app-input-field
             [(ngModel)]="element[column.key]"
             [label]="column.key"
             [required]="!!column.required"
@@ -71,7 +71,7 @@
               column.type === 'text' || column.type === 'number'
                 ? column.type
                 : 'text'
-            "></app-text-input-field>
+            "></app-input-field>
         </ng-container>
       </div>
     </td>

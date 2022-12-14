@@ -67,6 +67,12 @@ export class StepPropertyService {
     );
   }
 
+  public stepPropertiesByStepId$(id: number): Observable<StepProperty[]> {
+    return this._stepProperties$.pipe(
+      map(props => props.filter(p => p.stepId === id))
+    );
+  }
+
   private upsertStepProp$(
     { id, name, defaultValue, description, type }: StepProperty,
     stepId: number | undefined

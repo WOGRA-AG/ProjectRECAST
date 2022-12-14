@@ -4,24 +4,24 @@
   class="form-widget"
   [formGroup]="updateProfileForm">
   <div>
-    <app-text-input-field
+    <app-input-field
       i18n-label="@@label.id"
       label="id"
-      formControlName="id"></app-text-input-field>
+      formControlName="id"></app-input-field>
   </div>
   <div>
-    <app-text-input-field
+    <app-input-field
       i18n-label="@@label.email"
       formControlName="email"
-      label="email"></app-text-input-field>
+      label="email"></app-input-field>
   </div>
   <div>
-    <app-text-input-field
+    <app-input-field
       i18n-label="@@label.username"
       i18n-errMsg="@@err.min_char"
       formControlName="username"
       label="username"
-      errMsg="Minimum of {{ _minlength }} characters"></app-text-input-field>
+      errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
   </div>
   <div class="actions">
     <app-submit-button [disabled]="loading">

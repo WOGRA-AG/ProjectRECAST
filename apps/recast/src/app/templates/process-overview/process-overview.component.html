@@ -25,8 +25,12 @@
         i18n="@@action.scan_element">
         Bauteil scannen
       </app-button-unfilled>
-      <app-button-filled class="button" i18n="@@action.create_element"
-        >Bauteil erstellen</app-button-filled
+      <app-button-filled 
+        class="button"
+        i18n="@@action.create_element"
+        (click)="navigateToCreateElement()">
+          Bauteil erstellen
+      </app-button-filled
       >
     </div>
   </div>

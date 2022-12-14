@@ -3,6 +3,7 @@
   "actions.update": "Update",
   "actions.back": "Back",
   "actions.create": "Create",
+  "actions.save": "Save",
   "action.scan_element": "Scan Element",
   "action.create_element": "Create Element",
 
@@ -21,5 +22,6 @@
   "info.no_data_text": "No parts available yet",
 
   "header.new_process": "New Process",
-  "header.overview": "Overview"
+  "header.overview": "Overview",
+  "header.create_element": "Create Element"
 }

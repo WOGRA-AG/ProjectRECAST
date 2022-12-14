@@ -3,6 +3,7 @@
   "actions.update": "Update",
   "actions.back": "Zurück",
   "actions.create": "Erstellen",
+  "actions.save": "Speichern",
   "action.scan_element": "Bauteil scannen",
   "action.create_element": "Bauteil erstellen",
 
@@ -21,5 +22,6 @@
   "info.no_data_text": "Noch keine Bauteile vorhanden",
 
   "header.new_process": "Prozess Erstellen",
-  "header.overview": "Übersicht"
+  "header.overview": "Übersicht",
+  "header.create_element": "Bauteil erstellen"
 }
