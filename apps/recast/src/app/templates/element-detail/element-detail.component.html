@@ -1,0 +1,38 @@
+<div class="content-wrapper">
+  <app-page-header
+    [header]="element?.name!"
+    [breadcrumbs]="breadcrumbs">
+  </app-page-header>
+
+  <app-stepper [steps]="stepTitles" [disabled]="true" [currentIndex]="currentIndex"></app-stepper>
+
+  <form
+    #f="ngForm"
+    [formGroup]="propertiesForm">
+    <div class="grid-wrapper">
+      <div class="input-wrapper" *ngFor="let prop of properties">
+        <app-input-field
+          class="input"
+          [label]="getStepPropertyName(prop.stepPropertyId!)"
+          [formControlName]="prop.id!"
+          icon="bar_chart">
+        </app-input-field>
+      </div>
+    </div>
+    <div class="actions">
+      <app-button-unfilled
+        type="reset"
+        [bordered]="true"
+        routerLink="../../../../"
+        i18n="@@actions.back">
+        Back
+      </app-button-unfilled>
+      <app-submit-button
+        class="button"
+        i18n="@@action.next_step"
+        (click)="saveElementProperty()">
+        Take to the next step
+      </app-submit-button>
+    </div>
+  </form>
+</div>

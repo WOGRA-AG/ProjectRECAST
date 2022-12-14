@@ -67,6 +67,12 @@ export class ElementPropertyService {
     );
   }
 
+  public elementPropertiesByElementId$(id: number): Observable<ElementProperty[]> {
+    return this._elementProperties$.pipe(
+      map(props => props.filter(p => p.elementId === id))
+    );
+  }
+
   private upsertElementProp$(
     { id, value, stepPropertyId }: ElementProperty,
     elementId: number | undefined

@@ -7,6 +7,8 @@ import { MatStepper } from '@angular/material/stepper';
 })
 export class StepperComponent implements AfterViewInit {
   @Input() steps: string[] = [];
+  @Input() disabled = false;
+  @Input() currentIndex = 0;
   @Output() stepChanged: EventEmitter<number> = new EventEmitter<number>();
 
   @ViewChild(MatStepper) stepper: MatStepper | undefined;

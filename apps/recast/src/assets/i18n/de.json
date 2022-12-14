@@ -6,6 +6,7 @@
   "actions.save": "Speichern",
   "action.scan_element": "Bauteil scannen",
   "action.create_element": "Bauteil erstellen",
+  "action.next_step": "Zum nächsten Schritt bringen",
 
   "label.username": "Username",
   "label.email": "Email",

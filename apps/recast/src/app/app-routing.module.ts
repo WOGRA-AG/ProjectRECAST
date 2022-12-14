@@ -8,6 +8,7 @@ import { OverviewComponent } from './templates/overview/overview.component';
 import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
 import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
 import { CreateElementComponent } from './templates/create-element/create-element.component';
+import { ElementDetailComponent } from './templates/element-detail/element-detail.component';
 
 const routes: Routes = [
   {
@@ -58,6 +59,10 @@ const routes: Routes = [
                           {
                             path: '',
                             component: CreateElementComponent,
+                          },
+                          {
+                            path: ':elementId',
+                            component: ElementDetailComponent,
                           }
                         ]
                       }

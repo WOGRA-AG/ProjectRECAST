@@ -96,7 +96,10 @@ export class OverviewComponent {
         this.router.navigateByUrl('overview/process/' + element.id);
         break;
       case 1:
-        // TODO navigate to element page
+        const elem: Element = element as Element;
+        this.router.navigateByUrl(
+          'overview/process/' + elem.processId + '/step/' + elem.currentStepId + '/element/' + elem.id
+        );
         break;
       default:
         break;
