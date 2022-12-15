@@ -50,6 +50,10 @@ export class UserFacadeService {
     );
   }
 
+  get currentProfile(): Profile | null {
+    return this._currentProfile$.getValue();
+  }
+
   get profile$(): Observable<Profile | null> {
     return this._currentProfile$;
   }
