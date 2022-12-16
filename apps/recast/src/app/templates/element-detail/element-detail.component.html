@@ -4,7 +4,11 @@
     [breadcrumbs]="breadcrumbs">
   </app-page-header>
 
-  <app-stepper [steps]="stepTitles" [disabled]="true" [currentIndex]="currentIndex"></app-stepper>
+  <app-stepper 
+    [steps]="stepTitles"
+    [disabled]="true"
+    [currentIndex]="currentIndex">
+  </app-stepper>
 
   <form
     #f="ngForm"
@@ -23,15 +27,24 @@
       <app-button-unfilled
         type="reset"
         [bordered]="true"
-        routerLink="../../../../"
+        (click)="navigateBack()"
         i18n="@@actions.back">
         Back
       </app-button-unfilled>
       <app-submit-button
+        *ngIf="!isLastStep"
         class="button"
         i18n="@@action.next_step"
         (click)="saveElementProperty()">
         Take to the next step
+      </app-submit-button>
+      <app-submit-button
+        *ngIf="isLastStep"
+        class="button"
+        i18n="@@action.finished"
+        routerLink="../../../../"
+        (click)="saveElementProperty()">
+        Finished
       </app-submit-button>
     </div>
   </form>

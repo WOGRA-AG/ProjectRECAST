@@ -23,6 +23,7 @@ export class ElementDetailComponent {
   public currentStep: Step | undefined;
   public currentIndex = 0;
   public stepTitles: string[] = [];
+  public isLastStep = false;
 
   propertiesForm = this.formBuilder.group({
   });
@@ -65,6 +66,7 @@ export class ElementDetailComponent {
       ).subscribe(step => {
           this.currentStep = step;
           this.currentIndex = this.steps.indexOf(step);
+          this.isLastStep = this.steps.length - 1 === this.currentIndex;
       });
 
     route.paramMap
@@ -99,6 +101,13 @@ export class ElementDetailComponent {
     let stepPropName = '';
     this.stepPropertyService.stepPropertyById$(id).subscribe(sp => stepPropName = sp.name!);
     return stepPropName;
+  }
+
+  public navigateBack() {
+    if (this.currentIndex === 0) {
+      this.router.navigate(['../../../../'], {relativeTo: this.route});
+    }
+    // TODO navigate to previous step
   }
 
   public saveElementProperty(): void {

@@ -7,6 +7,7 @@
   "action.scan_element": "Bauteil scannen",
   "action.create_element": "Bauteil erstellen",
   "action.next_step": "Zum nächsten Schritt bringen",
+  "action.finished": "Fertig",
 
   "label.username": "Username",
   "label.email": "Email",

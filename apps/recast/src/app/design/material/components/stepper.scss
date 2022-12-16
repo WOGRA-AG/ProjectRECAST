@@ -54,6 +54,10 @@
 
 @mixin layout() {
   .mat-stepper-label-position-bottom {
+    &.disabled {
+      pointer-events: none;
+    }
+
     .mat-stepper-horizontal-line {
       top: 38px;
       border-width: 2px;
