@@ -57,7 +57,7 @@ export class CreateElementComponent {
         this.properties = stepProperties;
         this.propertiesForm.addControl('name', new FormControl());
         this.properties.forEach(p => {
-          this.propertiesForm.addControl('' + p.id, new FormControl());
+          this.propertiesForm.addControl('' + p.id, new FormControl(p.defaultValue));
         });
       });
   }
