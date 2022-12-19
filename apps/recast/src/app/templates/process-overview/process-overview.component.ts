@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Process, Step } from 'build/openapi/recast';
+import { Process, Step, Element } from 'build/openapi/recast';
 import { concatMap, filter, map, Observable } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { TableColumn } from 'src/app/design/components/organisms/table/table.component';
@@ -76,10 +76,18 @@ export class ProcessOverviewComponent {
   }
 
   public deleteTableRow(element: Process | Element | Step): void {
-    //TODO
+    if (!element.id) {
+      return;
+    }
+    if (confirm('Delete Element and all corresponding data?')) {
+      this.elementService.deleteElement$(element.id).subscribe();
+    }
   }
 
   public editTableRow(element: Process | Element | Step): void {
-    //TODO
+    if (!element) {
+      return;
+    }
+    this.elementService.saveElement$(element as Element).subscribe();
   }
 }
