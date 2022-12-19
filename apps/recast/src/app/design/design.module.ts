@@ -21,6 +21,7 @@ import { AppRoutingModule } from '../app-routing.module';
 import { ButtonFilledComponent } from './components/molecules/button-filled/button-filled.component';
 import { ButtonUnfilledComponent } from './components/molecules/button-unfilled/button-unfilled.component';
 import { StepperComponent } from './components/molecules/stepper/stepper.component';
+import { ConfirmDialogComponent } from './components/organisms/confirm-dialog/confirm-dialog.component';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -39,7 +40,8 @@ const COMPONENTS = [
   DragAndDropDirective,
   SingleFileInputComponent,
   BreadcrumbComponent,
-  StepperComponent
+  StepperComponent,
+  ConfirmDialogComponent,
 ];
 
 @NgModule({

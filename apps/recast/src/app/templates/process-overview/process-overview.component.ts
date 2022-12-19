@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Process, Step, Element } from 'build/openapi/recast';
 import { concatMap, filter, map, Observable } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
+import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { TableColumn } from 'src/app/design/components/organisms/table/table.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
@@ -32,6 +34,7 @@ export class ProcessOverviewComponent {
     public readonly stepService: StepFacadeService,
     public activatedRoute: ActivatedRoute,
     private router: Router,
+    public dialog: MatDialog,
   ) {
     this.processId$.pipe(
       concatMap(id => this.processService.processById$(id))
@@ -86,9 +89,12 @@ export class ProcessOverviewComponent {
     if (!element.id) {
       return;
     }
-    if (confirm('Delete Element and all corresponding data?')) {
-      this.elementService.deleteElement$(element.id).subscribe();
-    }
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { title:$localize`:@@dialog.delete_element:Delete Element?` }
+    }).afterClosed().pipe(
+      filter(confirmed => !!confirmed),
+      concatMap(() => this.elementService.deleteElement$(element.id!))
+    ).subscribe();
   }
 
   public editTableRow(element: Process | Element | Step): void {
