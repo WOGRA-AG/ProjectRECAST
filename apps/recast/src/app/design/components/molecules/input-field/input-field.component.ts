@@ -60,8 +60,6 @@ export class InputFieldComponent implements ControlValueAccessor {
       return;
     }
     this.value = val;
-    this.onChange(val);
-    this.onTouch();
   }
 
   change(event: Event): void {

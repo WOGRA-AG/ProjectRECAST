@@ -35,7 +35,7 @@
         *ngIf="!isLastStep"
         class="button"
         i18n="@@action.next_step"
-        (click)="goToNextStep()">
+        (click)="onSubmitClicked()">
         Take to the next step
       </app-submit-button>
       <app-submit-button
@@ -43,7 +43,7 @@
         class="button"
         i18n="@@action.finished"
         routerLink="../../../../"
-        (click)="saveElementProperties()">
+        (click)="onSubmitClicked()">
         Finished
       </app-submit-button>
     </div>

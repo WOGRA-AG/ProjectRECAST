@@ -94,7 +94,7 @@ export class ElementDetailComponent {
       .subscribe(elementProperties => {
         this.properties = elementProperties;
         this.properties.forEach(p => {
-          this.propertiesForm.addControl('' + p.id, new FormControl());
+          this.propertiesForm.addControl('' + p.id, new FormControl(p.value));
         });
       });
   }
@@ -109,11 +109,39 @@ export class ElementDetailComponent {
     this.location.back();
   }
 
-  public saveElementProperties(): void {
-    // TODO
+  public onSubmitClicked() {
+    for (const prop of this.properties) {
+      const value = this.propertiesForm.get('' + prop.id)?.value;
+      this.updateElementProperty(prop, value);
+      if (!this.isLastStep) {
+        const nextStepId = this.steps[this.currentIndex + 1].id!;
+        this.updateElement(prop.elementId!, nextStepId);
+        this.router.navigate(['/'], { skipLocationChange: true }).then(() =>
+          this.router.navigateByUrl('/overview/process/1/step/' + nextStepId + '/element/1')
+        )
+      }
+    }
   }
 
-  public goToNextStep(): void {
-    // TODO
+  private updateElementProperty(property: ElementProperty, value: string): void {
+    this.elementPropertyService.saveElementProp$({
+      id: property.id,
+      value: value
+    }, property.elementId).pipe(
+      catchError(err => {
+        console.error(err);
+        return of(undefined);
+      })).subscribe();
+  }
+
+  private updateElement(id: number, stepId: number): void {
+    this.elementService.saveElement$({
+      id,
+      currentStepId: stepId
+    }).pipe(
+      catchError(err => {
+        console.error(err);
+        return of(undefined);
+      })).subscribe();
   }
 }
