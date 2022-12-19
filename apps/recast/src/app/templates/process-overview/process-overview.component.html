@@ -15,7 +15,8 @@
       i18n-noDataText="@@info.no_data_text"
       noDataText="Noch keine Bauteile vorhanden"
       (deleteClicked)="deleteTableRow($event)"
-      (saveClicked)="editTableRow($event)">
+      (saveClicked)="editTableRow($event)"
+      (rowClicked)="navigateTo($event)">
     </app-table>
     <div class="buttons">
       <app-button-unfilled

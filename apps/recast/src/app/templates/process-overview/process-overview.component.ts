@@ -75,6 +75,13 @@ export class ProcessOverviewComponent {
     this.router.navigate(['./step/' + this.currentStepId + '/element'], {relativeTo: this.activatedRoute});
   }
 
+  public navigateTo(element: Element): void {
+    this.router.navigate(
+      ['./step/' + this.currentStepId + '/element/' + element.id],
+      {relativeTo: this.activatedRoute}
+    );
+  }
+
   public deleteTableRow(element: Process | Element | Step): void {
     //TODO
   }

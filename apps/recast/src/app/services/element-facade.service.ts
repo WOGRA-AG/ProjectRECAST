@@ -8,6 +8,7 @@ import {
   from,
   map,
   merge,
+  mergeAll,
   Observable,
   of,
   skip,
@@ -95,6 +96,13 @@ export class ElementFacadeService {
     return from(del).pipe(
       filter(({ error }) => !!error),
       map(({ error }) => error!)
+    );
+  }
+
+  public elementById$(id: number): Observable<Element> {
+    return this._elements$.pipe(
+      mergeAll(),
+      filter(elements => elements.id === id)
     );
   }
 

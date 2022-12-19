@@ -15,6 +15,7 @@ import {
   from,
   map,
   merge,
+  mergeAll,
   Observable,
   of,
   Subject,
@@ -64,6 +65,13 @@ export class StepPropertyService {
     return from(del).pipe(
       filter(({ error }) => !!error),
       map(({ error }) => error!)
+    );
+  }
+
+  public stepPropertyById$(id: number): Observable<StepProperty> {
+    return this._stepProperties$.pipe(
+      mergeAll(),
+      filter(step => step.id === id)
     );
   }
 

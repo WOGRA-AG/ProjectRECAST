@@ -6,6 +6,8 @@
   "actions.save": "Save",
   "action.scan_element": "Scan Element",
   "action.create_element": "Create Element",
+  "action.next_step": "Take to the next step",
+  "action.finished": "Finished",
 
   "label.username": "Username",
   "label.email": "Email",

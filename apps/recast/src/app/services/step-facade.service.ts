@@ -16,6 +16,7 @@ import {
   from,
   map,
   merge,
+  mergeAll,
   Observable,
   of,
   skip,
@@ -85,6 +86,13 @@ export class StepFacadeService {
         step.stepProperties = stepProps;
         return step;
       })
+    );
+  }
+
+  public stepById$(id: number): Observable<Step> {
+    return this._steps$.pipe(
+      mergeAll(),
+      filter(step => step.id === id)
     );
   }
 
