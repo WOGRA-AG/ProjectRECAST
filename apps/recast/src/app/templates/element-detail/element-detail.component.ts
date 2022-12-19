@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ElementProperty, Element, Step } from 'build/openapi/recast';
-import { concatMap, filter, map } from 'rxjs';
+import { catchError, concatMap, filter, map, of } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ElementPropertyService } from 'src/app/services/element-property.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-element-detail',
@@ -37,6 +38,7 @@ export class ElementDetailComponent {
     private elementPropertyService: ElementPropertyService,
     private formBuilder: FormBuilder,
     private router: Router,
+    private location: Location
   ) {
     route.paramMap
       .pipe(
@@ -103,14 +105,15 @@ export class ElementDetailComponent {
     return stepPropName;
   }
 
-  public navigateBack() {
-    if (this.currentIndex === 0) {
-      this.router.navigate(['../../../../'], {relativeTo: this.route});
-    }
-    // TODO navigate to previous step
+  public navigateBack(): void {
+    this.location.back();
   }
 
-  public saveElementProperty(): void {
+  public saveElementProperties(): void {
+    // TODO
+  }
+
+  public goToNextStep(): void {
     // TODO
   }
 }
