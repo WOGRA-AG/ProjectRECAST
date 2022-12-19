@@ -114,10 +114,11 @@ export class ElementDetailComponent {
       const value = this.propertiesForm.get('' + prop.id)?.value;
       this.updateElementProperty(prop, value);
       if (!this.isLastStep) {
-        const nextStepId = this.steps[this.currentIndex + 1].id!;
-        this.updateElement(prop.elementId!, nextStepId);
+        const nextStep = this.steps[this.currentIndex + 1];
+        this.updateElement(prop.elementId!, nextStep.id!);
         this.router.navigate(['/'], { skipLocationChange: true }).then(() =>
-          this.router.navigateByUrl('/overview/process/1/step/' + nextStepId + '/element/1')
+          this.router.navigateByUrl('/overview/process/' + nextStep.processId! + '/step/' + nextStep.id!
+            + '/element/' + prop.elementId)
         );
       }
     }
