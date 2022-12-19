@@ -118,7 +118,7 @@ export class ElementDetailComponent {
         this.updateElement(prop.elementId!, nextStepId);
         this.router.navigate(['/'], { skipLocationChange: true }).then(() =>
           this.router.navigateByUrl('/overview/process/1/step/' + nextStepId + '/element/1')
-        )
+        );
       }
     }
   }
@@ -126,7 +126,7 @@ export class ElementDetailComponent {
   private updateElementProperty(property: ElementProperty, value: string): void {
     this.elementPropertyService.saveElementProp$({
       id: property.id,
-      value: value
+      value
     }, property.elementId).pipe(
       catchError(err => {
         console.error(err);
