@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { concatMap, filter, Observable } from 'rxjs';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { ProcessFacadeService } from '../../services/process-facade.service';
@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
 import { Process, Step, Element } from '../../../../build/openapi/recast';
+import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-overview',
@@ -57,14 +58,20 @@ export class OverviewComponent {
     }
     switch (this.currentIndex) {
       case 0:
-        if (confirm('Delete Process and all corresponding data?')) {
-          this.processService.deleteProcess$(element.id).subscribe();
-        }
+        this.dialog.open(ConfirmDialogComponent, {
+          data: { title: $localize`:@@dialog.delete_process:Delete Process?` }
+        }).afterClosed().pipe(
+          filter(confirmed => !!confirmed),
+          concatMap(() => this.processService.deleteProcess$(element.id!))
+        ).subscribe();
         break;
       case 1:
-        if (confirm('Delete Element and all corresponding data?')) {
-          this.elementService.deleteElement$(element.id).subscribe();
-        }
+        this.dialog.open(ConfirmDialogComponent, {
+          data: { title:$localize`:@@dialog.delete_element:Delete Element?` }
+        }).afterClosed().pipe(
+          filter(confirmed => !!confirmed),
+          concatMap(() => this.elementService.deleteElement$(element.id!))
+        ).subscribe();
         break;
       default:
         break;

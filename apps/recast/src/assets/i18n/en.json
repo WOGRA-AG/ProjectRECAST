@@ -8,6 +8,8 @@
   "action.create_element": "Create Element",
   "action.next_step": "Take to the next step",
   "action.finished": "Finished",
+  "action.cancel": "Cancel",
+  "action.confirm": "Confirm",
 
   "label.username": "Username",
   "label.email": "Email",
@@ -25,5 +27,8 @@
 
   "header.new_process": "New Process",
   "header.overview": "Overview",
-  "header.create_element": "Create Element"
+  "header.create_element": "Create Element",
+
+  "dialog.delete_process": "Delete process and all corresponding data?",
+  "dialog.delete_element": "Delete Element and all corresponding data?"
 }
