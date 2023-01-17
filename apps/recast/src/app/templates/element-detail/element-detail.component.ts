@@ -26,8 +26,7 @@ export class ElementDetailComponent {
   public stepTitles: string[] = [];
   public isLastStep = false;
 
-  propertiesForm = this.formBuilder.group({
-  });
+  propertiesForm = this.formBuilder.group({});
 
   constructor(
     private route: ActivatedRoute,
@@ -55,9 +54,10 @@ export class ElementDetailComponent {
         filter(param => !!param.get('id')),
         map((param, index) => +param.get('id')!),
         concatMap(id => this.stepService.stepsByProcessId$(id))
-      ).subscribe(steps => {
-          this.steps = steps;
-          this.stepTitles = steps.map(step => step.name!);
+      )
+      .subscribe(steps => {
+        this.steps = steps;
+        this.stepTitles = steps.map(step => step.name!);
       });
 
     route.paramMap
@@ -65,10 +65,11 @@ export class ElementDetailComponent {
         filter(param => !!param.get('stepId')),
         map((param, index) => +param.get('stepId')!),
         concatMap(id => this.stepService.stepById$(id))
-      ).subscribe(step => {
-          this.currentStep = step;
-          this.currentIndex = this.steps.indexOf(step);
-          this.isLastStep = this.steps.length - 1 === this.currentIndex;
+      )
+      .subscribe(step => {
+        this.currentStep = step;
+        this.currentIndex = this.steps.indexOf(step);
+        this.isLastStep = this.steps.length - 1 === this.currentIndex;
       });
 
     route.paramMap
@@ -81,7 +82,7 @@ export class ElementDetailComponent {
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },
           { label: process.name!, link: '/overview/process/' + process.id },
-          { label: this.element?.name!},
+          { label: this.element?.name! },
         ];
       });
 
@@ -89,7 +90,9 @@ export class ElementDetailComponent {
       .pipe(
         filter(param => !!param.get('elementId')),
         map((param, index) => +param.get('elementId')!),
-        concatMap(id => this.elementPropertyService.elementPropertiesByElementId$(id))
+        concatMap(id =>
+          this.elementPropertyService.elementPropertiesByElementId$(id)
+        )
       )
       .subscribe(elementProperties => {
         this.properties = elementProperties;
@@ -101,7 +104,9 @@ export class ElementDetailComponent {
 
   public getStepPropertyName(id: number): string {
     let stepPropName = '';
-    this.stepPropertyService.stepPropertyById$(id).subscribe(sp => stepPropName = sp.name!);
+    this.stepPropertyService
+      .stepPropertyById$(id)
+      .subscribe(sp => (stepPropName = sp.name!));
     return stepPropName;
   }
 

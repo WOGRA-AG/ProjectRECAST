@@ -1,10 +1,10 @@
 <div class="content-wrapper">
-  <app-page-header
-    [header]="title"
-    [breadcrumbs]="breadcrumbs">
+  <app-page-header [header]="title" [breadcrumbs]="breadcrumbs">
   </app-page-header>
 
-  <app-stepper [steps]="stepTitles" (stepChanged)="changeContent($event)"></app-stepper>
+  <app-stepper
+    [steps]="stepTitles"
+    (stepChanged)="changeContent($event)"></app-stepper>
 
   <div class="grid-wrapper">
     <h5 class="title primary" i18n="@@label.elements">Bauteile</h5>
@@ -26,13 +26,12 @@
         i18n="@@action.scan_element">
         Bauteil scannen
       </app-button-unfilled>
-      <app-button-filled 
+      <app-button-filled
         class="button"
         i18n="@@action.create_element"
         (click)="navigateToCreateElement()">
-          Bauteil erstellen
-      </app-button-filled
-      >
+        Bauteil erstellen
+      </app-button-filled>
     </div>
   </div>
 </div>

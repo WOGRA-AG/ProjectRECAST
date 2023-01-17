@@ -58,20 +58,32 @@ export class OverviewComponent {
     }
     switch (this.currentIndex) {
       case 0:
-        this.dialog.open(ConfirmDialogComponent, {
-          data: { title: $localize`:@@dialog.delete_process:Delete Process?` }
-        }).afterClosed().pipe(
-          filter(confirmed => !!confirmed),
-          concatMap(() => this.processService.deleteProcess$(element.id!))
-        ).subscribe();
+        this.dialog
+          .open(ConfirmDialogComponent, {
+            data: {
+              title: $localize`:@@dialog.delete_process:Delete Process?`,
+            },
+          })
+          .afterClosed()
+          .pipe(
+            filter(confirmed => !!confirmed),
+            concatMap(() => this.processService.deleteProcess$(element.id!))
+          )
+          .subscribe();
         break;
       case 1:
-        this.dialog.open(ConfirmDialogComponent, {
-          data: { title:$localize`:@@dialog.delete_element:Delete Element?` }
-        }).afterClosed().pipe(
-          filter(confirmed => !!confirmed),
-          concatMap(() => this.elementService.deleteElement$(element.id!))
-        ).subscribe();
+        this.dialog
+          .open(ConfirmDialogComponent, {
+            data: {
+              title: $localize`:@@dialog.delete_element:Delete Element?`,
+            },
+          })
+          .afterClosed()
+          .pipe(
+            filter(confirmed => !!confirmed),
+            concatMap(() => this.elementService.deleteElement$(element.id!))
+          )
+          .subscribe();
         break;
       default:
         break;
@@ -105,7 +117,12 @@ export class OverviewComponent {
       case 1:
         const elem: Element = element as Element;
         this.router.navigateByUrl(
-          'overview/process/' + elem.processId + '/step/' + elem.currentStepId + '/element/' + elem.id
+          'overview/process/' +
+            elem.processId +
+            '/step/' +
+            elem.currentStepId +
+            '/element/' +
+            elem.id
         );
         break;
       default:

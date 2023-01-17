@@ -34,54 +34,66 @@ export class ProcessOverviewComponent {
     public readonly stepService: StepFacadeService,
     public activatedRoute: ActivatedRoute,
     private router: Router,
-    public dialog: MatDialog,
+    public dialog: MatDialog
   ) {
-    this.processId$.pipe(
-      concatMap(id => this.processService.processById$(id))
-    ).subscribe(process => {
+    this.processId$
+      .pipe(concatMap(id => this.processService.processById$(id)))
+      .subscribe(process => {
         this.title = process.name!;
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },
           { label: this.title },
         ];
-    });
+      });
 
-    this.processId$.pipe(
-      concatMap(id => this.stepService.stepsByProcessId$(id))
-    ).subscribe(steps => {
+    this.processId$
+      .pipe(concatMap(id => this.stepService.stepsByProcessId$(id)))
+      .subscribe(steps => {
         this.steps = steps;
         this.stepTitles = steps.map(step => step.name!);
         if (steps[0]) {
           this.currentStepId = steps[0].id!;
-          this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(steps[0].processId!, this.currentStepId);
+          this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(
+            steps[0].processId!,
+            this.currentStepId
+          );
         }
-    });
-
+      });
   }
 
   private get processId$(): Observable<number> {
     return this.activatedRoute.paramMap.pipe(
       filter(param => !!param.get('id')),
-      map((param, index) => +param.get('id')!),
+      map((param, index) => +param.get('id')!)
     );
   }
 
-
   public changeContent(index: number): void {
     this.currentStepId = this.steps[index]?.id!;
-    this.processId$.pipe(
-      concatMap(id => this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(id, this.currentStepId!))
-    ).subscribe();
+    this.processId$
+      .pipe(
+        concatMap(
+          id =>
+            (this.tableData$ =
+              this.elementService.elementsByProcessIdAndStepId$(
+                id,
+                this.currentStepId!
+              ))
+        )
+      )
+      .subscribe();
   }
 
   public navigateToCreateElement(): void {
-    this.router.navigate(['./step/' + this.currentStepId + '/element'], {relativeTo: this.activatedRoute});
+    this.router.navigate(['./step/' + this.currentStepId + '/element'], {
+      relativeTo: this.activatedRoute,
+    });
   }
 
   public navigateTo(element: Element): void {
     this.router.navigate(
       ['./step/' + this.currentStepId + '/element/' + element.id],
-      {relativeTo: this.activatedRoute}
+      { relativeTo: this.activatedRoute }
     );
   }
 
@@ -89,12 +101,16 @@ export class ProcessOverviewComponent {
     if (!element.id) {
       return;
     }
-    this.dialog.open(ConfirmDialogComponent, {
-      data: { title:$localize`:@@dialog.delete_element:Delete Element?` }
-    }).afterClosed().pipe(
-      filter(confirmed => !!confirmed),
-      concatMap(() => this.elementService.deleteElement$(element.id!))
-    ).subscribe();
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: { title: $localize`:@@dialog.delete_element:Delete Element?` },
+      })
+      .afterClosed()
+      .pipe(
+        filter(confirmed => !!confirmed),
+        concatMap(() => this.elementService.deleteElement$(element.id!))
+      )
+      .subscribe();
   }
 
   public editTableRow(element: Process | Element | Step): void {

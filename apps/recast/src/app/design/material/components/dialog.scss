@@ -6,7 +6,8 @@
   $accent-palette: map.get($theme, 'accent');
   $accent-color: mat.get-color-from-palette($accent-palette);
 
-  .mat-dialog-title, .mat-dialog-content {
+  .mat-dialog-title,
+  .mat-dialog-content {
     color: $accent-color;
   }
 }
@@ -17,7 +18,7 @@
     text-align: center;
     padding: 1.5rem;
     max-width: 24rem;
-    
+
     @media #{$medium-and-up} {
       max-width: 50vw;
       min-width: 24rem;
