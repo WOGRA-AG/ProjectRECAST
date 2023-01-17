@@ -1,12 +1,3 @@
-.actions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-  gap: 1rem;
-  padding-top: 3.75rem;
-}
-
 .form-widget {
   height: 100%;
   width: 100%;
@@ -14,8 +5,17 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
 
-.file-input {
-  width: 100%;
+  .actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 1rem;
+    padding-top: 3.75rem;
+  }
+
+  .file-input {
+    width: 100%;
+  }
 }
