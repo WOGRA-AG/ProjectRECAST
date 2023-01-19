@@ -8,6 +8,8 @@
   "action.create_element": "Bauteil erstellen",
   "action.next_step": "Zum nächsten Schritt bringen",
   "action.finished": "Fertig",
+  "action.cancel": "Abbrechen",
+  "action.confirm": "Bestätigen",
 
   "label.username": "Username",
   "label.email": "Email",
@@ -25,5 +27,8 @@
 
   "header.new_process": "Prozess Erstellen",
   "header.overview": "Übersicht",
-  "header.create_element": "Bauteil erstellen"
+  "header.create_element": "Bauteil erstellen",
+
+  "dialog.delete_process": "Prozess und alle dazugehörigen Daten löschen?",
+  "dialog.delete_element": "Bauteil und alle dazugehörigen Daten löschen?"
 }

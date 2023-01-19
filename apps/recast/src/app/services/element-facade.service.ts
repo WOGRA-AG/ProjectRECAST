@@ -106,9 +106,16 @@ export class ElementFacadeService {
     );
   }
 
-  public elementsByProcessIdAndStepId$(processId: number, stepId: number): Observable<Element[]> {
+  public elementsByProcessIdAndStepId$(
+    processId: number,
+    stepId: number
+  ): Observable<Element[]> {
     return this._elements$.pipe(
-      map(elements => elements.filter(e => e.processId === processId && e.currentStepId === stepId))
+      map(elements =>
+        elements.filter(
+          e => e.processId === processId && e.currentStepId === stepId
+        )
+      )
     );
   }
 
@@ -116,9 +123,9 @@ export class ElementFacadeService {
     id,
     name,
     processId,
-    currentStepId
+    currentStepId,
   }: Element): Observable<Element> {
-    const upsertElem = { id, name, processId, currentStepId};
+    const upsertElem = { id, name, processId, currentStepId };
     const upsert = this._supabaseClient
       .from(Tables.elements)
       .upsert(snakeCase(upsertElem))

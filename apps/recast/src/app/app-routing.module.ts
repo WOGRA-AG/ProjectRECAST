@@ -63,14 +63,14 @@ const routes: Routes = [
                           {
                             path: ':elementId',
                             component: ElementDetailComponent,
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
         ],
       },

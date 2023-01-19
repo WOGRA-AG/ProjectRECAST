@@ -1,79 +1,42 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
+@import 'src/app/design/material/essentials/media-queries';
 
 @mixin color($theme) {
-  $primary-palette: map.get($theme, 'primary');
-  $primary-color: mat.get-color-from-palette($primary-palette, 500);
-  $on-surface: mat.get-color-from-palette($primary-palette, '50-contrast');
-  $on-surface-high: rgba($on-surface, 0.87);
+  $accent-palette: map.get($theme, 'accent');
+  $accent-color: mat.get-color-from-palette($accent-palette);
 
-  .mat-dialog-container {
-    .mat-dialog-header {
-      .mat-icon-button {
-        color: $on-surface-high;
-      }
-    }
+  .mat-dialog-title,
+  .mat-dialog-content {
+    color: $accent-color;
   }
 }
 
 @mixin layout() {
   .mat-dialog-container {
-    border-radius: 24px;
-    padding: 0;
-    width: 384px;
-    min-height: 192px;
-    overflow: hidden;
-  }
+    border-radius: 12px;
+    text-align: center;
+    padding: 1.5rem;
+    max-width: 24rem;
 
-  .setting-dialog .mat-dialog-container {
-    margin-top: 16px;
-    margin-bottom: 16px;
-    width: 384px;
-    height: auto;
-  }
+    @media #{$medium-and-up} {
+      max-width: 50vw;
+      min-width: 24rem;
+    }
 
-  .getting-started-dialog .mat-dialog-container {
-    margin-top: 16px;
-    margin-bottom: 16px;
-    width: 444px;
-    height: auto;
-  }
+    .mat-dialog-content {
+      margin: 1rem 0;
+    }
 
-  .mat-dialog-title {
-    margin-bottom: 0px;
-  }
+    .mat-dialog-actions {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 1.625rem;
+      gap: 1rem;
 
-  .mat-dialog-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 42px;
-    padding-bottom: 16px;
-  }
-
-  .mat-dialog-actions {
-    margin-bottom: 35px;
-    margin-top: 16px;
-    margin-left: 30px;
-    margin-right: 30px;
-  }
-
-  .mat-dialog-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    flex: auto;
-    overflow: auto;
-    padding: 0px 0px 0px 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    .mat-form-field {
-      margin-bottom: -1.25em;
-      width: 100%;
+      @media #{$medium-and-up} {
+        justify-content: space-between;
+      }
     }
   }
 }

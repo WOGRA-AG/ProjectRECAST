@@ -10,7 +10,6 @@
   $accent-color-200: mat.get-color-from-palette($accent-palette, 200);
 
   .mat-stepper-label-position-bottom {
-
     .mat-stepper-horizontal-line {
       border-color: $accent-color-200;
     }
@@ -20,14 +19,15 @@
     }
 
     .mat-horizontal-stepper-header {
-      &::before, &::after {
+      &::before,
+      &::after {
         border-color: $accent-color-200;
       }
     }
 
-    .mat-horizontal-stepper-header[aria-selected="true"] {
-
-      &::before, &::after {
+    .mat-horizontal-stepper-header[aria-selected='true'] {
+      &::before,
+      &::after {
         border-color: $primary-color;
       }
 
@@ -45,7 +45,10 @@
     }
 
     .mat-step-header {
-      &:hover, &.cdk-program-focused, &.cdk-mouse-focused, &.cdk-focuse {
+      &:hover,
+      &.cdk-program-focused,
+      &.cdk-mouse-focused,
+      &.cdk-focuse {
         background-color: transparent !important;
       }
     }
@@ -78,14 +81,15 @@
     }
 
     .mat-horizontal-stepper-header {
-      &::before, &::after {
+      &::before,
+      &::after {
         top: 38px;
       }
 
       &:last-child {
         align-items: flex-end;
         padding-right: 0;
-    
+
         &:not(:first-child)::before {
           width: calc(100% - 8px);
           border-width: 2px;
@@ -95,7 +99,7 @@
       &:first-child {
         align-items: flex-start;
         padding-left: 0;
-    
+
         &:not(:last-child)::after {
           width: calc(100% - 8px);
           border-width: 2px;
@@ -103,7 +107,8 @@
       }
 
       &:not(:first-child) {
-        &::before, &::after {
+        &::before,
+        &::after {
           width: calc(50% - 12px);
           border-width: 2px;
         }

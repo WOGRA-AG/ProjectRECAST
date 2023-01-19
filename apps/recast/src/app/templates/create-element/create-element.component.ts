@@ -20,8 +20,7 @@ export class CreateElementComponent {
   public breadcrumbs: Breadcrumb[] = [];
   public properties: StepProperty[] = [];
 
-  propertiesForm = this.formBuilder.group({
-  });
+  propertiesForm = this.formBuilder.group({});
 
   constructor(
     private route: ActivatedRoute,
@@ -29,7 +28,7 @@ export class CreateElementComponent {
     private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
     private elementPropertyService: ElementPropertyService,
-    private formBuilder: FormBuilder,
+    private formBuilder: FormBuilder
   ) {
     route.paramMap
       .pipe(
@@ -42,7 +41,7 @@ export class CreateElementComponent {
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },
           { label: process.name!, link: '/overview/process/' + process.id },
-          { label: $localize`:@@header.create_element:Create element`},
+          { label: $localize`:@@header.create_element:Create element` },
         ];
       });
 
@@ -50,7 +49,7 @@ export class CreateElementComponent {
       .pipe(
         filter(param => !!param.get('stepId')),
         map((param, index) => +param.get('stepId')!),
-        tap(id => this.stepId = id),
+        tap(id => (this.stepId = id)),
         concatMap(id => this.stepPropertyService.stepPropertiesByStepId$(id))
       )
       .subscribe(stepProperties => {
@@ -63,33 +62,46 @@ export class CreateElementComponent {
   }
 
   public saveElement(): void {
-    this.elementService.saveElement$({
-      processId: this.processId,
-      currentStepId: this.stepId,
-      name: this.propertiesForm.get('name')?.value
-    }).pipe(
-      catchError(err => {
-        console.error(err);
-        return of(undefined);
-    }))
-    .subscribe(element => {
-      if (element) {
-        for (const prop of this.properties) {
-          this.saveElementProperty(prop, element.id!);
+    this.elementService
+      .saveElement$({
+        processId: this.processId,
+        currentStepId: this.stepId,
+        name: this.propertiesForm.get('name')?.value,
+      })
+      .pipe(
+        catchError(err => {
+          console.error(err);
+          return of(undefined);
+        })
+      )
+      .subscribe(element => {
+        if (element) {
+          for (const prop of this.properties) {
+            this.saveElementProperty(prop, element.id!);
+          }
         }
-      }
-    });
+      });
   }
 
-  private saveElementProperty(property: ElementProperty, elementId: number): void {
-    this.elementPropertyService.saveElementProp$({
-      elementId,
-      stepPropertyId: property.id,
-      value: this.propertiesForm.get('' + property.id)?.value
-    }, elementId).pipe(
-      catchError(err => {
-        console.error(err);
-        return of(undefined);
-    })).subscribe();
+  private saveElementProperty(
+    property: ElementProperty,
+    elementId: number
+  ): void {
+    this.elementPropertyService
+      .saveElementProp$(
+        {
+          elementId,
+          stepPropertyId: property.id,
+          value: this.propertiesForm.get('' + property.id)?.value,
+        },
+        elementId
+      )
+      .pipe(
+        catchError(err => {
+          console.error(err);
+          return of(undefined);
+        })
+      )
+      .subscribe();
   }
 }
