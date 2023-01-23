@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { StepProperty, ElementProperty } from 'build/openapi/recast';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, concatMap, filter, map, of, tap } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
-import { ElementPropertyService } from 'src/app/services/element-property.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
-import { StepPropertyService } from 'src/app/services/step-property.service';
 
 @Component({
   selector: 'app-create-element',
@@ -18,22 +15,26 @@ export class CreateElementComponent {
   public processId: number | undefined;
   public stepId: number | undefined;
   public breadcrumbs: Breadcrumb[] = [];
-  public properties: StepProperty[] = [];
 
   propertiesForm = this.formBuilder.group({});
 
   constructor(
     private route: ActivatedRoute,
-    private processService: ProcessFacadeService,
-    private stepPropertyService: StepPropertyService,
-    private elementService: ElementFacadeService,
-    private elementPropertyService: ElementPropertyService,
-    private formBuilder: FormBuilder
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private readonly processService: ProcessFacadeService,
+    private readonly elementService: ElementFacadeService
   ) {
+    this.propertiesForm.addControl(
+      'name',
+      new FormControl('', [Validators.minLength(3), Validators.required])
+    );
+
     route.paramMap
       .pipe(
-        filter(param => !!param.get('id')),
-        map((param, index) => +param.get('id')!),
+        filter(param => !!param.get('processId') && !!param.get('stepId')),
+        tap(param => (this.stepId = +param.get('stepId')!)),
+        map(param => +param.get('processId')!),
         concatMap(id => this.processService.processById$(id))
       )
       .subscribe(process => {
@@ -43,21 +44,6 @@ export class CreateElementComponent {
           { label: process.name!, link: '/overview/process/' + process.id },
           { label: $localize`:@@header.create_element:Create element` },
         ];
-      });
-
-    route.paramMap
-      .pipe(
-        filter(param => !!param.get('stepId')),
-        map((param, index) => +param.get('stepId')!),
-        tap(id => (this.stepId = id)),
-        concatMap(id => this.stepPropertyService.stepPropertiesByStepId$(id))
-      )
-      .subscribe(stepProperties => {
-        this.properties = stepProperties;
-        this.propertiesForm.addControl('name', new FormControl());
-        this.properties.forEach(p => {
-          this.propertiesForm.addControl('' + p.id, new FormControl(p.defaultValue));
-        });
       });
   }
 
@@ -74,34 +60,8 @@ export class CreateElementComponent {
           return of(undefined);
         })
       )
-      .subscribe(element => {
-        if (element) {
-          for (const prop of this.properties) {
-            this.saveElementProperty(prop, element.id!);
-          }
-        }
-      });
-  }
-
-  private saveElementProperty(
-    property: ElementProperty,
-    elementId: number
-  ): void {
-    this.elementPropertyService
-      .saveElementProp$(
-        {
-          elementId,
-          stepPropertyId: property.id,
-          value: this.propertiesForm.get('' + property.id)?.value,
-        },
-        elementId
-      )
-      .pipe(
-        catchError(err => {
-          console.error(err);
-          return of(undefined);
-        })
-      )
-      .subscribe();
+      .subscribe(() =>
+        this.router.navigate([`/overview/process/${this.processId}`])
+      );
   }
 }

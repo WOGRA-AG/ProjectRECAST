@@ -41,7 +41,7 @@ const routes: Routes = [
             component: UploadNewProcessComponent,
           },
           {
-            path: ':id',
+            path: ':processId',
             children: [
               {
                 path: '',

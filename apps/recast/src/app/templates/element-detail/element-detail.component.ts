@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ElementProperty, Element, Step } from 'build/openapi/recast';
+import {
+  ElementProperty,
+  Element,
+  Step,
+  StepProperty,
+} from 'build/openapi/recast';
 import { catchError, concatMap, filter, map, of } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
@@ -9,7 +14,6 @@ import { ElementPropertyService } from 'src/app/services/element-property.servic
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-element-detail',
@@ -19,7 +23,7 @@ import { Location } from '@angular/common';
 export class ElementDetailComponent {
   public element: Element | undefined;
   public breadcrumbs: Breadcrumb[] = [];
-  public properties: ElementProperty[] = [];
+  public properties: StepProperty[] = [];
   public steps: Step[] = [];
   public currentStep: Step | undefined;
   public currentIndex = 0;
@@ -36,13 +40,12 @@ export class ElementDetailComponent {
     private elementService: ElementFacadeService,
     private elementPropertyService: ElementPropertyService,
     private formBuilder: FormBuilder,
-    private router: Router,
-    private location: Location
+    private router: Router
   ) {
     route.paramMap
       .pipe(
         filter(param => !!param.get('elementId')),
-        map((param, index) => +param.get('elementId')!),
+        map(param => +param.get('elementId')!),
         concatMap(id => this.elementService.elementById$(id))
       )
       .subscribe(element => {
@@ -51,8 +54,8 @@ export class ElementDetailComponent {
 
     route.paramMap
       .pipe(
-        filter(param => !!param.get('id')),
-        map((param, index) => +param.get('id')!),
+        filter(param => !!param.get('processId')),
+        map(param => +param.get('processId')!),
         concatMap(id => this.stepService.stepsByProcessId$(id))
       )
       .subscribe(steps => {
@@ -63,7 +66,7 @@ export class ElementDetailComponent {
     route.paramMap
       .pipe(
         filter(param => !!param.get('stepId')),
-        map((param, index) => +param.get('stepId')!),
+        map(param => +param.get('stepId')!),
         concatMap(id => this.stepService.stepById$(id))
       )
       .subscribe(step => {
@@ -74,8 +77,8 @@ export class ElementDetailComponent {
 
     route.paramMap
       .pipe(
-        filter(param => !!param.get('id')),
-        map((param, index) => +param.get('id')!),
+        filter(param => !!param.get('processId')),
+        map(param => +param.get('processId')!),
         concatMap(id => this.processService.processById$(id))
       )
       .subscribe(process => {
@@ -88,30 +91,23 @@ export class ElementDetailComponent {
 
     route.paramMap
       .pipe(
-        filter(param => !!param.get('elementId')),
-        map((param, index) => +param.get('elementId')!),
-        concatMap(id =>
-          this.elementPropertyService.elementPropertiesByElementId$(id)
-        )
+        filter(param => !!param.get('stepId')),
+        map(param => +param.get('stepId')!),
+        concatMap(id => this.stepPropertyService.stepPropertiesByStepId$(id))
       )
-      .subscribe(elementProperties => {
-        this.properties = elementProperties;
+      .subscribe(stepProperties => {
+        this.properties = stepProperties;
         this.properties.forEach(p => {
-          this.propertiesForm.addControl('' + p.id, new FormControl(p.value));
+          this.propertiesForm.addControl(
+            '' + p.id,
+            new FormControl(p.defaultValue)
+          );
         });
       });
   }
 
-  public getStepPropertyName(id: number): string {
-    let stepPropName = '';
-    this.stepPropertyService
-      .stepPropertyById$(id)
-      .subscribe(sp => (stepPropName = sp.name!));
-    return stepPropName;
-  }
-
   public navigateBack(): void {
-    this.location.back();
+    this.router.navigate(['../../../..'], { relativeTo: this.route });
   }
 
   public onSubmitClicked() {
@@ -120,34 +116,55 @@ export class ElementDetailComponent {
       this.updateElementProperty(prop, value);
       if (!this.isLastStep) {
         const nextStep = this.steps[this.currentIndex + 1];
-        this.updateElement(prop.elementId!, nextStep.id!);
-        this.router.navigate(['/'], { skipLocationChange: true }).then(() =>
-          this.router.navigateByUrl('/overview/process/' + nextStep.processId! + '/step/' + nextStep.id!
-            + '/element/' + prop.elementId)
-        );
+        this.updateElement(this.element?.id!, nextStep.id!);
+        this.router
+          .navigate(['/'], { skipLocationChange: true })
+          .then(() =>
+            this.router.navigateByUrl(
+              '/overview/process/' +
+                nextStep.processId! +
+                '/step/' +
+                nextStep.id! +
+                '/element/' +
+                this.element?.id
+            )
+          );
+        return;
       }
+      this.router.navigate(['../../../..'], { relativeTo: this.route });
     }
   }
 
-  private updateElementProperty(property: ElementProperty, value: string): void {
-    this.elementPropertyService.saveElementProp$({
-      id: property.id,
-      value
-    }, property.elementId).pipe(
-      catchError(err => {
-        console.error(err);
-        return of(undefined);
-      })).subscribe();
+  private updateElementProperty(property: StepProperty, value: string): void {
+    this.elementPropertyService
+      .saveElementProp$(
+        {
+          value,
+          stepPropertyId: property.id,
+        },
+        this.element?.id
+      )
+      .pipe(
+        catchError(err => {
+          console.error(err);
+          return of(undefined);
+        })
+      )
+      .subscribe();
   }
 
   private updateElement(id: number, stepId: number): void {
-    this.elementService.saveElement$({
-      id,
-      currentStepId: stepId
-    }).pipe(
-      catchError(err => {
-        console.error(err);
-        return of(undefined);
-      })).subscribe();
+    this.elementService
+      .saveElement$({
+        id,
+        currentStepId: stepId,
+      })
+      .pipe(
+        catchError(err => {
+          console.error(err);
+          return of(undefined);
+        })
+      )
+      .subscribe();
   }
 }
