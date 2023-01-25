@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Process, Step, Element } from 'build/openapi/recast';
-import { concatMap, filter, map, Observable } from 'rxjs';
+import { concat, concatMap, filter, map, Observable, tap } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { TableColumn } from 'src/app/design/components/organisms/table/table.component';
@@ -28,13 +28,15 @@ export class ProcessOverviewComponent {
   ];
   public tableData$: Observable<any> = new Observable<any>();
 
+  private _currentIndex = 0;
+
   constructor(
-    public readonly processService: ProcessFacadeService,
-    public readonly elementService: ElementFacadeService,
-    public readonly stepService: StepFacadeService,
-    public activatedRoute: ActivatedRoute,
+    private readonly processService: ProcessFacadeService,
+    private readonly elementService: ElementFacadeService,
+    private readonly stepService: StepFacadeService,
+    private activatedRoute: ActivatedRoute,
     private router: Router,
-    public dialog: MatDialog
+    private dialog: MatDialog
   ) {
     this.processId$
       .pipe(concatMap(id => this.processService.processById$(id)))
@@ -51,14 +53,24 @@ export class ProcessOverviewComponent {
       .subscribe(steps => {
         this.steps = steps;
         this.stepTitles = steps.map(step => step.name!);
-        if (steps[0]) {
-          this.currentStepId = steps[0].id!;
+        if (steps[this.currentIndex]) {
+          this.currentStepId = steps[this.currentIndex].id!;
           this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(
-            steps[0].processId!,
+            steps[this.currentIndex].processId!,
             this.currentStepId
           );
         }
       });
+
+    this.currentIndex$.subscribe();
+  }
+
+  public get currentIndex(): number {
+    return this._currentIndex;
+  }
+
+  public set currentIndex(index: number) {
+    this._currentIndex = index;
   }
 
   private get processId$(): Observable<number> {
@@ -67,9 +79,17 @@ export class ProcessOverviewComponent {
       map(param => +param.get('processId')!)
     );
   }
+  private get currentIndex$(): Observable<number> {
+    return this.activatedRoute.queryParamMap.pipe(
+      filter(param => !!param.get('idx')),
+      map(param => +param.get('idx')!),
+      tap(idx => (this.currentIndex = idx))
+    );
+  }
 
   public changeContent(index: number): void {
-    this.currentStepId = this.steps[index]?.id!;
+    this.currentIndex = index;
+    this.currentStepId = this.steps[this.currentIndex]?.id!;
     this.processId$
       .pipe(
         concatMap(
@@ -82,6 +102,12 @@ export class ProcessOverviewComponent {
         )
       )
       .subscribe();
+    this.router.navigate(['.'], {
+      relativeTo: this.activatedRoute,
+      queryParams: {
+        idx: `${this._currentIndex}`,
+      },
+    });
   }
 
   public navigateToCreateElement(): void {

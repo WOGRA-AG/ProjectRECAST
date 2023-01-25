@@ -5,7 +5,8 @@
   <app-stepper
     [steps]="stepTitles"
     (stepChanged)="changeContent($event)"
-    [disableRipple]="true">
+    [disableRipple]="true"
+    [currentIndex]="currentIndex">
   </app-stepper>
 
   <div class="grid-wrapper">
