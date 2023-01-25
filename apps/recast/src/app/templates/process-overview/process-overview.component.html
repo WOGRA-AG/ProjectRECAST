@@ -4,7 +4,9 @@
 
   <app-stepper
     [steps]="stepTitles"
-    (stepChanged)="changeContent($event)"></app-stepper>
+    (stepChanged)="changeContent($event)"
+    [disableRipple]="true">
+  </app-stepper>
 
   <div class="grid-wrapper">
     <h5 class="title primary" i18n="@@label.elements">Bauteile</h5>
