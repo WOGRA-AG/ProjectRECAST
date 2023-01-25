@@ -1,8 +1,10 @@
 .search {
+  position: relative;
   display: flex;
   justify-content: flex-end;
   margin-bottom: -56px;
   margin-right: 19px;
+  z-index: 1;
 }
 
 table {
@@ -10,11 +12,21 @@ table {
 
   .text {
     cursor: pointer;
+    height: inherit;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: inherit;
   }
 
   .center {
     padding: 2rem 0 1rem;
     width: 100%;
     text-align: center;
+  }
+
+  .cell {
+    height: inherit;
   }
 }
