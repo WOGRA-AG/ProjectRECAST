@@ -1,8 +1,10 @@
 .search {
+  position: relative;
   display: flex;
   justify-content: flex-end;
   margin-bottom: -56px;
   margin-right: 19px;
+  z-index: 1;
 }
 
 table {
