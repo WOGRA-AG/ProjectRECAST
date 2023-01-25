@@ -21,6 +21,7 @@
   td.mat-cell {
     border-color: $primary-color;
     color: $accent-color;
+    height: inherit;
   }
 
   .mat-sort-header-arrow {

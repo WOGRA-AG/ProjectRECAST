@@ -28,7 +28,7 @@
       </ng-container>
     </ng-container>
     <td class="mat-body-2" mat-cell *matCellDef="let element">
-      <div [ngSwitch]="column.type" *ngIf="!element.isEdit">
+      <div [ngSwitch]="column.type" *ngIf="!element.isEdit" class="cell">
         <ng-container *ngSwitchCase="'isDelete'">
           <app-icon-button
             svgIcon="rcst_delete"
