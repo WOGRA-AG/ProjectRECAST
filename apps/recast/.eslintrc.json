@@ -25,6 +25,28 @@
         ],
         "no-underscore-dangle": 0,
         "@typescript-eslint/no-non-null-assertion": 0,
+        "@typescript-eslint/member-ordering": [
+          "error",
+          {
+            "classes": [
+              "decorated-field",
+              "public-field",
+              "protected-field",
+              "private-field",
+              "constructor",
+              ["get", "set"],
+              "public-static-method",
+              "public-decorated-method",
+              "public-method",
+              "protected-static-method",
+              "protected-decorated-method",
+              "protected-method",
+              "private-static-method",
+              "private-decorated-method",
+              "private-method"
+            ]
+          }
+        ],
         "@angular-eslint/directive-selector": [
           "error",
           {
