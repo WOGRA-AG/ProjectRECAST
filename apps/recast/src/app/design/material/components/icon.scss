@@ -4,6 +4,11 @@
     width: 1em;
     overflow: inherit;
     vertical-align: middle;
+
+    &.logo {
+      width: 56px;
+      height: 47px;
+    }
   }
 }
 

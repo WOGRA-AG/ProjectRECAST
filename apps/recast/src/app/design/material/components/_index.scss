@@ -12,10 +12,12 @@
 @use 'tab.scss' as tab;
 @use 'button_variants.scss' as button_variants;
 @use 'icon.scss' as icon;
+@use 'icon_variants' as icon_variants;
 @use 'single-file-input.scss' as single_file_input;
 
 @mixin theme($theme, $typography-config, $variants) {
   @include button.theme($theme, $typography-config, $variants);
+  @include button_variants.color($theme, $variants);
   @include sidenav.theme($theme, $typography-config, $variants);
   @include toolbar.theme($theme, $typography-config, $variants);
   @include navlist.theme($theme, $typography-config, $variants);
@@ -27,7 +29,7 @@
   @include chips.theme($theme, $typography-config, $variants);
   @include form.theme($theme, $typography-config, $variants);
   @include tab.theme($theme, $typography-config, $variants);
-  @include button_variants.color($theme, $variants);
   @include icon.theme($theme, $typography-config, $variants);
+  @include icon_variants.color($theme, $variants);
   @include single_file_input.theme($theme, $typography-config, $variants);
 }
