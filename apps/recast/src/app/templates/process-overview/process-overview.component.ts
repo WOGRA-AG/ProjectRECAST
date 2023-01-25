@@ -63,8 +63,8 @@ export class ProcessOverviewComponent {
 
   private get processId$(): Observable<number> {
     return this.activatedRoute.paramMap.pipe(
-      filter(param => !!param.get('id')),
-      map((param, index) => +param.get('id')!)
+      filter(param => !!param.get('processId')),
+      map(param => +param.get('processId')!)
     );
   }
 

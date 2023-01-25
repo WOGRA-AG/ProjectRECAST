@@ -8,12 +8,15 @@
     [currentIndex]="currentIndex">
   </app-stepper>
 
-  <form #f="ngForm" [formGroup]="propertiesForm">
+  <form
+    #f="ngForm"
+    [formGroup]="propertiesForm"
+    (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
       <div class="input-wrapper" *ngFor="let prop of properties">
         <app-input-field
           class="input"
-          [label]="getStepPropertyName(prop.stepPropertyId!)"
+          [label]="prop.name!"
           [formControlName]="prop.id!"
           icon="bar_chart">
         </app-input-field>
@@ -21,7 +24,7 @@
     </div>
     <div class="actions">
       <app-button-unfilled
-        type="reset"
+        type="button"
         [bordered]="true"
         (click)="navigateBack()"
         i18n="@@actions.back">
@@ -30,16 +33,14 @@
       <app-submit-button
         *ngIf="!isLastStep"
         class="button"
-        i18n="@@action.next_step"
-        (click)="goToNextStep()">
+        i18n="@@action.next_step">
         Take to the next step
       </app-submit-button>
       <app-submit-button
         *ngIf="isLastStep"
         class="button"
         i18n="@@action.finished"
-        routerLink="../../../../"
-        (click)="saveElementProperties()">
+        (click)="onSubmitClicked()">
         Finished
       </app-submit-button>
     </div>
