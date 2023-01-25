@@ -16,6 +16,7 @@ export class StepperComponent implements AfterContentChecked {
   @Input() steps: string[] = [];
   @Input() disabled = false;
   @Input() currentIndex: number | undefined;
+  @Input() disableRipple: boolean = false;
   @Output() stepChanged: EventEmitter<number> = new EventEmitter<number>();
 
   @ViewChild('stepper') stepper: MatStepper | undefined;

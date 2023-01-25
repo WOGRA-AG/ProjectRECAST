@@ -4,6 +4,7 @@
   [linear]="false"
   [ngClass]="{ disabled: disabled }"
   [@.disabled]="true"
+  [disableRipple]="disableRipple"
   labelPosition="bottom"
   (selectionChange)="stepChanged.emit($event.selectedIndex)">
   <ng-container *ngFor="let step of steps">
