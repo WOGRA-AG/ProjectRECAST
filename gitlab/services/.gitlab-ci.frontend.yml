@@ -11,8 +11,6 @@ include:
     - npm run lint
     - npm run build
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-    - if: $CI_COMMIT_REF_NAME =~ /^hotfix/
     - if: '$CI_COMMIT_TAG'
 
 .build-frontend-dev:
@@ -25,7 +23,7 @@ include:
     - npm run lint
     - npm run build-dev
   rules:
-    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_REF_NAME !~ /^hotfix/ && $CI_COMMIT_TAG == null
+    - if: $CI_COMMIT_TAG == null
 
 build-frontend:
   extends:
@@ -42,8 +40,6 @@ build-frontend:
       - apps/recast/node_modules
       - apps/recast/.npm_cache
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-    - if: $CI_COMMIT_REF_NAME =~ /^hotfix/
     - if: '$CI_COMMIT_TAG'
 
 build-frontend-dev:
@@ -61,7 +57,7 @@ build-frontend-dev:
       - apps/recast/node_modules
       - apps/recast/.npm_cache
   rules:
-    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_REF_NAME !~ /^hotfix/ && $CI_COMMIT_TAG == null
+    - if: $CI_COMMIT_TAG == null
 
 build-frontend-image:
   extends:
@@ -75,8 +71,6 @@ build-frontend-image:
     IMG_NAME: 'frontend'
     BUILD_CONTEXT: 'apps/recast'
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-    - if: $CI_COMMIT_REF_NAME =~ /^hotfix/
     - if: '$CI_COMMIT_TAG'
 
 build-frontend-image-dev:
@@ -91,4 +85,4 @@ build-frontend-image-dev:
     IMG_NAME: 'frontend'
     BUILD_CONTEXT: 'apps/recast'
   rules:
-    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_REF_NAME !~ /^hotfix/ && $CI_COMMIT_TAG == null
+    - if: $CI_COMMIT_TAG == null
