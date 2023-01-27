@@ -27,8 +27,7 @@ deploy-tag:
     LABEL: $CI_COMMIT_TAG
   when: always
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+    - !reference [.deploy, rules]
     - if: '$CI_COMMIT_TAG'
 
 deploy-prod:
@@ -41,8 +40,7 @@ deploy-prod:
     LABEL: 'latest'
   when: manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+    - !reference [.deploy, rules]
     - if: '$CI_COMMIT_TAG'
 
 deploy-staging:
@@ -55,8 +53,7 @@ deploy-staging:
     LABEL: 'stage'
   when: manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+    - !reference [.deploy, rules]
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: $CI_COMMIT_REF_NAME =~ /^hotfix/
     - if: '$CI_COMMIT_TAG'
@@ -71,8 +68,7 @@ deploy-release:
     LABEL: 'rc'
   when: manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+    - !reference [.deploy, rules]
     - if: $CI_COMMIT_REF_NAME =~ /^rc/
     - if: $CI_COMMIT_REF_NAME =~ /^release/
 
@@ -86,8 +82,7 @@ deploy-dev:
     LABEL: 'dev'
   when: manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+    - !reference [.deploy, rules]
     - if: $CI_COMMIT_TAG == null
 
 deploy-feature:
@@ -100,8 +95,7 @@ deploy-feature:
     LABEL: 'feature'
   when: manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+    - !reference [.deploy, rules]
     - if: $CI_COMMIT_TAG == null
 
 deploy-e2e:
@@ -115,6 +109,5 @@ deploy-e2e:
   resource_group: testing
   when: manual
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+    - !reference [.deploy, rules]
     - if: $CI_COMMIT_TAG == null
