@@ -1,14 +1,21 @@
-.search {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
+.search-field {
   margin-bottom: -56px;
   margin-right: 19px;
-  z-index: 1;
+  z-index: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  .search {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 2;
+  }
 }
 
 table {
   width: 100%;
+  z-index: 1;
 
   .text {
     cursor: pointer;
