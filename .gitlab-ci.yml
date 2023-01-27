@@ -16,6 +16,3 @@ validate-oas:
     - .validate-oas
   variables:
     OAS_FILE: 'apps/oas/recast-models.yaml'
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
