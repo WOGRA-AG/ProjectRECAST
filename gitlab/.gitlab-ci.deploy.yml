@@ -14,7 +14,8 @@
     - docker tag $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/frontend:$LABEL
     - docker push $CI_REGISTRY_IMAGE/frontend:$LABEL
   rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
 
 deploy-tag:
   extends:
@@ -26,8 +27,9 @@ deploy-tag:
     LABEL: $CI_COMMIT_TAG
   when: always
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: '$CI_COMMIT_TAG'
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 deploy-prod:
   extends:
@@ -39,8 +41,9 @@ deploy-prod:
     LABEL: 'latest'
   when: manual
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: '$CI_COMMIT_TAG'
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 deploy-staging:
   extends:
@@ -52,10 +55,11 @@ deploy-staging:
     LABEL: 'stage'
   when: manual
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: $CI_COMMIT_REF_NAME =~ /^hotfix/
     - if: '$CI_COMMIT_TAG'
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 deploy-release:
   extends:
@@ -67,9 +71,10 @@ deploy-release:
     LABEL: 'rc'
   when: manual
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_REF_NAME =~ /^rc/
     - if: $CI_COMMIT_REF_NAME =~ /^release/
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 deploy-dev:
   extends:
@@ -81,8 +86,9 @@ deploy-dev:
     LABEL: 'dev'
   when: manual
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_TAG == null
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 deploy-feature:
   extends:
@@ -94,8 +100,9 @@ deploy-feature:
     LABEL: 'feature'
   when: manual
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_TAG == null
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 deploy-e2e:
   extends:
@@ -108,5 +115,6 @@ deploy-e2e:
   resource_group: testing
   when: manual
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_TAG == null
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'

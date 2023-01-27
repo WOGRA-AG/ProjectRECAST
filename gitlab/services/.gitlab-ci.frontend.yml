@@ -11,8 +11,9 @@ include:
     - npm run lint
     - npm run build
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: '$CI_COMMIT_TAG'
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 .build-frontend-dev:
   stage: build
@@ -24,8 +25,9 @@ include:
     - npm run lint
     - npm run build-dev
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_TAG == null
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 build-frontend:
   extends:
@@ -42,8 +44,9 @@ build-frontend:
       - apps/recast/node_modules
       - apps/recast/.npm_cache
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: '$CI_COMMIT_TAG'
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 build-frontend-dev:
   extends:
@@ -60,8 +63,9 @@ build-frontend-dev:
       - apps/recast/node_modules
       - apps/recast/.npm_cache
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_TAG == null
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 build-frontend-image:
   extends:
@@ -75,8 +79,9 @@ build-frontend-image:
     IMG_NAME: 'frontend'
     BUILD_CONTEXT: 'apps/recast'
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: '$CI_COMMIT_TAG'
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
 
 build-frontend-image-dev:
   extends:
@@ -90,5 +95,6 @@ build-frontend-image-dev:
     IMG_NAME: 'frontend'
     BUILD_CONTEXT: 'apps/recast'
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_TAG == null
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
