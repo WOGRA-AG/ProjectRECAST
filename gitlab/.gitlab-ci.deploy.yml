@@ -13,6 +13,9 @@
     - docker pull $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
     - docker tag $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/frontend:$LABEL
     - docker push $CI_REGISTRY_IMAGE/frontend:$LABEL
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
 
 deploy-tag:
   extends:
