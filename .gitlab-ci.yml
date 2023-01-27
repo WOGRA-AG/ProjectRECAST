@@ -16,3 +16,6 @@ validate-oas:
     - .validate-oas
   variables:
     OAS_FILE: 'apps/oas/recast-models.yaml'
+  rules:
+    - !reference [.validate-oas, rules]
+    - if: $CI_PIPELINE_SOURCE
