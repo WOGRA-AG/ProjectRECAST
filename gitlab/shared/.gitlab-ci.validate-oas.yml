@@ -2,7 +2,6 @@
   stage: prepare
   needs: []
   image: node:14
-  when: always
   script:
     - npm install -g swagger-cli@$SWAGGER_CLI_VERSION
     - swagger-cli validate $OAS_FILE

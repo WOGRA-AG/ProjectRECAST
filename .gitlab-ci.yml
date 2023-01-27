@@ -16,3 +16,5 @@ validate-oas:
     - .validate-oas
   variables:
     OAS_FILE: 'apps/oas/recast-models.yaml'
+  rules:
+    - !reference [.validate-oas, rules]
