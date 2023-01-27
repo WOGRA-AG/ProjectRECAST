@@ -28,6 +28,8 @@ deploy-tag:
   when: always
   rules:
     - if: '$CI_COMMIT_TAG'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
 
 deploy-prod:
   extends:
@@ -40,6 +42,8 @@ deploy-prod:
   when: manual
   rules:
     - if: '$CI_COMMIT_TAG'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
 
 deploy-staging:
   extends:
@@ -54,6 +58,8 @@ deploy-staging:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: $CI_COMMIT_REF_NAME =~ /^hotfix/
     - if: '$CI_COMMIT_TAG'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
 
 deploy-release:
   extends:
@@ -67,6 +73,8 @@ deploy-release:
   rules:
     - if: $CI_COMMIT_REF_NAME =~ /^rc/
     - if: $CI_COMMIT_REF_NAME =~ /^release/
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
 
 deploy-dev:
   extends:
@@ -79,6 +87,8 @@ deploy-dev:
   when: manual
   rules:
     - if: $CI_COMMIT_TAG == null
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
 
 deploy-feature:
   extends:
@@ -91,6 +101,8 @@ deploy-feature:
   when: manual
   rules:
     - if: $CI_COMMIT_TAG == null
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
 
 deploy-e2e:
   extends:
@@ -104,3 +116,5 @@ deploy-e2e:
   when: manual
   rules:
     - if: $CI_COMMIT_TAG == null
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
