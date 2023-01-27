@@ -6,5 +6,4 @@
     - npm install -g swagger-cli@$SWAGGER_CLI_VERSION
     - swagger-cli validate $OAS_FILE
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
