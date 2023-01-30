@@ -1,8 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Process, Step, Element } from 'build/openapi/recast';
-import { concat, concatMap, filter, map, Observable, tap } from 'rxjs';
+import {
+  concatMap,
+  filter,
+  map,
+  Observable,
+  Subject,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { TableColumn } from 'src/app/design/components/organisms/table/table.component';
@@ -15,7 +23,7 @@ import { StepFacadeService } from 'src/app/services/step-facade.service';
   templateUrl: './process-overview.component.html',
   styleUrls: ['./process-overview.component.scss'],
 })
-export class ProcessOverviewComponent {
+export class ProcessOverviewComponent implements OnDestroy {
   public title = '';
   public currentStepId: number | undefined;
   public breadcrumbs: Breadcrumb[] = [];
@@ -30,6 +38,8 @@ export class ProcessOverviewComponent {
 
   private _currentIndex = 0;
 
+  private readonly _destroy$: Subject<void> = new Subject<void>();
+
   constructor(
     private readonly processService: ProcessFacadeService,
     private readonly elementService: ElementFacadeService,
@@ -39,7 +49,10 @@ export class ProcessOverviewComponent {
     private dialog: MatDialog
   ) {
     this.processId$
-      .pipe(concatMap(id => this.processService.processById$(id)))
+      .pipe(
+        concatMap(id => this.processService.processById$(id)),
+        takeUntil(this._destroy$)
+      )
       .subscribe(process => {
         this.title = process.name!;
         this.breadcrumbs = [
@@ -49,7 +62,10 @@ export class ProcessOverviewComponent {
       });
 
     this.processId$
-      .pipe(concatMap(id => this.stepService.stepsByProcessId$(id)))
+      .pipe(
+        concatMap(id => this.stepService.stepsByProcessId$(id)),
+        takeUntil(this._destroy$)
+      )
       .subscribe(steps => {
         this.steps = steps;
         this.stepTitles = steps.map(step => step.name!);
@@ -62,7 +78,7 @@ export class ProcessOverviewComponent {
         }
       });
 
-    this.currentIndex$.subscribe();
+    this.currentIndex$.pipe(takeUntil(this._destroy$)).subscribe();
   }
 
   public get currentIndex(): number {
@@ -76,15 +92,22 @@ export class ProcessOverviewComponent {
   private get processId$(): Observable<number> {
     return this.activatedRoute.paramMap.pipe(
       filter(param => !!param.get('processId')),
-      map(param => +param.get('processId')!)
+      map(param => +param.get('processId')!),
+      takeUntil(this._destroy$)
     );
   }
   private get currentIndex$(): Observable<number> {
     return this.activatedRoute.queryParamMap.pipe(
       filter(param => !!param.get('idx')),
       map(param => +param.get('idx')!),
-      tap(idx => (this.currentIndex = idx))
+      tap(idx => (this.currentIndex = idx)),
+      takeUntil(this._destroy$)
     );
+  }
+
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   public changeContent(index: number): void {
@@ -99,7 +122,8 @@ export class ProcessOverviewComponent {
                 id,
                 this.currentStepId!
               ))
-        )
+        ),
+        takeUntil(this._destroy$)
       )
       .subscribe();
     this.router.navigate(['.'], {
@@ -134,7 +158,8 @@ export class ProcessOverviewComponent {
       .afterClosed()
       .pipe(
         filter(confirmed => !!confirmed),
-        concatMap(() => this.elementService.deleteElement$(element.id!))
+        concatMap(() => this.elementService.deleteElement$(element.id!)),
+        takeUntil(this._destroy$)
       )
       .subscribe();
   }
@@ -143,6 +168,9 @@ export class ProcessOverviewComponent {
     if (!element) {
       return;
     }
-    this.elementService.saveElement$(element as Element).subscribe();
+    this.elementService
+      .saveElement$(element as Element)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe();
   }
 }
