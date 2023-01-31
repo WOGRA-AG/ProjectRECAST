@@ -1,0 +1,45 @@
+{
+  "name": "minimal-typescript-setup",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Minimal TypeScript project setup for curious minds",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "lint": "tsc --noEmit && eslint \"**/*.ts\" --quiet --fix",
+    "serve": "ts-node ./src",
+    "start": "node ./dist",
+    "test": "mocha -r ts-node/register **/test/**/*.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobaekang/minimal-typescript-setup.git"
+  },
+  "keywords": [
+    "minimal",
+    "typescript",
+    "setup"
+  ],
+  "author": "Bobae Kang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bobaekang/minimal-typescript-setup/issues"
+  },
+  "homepage": "https://github.com/bobaekang/minimal-typescript-setup#readme",
+  "devDependencies": {
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^13.13.2",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "mocha": "^7.1.1",
+    "prettier": "1.19.1",
+    "ts-node": "^8.9.0",
+    "typescript": "^4.7.2"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.5.0"
+  }
+}
