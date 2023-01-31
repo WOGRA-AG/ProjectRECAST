@@ -9,26 +9,23 @@ const password = 'example_js-password'
 
 let client = new RecastClient('https://' + supabaseurl, supabasekey, email, password)
 
-async function read_table(client: RecastClient): Promise<void> {
-  await client.supabase.from('file_upload').select('*').then(data => console.log(data))
+async function get_upload(client: RecastClient): Promise<{ bucket: string, prefix: string }> {
+  //SELECT bucket, prefix FROM upload WHERE (status is true AND owner_id = '0b027f1a-f439-4953-9089ud1a2144b7d88' )
+  let { data, error } = await client.supabase.from('upload').select('bucket, prefix').is('status', true)
+  let bucket: string = data && data[0].bucket;
+  let prefix: string = data && data[0].prefix;
+  return { bucket , prefix }
 }
 
-read_table(client)
-
-const rt = new RealtimeClient('ws://' + supabaseurl, {
-  params: {
-    apikey: supabasekey,
-    eventsPerSecond: 10,
-  },
-})
+get_upload(client).then(data => console.log(data.bucket))
 
 const fileUpload = client.supabase.channel('custom-all-channel')
-  .on(
-    'postgres_changes',
-    { event: '*', schema: 'public', table: 'file_upload' },
-    (payload: any) => {
-      console.log('Change received!', payload)
-    }
-  )
-  .subscribe()
+.on(
+  'postgres_changes',
+  { event: '*', schema: 'public', table: 'upload' },
+  (payload: any) => {
+    console.log('Change received!', payload)
+  }
+)
+.subscribe()
 
