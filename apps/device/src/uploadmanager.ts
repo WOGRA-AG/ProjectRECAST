@@ -21,9 +21,9 @@ export class UploadManager {
       return null;
     } else {
       let bucket: string = data && data[0].bucket;
-      console.log(`Bucket "${bucket}".`);
+      console.log(`UploadManager: Bucket "${bucket}".`);
       let prefix: string = data && data[0].prefix;
-      console.log(`Prefix "${prefix}".`);
+      console.log(`UploadManager: Prefix "${prefix}".`);
       return { bucket, prefix };
     }
   }
