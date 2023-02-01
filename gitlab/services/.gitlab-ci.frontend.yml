@@ -105,14 +105,16 @@ ui-chrome-tests:
   image: cypress/browsers:node16.16.0-chrome107-ff107-edge
   stage: e2e
   when: manual
+  before_script:
+    - apt-get update -y
   script:
     - cd apps/recast
     # install dependencies
-    - npm install --cache .npm_cache
+    - npm ci --cache .npm_cache
     # start the server in the background
     - npm run start:ci &
     # run Cypress tests in parallel
-    - npx cypress run --record --browser chrome
+    - npx cypress run --browser chrome
   artifacts:
     when: always
     paths:
