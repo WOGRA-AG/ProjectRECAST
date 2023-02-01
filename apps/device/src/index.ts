@@ -1,11 +1,21 @@
 import { RecastClient } from './client'
 import { mkdirp } from 'mkdirp'
 import { Watcher } from './watcher'
+import 'dotenv/config';
 
-const supabaseurl = 'fbrhcyxrfnfojfuioexq.supabase.co'
-const supabasekey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZicmhjeXhyZm5mb2pmdWlvZXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njc5ODkzNzksImV4cCI6MTk4MzU2NTM3OX0.B11sNHYYnEskYELwPz6LkKnl2z2sK3th5E5K9lLHlNU'
-const email = 'example_js@email.com'
-const password = 'example_js-password'
+declare const process: {
+  env: {
+    SUPABASE_URL: string;
+    SUPABASE_KEY: string;
+    EMAIL: string;
+    PASSWORD: string;
+  };
+};
+
+const supabaseurl = process.env.SUPABASE_URL;
+const supabasekey = process.env.SUPABASE_KEY;
+const email = process.env.EMAIL;
+const password = process.env.PASSWORD;
 
 let client: RecastClient = new RecastClient('https://' + supabaseurl, supabasekey, email, password)
 let watcher: Watcher = new Watcher();
