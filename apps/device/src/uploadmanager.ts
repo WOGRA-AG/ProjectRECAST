@@ -10,10 +10,10 @@ export class UploadManager {
   constructor(client: RecastClient, watcher: Watcher) {
     this.client = client;
     this.watcher = watcher;
-    this.inital_call();
+    this.initialize();
   }
 
-  async get_upload(): Promise<{ bucket: string, prefix: string } | null> {
+  async check_upload(): Promise<{ bucket: string, prefix: string } | null> {
     let { data, error } = await this.client.supabase.from('upload').select('bucket, prefix').is('status', true);
 
     if (data === null) {
@@ -34,11 +34,16 @@ export class UploadManager {
     return folderPath;
   }
 
-  async inital_call(): Promise<void> {
-    const data = await this.get_upload();
-    if (data !== null) {
-      const folderPath = await this.create_folder('./data/' + data.prefix);
+  async start_watcher(prefix: string) {
+      const folderPath = await this.create_folder('./data/' + prefix);
       this.watcher.start(folderPath);
+  }
+
+
+  async initialize(): Promise<void> {
+    const data = await this.check_upload();
+    if (data !== null) {
+      this.start_watcher(data.prefix);
     }
   }
 }
