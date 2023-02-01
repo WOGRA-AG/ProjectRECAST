@@ -7,6 +7,7 @@ stages:
   - prepare
   - build
   - deploy
+  - e2e
 
 variables:
   SWAGGER_CLI_VERSION: 4.0.4
