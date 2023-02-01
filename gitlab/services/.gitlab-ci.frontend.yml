@@ -8,10 +8,10 @@ variables:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - .cache/*
-    - cache/Cypress
-    - node_modules
-    - build
+    - apps/recast.cache/*
+    - apps/recastcache/Cypress
+    - apps/recastnode_modules
+    - apps/recastbuild
 
 .build-frontend:
   stage: build
@@ -116,8 +116,8 @@ ui-chrome-tests:
   artifacts:
     when: always
     paths:
-      - services/frontend/cypress/videos/**/*.mp4
-      - services/frontend/cypress/screenshots/**/*.png
+      - apps/recast/cypress/videos/**/*.mp4
+      - apps/recast/cypress/screenshots/**/*.png
     expire_in: 1 day
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
