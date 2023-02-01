@@ -21,12 +21,26 @@ let watcher: Watcher = new Watcher();
 
 const uploadManager = new UploadManager(client, watcher);
 
-const fileUpload = client.supabase.channel('custom-all-channel')
+const fileUpload = client.supabase.channel('upload')
 .on(
   'postgres_changes',
-  { event: '*', schema: 'public', table: 'upload' },
+  { event: 'INSERT', schema: 'public', table: 'upload', filter: "status=eq.true" },
   (payload: any) => {
-    console.log('Change received!', payload)
+    console.log('Upload activated', payload)
+  }
+)
+.on(
+  'postgres_changes',
+  { event: 'UPDATE', schema: 'public', table: 'upload', filter: "status=eq.true"},
+  (payload: any) => {
+    console.log('Upload reactivated', payload)
+  }
+)
+.on(
+  'postgres_changes',
+  { event: 'UPDATE', schema: 'public', table: 'upload', filter: "status=eq.false"},
+  (payload: any) => {
+    console.log('Upload deactivated', payload)
   }
 )
 .subscribe()
