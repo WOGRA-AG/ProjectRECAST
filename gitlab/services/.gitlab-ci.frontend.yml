@@ -113,3 +113,12 @@ ui-chrome-tests:
     - npm run start:ci &
     # run Cypress tests in parallel
     - npx cypress run --record --browser chrome
+  artifacts:
+    when: always
+    paths:
+      - services/frontend/cypress/videos/**/*.mp4
+      - services/frontend/cypress/screenshots/**/*.png
+    expire_in: 1 day
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
