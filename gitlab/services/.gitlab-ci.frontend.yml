@@ -108,7 +108,7 @@ ui-chrome-tests:
   script:
     - cd apps/recast
     # install dependencies
-    - npm ci --cache .npm_cache
+    - npm install --cache .npm_cache
     # start the server in the background
     - npm run start:ci &
     # run Cypress tests in parallel
