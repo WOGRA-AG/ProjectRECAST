@@ -107,7 +107,7 @@ install-cypress:
   when: always
   script:
     - cd apps/recast
-    - npm ci
+    - npm ci --cache .npm_cache
 
 ui-chrome-tests:
   image: cypress/browsers:node12.14.1-chrome85-ff81
