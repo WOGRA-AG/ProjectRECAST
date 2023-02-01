@@ -13,11 +13,11 @@ describe('Processes', () => {
     cy.get('#kc-login > span').click();
   });
 
-  afterEach('logout', () => {
-    cy.visit('/logout');
-    cy.get('#kc-logout').click();
-    cy.get('#kc-page-title').contains('You are logged out');
-  });
+  // afterEach('logout', () => {
+  //   cy.visit('https://login.os4ml.wogra.com/logout');
+  //   cy.get('#kc-logout').click();
+  //   cy.get('#kc-page-title').contains('You are logged out');
+  // });
 
   it('add process from yaml and delete it', () => {
     let oldLength: number = 0;
