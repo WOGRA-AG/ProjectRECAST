@@ -16,6 +16,7 @@ export class Watcher {
   remove(path: string) {
     this.currentPaths.pop();
     console.log(`Watcher: remove "${path}"`);
+    this.currentPaths = this.currentPaths.filter(element => element !== path);
   }
 
   start(path: string) {
