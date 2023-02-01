@@ -1,7 +1,7 @@
 import { mkdirp } from 'mkdirp'
 import { Watcher } from './watcher'
 import 'dotenv/config';
-import { RecastClient } from './client';
+import { RecastClient } from './recastclient';
 
 export class UploadManager {
   private client: RecastClient;

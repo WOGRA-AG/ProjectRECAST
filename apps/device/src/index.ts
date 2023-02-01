@@ -1,4 +1,4 @@
-import { RecastClient } from './client'
+import { RecastClient } from './recastclient'
 import { Watcher } from './watcher';
 import { UploadManager } from './uploadmanager'
 
