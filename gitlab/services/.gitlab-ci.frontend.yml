@@ -111,8 +111,6 @@ ui-chrome-tests:
     - cd apps/recast
     # install dependencies
     - npm ci --cache .npm_cache
-    # start the server in the background
-    - npm run start:ci &
     # run Cypress tests in parallel
     - npx cypress run --browser chrome
   artifacts:
