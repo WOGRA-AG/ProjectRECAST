@@ -102,10 +102,9 @@ build-frontend-image-dev:
     - if: $CI_COMMIT_TAG == null
 
 ui-chrome-tests:
-  image: cypress/browsers:node12.14.1-chrome85-ff81
+  image: cypress/browsers:node18.12.0-chrome103-ff107
   stage: e2e
   when: manual
-  parallel: 3
   script:
     - cd apps/recast
     # install dependencies
@@ -113,4 +112,4 @@ ui-chrome-tests:
     # start the server in the background
     - npm run start:ci &
     # run Cypress tests in parallel
-    - npx cypress run --record --parallel --browser chrome --group "UI - Chrome"
+    - npx cypress run --record --browser chrome
