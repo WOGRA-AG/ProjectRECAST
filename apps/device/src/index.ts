@@ -1,6 +1,7 @@
 import { RecastClient } from './recastclient'
 import { Watcher } from './watcher';
 import { UploadManager } from './uploadmanager'
+import { RealtimeChannel } from '@supabase/supabase-js'
 
 declare const process: {
   env: {
@@ -17,31 +18,5 @@ const email = process.env.EMAIL;
 const password = process.env.PASSWORD;
 
 let client: RecastClient = new RecastClient('https://' + supabaseurl, supabasekey, email, password)
-let watcher: Watcher = new Watcher();
 
-const uploadManager = new UploadManager(client, watcher);
-
-const fileUpload = client.supabase.channel('upload')
-.on(
-  'postgres_changes',
-  { event: 'INSERT', schema: 'public', table: 'upload', filter: "status=eq.true" },
-  (payload: any) => {
-    console.log('Upload activated', payload)
-  }
-)
-.on(
-  'postgres_changes',
-  { event: 'UPDATE', schema: 'public', table: 'upload', filter: "status=eq.true"},
-  (payload: any) => {
-    console.log('Upload reactivated', payload)
-  }
-)
-.on(
-  'postgres_changes',
-  { event: 'UPDATE', schema: 'public', table: 'upload', filter: "status=eq.false"},
-  (payload: any) => {
-    console.log('Upload deactivated', payload)
-  }
-)
-.subscribe()
-
+const uploadManager = new UploadManager(client);
