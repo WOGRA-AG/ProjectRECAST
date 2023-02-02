@@ -1,4 +1,5 @@
 import * as chokidar from "chokidar";
+import { mkdirp } from 'mkdirp'
 
 export class Watcher {
   private chokidarWatcher: chokidar.FSWatcher | undefined;
@@ -6,6 +7,12 @@ export class Watcher {
 
   constructor() {
     this.currentPaths = [];
+  }
+  
+  async create_folder(path: string): Promise<string> {
+    let made = mkdirp(path);
+    path = typeof made == 'string' ? made : path;
+    return path;
   }
 
   add(path: string) {
@@ -19,7 +26,8 @@ export class Watcher {
     this.currentPaths = this.currentPaths.filter(element => element !== path);
   }
 
-  start(path: string) {
+  async start(path: string) {
+    path = await this.create_folder(path);
     this.currentPaths = [];
     this.chokidarWatcher = chokidar.watch(path, {});
 

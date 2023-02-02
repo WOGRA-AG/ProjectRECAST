@@ -1,4 +1,3 @@
-import { mkdirp } from 'mkdirp'
 import { Watcher } from './watcher'
 import 'dotenv/config';
 import { RecastClient } from './recastclient';
@@ -43,7 +42,7 @@ export class UploadManager {
     let { data, error } = await client.supabase.from('upload').select('bucket, prefix').is('status', true);
 
     if (data != null && data.length === 0) {
-      console.log(`No active upload!`);
+      console.log(`UploadManager: No active upload!`);
       return null;
     } else {
       let bucket: string = data && data[0].bucket;
@@ -54,30 +53,27 @@ export class UploadManager {
     }
   }
 
-  async create_folder(folderPath: string): Promise<string> {
-    let made = mkdirp(folderPath);
-    folderPath = typeof made == 'string' ? made : folderPath;
-    return folderPath;
+  start_watcher(prefix: string) {
+    const path: string = './data/' + prefix;
+    this.watcher.start(path);
   }
 
-  async start_watcher(prefix: string) {
-      const folderPath = await this.create_folder('./data/' + prefix);
-      this.watcher.start(folderPath);
-  }
-
-  async stop_watcher() {
-    // TODO return latest path
+  stop_watcher(): string | undefined {
+    return this.watcher.stop();
   }
 
   open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
-    console.log('open');
-    console.log(payload)
+    const prefix: string = payload.new.prefix;
+    console.log(`UploadManager: Open upload for prefix "${prefix}"`);
+    this.start_watcher(payload.new.prefix);
   }
 
   close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
-    console.log('close');
-    console.log(payload);
+    const prefix: string = payload.new.prefix;
+    console.log(`UploadManager: Close upload for prefix "${prefix}"`);
+    const path: string | undefined = this.stop_watcher();
+    console.log(`UploadManager: Upload file "${path}"`)
+    // TODO S3 Upload
   }
-
 }
 
