@@ -68,26 +68,29 @@ export class UploadManager {
   }
 
   async close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
-    const bucket: string = payload.new.bucket;
-    const prefix: string = payload.new.prefix;
     const filePath: string | undefined = this.stop_watcher();
 
     if (filePath != undefined) {
+      this.upload(payload.new.bucket, payload.new.prefix, filePath)
+    } else {
+      console.log(`UploadManager: Nothing to upload`);
+    }
+  }
+
+  async upload(bucket: string, prefix: string, filePath: string) {
       const localfilepath: string = filePath;
       const s3filepath: string = prefix + '/' + path.basename(filePath);
       const url: string = bucket + '/' + s3filepath;
       console.log(`UploadManager: Upload file ${filePath} to s3://${url}`);
       const fileBuffer = fs.readFileSync(localfilepath);
-      await this.supabase
+      const { data, error } = await this.supabase
         .storage
         .from(bucket)
         .upload(s3filepath, fileBuffer, {
           cacheControl: '3600',
           upsert: false
-        }).then(response => console.log(`UploadManager: ${response}`));
-    } else {
-      console.log(`UploadManager: Nothing to upload`);
-    }
+        });
+    console.log(data)
   }
 }
 
