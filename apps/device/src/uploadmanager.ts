@@ -4,8 +4,10 @@ import { RecastClient } from './recastclient';
 import { RealtimeChannel, RealtimePostgresInsertPayload, SupabaseClient } from '@supabase/supabase-js';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as rimraf from 'rimraf';
 
 export class UploadManager {
+  private dataFolder: string = './data/';
   private folderWatcher: FolderWatcher = new FolderWatcher();
   private uploadChannel: RealtimeChannel;
   private supabase: SupabaseClient;
@@ -36,6 +38,7 @@ export class UploadManager {
   }
 
   async initialize(client: RecastClient): Promise<void> {
+    this.clear();
     await this.check_for_active_upload(client).then(data => data && this.start_watcher(data));
   }
 
@@ -53,7 +56,7 @@ export class UploadManager {
   }
 
   start_watcher(folderPath: string) {
-    const relativeFolderPath: string = './data/' + folderPath;
+    const relativeFolderPath: string = this.dataFolder + folderPath;
     this.folderWatcher.start(relativeFolderPath);
   }
 
@@ -90,7 +93,14 @@ export class UploadManager {
           cacheControl: '3600',
           upsert: false
         });
-    console.log(data)
+    console.log(`UploadManager: ${data?.path}`);
+    this.clear();
+  }
+
+  clear() {
+    const dataPath = path.resolve(process.cwd(), this.dataFolder);
+    console.log(`UploadManager: Clear ${dataPath}`);
+    rimraf.sync(dataPath);
   }
 }
 
