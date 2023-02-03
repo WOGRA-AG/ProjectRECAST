@@ -10,25 +10,25 @@ export class UploadManager {
   constructor(client: RecastClient) {
     this.initialize(client);
     this.uploadChannel = this.create_channel(client);
+    this.uploadChannel.subscribe();
   }
 
   create_channel(client: RecastClient): RealtimeChannel {
      return client.supabase.channel('upload')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'upload', filter: "status=eq.true" },
+        { event: 'INSERT', schema: 'public', table: 'upload', filter: "active=eq.true" },
         (payload: any) => {
           this.open(payload)
         }
       )
       .on(
         'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'upload', filter: "status=eq.false"},
+        { event: 'UPDATE', schema: 'public', table: 'upload', filter: "active=eq.false"},
         (payload: any) => {
           this.close(payload)
         }
       )
-      .subscribe()
   }
 
   async initialize(client: RecastClient): Promise<void> {
@@ -39,7 +39,7 @@ export class UploadManager {
   }
 
   async check_for_active_upload(client: RecastClient): Promise<{ bucket: string, prefix: string } | null> {
-    let { data, error } = await client.supabase.from('upload').select('bucket, prefix').is('status', true);
+    let { data, error } = await client.supabase.from('upload').select('bucket, prefix').is('active', true);
 
     if (data != null && data.length === 0) {
       console.log(`UploadManager: No active upload!`);
