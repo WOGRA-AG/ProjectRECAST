@@ -1,10 +1,10 @@
-import { Watcher } from './watcher'
+import { FolderWatcher as FolderWatcher } from './folderwatcher'
 import 'dotenv/config';
 import { RecastClient } from './recastclient';
 import { RealtimeChannel, RealtimePostgresInsertPayload } from '@supabase/supabase-js';
 
 export class UploadManager {
-  private watcher: Watcher = new Watcher();
+  private folderWatcher: FolderWatcher = new FolderWatcher();
   private uploadChannel: RealtimeChannel;
 
   constructor(client: RecastClient) {
@@ -55,11 +55,11 @@ export class UploadManager {
 
   start_watcher(prefix: string) {
     const path: string = './data/' + prefix;
-    this.watcher.start(path);
+    this.folderWatcher.start(path);
   }
 
   stop_watcher(): string | undefined {
-    return this.watcher.stop();
+    return this.folderWatcher.stop();
   }
 
   open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
