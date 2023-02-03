@@ -1,4 +1,4 @@
-import { FolderWatcher as FolderWatcher } from './folderwatcher'
+import { FolderWatcher } from './folderwatcher'
 import 'dotenv/config';
 import { RecastClient } from './recastclient';
 import { RealtimeChannel, RealtimePostgresInsertPayload, SupabaseClient } from '@supabase/supabase-js';
@@ -36,30 +36,25 @@ export class UploadManager {
   }
 
   async initialize(client: RecastClient): Promise<void> {
-    const data = await this.check_for_active_upload(client);
-    if (data !== null) {
-      this.start_watcher(data.prefix);
-    }
+    await this.check_for_active_upload(client).then(data => data && this.start_watcher(data));
   }
 
-  async check_for_active_upload(client: RecastClient): Promise<{ bucket: string, prefix: string } | null> {
-    let { data, error } = await client.supabase.from('upload').select('bucket, prefix').is('active', true);
+  async check_for_active_upload(client: RecastClient): Promise<string | null> {
+    const { data, error } = await client.supabase.from('upload').select('local_folder_name').is('active', true);
 
     if (data != null && data.length === 0) {
       console.log(`UploadManager: No active upload!`);
       return null;
     } else {
-      let bucket: string = data && data[0].bucket;
-      console.log(`UploadManager: Bucket "${bucket}".`);
-      let prefix: string = data && data[0].prefix;
-      console.log(`UploadManager: Prefix "${prefix}".`);
-      return { bucket, prefix };
+      let local_folder_name: string = data && data[0].local_folder_name;
+      console.log(`UploadManager: Watch "${local_folder_name}".`);
+      return local_folder_name;
     }
   }
 
-  start_watcher(prefix: string) {
-    const path: string = './data/' + prefix;
-    this.folderWatcher.start(path);
+  start_watcher(folderPath: string) {
+    const relativeFolderPath: string = './data/' + folderPath;
+    this.folderWatcher.start(relativeFolderPath);
   }
 
   stop_watcher(): string | undefined {
@@ -72,18 +67,18 @@ export class UploadManager {
     this.start_watcher(payload.new.prefix);
   }
 
-  close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
+  async close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
     const bucket: string = payload.new.bucket;
     const prefix: string = payload.new.prefix;
     const filePath: string | undefined = this.stop_watcher();
 
     if (filePath != undefined) {
-      const localfilepath: string = './' + filePath;
+      const localfilepath: string = filePath;
       const s3filepath: string = prefix + '/' + path.basename(filePath);
       const url: string = bucket + '/' + s3filepath;
       console.log(`UploadManager: Upload file ${filePath} to s3://${url}`);
       const fileBuffer = fs.readFileSync(localfilepath);
-      this.supabase
+      await this.supabase
         .storage
         .from(bucket)
         .upload(s3filepath, fileBuffer, {

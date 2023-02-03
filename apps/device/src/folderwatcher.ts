@@ -2,46 +2,49 @@ import * as chokidar from "chokidar";
 import { mkdirp } from 'mkdirp'
 
 export class FolderWatcher {
-  private chokidarWatcher: chokidar.FSWatcher | undefined;
+  private chokidarFolderWatcher: chokidar.FSWatcher | undefined;
   private currentPaths: string[];
 
   constructor() {
     this.currentPaths = [];
   }
   
-  async create_folder(path: string): Promise<string> {
-    let made = mkdirp.sync(path);
-    path = typeof made == 'string' ? made : path;
-    return path;
+  async create_folder(path: string) {
+    await mkdirp(path).then(made => made && console.log(`FolderWatcher: made directories, starting with ${made}`));
   }
 
-  add(path: string) {
+  add_filepath(path: string) {
     this.currentPaths.push(path);
-    console.log(`Watcher: added "${path}"`);
+    console.log(`FolderWatcher: added "${path}" to current paths.`);
   }
   
-  remove(path: string) {
+  remove_filepath(path: string) {
     this.currentPaths.pop();
-    console.log(`Watcher: remove "${path}"`);
+    console.log(`FolderWatcher: remove "${path}" to current paths.`);
     this.currentPaths = this.currentPaths.filter(element => element !== path);
   }
 
-  async start(path: string) {
-    path = await this.create_folder(path);
-    this.currentPaths = [];
-    this.chokidarWatcher = chokidar.watch(path, {});
+  async start(relativeFolderPath: string) {
+    await this.create_folder(relativeFolderPath);
 
-    this.chokidarWatcher
-      .on("add", (path: string) => this.add(path))
-      .on("change", (path: string) => this.add(path))
-      .on("unlink", (path: string) => this.remove(path));
+    this.currentPaths = [];
+    this.chokidarFolderWatcher = chokidar.watch(relativeFolderPath, {});
+    this.chokidarFolderWatcher
+      .on("add", (path: string) => this.add_filepath(path))
+      .on("change", (path: string) => this.add_filepath(path))
+      .on("unlink", (path: string) => this.remove_filepath(path));
   }
 
   stop() : string | undefined {
-    if (this.chokidarWatcher) {
-      this.chokidarWatcher.close();
+    if (this.chokidarFolderWatcher) {
+      this.chokidarFolderWatcher.close();
     }
-    return this.currentPaths.pop()
+    const latestFilePath = this.currentPaths.pop();
+    if (typeof latestFilePath == 'undefined') {
+      return undefined;
+    } else {
+      return './' + latestFilePath;
+    }
   }
 }
 
