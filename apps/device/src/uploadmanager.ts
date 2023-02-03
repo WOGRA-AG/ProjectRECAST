@@ -1,16 +1,20 @@
 import { FolderWatcher as FolderWatcher } from './folderwatcher'
 import 'dotenv/config';
 import { RecastClient } from './recastclient';
-import { RealtimeChannel, RealtimePostgresInsertPayload } from '@supabase/supabase-js';
+import { RealtimeChannel, RealtimePostgresInsertPayload, SupabaseClient } from '@supabase/supabase-js';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class UploadManager {
   private folderWatcher: FolderWatcher = new FolderWatcher();
   private uploadChannel: RealtimeChannel;
+  private supabase: SupabaseClient;
 
   constructor(client: RecastClient) {
     this.initialize(client);
     this.uploadChannel = this.create_channel(client);
     this.uploadChannel.subscribe();
+    this.supabase = client.supabase;
   }
 
   create_channel(client: RecastClient): RealtimeChannel {
@@ -64,16 +68,31 @@ export class UploadManager {
 
   open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
     const prefix: string = payload.new.prefix;
-    console.log(`UploadManager: Open upload for prefix "${prefix}"`);
+    console.log(`UploadManager: Active upload for prefix "${prefix}"`);
     this.start_watcher(payload.new.prefix);
   }
 
   close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
+    const bucket: string = payload.new.bucket;
     const prefix: string = payload.new.prefix;
-    console.log(`UploadManager: Close upload for prefix "${prefix}"`);
-    const path: string | undefined = this.stop_watcher();
-    console.log(`UploadManager: Upload file "${path}"`)
-    // TODO S3 Upload
+    const filePath: string | undefined = this.stop_watcher();
+
+    if (filePath != undefined) {
+      const localfilepath: string = './' + filePath;
+      const s3filepath: string = prefix + '/' + path.basename(filePath);
+      const url: string = bucket + '/' + s3filepath;
+      console.log(`UploadManager: Upload file ${filePath} to s3://${url}`);
+      const fileBuffer = fs.readFileSync(localfilepath);
+      this.supabase
+        .storage
+        .from(bucket)
+        .upload(s3filepath, fileBuffer, {
+          cacheControl: '3600',
+          upsert: false
+        }).then(response => console.log(`UploadManager: ${response}`));
+    } else {
+      console.log(`UploadManager: Nothing to upload`);
+    }
   }
 }
 
