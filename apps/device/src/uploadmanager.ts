@@ -11,12 +11,14 @@ export class UploadManager {
   private folderWatcher: FolderWatcher = new FolderWatcher();
   private uploadChannel: RealtimeChannel;
   private supabase: SupabaseClient;
+  private device_id: string;
 
   constructor(client: RecastClient) {
     this.initialize(client);
     this.uploadChannel = this.create_channel(client);
     this.uploadChannel.subscribe();
     this.supabase = client.supabase;
+    this.device_id = 'blub'
   }
 
   create_channel(client: RecastClient): RealtimeChannel {
@@ -38,7 +40,9 @@ export class UploadManager {
   }
 
   async initialize(client: RecastClient): Promise<void> {
+    await client.login();
     this.clear();
+    await client.supabase.from('devices').select('device_id').then(data => console.log(data));
     await this.check_for_active_upload(client).then(data => data && this.start_watcher(data));
   }
 

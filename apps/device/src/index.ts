@@ -15,6 +15,8 @@ const supabasekey = process.env.SUPABASE_KEY;
 const email = process.env.EMAIL;
 const password = process.env.PASSWORD;
 
-let client: RecastClient = new RecastClient('https://' + supabaseurl, supabasekey, email, password)
-
-const uploadManager = new UploadManager(client);
+async function main() {
+  let client: RecastClient = new RecastClient('https://' + supabaseurl, supabasekey, email, password)
+  const uploadManager = new UploadManager(client);
+}
+main();
