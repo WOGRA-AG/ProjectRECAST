@@ -11,7 +11,19 @@ export class FolderWatcher {
   }
   
   async create_folder(path: string) {
-    await mkdirp(path).then(made => made && console.log(`FolderWatcher: made directories, starting with ${made}`));
+    try {
+        await mkdirp(path).then(made => made && console.log(`FolderWatcher: made directories, starting with ${made}`));
+    } catch (error: any) {
+        if (error.code === 'ENOENT') {
+            console.error(`FolderWatcher: error creating directory, ${error.message}`);
+        } else if (error.code === 'EEXIST') {
+            console.error(`FolderWatcher: directory already exists, ${error.message}`);
+        } else if (error.code === 'EACCES') {
+            console.error(`FolderWatcher: permission denied, ${error.message}`);
+        } else {
+            throw error;
+        }
+    }
   }
 
   add_filepath(path: string) {
