@@ -131,6 +131,7 @@ export class ElementDetailComponent {
           );
         return;
       }
+      this.updateElement(this.element?.id!, null);
       this.router.navigate(['../../../..'], { relativeTo: this.route });
     }
   }
@@ -153,7 +154,7 @@ export class ElementDetailComponent {
       .subscribe();
   }
 
-  private updateElement(id: number, stepId: number): void {
+  private updateElement(id: number, stepId: number | null): void {
     this.elementService
       .saveElement$({
         id,

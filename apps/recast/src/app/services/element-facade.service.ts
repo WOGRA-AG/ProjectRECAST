@@ -108,7 +108,7 @@ export class ElementFacadeService {
 
   public elementsByProcessIdAndStepId$(
     processId: number,
-    stepId: number
+    stepId: number | null | undefined
   ): Observable<Element[]> {
     return this._elements$.pipe(
       map(elements =>

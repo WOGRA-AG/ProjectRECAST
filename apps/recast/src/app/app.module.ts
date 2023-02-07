@@ -14,6 +14,7 @@ import { UploadNewProcessComponent } from './templates/upload-new-process/upload
 import { i18nModule } from './i18n/i18n.module';
 import { CreateElementComponent } from './templates/create-element/create-element.component';
 import { ElementDetailComponent } from './templates/element-detail/element-detail.component';
+import { ElementViewComponent } from './templates/element-view/element-view.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { ElementDetailComponent } from './templates/element-detail/element-detai
     UploadNewProcessComponent,
     CreateElementComponent,
     ElementDetailComponent,
+    ElementViewComponent,
   ],
   imports: [
     BrowserModule,

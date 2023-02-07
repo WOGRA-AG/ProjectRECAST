@@ -18,6 +18,7 @@
   "label.processes": "Prozesse",
   "label.title": "Titel",
   "label.search": "Suche",
+  "label.done": "Abgeschlossen",
 
   "err.min_char": "Mindestens {$INTERPOLATION} Buchstaben",
 
@@ -28,6 +29,7 @@
   "header.new_process": "Prozess Erstellen",
   "header.overview": "Übersicht",
   "header.create_element": "Bauteil erstellen",
+  "header.view_element": "Bauteil ansehen",
 
   "dialog.delete_process": "Prozess und alle dazugehörigen Daten löschen?",
   "dialog.delete_element": "Bauteil und alle dazugehörigen Daten löschen?"

@@ -18,6 +18,7 @@
   "label.processes": "Processes",
   "label.title": "Title",
   "label.search": "Search",
+  "label.done": "Done",
 
   "err.min_char": "Minimum of {$INTERPOLATION} characters",
 
@@ -28,6 +29,7 @@
   "header.new_process": "New Process",
   "header.overview": "Overview",
   "header.create_element": "Create Element",
+  "header.view_element": "View Element",
 
   "dialog.delete_process": "Delete process and all corresponding data?",
   "dialog.delete_element": "Delete Element and all corresponding data?"
