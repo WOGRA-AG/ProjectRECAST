@@ -5,6 +5,7 @@ import { mkdirp } from 'mkdirp'
 export class FolderWatcher {
   private chokidarFolderWatcher: FSWatcher | undefined;
   private currentPaths: string[] = [];
+  private ready: boolean = true;
 
   private async create_folder(path: string): Promise<void> {
     try {
@@ -33,30 +34,42 @@ export class FolderWatcher {
   }
 
   async start(relativeFolderPath: string): Promise<void> {
-    try {
-      await this.create_folder(relativeFolderPath);
-    } catch (error) {
-      console.error("FolderWatcher: create folder error ", error);
-    }
+    if (this.ready) {
+      try {
+        await this.create_folder(relativeFolderPath);
+      } catch (error) {
+        console.error("FolderWatcher: create folder error ", error);
+      }
 
-    this.currentPaths = [];
-    this.chokidarFolderWatcher = chokidarWatch(relativeFolderPath, {});
-    this.chokidarFolderWatcher
-      .on("add", (path: string) => this.add_filepath(path))
-      .on("change", (path: string) => this.add_filepath(path))
-      .on("unlink", (path: string) => this.remove_filepath(path));
+      this.chokidarFolderWatcher = chokidarWatch(relativeFolderPath, {});
+      this.chokidarFolderWatcher
+        .on("add", (path: string) => this.add_filepath(path))
+        .on("change", (path: string) => this.add_filepath(path))
+        .on("unlink", (path: string) => this.remove_filepath(path));
+    } else {
+      console.debug('FolderWatcher: already watching...')
+    }
   }
 
   stop() : string | undefined {
-    if (this.chokidarFolderWatcher) {
-      this.chokidarFolderWatcher.close();
-    }
     const latestFilePath = this.currentPaths.pop();
+    this.reset();
+
     if (typeof latestFilePath == 'undefined') {
       return undefined;
     } else {
       return './' + latestFilePath;
     }
+  }
+
+  private reset(): void {
+    if (this.chokidarFolderWatcher) {
+      this.chokidarFolderWatcher.close();
+    }
+
+    this.currentPaths = [];
+    this.chokidarFolderWatcher = undefined;
+    this.ready = true;
   }
 }
 

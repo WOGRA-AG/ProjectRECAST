@@ -15,8 +15,8 @@ export class RecastClient{
     password: string, 
     signup?: boolean,
   ) {
-    this.supabaseurl = supabaseurl,
-    this.supabasekey = supabasekey,
+    this.supabaseurl = supabaseurl;
+    this.supabasekey = supabasekey;
     this.email = email;
     this.password = password;
     this.signup = signup || false;

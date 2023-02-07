@@ -19,7 +19,7 @@ export class UploadManager {
     this.uploadChannel = this.create_channel(client);
     this.uploadChannel.subscribe();
     this.supabase = client.supabase;
-    this.device_id = 'blub'
+    this.device_id = 'blub';
   }
 
   private create_channel(client: RecastClient): RealtimeChannel {
@@ -84,7 +84,7 @@ export class UploadManager {
       console.info(`UploadManager: nothing to upload.`);
     }
     
-    console.info(`Uploadmanager: waiting for upload.`)
+    console.info(`Uploadmanager: waiting for upload.`);
   }
 
   private async upload(bucket: string, prefix: string, filePath: string): Promise<void> {
