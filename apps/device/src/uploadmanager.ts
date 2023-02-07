@@ -2,9 +2,10 @@ import { FolderWatcher } from './folderwatcher'
 import 'dotenv/config';
 import { RecastClient } from './recastclient';
 import { RealtimeChannel, RealtimePostgresInsertPayload, SupabaseClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as rimraf from 'rimraf';
+import { readFileSync as fsReadFileSync } from 'fs';
+import { basename as pathBasename } from 'path';
+import { resolve as pathResolve } from 'path';
+import { sync as rimrafSync } from 'rimraf';
 
 export class UploadManager {
   private dataFolder: string = './data/';
@@ -86,10 +87,10 @@ export class UploadManager {
 
   async upload(bucket: string, prefix: string, filePath: string) {
       const localfilepath: string = filePath;
-      const s3filepath: string = prefix + '/' + path.basename(filePath);
+      const s3filepath: string = prefix + '/' + pathBasename(filePath);
       const url: string = bucket + '/' + s3filepath;
       console.log(`UploadManager: Upload file ${filePath} to s3://${url}`);
-      const fileBuffer = fs.readFileSync(localfilepath);
+      const fileBuffer = fsReadFileSync(localfilepath);
       const { data, error } = await this.supabase
         .storage
         .from(bucket)
@@ -102,9 +103,9 @@ export class UploadManager {
   }
 
   clear() {
-    const dataPath = path.resolve(process.cwd(), this.dataFolder);
+    const dataPath = pathResolve(process.cwd(), this.dataFolder);
     console.log(`UploadManager: Clear ${dataPath}`);
-    rimraf.sync(dataPath);
+    rimrafSync(dataPath);
   }
 }
 

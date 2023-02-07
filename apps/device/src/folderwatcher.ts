@@ -1,8 +1,9 @@
-import * as chokidar from "chokidar";
+import { FSWatcher } from 'chokidar';
+import { watch as chokidarWatch } from 'chokidar';
 import { mkdirp } from 'mkdirp'
 
 export class FolderWatcher {
-  private chokidarFolderWatcher: chokidar.FSWatcher | undefined;
+  private chokidarFolderWatcher: FSWatcher | undefined;
   private currentPaths: string[];
 
   constructor() {
@@ -28,7 +29,7 @@ export class FolderWatcher {
     await this.create_folder(relativeFolderPath);
 
     this.currentPaths = [];
-    this.chokidarFolderWatcher = chokidar.watch(relativeFolderPath, {});
+    this.chokidarFolderWatcher = chokidarWatch(relativeFolderPath, {});
     this.chokidarFolderWatcher
       .on("add", (path: string) => this.add_filepath(path))
       .on("change", (path: string) => this.add_filepath(path))
