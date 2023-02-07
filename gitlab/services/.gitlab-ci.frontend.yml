@@ -1,6 +1,18 @@
 include:
   - local: 'gitlab/shared/.gitlab-ci.build-production.yml'
 
+variables:
+  npm_config_cache: '$CI_PROJECT_DIR/.npm'
+  CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - apps/recast.cache/*
+    - apps/recastcache/Cypress
+    - apps/recastnode_modules
+    - apps/recastbuild
+
 .build-frontend:
   stage: build
   needs: [ ]
@@ -88,3 +100,27 @@ build-frontend-image-dev:
   rules:
     - !reference [.build-production, rules]
     - if: $CI_COMMIT_TAG == null
+
+ui-chrome-tests:
+  image: cypress/browsers:node16.16.0-chrome107-ff107-edge
+  stage: e2e
+  when: manual
+  before_script:
+    - apt-get update -y
+  script:
+    - cd apps/recast
+    # install dependencies
+    - npm ci --cache .npm_cache
+    # run Cypress tests in parallel
+    - npx cypress run --browser chrome
+  artifacts:
+    when: always
+    paths:
+      - apps/recast/cypress/videos/**/*.mp4
+      - apps/recast/cypress/screenshots/**/*.png
+    expire_in: 1 day
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+      when: manual

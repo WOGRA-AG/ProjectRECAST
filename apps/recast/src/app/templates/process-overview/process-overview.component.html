@@ -1,9 +1,10 @@
 <div class="content-wrapper">
-  <app-page-header [header]="title" [breadcrumbs]="breadcrumbs">
+  <app-page-header [breadcrumbs]="breadcrumbs">
+    {{ title }}
   </app-page-header>
 
   <app-stepper
-    [steps]="stepTitles"
+    [steps]="(stepTitles$ | async) || []"
     (stepChanged)="changeContent($event)"
     [disableRipple]="true"
     [currentIndex]="currentIndex">

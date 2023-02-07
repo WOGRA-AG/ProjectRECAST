@@ -7,6 +7,5 @@ import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/bread
   styleUrls: ['./page-header.component.scss'],
 })
 export class PageHeaderComponent {
-  @Input() header = '';
   @Input() breadcrumbs: Breadcrumb[] = [];
 }

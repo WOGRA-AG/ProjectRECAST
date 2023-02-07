@@ -1,10 +1,9 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Element, Process, Step, StepProperty } from 'build/openapi/recast';
+import { Element, Step, StepProperty, Process } from 'build/openapi/recast';
 import {
   catchError,
-  combineLatest,
   distinctUntilChanged,
   filter,
   map,
@@ -13,6 +12,7 @@ import {
   Subject,
   takeUntil,
   tap,
+  combineLatestWith,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
@@ -20,6 +20,7 @@ import { ElementPropertyService } from 'src/app/services/element-property.servic
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
+import { elementComparator } from "../../shared/util/common-utils";
 
 @Component({
   selector: 'app-element-detail',
@@ -52,32 +53,32 @@ export class ElementDetailComponent implements OnDestroy {
       filter(param => !!param.get('processId')),
       map(param => +param.get('processId')!),
       mergeMap(id => this.stepService.stepsByProcessId$(id)),
-      distinctUntilChanged((a, b) => this.equalsObj(a, b))
+      distinctUntilChanged(elementComparator)
     );
 
     const process$ = route.paramMap.pipe(
       filter(param => !!param.get('processId')),
       map(param => +param.get('processId')!),
       mergeMap(id => this.processService.processById$(id)),
-      distinctUntilChanged((a, b) => this.equalsObj(a, b))
+      distinctUntilChanged(elementComparator)
     );
 
     const element$ = route.paramMap.pipe(
       filter(param => !!param.get('elementId')),
       map(param => +param.get('elementId')!),
       mergeMap(id => this.elementService.elementById$(id)),
-      distinctUntilChanged((a, b) => this.equalsObj(a, b))
+      distinctUntilChanged(elementComparator)
     );
 
     const step$ = route.paramMap.pipe(
       filter(param => !!param.get('stepId')),
       map(param => +param.get('stepId')!),
       mergeMap(id => this.stepService.stepById$(id)),
-      distinctUntilChanged((a, b) => this.equalsObj(a, b))
+      distinctUntilChanged(elementComparator)
     );
-    const observable$ = combineLatest(process$, element$, step$, steps$);
-    observable$
+    process$
       .pipe(
+        combineLatestWith(element$, step$, steps$),
         tap(([process, element, step, steps]) => {
           this._steps = steps;
           this.stepTitles = steps.map(s => s.name!);
@@ -124,7 +125,7 @@ export class ElementDetailComponent implements OnDestroy {
 
   public onSubmitClicked() {
     for (const prop of this.stepProperties) {
-      const value = this.propertiesForm.get('' + prop.id)?.value;
+      const value = this.propertiesForm.get('' + prop.id)?.value!;
       this.updateElementProperty(prop, value);
       if (!this.isLastStep) {
         const nextStep = this._steps[this.currentIndex + 1];
@@ -132,6 +133,7 @@ export class ElementDetailComponent implements OnDestroy {
         this.navigateStep(nextStep);
         return;
       }
+      this.updateElement(this.element?.id!, null);
       this.navigateBack();
     }
   }
@@ -177,7 +179,7 @@ export class ElementDetailComponent implements OnDestroy {
       .subscribe();
   }
 
-  private updateElement(id: number, stepId: number): void {
+  private updateElement(id: number, stepId: number | null): void {
     this.elementService
       .saveElement$({
         id,
@@ -191,10 +193,6 @@ export class ElementDetailComponent implements OnDestroy {
         takeUntil(this._destroy$)
       )
       .subscribe();
-  }
-
-  private equalsObj(a: object, b: object): boolean {
-    return JSON.stringify(a) === JSON.stringify(b);
   }
 
   private initBreadcrumbs(process: Process): void {

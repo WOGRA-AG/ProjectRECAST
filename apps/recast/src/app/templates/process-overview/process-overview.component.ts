@@ -4,8 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Process, Step, Element } from 'build/openapi/recast';
 import {
   concatMap,
+  distinctUntilChanged,
   filter,
   map,
+  mergeMap,
   Observable,
   Subject,
   takeUntil,
@@ -17,6 +19,7 @@ import { TableColumn } from 'src/app/design/components/organisms/table/table.com
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
+import { elementComparator } from '../../shared/util/common-utils';
 
 @Component({
   selector: 'app-process-overview',
@@ -25,10 +28,9 @@ import { StepFacadeService } from 'src/app/services/step-facade.service';
 })
 export class ProcessOverviewComponent implements OnDestroy {
   public title = '';
-  public currentStepId: number | undefined;
+  public currentStepId: number | null | undefined;
   public breadcrumbs: Breadcrumb[] = [];
   public steps: Step[] = [];
-  public stepTitles: string[] = [];
   public dataColumns: TableColumn[] = [
     { key: 'name', label: 'Title', type: 'text', required: true },
     { key: 'isEdit', label: '', type: 'isEdit' },
@@ -36,7 +38,7 @@ export class ProcessOverviewComponent implements OnDestroy {
   ];
   public tableData$: Observable<any> = new Observable<any>();
 
-  private _currentIndex = 0;
+  public currentIndex = 0;
 
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
@@ -60,33 +62,33 @@ export class ProcessOverviewComponent implements OnDestroy {
           { label: this.title },
         ];
       });
+  }
 
-    this.processId$
-      .pipe(
-        concatMap(id => this.stepService.stepsByProcessId$(id)),
-        takeUntil(this._destroy$)
-      )
-      .subscribe(steps => {
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
+  public get stepTitles$(): Observable<string[]> {
+    return this.processId$.pipe(
+      mergeMap(id => this.stepService.stepsByProcessId$(id)),
+      filter(steps => !!steps.length),
+      distinctUntilChanged(elementComparator),
+      takeUntil(this._destroy$),
+      map(steps => {
         this.steps = steps;
-        this.stepTitles = steps.map(step => step.name!);
-        if (steps[this.currentIndex]) {
-          this.currentStepId = steps[this.currentIndex].id!;
+        const stepTitles = steps.map(step => step.name!);
+        stepTitles.push($localize`:@@label.done:Abgeschlossen`);
+        if (this.steps[this.currentIndex]) {
+          this.currentStepId = this.steps[this.currentIndex].id!;
           this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(
-            steps[this.currentIndex].processId!,
+            this.steps[this.currentIndex].processId!,
             this.currentStepId
           );
         }
-      });
-
-    this.currentIndex$.pipe(takeUntil(this._destroy$)).subscribe();
-  }
-
-  public get currentIndex(): number {
-    return this._currentIndex;
-  }
-
-  public set currentIndex(index: number) {
-    this._currentIndex = index;
+        return stepTitles;
+      }),
+    );
   }
 
   private get processId$(): Observable<number> {
@@ -96,23 +98,11 @@ export class ProcessOverviewComponent implements OnDestroy {
       takeUntil(this._destroy$)
     );
   }
-  private get currentIndex$(): Observable<number> {
-    return this.activatedRoute.queryParamMap.pipe(
-      filter(param => !!param.get('idx')),
-      map(param => +param.get('idx')!),
-      tap(idx => (this.currentIndex = idx)),
-      takeUntil(this._destroy$)
-    );
-  }
-
-  public ngOnDestroy() {
-    this._destroy$.next();
-    this._destroy$.complete();
-  }
 
   public changeContent(index: number): void {
     this.currentIndex = index;
-    this.currentStepId = this.steps[this.currentIndex]?.id!;
+    this.currentStepId =
+      index === this.steps.length ? null : this.steps[this.currentIndex]?.id!;
     this.processId$
       .pipe(
         concatMap(
@@ -120,18 +110,12 @@ export class ProcessOverviewComponent implements OnDestroy {
             (this.tableData$ =
               this.elementService.elementsByProcessIdAndStepId$(
                 id,
-                this.currentStepId!
+                this.currentStepId
               ))
         ),
         takeUntil(this._destroy$)
       )
       .subscribe();
-    this.router.navigate(['.'], {
-      relativeTo: this.activatedRoute,
-      queryParams: {
-        idx: `${this._currentIndex}`,
-      },
-    });
   }
 
   public navigateToCreateElement(): void {
@@ -141,10 +125,12 @@ export class ProcessOverviewComponent implements OnDestroy {
   }
 
   public navigateTo(element: Element): void {
-    this.router.navigate(
-      ['./step/' + this.currentStepId + '/element/' + element.id],
-      { relativeTo: this.activatedRoute }
-    );
+    const route = element.currentStepId
+      ? `./step/${this.currentStepId}/element/${element.id}`
+      : `./element/${element.id}`;
+    this.router.navigate([route], {
+      relativeTo: this.activatedRoute,
+    });
   }
 
   public deleteTableRow(element: Process | Element | Step): void {

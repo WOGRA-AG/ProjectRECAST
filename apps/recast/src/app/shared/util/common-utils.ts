@@ -55,3 +55,6 @@ export const yamlToProcess$ = (file: File): Observable<Process> =>
       return proc;
     })
   );
+
+export const elementComparator = <T>(a: T, b: T): boolean =>
+  JSON.stringify(a) === JSON.stringify(b);
