@@ -33,7 +33,11 @@ export class FolderWatcher {
   }
 
   async start(relativeFolderPath: string): Promise<void> {
-    this.create_folder(relativeFolderPath);
+    try {
+      await this.create_folder(relativeFolderPath);
+    } catch (error) {
+      console.error("FolderWatcher: create folder error ", error);
+    }
 
     this.currentPaths = [];
     this.chokidarFolderWatcher = chokidarWatch(relativeFolderPath, {});
