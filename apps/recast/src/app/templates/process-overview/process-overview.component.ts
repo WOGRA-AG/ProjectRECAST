@@ -64,17 +64,11 @@ export class ProcessOverviewComponent implements OnDestroy {
       });
   }
 
-  public ngOnDestroy() {
-    this._destroy$.next();
-    this._destroy$.complete();
-  }
-
-  public get stepTitles$(): Observable<string[]> {
+  get stepTitles$(): Observable<string[]> {
     return this.processId$.pipe(
       mergeMap(id => this.stepService.stepsByProcessId$(id)),
       filter(steps => !!steps.length),
       distinctUntilChanged(elementComparator),
-      takeUntil(this._destroy$),
       map(steps => {
         this.steps = steps;
         const stepTitles = steps.map(step => step.name!);
@@ -88,10 +82,11 @@ export class ProcessOverviewComponent implements OnDestroy {
         }
         return stepTitles;
       }),
+      takeUntil(this._destroy$)
     );
   }
 
-  private get processId$(): Observable<number> {
+  get processId$(): Observable<number> {
     return this.activatedRoute.paramMap.pipe(
       filter(param => !!param.get('processId')),
       map(param => +param.get('processId')!),
@@ -158,5 +153,10 @@ export class ProcessOverviewComponent implements OnDestroy {
       .saveElement$(element as Element)
       .pipe(takeUntil(this._destroy$))
       .subscribe();
+  }
+
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

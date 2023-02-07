@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   distinctUntilChanged,
@@ -6,6 +6,8 @@ import {
   map,
   mergeMap,
   Observable,
+  Subject,
+  takeUntil,
   tap,
 } from 'rxjs';
 import { Element } from '../../../../build/openapi/recast';
@@ -21,7 +23,7 @@ import { StepPropertyService } from '../../services/step-property.service';
   templateUrl: './element-view.component.html',
   styleUrls: ['./element-view.component.scss'],
 })
-export class ElementViewComponent {
+export class ElementViewComponent implements OnDestroy {
   public element: Element | undefined = undefined;
   public breadcrumbs: Breadcrumb[] = [];
   public processId: number | undefined;
@@ -29,6 +31,8 @@ export class ElementViewComponent {
   public properties: [{ id: string; name: string; value: any }] | undefined;
 
   public propertiesForm: FormGroup = this.formBuilder.group({});
+
+  private readonly _destroy$: Subject<void> = new Subject<void>();
   constructor(
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
@@ -40,7 +44,8 @@ export class ElementViewComponent {
     this.processId$
       .pipe(
         mergeMap(id => processService.processById$(id)),
-        distinctUntilChanged(elementComparator)
+        distinctUntilChanged(elementComparator),
+        takeUntil(this._destroy$)
       )
       .subscribe(process => {
         this.breadcrumbs = [
@@ -54,7 +59,8 @@ export class ElementViewComponent {
         mergeMap(() => this.elementId$),
         mergeMap(id => elementService.elementById$(id)),
         distinctUntilChanged(elementComparator),
-        tap(element => this.initFormGroup(element))
+        tap(element => this.initFormGroup(element)),
+        takeUntil(this._destroy$)
       )
       .subscribe(element => {
         this.element = element;
@@ -76,6 +82,11 @@ export class ElementViewComponent {
       map(param => +param.get('elementId')!),
       distinctUntilChanged()
     );
+  }
+
+  ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   public propertyName(id: number): Observable<string> {

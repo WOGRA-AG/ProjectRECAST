@@ -20,7 +20,7 @@ import { ElementPropertyService } from 'src/app/services/element-property.servic
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
-import { elementComparator } from "../../shared/util/common-utils";
+import { elementComparator } from '../../shared/util/common-utils';
 
 @Component({
   selector: 'app-element-detail',
