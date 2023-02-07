@@ -28,7 +28,6 @@ export class FolderWatcher {
   }
   
   remove_filepath(path: string): void {
-    this.currentPaths.pop();
     console.debug(`FolderWatcher: remove "${path}" to current paths.`);
     this.currentPaths = this.currentPaths.filter(element => element !== path);
   }
