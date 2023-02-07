@@ -1,7 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { concatMap, filter, Observable, Subject, takeUntil } from 'rxjs';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
-import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { ProcessFacadeService } from '../../services/process-facade.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -36,7 +35,6 @@ export class OverviewComponent implements OnDestroy {
   constructor(
     public readonly processService: ProcessFacadeService,
     public readonly elementService: ElementFacadeService,
-    public readonly stepService: StepFacadeService,
     public dialog: MatDialog,
     public router: Router
   ) {
@@ -130,14 +128,10 @@ export class OverviewComponent implements OnDestroy {
         break;
       case 1:
         const elem: Element = element as Element;
-        this.router.navigateByUrl(
-          'overview/process/' +
-            elem.processId +
-            '/step/' +
-            elem.currentStepId +
-            '/element/' +
-            elem.id
-        );
+        const route = elem.currentStepId
+          ? `overview/process/${elem.processId}/step/${elem.currentStepId}/element/${elem.id}`
+          : `overview/process/${elem.processId}/element/${elem.id}`;
+        this.router.navigateByUrl(route);
         break;
       default:
         break;
