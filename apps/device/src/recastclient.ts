@@ -24,7 +24,7 @@ export class RecastClient{
     this.supabase = createClient(supabaseurl, supabasekey, options);
   }
 
-  async login() {
+  async login(): Promise<void> {
     if (this.signup) {
       this.supabase.auth.signUp({ email: this.email, password: this.password})
     }

@@ -69,13 +69,13 @@ export class UploadManager {
     return this.folderWatcher.stop();
   }
 
-  open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
+  open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): void {
     const prefix: string = payload.new.prefix;
     console.log(`UploadManager: Active upload for prefix "${prefix}"`);
     this.start_watcher(payload.new.prefix);
   }
 
-  async close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>) {
+  async close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): Promise<void> {
     const filePath: string | undefined = this.stop_watcher();
 
     if (filePath != undefined) {
@@ -85,7 +85,7 @@ export class UploadManager {
     }
   }
 
-  async upload(bucket: string, prefix: string, filePath: string) {
+  async upload(bucket: string, prefix: string, filePath: string): Promise<void> {
       const localfilepath: string = filePath;
       const s3filepath: string = prefix + '/' + pathBasename(filePath);
       const url: string = bucket + '/' + s3filepath;
@@ -102,7 +102,7 @@ export class UploadManager {
     this.clear();
   }
 
-  clear() {
+  clear(): void {
     const dataPath = pathResolve(process.cwd(), this.dataFolder);
     console.log(`UploadManager: Clear ${dataPath}`);
     rimrafSync(dataPath);
