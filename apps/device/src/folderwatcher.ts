@@ -4,12 +4,8 @@ import { mkdirp } from 'mkdirp'
 
 export class FolderWatcher {
   private chokidarFolderWatcher: FSWatcher | undefined;
-  private currentPaths: string[];
+  private currentPaths: string[] = [];
 
-  constructor() {
-    this.currentPaths = [];
-  }
-  
   async create_folder(path: string) {
     try {
         await mkdirp(path).then(made => made && console.log(`FolderWatcher: made directories, starting with ${made}`));
