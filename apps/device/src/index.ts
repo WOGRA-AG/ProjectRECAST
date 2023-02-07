@@ -17,6 +17,7 @@ const password = process.env.PASSWORD;
 
 async function main() {
   let client: RecastClient = new RecastClient('https://' + supabaseurl, supabasekey, email, password)
+  await client.login();
   const uploadManager = new UploadManager(client);
 }
 main();

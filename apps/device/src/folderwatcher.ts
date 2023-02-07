@@ -6,7 +6,7 @@ export class FolderWatcher {
   private chokidarFolderWatcher: FSWatcher | undefined;
   private currentPaths: string[] = [];
 
-  async create_folder(path: string): Promise<void> {
+  private async create_folder(path: string): Promise<void> {
     try {
         await mkdirp(path).then(made => made && console.debug(`FolderWatcher: made directories, starting with ${made}`));
     } catch (error: any) {
@@ -22,12 +22,12 @@ export class FolderWatcher {
     }
   }
 
-  add_filepath(path: string): void {
+  private add_filepath(path: string): void {
     this.currentPaths.push(path);
     console.debug(`FolderWatcher: added "${path}" to current paths.`);
   }
   
-  remove_filepath(path: string): void {
+  private remove_filepath(path: string): void {
     console.debug(`FolderWatcher: remove "${path}" to current paths.`);
     this.currentPaths = this.currentPaths.filter(element => element !== path);
   }

@@ -22,7 +22,7 @@ export class UploadManager {
     this.device_id = 'blub'
   }
 
-  create_channel(client: RecastClient): RealtimeChannel {
+  private create_channel(client: RecastClient): RealtimeChannel {
      return client.supabase.channel('upload')
       .on(
         'postgres_changes',
@@ -40,14 +40,13 @@ export class UploadManager {
       )
   }
 
-  async initialize(client: RecastClient): Promise<void> {
-    await client.login();
+  private async initialize(client: RecastClient): Promise<void> {
     this.clear();
     await client.supabase.from('devices').select('device_id').then(data => console.debug(data));
     await this.check_on_startup_for_active_upload(client);
   }
 
-  async check_on_startup_for_active_upload(client: RecastClient): Promise<void> {
+  private async check_on_startup_for_active_upload(client: RecastClient): Promise<void> {
     const { data, error } = await client.supabase.from('upload').select('*').is('active', true);
     if (!error && data && data.length > 0) {
       const prefix: string = data[0].prefix;
@@ -59,22 +58,22 @@ export class UploadManager {
     }
   }
 
-  start_watcher(folderPath: string) {
+  private start_watcher(folderPath: string) {
     const relativeFolderPath: string = this.dataFolder + folderPath;
     this.folderWatcher.start(relativeFolderPath);
   }
 
-  stop_watcher(): string | undefined {
+  private stop_watcher(): string | undefined {
     return this.folderWatcher.stop();
   }
 
-  open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): void {
+  private open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): void {
     const prefix: string = payload.new.prefix;
     console.info(`UploadManager: active upload found for prefix "${prefix}"`);
     this.start_watcher(payload.new.local_folder_name);
   }
 
-  async close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): Promise<void> {
+  private async close<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): Promise<void> {
     const filePath: string | undefined = this.stop_watcher();
 
     if (filePath != undefined) {
@@ -88,7 +87,7 @@ export class UploadManager {
     console.info(`Uploadmanager: waiting for upload.`)
   }
 
-  async upload(bucket: string, prefix: string, filePath: string): Promise<void> {
+  private async upload(bucket: string, prefix: string, filePath: string): Promise<void> {
     const localfilepath: string = filePath;
     const s3filepath: string = prefix + '/' + pathBasename(filePath);
     const url: string = bucket + '/' + s3filepath;
@@ -111,7 +110,7 @@ export class UploadManager {
     this.clear();
   }
 
-  clear(): void {
+  private clear(): void {
     const dataPath = pathResolve(process.cwd(), this.dataFolder);
     console.debug(`UploadManager: clear ${dataPath}`);
     rimrafSync(dataPath);
