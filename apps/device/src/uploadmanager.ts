@@ -28,14 +28,22 @@ export class UploadManager {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'upload', filter: "active=eq.true" },
         (payload: any) => {
-          this.open(payload)
+          try { 
+            this.open(payload);
+          } catch (error) {
+            console.error(error);
+          }
         }
       )
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'upload', filter: "active=eq.false"},
         (payload: any) => {
-          this.close(payload)
+          try { 
+            this.close(payload)
+          } catch (error) {
+            console.error(error);
+          }
         }
       )
   }
@@ -43,12 +51,16 @@ export class UploadManager {
   private async initialize(client: RecastClient): Promise<void> {
     this.clear();
     await client.supabase.from('devices').select('device_id').then(data => console.debug(data));
-    await this.check_on_startup_for_active_upload(client);
+    try {
+      this.check_on_startup_for_active_upload(client);
+    } catch(error) {
+      console.error(error);
+    }
   }
 
   private async check_on_startup_for_active_upload(client: RecastClient): Promise<void> {
     const { data, error } = await client.supabase.from('upload').select('*').is('active', true);
-    if (!error && data && data.length > 0) {
+    if (!error && data?.length > 0) {
       const prefix: string = data[0].prefix;
       console.info(`UploadManager: active upload found on startup for prefix "${prefix}".`);
       this.start_watcher(data[0].local_folder_name);
@@ -60,11 +72,31 @@ export class UploadManager {
 
   private start_watcher(folderPath: string) {
     const relativeFolderPath: string = this.dataFolder + folderPath;
-    this.folderWatcher.start(relativeFolderPath);
+    try {
+      this.folderWatcher.start(relativeFolderPath);
+    } catch(error) {
+      console.error(`UploadManager: upload failed`, error);
+    }
   }
 
   private stop_watcher(): string | undefined {
-    return this.folderWatcher.stop();
+    let currentPaths: string[] = [];
+    try {
+      currentPaths = this.folderWatcher.stop();
+    } catch(error) {
+      console.error(`UploadManager: folderWatcher does not respond`, error);
+    }
+    return this.get_latest_filePath(currentPaths);
+  }
+
+  private get_latest_filePath(currentPaths: string[]): string | undefined {
+    const latestFilePath = currentPaths.pop();
+
+    if (typeof latestFilePath == 'undefined') {
+      return undefined;
+    } else {
+      return './' + latestFilePath;
+    }
   }
 
   private open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): void {
@@ -78,13 +110,17 @@ export class UploadManager {
 
     if (filePath != undefined) {
       console.info(`UploadManager: upload ${filePath}.`);
-      this.upload(payload.new.bucket, payload.new.prefix, filePath)
-    } 
+      try {
+        this.upload(payload.new.bucket, payload.new.prefix, filePath);
+      } catch(error) {
+        console.error(`UploadManager: upload failed`, error);
+      }
+    }
     else {
       console.info(`UploadManager: nothing to upload.`);
     }
-    
-    console.info(`Uploadmanager: waiting for upload.`);
+
+    console.info(`UploadManager: waiting for upload.`);
   }
 
   private async upload(bucket: string, prefix: string, filePath: string): Promise<void> {

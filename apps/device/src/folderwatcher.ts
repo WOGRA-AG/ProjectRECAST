@@ -34,6 +34,8 @@ export class FolderWatcher {
   }
 
   async start(relativeFolderPath: string): Promise<void> {
+    this.reset();
+
     if (this.ready) {
       try {
         await this.create_folder(relativeFolderPath);
@@ -51,15 +53,10 @@ export class FolderWatcher {
     }
   }
 
-  stop() : string | undefined {
-    const latestFilePath = this.currentPaths.pop();
+  stop() : string[] {
+    const currentPaths = this.currentPaths;
     this.reset();
-
-    if (typeof latestFilePath == 'undefined') {
-      return undefined;
-    } else {
-      return './' + latestFilePath;
-    }
+    return currentPaths;
   }
 
   private reset(): void {
