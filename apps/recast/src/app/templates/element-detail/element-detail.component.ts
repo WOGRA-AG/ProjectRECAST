@@ -76,6 +76,7 @@ export class ElementDetailComponent implements OnDestroy {
       mergeMap(id => this.stepService.stepById$(id)),
       distinctUntilChanged(elementComparator)
     );
+
     process$
       .pipe(
         combineLatestWith(element$, step$, steps$),

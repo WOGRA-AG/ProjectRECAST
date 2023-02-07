@@ -94,6 +94,11 @@ export class ProcessOverviewComponent implements OnDestroy {
     );
   }
 
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
   public changeContent(index: number): void {
     this.currentIndex = index;
     this.currentStepId =
@@ -153,10 +158,5 @@ export class ProcessOverviewComponent implements OnDestroy {
       .saveElement$(element as Element)
       .pipe(takeUntil(this._destroy$))
       .subscribe();
-  }
-
-  public ngOnDestroy() {
-    this._destroy$.next();
-    this._destroy$.complete();
   }
 }

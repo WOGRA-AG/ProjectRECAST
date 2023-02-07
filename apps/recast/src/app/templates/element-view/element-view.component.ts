@@ -67,7 +67,7 @@ export class ElementViewComponent implements OnDestroy {
       });
   }
 
-  private get processId$(): Observable<number> {
+  get processId$(): Observable<number> {
     return this.activatedRoute.paramMap.pipe(
       filter(param => !!param.get('processId')),
       map(param => +param.get('processId')!),
@@ -76,7 +76,7 @@ export class ElementViewComponent implements OnDestroy {
     );
   }
 
-  private get elementId$(): Observable<number> {
+  get elementId$(): Observable<number> {
     return this.activatedRoute.paramMap.pipe(
       filter(param => !!param.get('elementId')),
       map(param => +param.get('elementId')!),
@@ -84,7 +84,7 @@ export class ElementViewComponent implements OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this._destroy$.next();
     this._destroy$.complete();
   }

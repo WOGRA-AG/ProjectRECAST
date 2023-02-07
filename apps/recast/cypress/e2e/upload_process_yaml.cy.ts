@@ -1,5 +1,6 @@
 describe('Processes', () => {
-  let waitForUpdate: number = 5000;
+  const waitForUpdate: number = 5000;
+  const waitForDelete: number = 500;
   beforeEach('login', () => {
     cy.viewport(1280, 720);
     cy.visit('/');
@@ -20,7 +21,6 @@ describe('Processes', () => {
   // });
 
   it('add process from yaml and delete it', () => {
-    let oldLength: number = 0;
     cy.visit('/overview');
     cy.get('.mat-focus-indicator')
       .its('length')
@@ -31,21 +31,21 @@ describe('Processes', () => {
         cy.get('tbody > tr')
           .its('length')
           .then(length => {
-            oldLength = length;
             cy.get('app-button-filled > .mat-focus-indicator').click();
             cy.get('#file-input')
               .invoke('show')
               .selectFile('cypress/fixtures/example_process.yaml');
             cy.get('app-button-filled > .mat-focus-indicator').click();
             cy.wait(waitForUpdate);
-            cy.get('tbody > tr').its('length').should('be.gt', oldLength);
+            cy.get('tbody > tr').its('length').should('be.gt', length);
             cy.get(
               ':last-child > .cdk-column-isDelete > .cell > app-icon-button.ng-star-inserted > .mat-focus-indicator > .mat-button-wrapper'
             ).click();
             cy.get(
               'app-submit-button > app-button-filled > .mat-focus-indicator'
             ).click();
-            cy.get('tbody > tr').its('length').should('eq', oldLength);
+            cy.wait(waitForDelete);
+            cy.get('tbody > tr').its('length').should('eq', length);
           });
       });
   });
