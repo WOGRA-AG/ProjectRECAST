@@ -26,11 +26,9 @@ export class RecastClient{
 
   async login(): Promise<void> {
     if (this.signup) {
-      this.supabase.auth.signUp({ email: this.email, password: this.password})
+      console.debug(this.supabase.auth.signUp({ email: this.email, password: this.password}));
     }
-    let {data, error} = await this.supabase.auth.signInWithPassword({email: this.email, password: this.password});
-    console.log(data)
-    console.log(await this.supabase.auth.refreshSession({refresh_token: data.session?.refresh_token!}));
-    console.log(await this.supabase.auth.getSession());
+    console.debug(await this.supabase.auth.signInWithPassword({email: this.email, password: this.password}));
+    console.debug(await this.supabase.auth.getSession());
   }
 }

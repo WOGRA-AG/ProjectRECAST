@@ -8,7 +8,7 @@ export class FolderWatcher {
 
   async create_folder(path: string): Promise<void> {
     try {
-        await mkdirp(path).then(made => made && console.log(`FolderWatcher: made directories, starting with ${made}`));
+        await mkdirp(path).then(made => made && console.debug(`FolderWatcher: made directories, starting with ${made}`));
     } catch (error: any) {
         if (error.code === 'ENOENT') {
             console.error(`FolderWatcher: error creating directory, ${error.message}`);
@@ -24,12 +24,12 @@ export class FolderWatcher {
 
   add_filepath(path: string): void {
     this.currentPaths.push(path);
-    console.log(`FolderWatcher: added "${path}" to current paths.`);
+    console.debug(`FolderWatcher: added "${path}" to current paths.`);
   }
   
   remove_filepath(path: string): void {
     this.currentPaths.pop();
-    console.log(`FolderWatcher: remove "${path}" to current paths.`);
+    console.debug(`FolderWatcher: remove "${path}" to current paths.`);
     this.currentPaths = this.currentPaths.filter(element => element !== path);
   }
 
