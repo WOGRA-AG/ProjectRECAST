@@ -89,19 +89,25 @@ export class UploadManager {
   }
 
   async upload(bucket: string, prefix: string, filePath: string): Promise<void> {
-      const localfilepath: string = filePath;
-      const s3filepath: string = prefix + '/' + pathBasename(filePath);
-      const url: string = bucket + '/' + s3filepath;
-      
-      console.debug(`UploadManager: upload ${filePath} to s3://${url}`);
-      const fileBuffer = fsReadFileSync(localfilepath);
-      const { data, error } = await this.supabase
-        .storage
-        .from(bucket)
-        .upload(s3filepath, fileBuffer, {
-          cacheControl: '3600',
-          upsert: false
-        });
+    const localfilepath: string = filePath;
+    const s3filepath: string = prefix + '/' + pathBasename(filePath);
+    const url: string = bucket + '/' + s3filepath;
+
+    console.debug(`UploadManager: upload ${filePath} to s3://${url}`);
+    const fileBuffer = fsReadFileSync(localfilepath);
+    const { data, error } = await this.supabase
+      .storage
+      .from(bucket)
+      .upload(s3filepath, fileBuffer, {
+        cacheControl: '3600',
+        upsert: false
+      });
+    if (!error)  {
+      console.debug(data);
+    } 
+    else {
+      console.error(error);
+    }
     this.clear();
   }
 
