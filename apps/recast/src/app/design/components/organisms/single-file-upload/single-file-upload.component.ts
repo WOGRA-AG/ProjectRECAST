@@ -1,17 +1,24 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-file-upload',
   templateUrl: './single-file-upload.component.html',
   styleUrls: ['./single-file-upload.component.scss'],
 })
-export class SingleFileUploadComponent {
+export class SingleFileUploadComponent implements OnDestroy {
   @Input() placeholder = '';
   @Input() file: File | null = null;
   @Output() fileChange: EventEmitter<File | null> =
@@ -25,11 +32,17 @@ export class SingleFileUploadComponent {
       Validators.required,
     ]),
   });
+  private readonly _destroy$: Subject<void> = new Subject<void>();
 
   constructor(private formBuilder: FormBuilder) {
-    this.uploadFileForm.statusChanges.subscribe(status =>
-      this.isValid.emit(status === 'VALID')
-    );
+    this.uploadFileForm.statusChanges
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(status => this.isValid.emit(status === 'VALID'));
+  }
+
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   emitFile() {

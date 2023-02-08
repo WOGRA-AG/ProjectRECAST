@@ -4,20 +4,23 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
 })
-export class TableComponent<T> implements OnChanges, AfterViewInit, OnInit {
+export class TableComponent<T>
+  implements OnChanges, AfterViewInit, OnInit, OnDestroy
+{
   @ViewChild(MatSort) sort: MatSort | null = null;
 
   @Input() columnsSchema: TableColumn[] = [];
@@ -30,19 +33,25 @@ export class TableComponent<T> implements OnChanges, AfterViewInit, OnInit {
 
   dataSource: MatTableDataSource<T> = new MatTableDataSource<T>();
   columns: string[] = this.columnsSchema.map(col => col.key);
+  private readonly _destroy$: Subject<void> = new Subject<void>();
 
   ngOnInit() {
     this.columns = this.columnsSchema.map(col => col.key);
   }
 
   ngOnChanges(): void {
-    this.data.subscribe(value => {
+    this.data.pipe(takeUntil(this._destroy$)).subscribe(value => {
       this.dataSource.data = value;
     });
   }
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
+  }
+
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   applyFilter(filterValue: string | null) {

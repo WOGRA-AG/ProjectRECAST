@@ -62,6 +62,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsdoc": "^39.6.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-rxjs-angular": "^2.0.0",
     "husky": "^8.0.2",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",

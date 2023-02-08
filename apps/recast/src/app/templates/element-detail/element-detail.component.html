@@ -1,10 +1,11 @@
 <div class="content-wrapper">
-  <app-page-header [header]="element?.name!" [breadcrumbs]="breadcrumbs">
+  <app-page-header [breadcrumbs]="breadcrumbs">
+    {{ element?.name! }}
   </app-page-header>
 
   <app-stepper
     [steps]="stepTitles"
-    [disabled]="true"
+    (stepChanged)="stepChanged($event)"
     [currentIndex]="currentIndex"
     [disableRipple]="true">
   </app-stepper>
@@ -14,7 +15,7 @@
     [formGroup]="propertiesForm"
     (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
-      <div class="input-wrapper" *ngFor="let prop of properties">
+      <div class="input-wrapper" *ngFor="let prop of stepProperties">
         <app-input-field
           class="input"
           [label]="prop.name!"
@@ -40,8 +41,7 @@
       <app-submit-button
         *ngIf="isLastStep"
         class="button"
-        i18n="@@action.finished"
-        (click)="onSubmitClicked()">
+        i18n="@@action.finished">
         Finished
       </app-submit-button>
     </div>

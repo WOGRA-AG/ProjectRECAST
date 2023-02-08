@@ -1,36 +1,43 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Element, Step, StepProperty, Process } from 'build/openapi/recast';
 import {
-  ElementProperty,
-  Element,
-  Step,
-  StepProperty,
-} from 'build/openapi/recast';
-import { catchError, concatMap, filter, map, of } from 'rxjs';
+  catchError,
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  of,
+  Subject,
+  takeUntil,
+  tap,
+  combineLatestWith,
+} from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ElementPropertyService } from 'src/app/services/element-property.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
+import { elementComparator } from '../../shared/util/common-utils';
 
 @Component({
   selector: 'app-element-detail',
   templateUrl: './element-detail.component.html',
   styleUrls: ['./element-detail.component.scss'],
 })
-export class ElementDetailComponent {
+export class ElementDetailComponent implements OnDestroy {
   public element: Element | undefined;
   public breadcrumbs: Breadcrumb[] = [];
-  public properties: StepProperty[] = [];
-  public steps: Step[] = [];
-  public currentStep: Step | undefined;
-  public currentIndex = 0;
   public stepTitles: string[] = [];
   public isLastStep = false;
-
-  propertiesForm = this.formBuilder.group({});
+  public stepProperties: StepProperty[] = [];
+  public propertiesForm = this.formBuilder.group({});
+  private _currentIndex = 0;
+  private _currentStep: Step | undefined;
+  private _steps: Step[] = [];
+  private readonly _destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -42,68 +49,75 @@ export class ElementDetailComponent {
     private formBuilder: FormBuilder,
     private router: Router
   ) {
-    route.paramMap
-      .pipe(
-        filter(param => !!param.get('elementId')),
-        map(param => +param.get('elementId')!),
-        concatMap(id => this.elementService.elementById$(id))
-      )
-      .subscribe(element => {
-        this.element = element;
-      });
+    const steps$ = route.paramMap.pipe(
+      filter(param => !!param.get('processId')),
+      map(param => +param.get('processId')!),
+      mergeMap(id => this.stepService.stepsByProcessId$(id)),
+      distinctUntilChanged(elementComparator)
+    );
 
-    route.paramMap
-      .pipe(
-        filter(param => !!param.get('processId')),
-        map(param => +param.get('processId')!),
-        concatMap(id => this.stepService.stepsByProcessId$(id))
-      )
-      .subscribe(steps => {
-        this.steps = steps;
-        this.stepTitles = steps.map(step => step.name!);
-      });
+    const process$ = route.paramMap.pipe(
+      filter(param => !!param.get('processId')),
+      map(param => +param.get('processId')!),
+      mergeMap(id => this.processService.processById$(id)),
+      distinctUntilChanged(elementComparator)
+    );
 
-    route.paramMap
-      .pipe(
-        filter(param => !!param.get('stepId')),
-        map(param => +param.get('stepId')!),
-        concatMap(id => this.stepService.stepById$(id))
-      )
-      .subscribe(step => {
-        this.currentStep = step;
-        this.currentIndex = this.steps.indexOf(step);
-        this.isLastStep = this.steps.length - 1 === this.currentIndex;
-      });
+    const element$ = route.paramMap.pipe(
+      filter(param => !!param.get('elementId')),
+      map(param => +param.get('elementId')!),
+      mergeMap(id => this.elementService.elementById$(id)),
+      distinctUntilChanged(elementComparator)
+    );
 
-    route.paramMap
-      .pipe(
-        filter(param => !!param.get('processId')),
-        map(param => +param.get('processId')!),
-        concatMap(id => this.processService.processById$(id))
-      )
-      .subscribe(process => {
-        this.breadcrumbs = [
-          { label: $localize`:@@header.overview:Overview`, link: '/overview' },
-          { label: process.name!, link: '/overview/process/' + process.id },
-          { label: this.element?.name! },
-        ];
-      });
+    const step$ = route.paramMap.pipe(
+      filter(param => !!param.get('stepId')),
+      map(param => +param.get('stepId')!),
+      mergeMap(id => this.stepService.stepById$(id)),
+      distinctUntilChanged(elementComparator)
+    );
 
-    route.paramMap
+    process$
       .pipe(
-        filter(param => !!param.get('stepId')),
-        map(param => +param.get('stepId')!),
-        concatMap(id => this.stepPropertyService.stepPropertiesByStepId$(id))
+        combineLatestWith(element$, step$, steps$),
+        tap(([process, element, step, steps]) => {
+          this._steps = steps;
+          this.stepTitles = steps.map(s => s.name!);
+          this.element = element;
+          this._currentStep = step;
+          this.currentIndex = this._steps.indexOf(step);
+          this.isLastStep = this._steps.length - 1 === this.currentIndex;
+        }),
+        takeUntil(this._destroy$)
       )
-      .subscribe(stepProperties => {
-        this.properties = stepProperties;
-        this.properties.forEach(p => {
+      .subscribe(([process, element, step, steps]) => {
+        this.initBreadcrumbs(process);
+        this.stepProperties = step.stepProperties!;
+        this.stepProperties.forEach(p => {
+          const elemProp = element.elementProperties?.find(
+            e => e.stepPropertyId === p.id
+          );
           this.propertiesForm.addControl(
             '' + p.id,
-            new FormControl(p.defaultValue)
+            new FormControl(!!elemProp ? elemProp.value : p.defaultValue)
           );
         });
       });
+  }
+
+  get currentIndex(): number {
+    return this._currentIndex;
+  }
+
+  set currentIndex(idx: number) {
+    if (idx >= 0) {
+      this._currentIndex = idx;
+    }
+  }
+
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   public navigateBack(): void {
@@ -111,28 +125,40 @@ export class ElementDetailComponent {
   }
 
   public onSubmitClicked() {
-    for (const prop of this.properties) {
-      const value = this.propertiesForm.get('' + prop.id)?.value;
+    for (const prop of this.stepProperties) {
+      const value = this.propertiesForm.get('' + prop.id)?.value!;
       this.updateElementProperty(prop, value);
       if (!this.isLastStep) {
-        const nextStep = this.steps[this.currentIndex + 1];
+        const nextStep = this._steps[this.currentIndex + 1];
         this.updateElement(this.element?.id!, nextStep.id!);
-        this.router
-          .navigate(['/'], { skipLocationChange: true })
-          .then(() =>
-            this.router.navigateByUrl(
-              '/overview/process/' +
-                nextStep.processId! +
-                '/step/' +
-                nextStep.id! +
-                '/element/' +
-                this.element?.id
-            )
-          );
+        this.navigateStep(nextStep);
         return;
       }
-      this.router.navigate(['../../../..'], { relativeTo: this.route });
+      this.updateElement(this.element?.id!, null);
+      this.navigateBack();
     }
+  }
+
+  public stepChanged(event: number) {
+    if (event >= this._steps.indexOf(this._currentStep!)) {
+      return;
+    }
+    this.navigateStep(this._steps[event]);
+  }
+
+  private navigateStep(step: Step): void {
+    this.router
+      .navigate(['/'], { skipLocationChange: true })
+      .then(() =>
+        this.router.navigateByUrl(
+          '/overview/process/' +
+            step.processId! +
+            '/step/' +
+            step.id! +
+            '/element/' +
+            this.element?.id
+        )
+      );
   }
 
   private updateElementProperty(property: StepProperty, value: string): void {
@@ -148,12 +174,13 @@ export class ElementDetailComponent {
         catchError(err => {
           console.error(err);
           return of(undefined);
-        })
+        }),
+        takeUntil(this._destroy$)
       )
       .subscribe();
   }
 
-  private updateElement(id: number, stepId: number): void {
+  private updateElement(id: number, stepId: number | null): void {
     this.elementService
       .saveElement$({
         id,
@@ -163,8 +190,20 @@ export class ElementDetailComponent {
         catchError(err => {
           console.error(err);
           return of(undefined);
-        })
+        }),
+        takeUntil(this._destroy$)
       )
       .subscribe();
+  }
+
+  private initBreadcrumbs(process: Process): void {
+    this.breadcrumbs = [
+      {
+        label: $localize`:@@header.overview:Overview`,
+        link: '/overview',
+      },
+      { label: process.name!, link: '/overview/process/' + process.id },
+      { label: this.element?.name! },
+    ];
   }
 }

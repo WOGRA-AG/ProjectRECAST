@@ -82,7 +82,9 @@ export class ElementPropertyService {
     const upsertProp = { id, value, stepPropertyId, elementId };
     const upsert = this._supabaseClient
       .from(Tables.elementProperties)
-      .upsert(snakeCase(upsertProp))
+      .upsert(snakeCase(upsertProp), {
+        onConflict: 'step_property_id, element_id',
+      })
       .select();
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),

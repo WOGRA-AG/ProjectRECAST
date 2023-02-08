@@ -87,7 +87,9 @@ components:
         processId:
           $ref: '#/components/schemas/Id'
         currentStepId:
-          $ref: '#/components/schemas/Id'
+          type: integer
+          format: int64
+          nullable: true
         elementProperties:
           type: array
           items:
