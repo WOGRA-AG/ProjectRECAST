@@ -102,7 +102,7 @@ export class UploadManager {
   }
 
   private async check_on_startup_for_active_upload(client: RecastClient): Promise<void> {
-    const { data, error } = await client.supabase.from('upload').select('*').is('device_id', this.device_id).is('active', true);
+    const { data, error } = await client.supabase.from('upload').select('*').eq('device_id', this.device_id).is('active', true);
     if (!error && data?.length > 0) {
       const prefix: string = data[0].prefix;
       console.info(`UploadManager: active upload found on startup for prefix "${prefix}".`);
