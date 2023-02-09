@@ -9,7 +9,7 @@ import { sync as rimrafSync } from 'rimraf';
 
 export class UploadManager {
   private dataFolder: string = './data/';
-  private folderWatcher: FolderWatcher = new FolderWatcher();
+  private folderWatcher: FolderWatcher | undefined = undefined;
   private uploadChannel: RealtimeChannel;
   private supabase: SupabaseClient;
   private device_id: string | undefined = undefined;
@@ -116,7 +116,7 @@ export class UploadManager {
   private start_watcher(folderPath: string) {
     const relativeFolderPath: string = this.dataFolder + folderPath;
     try {
-      this.folderWatcher.start(relativeFolderPath);
+      this.folderWatcher = new FolderWatcher(relativeFolderPath);
     } catch(error) {
       console.error(`UploadManager: upload failed`, error);
     }
@@ -124,11 +124,13 @@ export class UploadManager {
 
   private stop_watcher(): string | undefined {
     let currentPaths: string[] = [];
-    try {
-      currentPaths = this.folderWatcher.stop();
-    } catch(error) {
-      console.error(`UploadManager: folderWatcher does not respond`, error);
-    }
+    if (this.folderWatcher!== undefined) {
+      try {
+        currentPaths = this.folderWatcher.get_current_paths();
+      } catch(error) {
+        console.error(`UploadManager: folderWatcher does not respond`, error);
+      }
+    }  
     return this.get_latest_filePath(currentPaths);
   }
 
@@ -146,7 +148,7 @@ export class UploadManager {
     this.device_id = payload.new.device_id;
     console.info(`UploadManager: found new device_id "${this.device_id}"`);
   }
-  
+
   private open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): void {
     const prefix: string = payload.new.prefix;
     console.info(`UploadManager: active upload found for prefix "${prefix}"`);
