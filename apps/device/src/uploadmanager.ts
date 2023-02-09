@@ -12,14 +12,13 @@ export class UploadManager {
   private folderWatcher: FolderWatcher = new FolderWatcher();
   private uploadChannel: RealtimeChannel;
   private supabase: SupabaseClient;
-  private device_id: string;
+  private device_id: string | undefined = undefined;
 
   constructor(client: RecastClient) {
     this.initialize(client);
     this.uploadChannel = this.create_channel(client);
     this.uploadChannel.subscribe();
     this.supabase = client.supabase;
-    this.device_id = 'blub';
   }
 
   private create_channel(client: RecastClient): RealtimeChannel {
@@ -46,20 +45,64 @@ export class UploadManager {
           }
         }
       )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'devices'},
+        (payload: any) => {
+          try { 
+            this.update_device_id(payload);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'devices' },
+        (payload: any) => {
+          try { 
+            this.update_device_id(payload)
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      )
   }
 
   private async initialize(client: RecastClient): Promise<void> {
     this.clear();
-    await client.supabase.from('devices').select('device_id').then(data => console.debug(data));
+
     try {
-      this.check_on_startup_for_active_upload(client);
+      this.device_id = await this.get_device_id(client);
     } catch(error) {
-      console.error(error);
+      console.error(`UploadManager: no device_id.`);
+    }
+
+    if (this.device_id !== undefined) {
+      console.info(`UploadManager: using device_id "${this.device_id}".`);
+      try {
+        this.check_on_startup_for_active_upload(client);
+      } catch(error) {
+        console.error(error);
+      }
+    } else {
+      console.log(`UploadManager: waiting for device_id.`);
+    }
+  }
+
+  private async get_device_id(client: RecastClient): Promise<string> {
+    const { data, error } = await client.supabase.from('devices').select('device_id');
+    if (!error && data?.length > 0) {
+      const device_id: string = data[0].device_id;
+      return device_id;
+    } 
+    else {
+      throw new Error(`UploadManager: no device_id found in database.`);
     }
   }
 
   private async check_on_startup_for_active_upload(client: RecastClient): Promise<void> {
-    const { data, error } = await client.supabase.from('upload').select('*').is('active', true);
+    const { data, error } = await client.supabase.from('upload').select('*').is('device_id', this.device_id).is('active', true);
     if (!error && data?.length > 0) {
       const prefix: string = data[0].prefix;
       console.info(`UploadManager: active upload found on startup for prefix "${prefix}".`);
@@ -99,6 +142,11 @@ export class UploadManager {
     }
   }
 
+  private update_device_id<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): void {
+    this.device_id = payload.new.device_id;
+    console.info(`UploadManager: found new device_id "${this.device_id}"`);
+  }
+  
   private open<T extends { [key: string]: any }>(payload: RealtimePostgresInsertPayload<T>): void {
     const prefix: string = payload.new.prefix;
     console.info(`UploadManager: active upload found for prefix "${prefix}"`);
