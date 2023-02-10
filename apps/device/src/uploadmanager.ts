@@ -11,20 +11,20 @@ import { basename as pathBasename, resolve as pathResolve } from 'path'
 import { sync as rimrafSync } from 'rimraf'
 
 export class UploadManager {
-  private readonly dataFolder: string = './data/'
-  private folderWatcher: FolderWatcher | undefined = undefined
-  private readonly uploadChannel: RealtimeChannel
-  private readonly supabase: SupabaseClient
-  private device_id: string | undefined = undefined
+  private readonly _dataFolder: string = './data/'
+  private _folderWatcher: FolderWatcher | undefined = undefined
+  private readonly _uploadChannel: RealtimeChannel
+  private readonly _supabase: SupabaseClient
+  private _device_id: string | undefined = undefined
 
   constructor (client: RecastClient) {
     this.initialize(client)
-    this.uploadChannel = this.create_channel(client)
-    this.uploadChannel.subscribe()
-    this.supabase = client.supabase
+    this._uploadChannel = this.createChannel(client)
+    this._uploadChannel.subscribe()
+    this._supabase = client.supabase
   }
 
-  private create_channel (client: RecastClient): RealtimeChannel {
+  private createChannel (client: RecastClient): RealtimeChannel {
     return client.supabase
       .channel('upload')
       .on(
@@ -64,7 +64,7 @@ export class UploadManager {
         { event: 'INSERT', schema: 'public', table: 'devices' },
         (payload: any) => {
           try {
-            this.update_device_id(payload)
+            this.updateDeviceId(payload)
           } catch (error) {
             console.error(error)
           }
@@ -75,7 +75,7 @@ export class UploadManager {
         { event: 'UPDATE', schema: 'public', table: 'devices' },
         (payload: any) => {
           try {
-            this.update_device_id(payload)
+            this.updateDeviceId(payload)
           } catch (error) {
             console.error(error)
           }
@@ -87,15 +87,15 @@ export class UploadManager {
     this.clear()
 
     try {
-      this.device_id = await this.get_device_id(client)
+      this._device_id = await this.getDeviceId(client)
     } catch (error) {
       console.error('UploadManager: no device_id.')
     }
 
-    if (this.device_id !== undefined) {
-      console.info(`UploadManager: using device_id "${this.device_id}".`)
+    if (this._device_id !== undefined) {
+      console.info(`UploadManager: using device_id "${this._device_id}".`)
       try {
-        this.check_on_startup_for_active_upload(client)
+        this.checkOnStartupForActiveUpload(client)
       } catch (error) {
         console.error(error)
       }
@@ -104,7 +104,7 @@ export class UploadManager {
     }
   }
 
-  private async get_device_id (client: RecastClient): Promise<string> {
+  private async getDeviceId (client: RecastClient): Promise<string> {
     const { data, error } = await client.supabase
       .from('devices')
       .select('device_id')
@@ -116,20 +116,20 @@ export class UploadManager {
     }
   }
 
-  private async check_on_startup_for_active_upload (
+  private async checkOnStartupForActiveUpload (
     client: RecastClient
   ): Promise<void> {
     const { data, error } = await client.supabase
       .from('upload')
       .select('*')
-      .eq('device_id', this.device_id)
+      .eq('device_id', this._device_id)
       .is('active', true)
     if (error == null && data?.length > 0) {
       const prefix: string = data[0].prefix
       console.info(
         `UploadManager: active upload found on startup for prefix "${prefix}".`
       )
-      this.start_watcher(data[0].local_folder_name)
+      this.startWatcher(data[0].local_folder_name)
     } else {
       console.info(
         'UploadManager: no active upload found on startup. Waiting for Upload'
@@ -137,28 +137,28 @@ export class UploadManager {
     }
   }
 
-  private start_watcher (folderPath: string) {
-    const relativeFolderPath: string = this.dataFolder + folderPath
+  private startWatcher (folderPath: string) {
+    const relativeFolderPath: string = this._dataFolder + folderPath
     try {
-      this.folderWatcher = new FolderWatcher(relativeFolderPath)
+      this._folderWatcher = new FolderWatcher(relativeFolderPath)
     } catch (error) {
       console.error('UploadManager: upload failed', error)
     }
   }
 
-  private stop_watcher (): string | undefined {
+  private stopWatcher (): string | undefined {
     let currentPaths: string[] = []
-    if (this.folderWatcher !== undefined) {
+    if (this._folderWatcher !== undefined) {
       try {
-        currentPaths = this.folderWatcher.get_current_paths()
+        currentPaths = this._folderWatcher.getCurrentPaths()
       } catch (error) {
         console.error('UploadManager: folderWatcher does not respond', error)
       }
     }
-    return this.get_latest_filePath(currentPaths)
+    return this.getLatestFilePath(currentPaths)
   }
 
-  private get_latest_filePath (currentPaths: string[]): string | undefined {
+  private getLatestFilePath (currentPaths: string[]): string | undefined {
     const latestFilePath = currentPaths.pop()
 
     if (typeof latestFilePath === 'undefined') {
@@ -168,11 +168,11 @@ export class UploadManager {
     }
   }
 
-  private update_device_id<T extends Record<string, any>>(
+  private updateDeviceId<T extends Record<string, any>>(
     payload: RealtimePostgresInsertPayload<T>
   ): void {
-    this.device_id = payload.new.device_id
-    console.info(`UploadManager: found new device_id "${this.device_id}"`)
+    this._device_id = payload.new.device_id
+    console.info(`UploadManager: found new device_id "${this._device_id}"`)
   }
 
   private open<T extends Record<string, any>>(
@@ -180,13 +180,13 @@ export class UploadManager {
   ): void {
     const prefix: string = payload.new.prefix
     console.info(`UploadManager: active upload found for prefix "${prefix}"`)
-    this.start_watcher(payload.new.local_folder_name)
+    this.startWatcher(payload.new.local_folder_name)
   }
 
   private async close<T extends Record<string, any>>(
     payload: RealtimePostgresInsertPayload<T>
   ): Promise<void> {
-    const filePath: string | undefined = this.stop_watcher()
+    const filePath: string | undefined = this.stopWatcher()
 
     if (filePath != undefined) {
       console.info(`UploadManager: upload ${filePath}.`)
@@ -213,7 +213,7 @@ export class UploadManager {
 
     console.debug(`UploadManager: upload ${filePath} to s3://${url}`)
     const fileBuffer = fsReadFileSync(localfilepath)
-    const { data, error } = await this.supabase.storage
+    const { data, error } = await this._supabase.storage
       .from(bucket)
       .upload(s3filepath, fileBuffer, {
         cacheControl: '3600',
@@ -228,7 +228,7 @@ export class UploadManager {
   }
 
   private clear (): void {
-    const dataPath = pathResolve(process.cwd(), this.dataFolder)
+    const dataPath = pathResolve(process.cwd(), this._dataFolder)
     console.debug(`UploadManager: clear ${dataPath}`)
     rimrafSync(dataPath)
   }
