@@ -1,5 +1,5 @@
-import { RecastClient } from './recastclient'
-import { UploadManager } from './uploadmanager'
+import { RecastClient } from './recastclient';
+import { UploadManager } from './uploadmanager';
 
 declare const process: {
   env: {
@@ -16,7 +16,12 @@ const email = process.env.EMAIL;
 const password = process.env.PASSWORD;
 
 async function main() {
-  const client: RecastClient = new RecastClient('https://' + supabaseurl, supabasekey, email, password);
+  const client: RecastClient = new RecastClient(
+    'https://' + supabaseurl,
+    supabasekey,
+    email,
+    password
+  );
   await client.login();
   const uploadManager = new UploadManager(client);
 }

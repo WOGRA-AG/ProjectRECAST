@@ -1,6 +1,5 @@
-import { FSWatcher } from 'chokidar';
-import { watch as chokidarWatch } from 'chokidar';
-import { mkdirp } from 'mkdirp'
+import { type FSWatcher, watch as chokidarWatch } from 'chokidar';
+import { mkdirp } from 'mkdirp';
 
 export class FolderWatcher {
   private chokidarFolderWatcher: FSWatcher | undefined;
@@ -14,14 +13,20 @@ export class FolderWatcher {
     try {
       await this.create_folder(relativeFolderPath);
     } catch (error) {
-      console.error("FolderWatcher: create folder error ", error);
+      console.error('FolderWatcher: create folder error ', error);
     }
 
     this.chokidarFolderWatcher = chokidarWatch(relativeFolderPath, {});
     this.chokidarFolderWatcher
-      .on("add", (path: string) => this.add_filepath(path))
-      .on("change", (path: string) => this.add_filepath(path))
-      .on("unlink", (path: string) => this.remove_filepath(path));
+      .on('add', (path: string) => {
+        this.add_filepath(path);
+      })
+      .on('change', (path: string) => {
+        this.add_filepath(path);
+      })
+      .on('unlink', (path: string) => {
+        this.remove_filepath(path);
+      });
   }
 
   private async create_folder(path: string): Promise<void> {
@@ -30,16 +35,20 @@ export class FolderWatcher {
       console.debug(`FolderWatcher: made directories, starting with ${made}`);
     } catch (error: any) {
       switch (error.code) {
-        case 'ENOENT': 
-          console.error(`FolderWatcher: error creating directory, ${error.message}`);
+        case 'ENOENT':
+          console.error(
+            `FolderWatcher: error creating directory, ${error.message}`
+          );
           break;
-        case  'EEXIST': 
-          console.error(`FolderWatcher: directory already exists, ${error.message}`);
+        case 'EEXIST':
+          console.error(
+            `FolderWatcher: directory already exists, ${error.message}`
+          );
           break;
         case 'EACCES':
           console.error(`FolderWatcher: permission denied, ${error.message}`);
           break;
-        default: 
+        default:
           throw error;
       }
     }
@@ -59,4 +68,3 @@ export class FolderWatcher {
     return this.currentPaths;
   }
 }
-
