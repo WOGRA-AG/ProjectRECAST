@@ -150,7 +150,7 @@ export class UploadManager {
     let currentPaths: string[] = []
     if (this._folderWatcher !== undefined) {
       try {
-        currentPaths = this._folderWatcher.getCurrentPaths()
+        currentPaths = this._folderWatcher.currentPaths
       } catch (error) {
         console.error('UploadManager: folderWatcher does not respond', error)
       }

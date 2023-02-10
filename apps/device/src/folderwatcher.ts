@@ -64,7 +64,7 @@ export class FolderWatcher {
     this._currentPaths = this._currentPaths.filter(element => element !== path)
   }
 
-  getCurrentPaths (): string[] {
+  public get currentPaths (): string[] {
     return this._currentPaths
   }
 }
