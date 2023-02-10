@@ -6,10 +6,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc --build",
-    "lint": "tsc --noEmit && eslint \"**/*.ts\" --quiet --fix",
+    "lint": "tsc --noEmit && eslint \"**/*.ts\" --quiet --fix && prettier --write .",
     "serve": "ts-node ./src",
     "start": "node ./dist",
-    "lint-staged": "prettier --write .",
     "test": "mocha -r ts-node/register **/test/**/*.test.ts"
   },
   "repository": {
