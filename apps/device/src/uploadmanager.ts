@@ -3,19 +3,19 @@ import 'dotenv/config'
 import { type RecastClient } from './recastclient'
 import {
   type RealtimeChannel,
-  type RealtimePostgresInsertPayload,
   type SupabaseClient
 } from '@supabase/supabase-js'
 import { readFileSync as fsReadFileSync } from 'fs'
 import { basename as pathBasename, resolve as pathResolve } from 'path'
 import { sync as rimrafSync } from 'rimraf'
+// import camelcaseKeys from 'camelcase-keys'
 
 export class UploadManager {
   private readonly _dataFolder: string = './data/'
   private _folderWatcher: FolderWatcher | undefined = undefined
   private readonly _uploadChannel: RealtimeChannel
   private readonly _supabase: SupabaseClient
-  private _device_id: string | undefined = undefined
+  private _deviceId: string | undefined = undefined
 
   constructor (client: RecastClient) {
     this.initialize(client)
@@ -37,7 +37,9 @@ export class UploadManager {
         },
         (payload: any) => {
           try {
-            this.open(payload)
+            // payload = camelcaseKeys(payload);
+            // this.open(payload.new.localFolderName);
+            this.open(payload.new.local_folder_name)
           } catch (error) {
             console.error(error)
           }
@@ -53,7 +55,7 @@ export class UploadManager {
         },
         (payload: any) => {
           try {
-            this.close(payload)
+            this.close(payload.new.bucket, payload.new.prefix)
           } catch (error) {
             console.error(error)
           }
@@ -61,10 +63,16 @@ export class UploadManager {
       )
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'devices' },
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'devices'
+        },
         (payload: any) => {
           try {
-            this.updateDeviceId(payload)
+            // payload = camelcaseKeys(payload);
+            // this.setDeviceId(payload.deviceId)
+            this.setDeviceId(payload.device_id)
           } catch (error) {
             console.error(error)
           }
@@ -72,10 +80,16 @@ export class UploadManager {
       )
       .on(
         'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'devices' },
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'devices'
+        },
         (payload: any) => {
           try {
-            this.updateDeviceId(payload)
+            // payload = camelcaseKeys(payload);
+            // this.setDeviceId(payload.deviceId)
+            this.setDeviceId(payload.device_id)
           } catch (error) {
             console.error(error)
           }
@@ -87,33 +101,33 @@ export class UploadManager {
     this.clear()
 
     try {
-      this._device_id = await this.getDeviceId(client)
+      this.setDeviceId(await this.readDeviceId(client))
     } catch (error) {
-      console.error('UploadManager: no device_id.')
+      console.error(error)
     }
 
-    if (this._device_id !== undefined) {
-      console.info(`UploadManager: using device_id "${this._device_id}".`)
-      try {
-        this.checkOnStartupForActiveUpload(client)
-      } catch (error) {
-        console.error(error)
-      }
-    } else {
-      console.log('UploadManager: waiting for device_id.')
+    if (!this._deviceId) {
+      console.info('UploadManager: waiting for deviceId.')
+      return
+    }
+
+    try {
+      this.checkOnStartupForActiveUpload(client)
+    } catch (error) {
+      console.error(error)
     }
   }
 
-  private async getDeviceId (client: RecastClient): Promise<string> {
+  private async readDeviceId (client: RecastClient): Promise<string> {
     const { data, error } = await client.supabase
       .from('devices')
       .select('device_id')
-    if (error == null && data?.length > 0) {
-      const device_id: string = data[0].device_id
-      return device_id
-    } else {
-      throw new Error('UploadManager: no device_id found in database.')
+
+    if ((error != null) || !data?.length) {
+      throw new Error('UploadManager: no deviceId found in database.')
     }
+
+    return data[0].device_id
   }
 
   private async checkOnStartupForActiveUpload (
@@ -122,22 +136,24 @@ export class UploadManager {
     const { data, error } = await client.supabase
       .from('upload')
       .select('*')
-      .eq('device_id', this._device_id)
+      .eq('device_id', this._deviceId)
       .is('active', true)
-    if (error == null && data?.length > 0) {
-      const prefix: string = data[0].prefix
+
+    if (error != null) {
+      throw new Error('UploadManager: cannot look for active uploads in database.')
+    }
+
+    if (!data?.length) {
       console.info(
-        `UploadManager: active upload found on startup for prefix "${prefix}".`
-      )
-      this.startWatcher(data[0].local_folder_name)
-    } else {
-      console.info(
-        'UploadManager: no active upload found on startup. Waiting for Upload'
+        'UploadManager: no active upload found on startup. Waiting for update.'
       )
     }
+
+    console.info('UploadManager: active upload found.')
+    this.startWatcher(data[0].local_folder_name)
   }
 
-  private startWatcher (folderPath: string) {
+  private startWatcher (folderPath: string): void {
     const relativeFolderPath: string = this._dataFolder + folderPath
     try {
       this._folderWatcher = new FolderWatcher(relativeFolderPath)
@@ -160,40 +176,35 @@ export class UploadManager {
 
   private getLatestFilePath (currentPaths: string[]): string | undefined {
     const latestFilePath = currentPaths.pop()
-
-    if (typeof latestFilePath === 'undefined') {
-      return undefined
-    } else {
-      return './' + latestFilePath
-    }
+    return typeof latestFilePath === 'undefined' ? undefined : './' + latestFilePath
   }
 
-  private updateDeviceId<T extends Record<string, any>>(
-    payload: RealtimePostgresInsertPayload<T>
+  private setDeviceId (
+    deviceID: string
   ): void {
-    this._device_id = payload.new.device_id
-    console.info(`UploadManager: found new device_id "${this._device_id}"`)
+    this._deviceId = deviceID
+    console.info(`UploadManager: found deviceId "${this._deviceId}"`)
   }
 
-  private open<T extends Record<string, any>>(
-    payload: RealtimePostgresInsertPayload<T>
+  private open (
+    folderName: string
   ): void {
-    const prefix: string = payload.new.prefix
-    console.info(`UploadManager: active upload found for prefix "${prefix}"`)
-    this.startWatcher(payload.new.local_folder_name)
+    console.info(`UploadManager: active upload found for local folder "${folderName}"`)
+    this.startWatcher(folderName)
   }
 
-  private async close<T extends Record<string, any>>(
-    payload: RealtimePostgresInsertPayload<T>
+  private async close (
+    bucket: string,
+    prefix: string
   ): Promise<void> {
     const filePath: string | undefined = this.stopWatcher()
 
-    if (filePath != undefined) {
-      console.info(`UploadManager: upload ${filePath}.`)
+    if (filePath !== undefined) {
+      console.info('UploadManager: upload latest file.')
       try {
-        this.upload(payload.new.bucket, payload.new.prefix, filePath)
+        this.upload(bucket, prefix, filePath)
       } catch (error) {
-        console.error('UploadManager: upload failed', error)
+        console.error('UploadManager: upload failed.', error)
       }
     } else {
       console.info('UploadManager: nothing to upload.')

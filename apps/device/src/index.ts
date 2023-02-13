@@ -15,7 +15,7 @@ const supabasekey = process.env.SUPABASE_KEY
 const email = process.env.EMAIL
 const password = process.env.PASSWORD
 
-async function main () {
+async function main (): Promise<void> {
   const client: RecastClient = new RecastClient(
     'https://' + supabaseurl,
     supabasekey,
@@ -23,6 +23,7 @@ async function main () {
     password
   )
   await client.login()
-  const uploadManager = new UploadManager(client)
+  new UploadManager(client)
 }
-main()
+
+void main()
