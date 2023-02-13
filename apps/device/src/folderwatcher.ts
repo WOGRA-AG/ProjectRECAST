@@ -2,11 +2,15 @@ import { type FSWatcher, watch as chokidarWatch } from 'chokidar'
 import { mkdirp } from 'mkdirp'
 
 export class FolderWatcher {
-  private _chokidarFolderWatcher: FSWatcher | undefined
   private _currentPaths: string[] = []
+  private _chokidarFolderWatcher: FSWatcher | undefined
 
   constructor (relativeFolderPath: string) {
-    this.start(relativeFolderPath)
+    void this.start(relativeFolderPath)
+  }
+
+  public get currentPaths (): string[] {
+    return this._currentPaths
   }
 
   private async start (relativeFolderPath: string): Promise<void> {
@@ -32,21 +36,20 @@ export class FolderWatcher {
   private async createFolder (path: string): Promise<void> {
     try {
       const made = await mkdirp(path)
-      console.debug(`FolderWatcher: made directories, starting with ${made}`)
+      if (typeof made === 'string') {
+        console.debug(`FolderWatcher: made directories, starting with ${made}`)
+      }
     } catch (error: any) {
+      console.error(error)
       switch (error.code) {
         case 'ENOENT':
-          console.error(
-            `FolderWatcher: error creating directory, ${error.message}`
-          )
+          console.error('FolderWatcher: error creating directory')
           break
         case 'EEXIST':
-          console.error(
-            `FolderWatcher: directory already exists, ${error.message}`
-          )
+          console.error('FolderWatcher: directory already exists')
           break
         case 'EACCES':
-          console.error(`FolderWatcher: permission denied, ${error.message}`)
+          console.error('FolderWatcher: permission denied')
           break
         default:
           throw error
@@ -62,9 +65,5 @@ export class FolderWatcher {
   private removeFilepath (path: string): void {
     console.debug(`FolderWatcher: remove "${path}" to current paths.`)
     this._currentPaths = this._currentPaths.filter(element => element !== path)
-  }
-
-  public get currentPaths (): string[] {
-    return this._currentPaths
   }
 }

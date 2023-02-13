@@ -18,7 +18,7 @@ export class UploadManager {
   private _deviceId: string | undefined = undefined
 
   constructor (client: RecastClient) {
-    this.initialize(client)
+    void this.initialize(client)
     this._uploadChannel = this.createChannel(client)
     this._uploadChannel.subscribe()
     this._supabase = client.supabase
@@ -55,7 +55,7 @@ export class UploadManager {
         },
         (payload: any) => {
           try {
-            this.close(payload.new.bucket, payload.new.prefix)
+            void this.close(payload.new.bucket, payload.new.prefix)
           } catch (error) {
             console.error(error)
           }
@@ -106,25 +106,29 @@ export class UploadManager {
       console.error(error)
     }
 
-    if (!this._deviceId) {
+    if (typeof this._deviceId === 'undefined' || this._deviceId === null) {
       console.info('UploadManager: waiting for deviceId.')
       return
     }
 
     try {
-      this.checkOnStartupForActiveUpload(client)
+      await this.checkOnStartupForActiveUpload(client)
     } catch (error) {
       console.error(error)
     }
   }
 
-  private async readDeviceId (client: RecastClient): Promise<string> {
+  private async readDeviceId (client: RecastClient): Promise<string | undefined> {
     const { data, error } = await client.supabase
       .from('devices')
       .select('device_id')
 
-    if ((error != null) || !data?.length) {
-      throw new Error('UploadManager: no deviceId found in database.')
+    if (error != null) {
+      throw new Error('UploadManager: Cannot read device db')
+    }
+
+    if (typeof data === 'undefined' || data === null || (data.length === 0) || isNaN(data.length)) {
+      return undefined
     }
 
     return data[0].device_id
@@ -143,7 +147,7 @@ export class UploadManager {
       throw new Error('UploadManager: cannot look for active uploads in database.')
     }
 
-    if (!data?.length) {
+    if (typeof data === 'undefined' || data === null || (data.length === 0) || isNaN(data.length)) {
       console.info(
         'UploadManager: no active upload found on startup. Waiting for update.'
       )
@@ -180,10 +184,12 @@ export class UploadManager {
   }
 
   private setDeviceId (
-    deviceID: string
+    deviceID: string | undefined
   ): void {
     this._deviceId = deviceID
-    console.info(`UploadManager: found deviceId "${this._deviceId}"`)
+    if (this._deviceId !== null && typeof this._deviceId === 'string') {
+      console.info(`UploadManager: found deviceId "${this._deviceId}"`)
+    }
   }
 
   private open (
@@ -202,7 +208,7 @@ export class UploadManager {
     if (filePath !== undefined) {
       console.info('UploadManager: upload latest file.')
       try {
-        this.upload(bucket, prefix, filePath)
+        void this.upload(bucket, prefix, filePath)
       } catch (error) {
         console.error('UploadManager: upload failed.', error)
       }

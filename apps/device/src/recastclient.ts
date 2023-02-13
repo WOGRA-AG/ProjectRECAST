@@ -5,10 +5,10 @@ import {
 } from '@supabase/supabase-js'
 
 export class RecastClient {
+  supabase: SupabaseClient
   private readonly _email: string
   private readonly _password: string
   private readonly _signup: boolean
-  supabase: SupabaseClient
 
   constructor (
     supabaseurl: string,
@@ -19,7 +19,7 @@ export class RecastClient {
   ) {
     this._email = email
     this._password = password
-    this._signup = signup || false
+    this._signup = signup ?? false
     const options: SupabaseClientOptions<any> = {
       auth: { persistSession: false }
     }
