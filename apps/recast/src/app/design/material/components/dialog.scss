@@ -6,14 +6,14 @@
   $accent-palette: map.get($theme, 'accent');
   $accent-color: mat.get-color-from-palette($accent-palette);
 
-  .mat-dialog-title,
-  .mat-dialog-content {
+  .mat-mdc-dialog-title,
+  .mat-mdc-dialog-content {
     color: $accent-color;
   }
 }
 
 @mixin layout() {
-  .mat-dialog-container {
+  .mat-mdc-dialog-container {
     border-radius: 12px;
     text-align: center;
     padding: 1.5rem;
@@ -24,11 +24,11 @@
       min-width: 24rem;
     }
 
-    .mat-dialog-content {
+    .mat-mdc-dialog-content {
       margin: 1rem 0;
     }
 
-    .mat-dialog-actions {
+    .mat-mdc-dialog-actions {
       display: flex;
       justify-content: center;
       padding-bottom: 1.625rem;

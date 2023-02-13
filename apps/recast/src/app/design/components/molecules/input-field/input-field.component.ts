@@ -11,7 +11,7 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() errMsg = '';
   @Input() hint = '';
-  @Input() appearance: 'outline' | 'fill' | 'legacy' | 'standard' = 'outline';
+  @Input() appearance: 'outline' | 'fill' = 'outline';
   @Input() type: 'text' | 'number' = 'text';
   @Input() icon = '';
 

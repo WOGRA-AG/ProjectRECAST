@@ -7,7 +7,7 @@
   $primary-color-100: mat.get-color-from-palette($primary-palette, 100);
   $on-surface: mat.get-color-from-palette($primary-palette, '50-contrast');
 
-  .mat-list-item {
+  .mat-mdc-list-item {
     color: rgba($on-surface, 0.6);
     &:hover {
       span {
@@ -18,7 +18,7 @@
     }
   }
 
-  .mat-list-item.active {
+  .mat-mdc-list-item.active {
     background: $primary-color-100;
     color: $primary-color;
   }
@@ -30,13 +30,13 @@
     margin: 0;
     width: 100%;
 
-    .mat-list-item {
+    .mat-mdc-list-item {
       display: flex;
       flex-direction: row;
       align-items: center;
       border-radius: 10px;
       overflow: hidden;
-
+      /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
       .mat-list-item-content {
         width: 100%;
       }
@@ -51,7 +51,7 @@
       }
     }
 
-    .mat-list-base .mat-list-item.mat-list-item-with-avatar,
+    .mat-mdc-list-base .mat-mdc-list-item.mat-list-item-with-avatar,
     .mat-list-base .mat-list-option.mat-list-item-with-avatar {
       height: 44px;
     }

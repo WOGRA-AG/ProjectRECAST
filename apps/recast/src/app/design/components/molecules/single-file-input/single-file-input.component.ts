@@ -29,10 +29,10 @@ import { coerceBooleanProperty } from '@angular/cdk/coercion';
 export class SingleFileInputComponent
   implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy
 {
-  static nextId = 0;
   // eslint-disable-next-line  @angular-eslint/no-input-rename
   @Input('aria-describedby') ariaDescribedBy = '';
   @Output() cancelUpload: EventEmitter<null> = new EventEmitter<null>();
+  static nextId = 0;
 
   stateChanges: Subject<void> = new Subject<void>();
   focused = false;

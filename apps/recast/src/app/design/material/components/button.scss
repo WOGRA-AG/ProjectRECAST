@@ -4,14 +4,15 @@
 @import 'src/app/design/material/essentials/media-queries';
 
 @mixin color($theme) {
-  .mat-stroked-button:not(.mat-button-disabled) {
+  /* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
+  .mat-mdc-outlined-button:not(.mat-button-disabled) {
     border-color: currentColor;
   }
 }
 
 @mixin layout() {
-  .mat-flat-button,
-  .mat-stroked-button {
+  .mat-mdc-unelevated-button,
+  .mat-mdc-outlined-button {
     border-radius: $btn-small-border-radius;
     border-width: $btn-small-border-widht;
     padding-top: $btn-small-padding-top;

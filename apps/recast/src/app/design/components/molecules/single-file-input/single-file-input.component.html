@@ -4,7 +4,7 @@
   [attr.aria-describedby]="ariaDescribedBy"
   [attr.aria-labelledby]="parentFormField.getLabelId()">
   <div
-    class="upload-file mat-body-1"
+    class="upload-file mat-body-2"
     appDragAndDrop
     (filesDropped)="uploadDroppedFile($event)"
     (click)="fileInput.click()">
@@ -17,10 +17,10 @@
       [formControl]="formControl"
       #fileInput />
     <div class="label mat-h6">
-      <p *ngIf="value?.name; else templateName">{{ value?.name }}</p>
-      <ng-template #templateName>
+      <p *ngIf="value?.name; else placeholderTemplate">{{ value?.name }}</p>
+      <ng-template #placeholderTemplate>
         <mat-icon matPrefix>upload</mat-icon>
-        <mat-placeholder>{{ placeholder }}</mat-placeholder>
+        <mat-label>{{ placeholder }}</mat-label>
       </ng-template>
     </div>
   </div>

@@ -20,16 +20,16 @@
 
 $custom-typography: mat.define-typography-config(
   $font-family: 'Avenir Roman',
-  $display-1: mat.define-typography-level(60px, 60px, 700),
-  $display-2: mat.define-typography-level(44px, 44px, 700),
-  $display-3: mat.define-typography-level(33px, 33px, 700),
-  $display-4: mat.define-typography-level(30px, 30px, 700),
-  $headline: mat.define-typography-level(60px, 60px, 700),
-  $title: mat.define-typography-level(44px, 72px, 700),
-  $subheading-2: mat.define-typography-level(33px, 33px, 700),
-  $subheading-1: mat.define-typography-level(16px, 28px, 400),
-  $body-1: mat.define-typography-level(16px, 24px, 400),
-  $body-2: mat.define-typography-level(14px, 20px, 400),
+  $headline-4: mat.define-typography-level(60px, 60px, 700),
+  $headline-3: mat.define-typography-level(44px, 44px, 700),
+  $headline-2: mat.define-typography-level(33px, 33px, 700),
+  $headline-1: mat.define-typography-level(30px, 30px, 700),
+  $headline-5: mat.define-typography-level(60px, 60px, 700),
+  $headline-6: mat.define-typography-level(44px, 72px, 700),
+  $subtitle-1: mat.define-typography-level(33px, 33px, 700),
+  $body-1: mat.define-typography-level(16px, 28px, 400),
+  $body-2: mat.define-typography-level(16px, 24px, 400),
+  $subtitle-2: mat.define-typography-level(14px, 20px, 400),
   $caption: mat.define-typography-level(12px, 14px, 400),
   $button: mat.define-typography-level(14px, 16px, 500),
 );
@@ -110,7 +110,7 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     text-decoration: map-get($heading-6, text-decoration);
   }
 
-  .mat-subheading-1 {
+  .mat-body-1 {
     font-family: map-get($subtitle-1, font-family);
     font-weight: map-get($subtitle-1, font-weight);
     line-height: map-get($subtitle-1, line-height);
@@ -119,7 +119,7 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     text-decoration: map-get($subtitle-1, text-decoration);
   }
 
-  .mat-subheading-2 {
+  .mat-subtitle-1 {
     font-family: map-get($subtitle-2, font-family);
     font-weight: map-get($subtitle-2, font-weight);
     line-height: map-get($subtitle-2, line-height);
@@ -128,7 +128,7 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     text-decoration: map-get($subtitle-2, text-decoration);
   }
 
-  .mat-body-1 {
+  .mat-body-2 {
     font-size: map-get($body-1, font-size);
     font-family: map-get($body-1, font-family);
     font-weight: map-get($body-1, font-weight);
@@ -137,7 +137,7 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     text-decoration: map-get($body-1, text-decoration);
   }
 
-  .mat-body-2 {
+  .mat-subtitle-2 {
     font-size: map-get($body-2, font-size);
 
     @media #{$medium-and-up} {
@@ -154,8 +154,8 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     text-decoration: map-get($body-2, text-decoration);
   }
 
-  .mat-flat-button,
-  .mat-stroked-button {
+  .mat-mdc-unelevated-button,
+  .mat-mdc-outlined-button {
     font-family: map-get($button-small, font-family);
     font-weight: map-get($button-small, font-weight);
     line-height: map-get($button-small, line-height);
@@ -231,7 +231,7 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
       font-size: map-get($button-large, font-size);
     }
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
   .mat-tab-label {
     font-family: map-get($button-medium, font-family);
     font-weight: map-get($button-medium, font-weight);
@@ -257,7 +257,7 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     line-height: 18.75px;
   }
 
-  .mat-form-field {
+  .mat-mdc-form-field {
     font-family: map-get($body-2, font-family);
     font-weight: map-get($body-2, font-weight);
     line-height: map-get($body-2, line-height);
@@ -285,7 +285,7 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     text-transform: uppercase;
   }
 
-  .mat-list-item {
+  .mat-mdc-list-item {
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
