@@ -2,3 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 cd ./apps/recast && npm run lint -- --fix && npm run lint-staged
+cd ../..
+cd ./apps/device && npm run lint
