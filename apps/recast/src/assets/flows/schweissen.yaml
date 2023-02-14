@@ -5,18 +5,18 @@ steps:
     stepProperties:
       - name: ProcurementMethod
         type: text
-        default: "Purchase"
+        default: 'Purchase'
       - name: FiberType
         type: text
         dafault: T700G
       - name: Supplier
         type: text
-      - name: Matrix 
+      - name: Matrix
         type: name
-        default: "LMPAEK"
+        default: 'LMPAEK'
       - name: Layup
         type: text
-        default: "[0/90]3s"
+        default: '[0/90]3s'
       - name: PlateWidth
         type: number
         default: 1200
@@ -27,24 +27,22 @@ steps:
         type: number
         default: 1.68
 ---
-
 name: EnergyDirektor
 steps:
   - name: EDProcurement
     stepProperties:
       - name: ProcurementMethod
         type: text
-        default: "Purchase"
+        default: 'Purchase'
       - name: Supplier
         type: text
-      - name: Material 
+      - name: Material
         type: name
-        default: "LMPAEK"
+        default: 'LMPAEK'
       - name: ThicknessInum
         type: number
         default: 100
 ---
-
 name: WeldingSamplePrep
 steps:
   - name: PlateSelection
@@ -55,7 +53,7 @@ steps:
     stepProperties:
       - name: Method
         type: text
-        default: "Waterjetcutting"
+        default: 'Waterjetcutting'
       - name: SampleWidth
         type: number
         default: 100
@@ -74,9 +72,8 @@ steps:
         type: boolean
       - name: AmountOfEDs
         type: number
-        default: 2   
+        default: 2
 ---
-
 name: UltrasonicWelding
 steps:
   - name: WeldingProcess
@@ -87,7 +84,7 @@ steps:
         type: WeldingSamplePrep
       - name: HornShape
         type: text
-        default: "Rectangle"
+        default: 'Rectangle'
       - name: HornWidth
         type: number
       - name: HornHeight
@@ -102,20 +99,19 @@ steps:
     stepProperties:
       - name: TransformerVersion
         type: text
-        default: "V0.0"
+        default: 'V0.0'
       - name: ParameterRecordingATransform
         type: files(ParameterRecordingA)
       - name: ParameterRecordingBTransform
         type: file(ParameterRecordingB)
---- 
-
+---
 name: LSSSamplePrep
 steps:
   - name: CuttingLSSSamples
     stepProperties:
       - name: Method
         type: text
-        default: "Waterjetcutting"
+        default: 'Waterjetcutting'
       - name: SampleWidth
         type: number
         default: 100
@@ -124,7 +120,6 @@ steps:
         default: 100
 
 ---
-
 name: QaulityEvaluation
 steps:
   - name: LSSSampleSelection
@@ -142,4 +137,3 @@ steps:
         type: text
       - name: TestingFile
         type: file
-
