@@ -21,6 +21,7 @@
   "label.done": "Abgeschlossen",
 
   "err.min_char": "Mindestens {$INTERPOLATION} Buchstaben",
+  "err.file.empty": "Die angegebene Datei scheint kein valides YAML Format zu besitzen",
 
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
 

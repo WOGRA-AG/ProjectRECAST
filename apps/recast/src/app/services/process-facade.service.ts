@@ -10,8 +10,11 @@ import { StepFacadeService } from './step-facade.service';
 import {
   BehaviorSubject,
   catchError,
+  combineLatest,
+  combineLatestWith,
   concatAll,
   concatMap,
+  concatWith,
   filter,
   from,
   map,
@@ -83,6 +86,13 @@ export class ProcessFacadeService {
         return proc;
       })
     );
+  }
+
+  public saveProcesses$(procs: Process[]): Observable<Process[]> {
+    const observables: Observable<Process>[] = procs.map(proc =>
+      this.saveProcess$(proc)
+    );
+    return combineLatest(observables);
   }
 
   public deleteProcess$(id: number): Observable<PostgrestError> {

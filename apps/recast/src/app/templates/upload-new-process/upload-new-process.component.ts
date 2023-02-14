@@ -35,8 +35,8 @@ export class UploadNewProcessComponent implements OnDestroy {
     }
     yamlToProcess$(file)
       .pipe(
-        filter(proc => !!proc.name),
-        concatMap(proc => this.processFacade.saveProcess$(proc)),
+        filter(procs => !!procs.length),
+        concatMap(procs => this.processFacade.saveProcesses$(procs)),
         catchError(err => {
           console.error(err);
           return of(undefined);
