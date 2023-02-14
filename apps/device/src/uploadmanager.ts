@@ -8,7 +8,6 @@ import {
 import { readFileSync as fsReadFileSync } from 'fs';
 import { basename as pathBasename, resolve as pathResolve } from 'path';
 import { sync as rimrafSync } from 'rimraf';
-// import camelcaseKeys from 'camelcase-keys'
 
 export class UploadManager {
   private readonly _dataFolder: string = './data/';
@@ -37,8 +36,6 @@ export class UploadManager {
         },
         (payload: any) => {
           try {
-            // payload = camelcaseKeys(payload);
-            // this.open(payload.new.localFolderName);
             this.open(payload.new.local_folder_name);
           } catch (error) {
             console.error(error);
@@ -70,8 +67,6 @@ export class UploadManager {
         },
         (payload: any) => {
           try {
-            // payload = camelcaseKeys(payload);
-            // this.setDeviceId(payload.deviceId)
             this.setDeviceId(payload.device_id);
           } catch (error) {
             console.error(error);
@@ -87,8 +82,6 @@ export class UploadManager {
         },
         (payload: any) => {
           try {
-            // payload = camelcaseKeys(payload);
-            // this.setDeviceId(payload.deviceId)
             this.setDeviceId(payload.device_id);
           } catch (error) {
             console.error(error);

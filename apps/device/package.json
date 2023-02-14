@@ -1,8 +1,8 @@
 {
-  "name": "minimal-typescript-setup",
+  "name": "recast upload client",
   "private": true,
   "version": "1.0.0",
-  "description": "Minimal TypeScript project setup for curious minds",
+  "description": "A client to upload files for RECAST framework.",
   "main": "index.js",
   "scripts": {
     "build": "tsc --build",
@@ -13,19 +13,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bobaekang/minimal-typescript-setup.git"
+    "url": "git+https://github.com/WOGRA-AG/recast.git"
   },
   "keywords": [
-    "minimal",
-    "typescript",
-    "setup"
+    "RECAST",
+    "supabase",
+    "client"
   ],
   "author": "WOGRA AG",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bobaekang/minimal-typescript-setup/issues"
+    "url": "https://github.com/WOGRA-AG/recast/issues"
   },
-  "homepage": "https://github.com/bobaekang/minimal-typescript-setup#readme",
+  "homepage": "https://github.com/WOGRA-AG/recast#readme",
   "devDependencies": {
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.13.0",
@@ -42,11 +42,9 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.5.0",
-    "camelcase-keys": "^8.0.2",
     "chokidar": "^3.5.3",
     "dotenv": "^16.0.3",
     "mkdirp": "^2.1.3",
-    "rimraf": "^4.1.2",
-    "snakecase-keys": "^5.4.5"
+    "rimraf": "^4.1.2"
   }
 }

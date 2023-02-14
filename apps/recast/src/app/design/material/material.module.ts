@@ -22,7 +22,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 
-export const MATERIAL_MODULES: (typeof MatInputModule)[] = [
+export const MATERIAL_MODULES: typeof MatInputModule[] = [
   MatButtonModule,
   MatToolbarModule,
   MatSnackBarModule,
