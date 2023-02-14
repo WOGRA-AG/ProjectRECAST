@@ -21,6 +21,7 @@
     "no-new": 0,
     "camelcase": "error",
     "no-underscore-dangle": 0,
+    "@typescript-eslint/space-before-function-paren": ["error", "never"],
     "@typescript-eslint/semi": ["error", "always"],
     "@typescript-eslint/no-non-null-assertion": 0,
     "@typescript-eslint/strict-boolean-expressions": 0,
