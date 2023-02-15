@@ -1,0 +1,58 @@
+{
+  "env": {
+    "es2021": true,
+    "node": true
+  },
+  "extends": ["prettier", "standard-with-typescript"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.json"],
+        "createDefaultProgram": true
+      }
+    }
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-new": 0,
+    "camelcase": "error",
+    "no-underscore-dangle": 0,
+    "@typescript-eslint/space-before-function-paren": ["error", "never"],
+    "@typescript-eslint/semi": ["error", "always"],
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/strict-boolean-expressions": 0,
+    "@typescript-eslint/member-ordering": [
+      "error",
+      {
+        "classes": [
+          "decorated-field",
+          "public-field",
+          "protected-field",
+          "private-field",
+          "constructor",
+          ["get", "set"],
+          "public-static-method",
+          "public-decorated-method",
+          "public-method",
+          "protected-static-method",
+          "protected-decorated-method",
+          "protected-method",
+          "private-static-method",
+          "private-decorated-method",
+          "private-method"
+        ]
+      }
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "ignoreUrls": true
+      }
+    ]
+  }
+}
