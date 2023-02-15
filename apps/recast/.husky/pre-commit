@@ -2,4 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 cd ./apps/recast && npm run lint:check
-cd ../device && npm run lint
+cd ../device && npm run lint:check
