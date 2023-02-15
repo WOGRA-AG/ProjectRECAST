@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc --build",
-    "lint": "tsc --noEmit && eslint \"**/*.ts\" --quiet --fix && prettier --write .",
+    "lint": "tsc --noEmit && eslint \"**/*.ts\" --fix && prettier --write .",
+    "lint:check": "tsc --noEmit && eslint \"**/*.ts\" && prettier --check .",
     "serve": "ts-node ./src",
     "start": "node ./dist",
     "test": "mocha -r ts-node/register **/test/**/*.test.ts"
