@@ -8,5 +8,126 @@ paths: {}
 
 components:
   schemas:
-    Message:
+    Id:
+      type: integer
+      format: int64
+
+    UuId:
       type: string
+      format: uuid
+
+    Process:
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
+          type: string
+          format: date-time
+        name:
+          type: string
+        ownerId:
+          $ref: '#/components/schemas/UuId'
+        steps:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/Step'
+
+    Step:
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
+          type: string
+          format: date-time
+        processId:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+        stepProperties:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepProperty'
+
+    StepProperty:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
+          type: string
+          format: date-time
+        stepId:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+        defaultValue:
+          nullable: true
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum:
+            - text
+            - number
+            - file
+
+    Element:
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
+          type: string
+          format: date-time
+        name:
+          type: string
+        processId:
+          $ref: '#/components/schemas/Id'
+        currentStepId:
+          type: integer
+          format: int64
+          nullable: true
+        elementProperties:
+          type: array
+          items:
+            $ref: '#/components/schemas/ElementProperty'
+
+    ElementProperty:
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        createdAt:
+          type: string
+          format: date-time
+        elementId:
+          $ref: '#/components/schemas/Id'
+        stepPropertyId:
+          $ref: '#/components/schemas/Id'
+        value:
+          $ref: '#/components/schemas/UuId'
+
+    Profile:
+      required:
+        - id
+        - email
+      properties:
+        id:
+          $ref: '#/components/schemas/UuId'
+        updatedAt:
+          type: string
+          format: date-time
+        fullName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        avatarUrl:
+          type: string

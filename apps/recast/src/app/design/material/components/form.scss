@@ -1,0 +1,70 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin color($theme) {
+  $primary-palette: map.get($theme, 'primary');
+  $primary-color: mat.get-color-from-palette($primary-palette, 500);
+  $accent-palette: map.get($theme, 'accent');
+  $accent-color-300: mat.get-color-from-palette($accent-palette, 300);
+
+  .mat-form-field {
+    &.mat-form-field-appearance-outline {
+      .mat-form-field-suffix {
+        mat-icon {
+          color: $accent-color-300;
+        }
+      }
+
+      &:not(.mat-form-field-invalid) {
+        .mat-form-field-outline-thick {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+@mixin layout() {
+  .mat-form-field-appearance-outline {
+    &.mat-form-field-can-float {
+      &.mat-form-field-should-float {
+        .mat-form-field-label {
+          &.mat-empty {
+            transform: translateY(-1.05em) scale(0.75);
+            width: 133.3333733333%;
+          }
+        }
+      }
+    }
+  }
+  .mat-form-field {
+    width: 100%;
+
+    .mat-form-field-wrapper {
+      width: 100%;
+      margin: 0;
+
+      .mat-form-field-infix {
+        padding: 0.5em 0 0.5em 0;
+        .mat-form-field-label-wrapper .mat-empty {
+          top: 1.35em;
+        }
+      }
+    }
+  }
+
+  .mat-form-field-flex {
+    .mat-form-field-outline {
+      width: 100%;
+    }
+  }
+
+  .mat-form-field-appearance-legacy .mat-form-field-ripple {
+    height: 0;
+  }
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include color($theme);
+  @include layout();
+}

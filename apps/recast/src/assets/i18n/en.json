@@ -1,0 +1,37 @@
+{
+  "actions.sign_out": "Sign Out",
+  "actions.update": "Update",
+  "actions.back": "Back",
+  "actions.create": "Create",
+  "actions.save": "Save",
+  "action.scan_element": "Scan Element",
+  "action.create_element": "Create Element",
+  "action.next_step": "Take to the next step",
+  "action.finished": "Finished",
+  "action.cancel": "Cancel",
+  "action.confirm": "Confirm",
+
+  "label.username": "Username",
+  "label.email": "Email",
+  "label.id": "Id",
+  "label.elements": "Elements",
+  "label.processes": "Processes",
+  "label.title": "Title",
+  "label.search": "Search",
+  "label.done": "Done",
+
+  "err.min_char": "Minimum of {$INTERPOLATION} characters",
+  "err.file.empty": "No valid Yaml found in File",
+
+  "placeholder.upload_yaml": "Upload Process-YAML",
+
+  "info.no_data_text": "No parts available yet",
+
+  "header.new_process": "New Process",
+  "header.overview": "Overview",
+  "header.create_element": "Create Element",
+  "header.view_element": "View Element",
+
+  "dialog.delete_process": "Delete process and all corresponding data?",
+  "dialog.delete_element": "Delete Element and all corresponding data?"
+}

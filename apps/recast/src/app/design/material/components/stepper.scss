@@ -1,0 +1,154 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import 'src/app/design/material/essentials/media-queries';
+
+@mixin color($theme) {
+  $primary-palette: map.get($theme, 'primary');
+  $primary-color: mat.get-color-from-palette($primary-palette, 500);
+  $accent-palette: map.get($theme, 'accent');
+  $accent-color: mat.get-color-from-palette($accent-palette);
+  $accent-color-200: mat.get-color-from-palette($accent-palette, 200);
+
+  .mat-stepper-label-position-bottom {
+    .mat-stepper-horizontal-line {
+      border-color: $accent-color-200;
+    }
+
+    .mat-step-label.mat-step-label-active {
+      color: $accent-color;
+    }
+
+    .mat-horizontal-stepper-header {
+      &::before,
+      &::after {
+        border-color: $accent-color-200;
+      }
+    }
+
+    .mat-horizontal-stepper-header[aria-selected='true'] {
+      &::before,
+      &::after {
+        border-color: $primary-color;
+      }
+
+      .mat-step-label.mat-step-label-active {
+        color: $primary-color;
+      }
+    }
+
+    .mat-step-icon {
+      background-color: $accent-color-200;
+    }
+
+    .mat-step-icon-selected {
+      background-color: $primary-color;
+    }
+
+    .mat-step-header {
+      &:hover,
+      &.cdk-program-focused,
+      &.cdk-mouse-focused,
+      &.cdk-focuse {
+        background-color: transparent !important;
+      }
+    }
+  }
+}
+
+@mixin layout() {
+  .mat-stepper-label-position-bottom {
+    &.disabled {
+      pointer-events: none;
+    }
+
+    .mat-stepper-horizontal-line {
+      top: 38px;
+      border-width: 2px;
+    }
+
+    .mat-step-label {
+      display: none;
+
+      @media #{$medium-and-up} {
+        display: inherit;
+      }
+    }
+
+    .left-label {
+      @media #{$medium-and-up} {
+        display: none;
+      }
+    }
+
+    .mat-horizontal-stepper-header {
+      &::before,
+      &::after {
+        top: 38px;
+      }
+
+      &:last-child {
+        align-items: flex-end;
+        padding-right: 0;
+
+        &:not(:first-child)::before {
+          width: calc(100% - 8px);
+          border-width: 2px;
+        }
+      }
+
+      &:first-child {
+        align-items: flex-start;
+        padding-left: 0;
+
+        &:not(:last-child)::after {
+          width: calc(100% - 8px);
+          border-width: 2px;
+        }
+      }
+
+      &:not(:first-child) {
+        &::before,
+        &::after {
+          width: calc(50% - 12px);
+          border-width: 2px;
+        }
+      }
+
+      .mat-step-icon {
+        z-index: 2;
+        margin-left: 8px;
+        margin-right: 8px;
+        border: 2px solid white;
+      }
+
+      .mat-step-label.mat-step-label-active {
+        padding-top: 0.5em;
+      }
+
+      .mat-step-label-selected {
+        font-size: inherit;
+      }
+    }
+
+    .mat-horizontal-stepper-header {
+      padding-bottom: 10px;
+    }
+
+    .mat-horizontal-stepper-header-container {
+      height: 4rem;
+
+      @media #{$medium-and-up} {
+        height: auto;
+      }
+    }
+  }
+
+  .mat-horizontal-content-container {
+    padding: 0 !important;
+  }
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include color($theme);
+  @include layout();
+}

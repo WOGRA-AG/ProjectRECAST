@@ -1,0 +1,175 @@
+@use '@angular/material' as mat;
+@import 'src/assets/WograDesignSystem_Tokens.json';
+
+$md-recast-colors-primary: (
+  50: map-get(map-get($wds-light-colors, primary-50), value),
+  100: map-get(map-get($wds-light-colors, primary-100), value),
+  200: map-get(map-get($wds-light-colors, primary-200), value),
+  300: map-get(map-get($wds-light-colors, primary-300), value),
+  400: map-get(map-get($wds-light-colors, primary-400), value),
+  500: map-get(map-get($wds-light-colors, primary-500), value),
+  600: map-get(map-get($wds-light-colors, primary-600), value),
+  700: map-get(map-get($wds-light-colors, primary-700), value),
+  800: map-get(map-get($wds-light-colors, primary-800), value),
+  900: map-get(map-get($wds-light-colors, primary-900), value),
+  A100: #f4f9fd,
+  A200: #c1e5ff,
+  A400: #8ed0ff,
+  A700: #74c5ff,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
+);
+
+$md-recast-colors-accent: (
+  50: map-get(map-get($wds-light-colors, secondary-50), value),
+  100: map-get(map-get($wds-light-colors, secondary-100), value),
+  200: map-get(map-get($wds-light-colors, secondary-200), value),
+  300: map-get(map-get($wds-light-colors, secondary-300), value),
+  400: map-get(map-get($wds-light-colors, secondary-400), value),
+  500: map-get(map-get($wds-light-colors, secondary-500), value),
+  600: map-get(map-get($wds-light-colors, secondary-600), value),
+  700: map-get(map-get($wds-light-colors, secondary-700), value),
+  800: map-get(map-get($wds-light-colors, secondary-800), value),
+  900: map-get(map-get($wds-light-colors, secondary-900), value),
+  A100: #ebfffb,
+  A200: #b8fff2,
+  A400: #85ffe9,
+  A700: #6bffe4,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
+);
+
+$md-recast-colors-warn: (
+  50: map-get(map-get($wds-light-colors, third-50), value),
+  100: map-get(map-get($wds-light-colors, third-100), value),
+  200: map-get(map-get($wds-light-colors, third-200), value),
+  300: map-get(map-get($wds-light-colors, third-300), value),
+  400: map-get(map-get($wds-light-colors, third-400), value),
+  500: map-get(map-get($wds-light-colors, third-500), value),
+  600: map-get(map-get($wds-light-colors, third-600), value),
+  700: map-get(map-get($wds-light-colors, third-700), value),
+  800: map-get(map-get($wds-light-colors, third-800), value),
+  900: map-get(map-get($wds-light-colors, third-900), value),
+  A100: #fffefe,
+  A200: #ffd0cb,
+  A400: #ffa298,
+  A700: #ff8b7f,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
+);
+
+$recast-light-primary: mat.define-palette($md-recast-colors-primary);
+$recast-light-accent: mat.define-palette($md-recast-colors-accent);
+$recast-light-warn: mat.define-palette(mat.$red-palette);
+$recast-light-tertiary: mat.define-palette($md-recast-colors-warn);
+$recast-light-success: mat.define-palette(mat.$green-palette);
+$recast-light-info: mat.define-palette(mat.$blue-palette);
+
+$primary-color: mat.get-color-from-palette($recast-light-primary, 500);
+$primary-color-100: mat.get-color-from-palette($recast-light-primary, 100);
+$primary-color-900: mat.get-color-from-palette($recast-light-primary, 900);
+$primary-variant: mat.get-color-from-palette($recast-light-primary, 700);
+$accent-color: mat.get-color-from-palette($recast-light-accent, 500);
+$warn-color: mat.get-color-from-palette($recast-light-warn, default);
+$background: #f4f9fd;
+$surface: #ffffff;
+$error: #b00020;
+$on-primary: #ffffff;
+$on-secondary: #000000;
+$on-background: #000000;
+$on-surface: #000000;
+$on-error: #ffffff;
+$on-primary-high: rgba($on-primary, 1);
+$on-primary-medium: rgba($on-primary, 0.74);
+$on-primary-disabled: rgba($on-primary, 0.38);
+$on-surface-high: rgba($on-surface, 0.87);
+$on-surface-medium: rgba($on-surface, 0.6);
+$on-surface-disabled: rgba($on-surface, 0.38);
+$border-color: rgba($on-surface, 0.12);
+$overlay: rgba($primary-color-900, 0.16);
+
+.primary {
+  color: $primary-color;
+}
+
+.accent {
+  color: $accent-color;
+}
+
+.warn {
+  color: $warn-color;
+}
+
+.bg-primary {
+  background-color: $background;
+}
+
+.bg-warn {
+  background-color: $warn-color;
+}
+
+.bg-accent {
+  background-color: $accent-color;
+}
+
+.bg-surface {
+  background-color: $surface;
+}
+
+.border-color {
+  border-color: rgb(0, 0, 0, 0.12);
+}
+
+.on-surface-disabled {
+  color: $on-surface-disabled;
+}
+
+.on-surface-medium {
+  color: $on-surface-medium;
+}
+
+.on-surface-high {
+  color: $on-surface-high;
+}

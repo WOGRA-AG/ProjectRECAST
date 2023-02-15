@@ -1,0 +1,139 @@
+---
+name: OriginPlate
+steps:
+  - name: PlateProcurement
+    stepProperties:
+      - name: ProcurementMethod
+        type: text
+        default: 'Purchase'
+      - name: FiberType
+        type: text
+        dafault: T700G
+      - name: Supplier
+        type: text
+      - name: Matrix
+        type: name
+        default: 'LMPAEK'
+      - name: Layup
+        type: text
+        default: '[0/90]3s'
+      - name: PlateWidth
+        type: number
+        default: 1200
+      - name: PlateHeight
+        type: number
+        default: 1800
+      - name: PlateThickness
+        type: number
+        default: 1.68
+---
+name: EnergyDirektor
+steps:
+  - name: EDProcurement
+    stepProperties:
+      - name: ProcurementMethod
+        type: text
+        default: 'Purchase'
+      - name: Supplier
+        type: text
+      - name: Material
+        type: name
+        default: 'LMPAEK'
+      - name: ThicknessInum
+        type: number
+        default: 100
+---
+name: WeldingSamplePrep
+steps:
+  - name: PlateSelection
+    stepProperties:
+      - name: Plate
+        type: OriginPlate
+  - name: CuttingWeldingSamples
+    stepProperties:
+      - name: Method
+        type: text
+        default: 'Waterjetcutting'
+      - name: SampleWidth
+        type: number
+        default: 100
+      - name: SampleHeight
+        type: number
+        default: 100
+  - name: EDPrep
+    stepProperties:
+      - name: EDWidth
+        type: number
+      - name: EDHeight
+        type: number
+  - name: EDPreFixation
+    stepProperties:
+      - name: Made
+        type: boolean
+      - name: AmountOfEDs
+        type: number
+        default: 2
+---
+name: UltrasonicWelding
+steps:
+  - name: WeldingProcess
+    stepProperties:
+      - name: UpperWeldingSample
+        type: WeldingSamplePrep
+      - name: LowerWeldingSample
+        type: WeldingSamplePrep
+      - name: HornShape
+        type: text
+        default: 'Rectangle'
+      - name: HornWidth
+        type: number
+      - name: HornHeight
+        type: number
+      - name: ParameterRecordingA
+        type: file
+      - name: ParameterRecordingB
+        type: file
+      - name: ParameterRecordingC
+        type: folder
+  - name: DataTransforming
+    stepProperties:
+      - name: TransformerVersion
+        type: text
+        default: 'V0.0'
+      - name: ParameterRecordingATransform
+        type: files(ParameterRecordingA)
+      - name: ParameterRecordingBTransform
+        type: file(ParameterRecordingB)
+---
+name: LSSSamplePrep
+steps:
+  - name: CuttingLSSSamples
+    stepProperties:
+      - name: Method
+        type: text
+        default: 'Waterjetcutting'
+      - name: SampleWidth
+        type: number
+        default: 100
+      - name: SampleHeight
+        type: number
+        default: 100
+
+---
+name: QaulityEvaluation
+steps:
+  - name: LSSSampleSelection
+    stepProperties:
+      - name: Sample
+        type: LSSSamplePrep
+  - name: LSSTest
+    stepProperties:
+      - name: TestingMachine
+        type: text
+      - name: CrossHeadSpeed
+        type: number
+        dafault: 1.3
+      - name: TestingNorm
+        type: text
+      - name: TestingFile
+        type: file

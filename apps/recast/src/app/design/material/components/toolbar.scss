@@ -1,0 +1,19 @@
+@mixin color() {
+  .mat-toolbar {
+    background: transparent;
+  }
+}
+
+@mixin layout() {
+  .mat-toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    max-height: 5%;
+  }
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include color();
+  @include layout();
+}

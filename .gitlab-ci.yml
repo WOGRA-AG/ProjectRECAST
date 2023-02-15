@@ -1,0 +1,22 @@
+include:
+  - local: 'gitlab/services/.gitlab-ci.frontend.yml'
+  - local: 'gitlab/shared/.gitlab-ci.validate-oas.yml'
+  - local: 'gitlab/.gitlab-ci.deploy.yml'
+
+stages:
+  - prepare
+  - build
+  - deploy
+  - e2e
+
+variables:
+  SWAGGER_CLI_VERSION: 4.0.4
+
+validate-oas:
+  extends:
+    - .validate-oas
+  variables:
+    OAS_FILE: 'apps/oas/recast-models.yaml'
+  rules:
+    - !reference [.validate-oas, rules]
+    - if: $CI_PIPELINE_SOURCE

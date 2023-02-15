@@ -1,0 +1,41 @@
+<div class="page-wrapper">
+  <app-page-header [breadcrumbs]="breadcrumbs">{{
+    element?.name
+  }}</app-page-header>
+
+  <form
+    #f="ngForm"
+    *ngIf="element"
+    [formGroup]="propertiesForm"
+    (ngSubmit)="(f.valid)">
+    <div class="grid-wrapper">
+      <div class="input-wrapper">
+        <app-input-field
+          class="input"
+          label="Name"
+          formControlName="name"
+          icon="bar_chart">
+        </app-input-field>
+      </div>
+      <div
+        class="input-wrapper"
+        *ngFor="let prop of element?.elementProperties!">
+        <app-input-field
+          label="{{ propertyName(prop.stepPropertyId!) | async }}"
+          class="input"
+          [formControlName]="prop.id!"
+          icon="bar_chart">
+        </app-input-field>
+      </div>
+    </div>
+    <div class="actions">
+      <app-button-unfilled
+        type="button"
+        [bordered]="true"
+        routerLink="/overview/process/{{ processId }}"
+        i18n="@@actions.back">
+        Back
+      </app-button-unfilled>
+    </div>
+  </form>
+</div>

@@ -1,1 +1,21 @@
+@import 'src/app/design/material/recast-material-theme';
 /* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.page-wrapper {
+  min-height: 90%;
+  max-height: 100%;
+  margin-left: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}

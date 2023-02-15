@@ -1,0 +1,14 @@
+<button
+  mat-button
+  matSuffix
+  color="primary"
+  mat-icon-button
+  [class]="size"
+  [type]="type">
+  <mat-icon *ngIf="matIcon" [class]="size" color="{{ color }}">{{
+    matIcon
+  }}</mat-icon>
+  <app-icon *ngIf="svgIcon" [size]="size" [color]="color" [svgIcon]="svgIcon">{{
+    svgIcon
+  }}</app-icon>
+</button>

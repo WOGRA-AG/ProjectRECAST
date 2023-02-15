@@ -1,0 +1,49 @@
+<div class="content-wrapper">
+  <app-page-header [breadcrumbs]="breadcrumbs">
+    {{ element?.name! }}
+  </app-page-header>
+
+  <app-stepper
+    [steps]="stepTitles"
+    (stepChanged)="stepChanged($event)"
+    [currentIndex]="currentIndex"
+    [disableRipple]="true">
+  </app-stepper>
+
+  <form
+    #f="ngForm"
+    [formGroup]="propertiesForm"
+    (ngSubmit)="f.valid && onSubmitClicked()">
+    <div class="grid-wrapper">
+      <div class="input-wrapper" *ngFor="let prop of stepProperties">
+        <app-input-field
+          class="input"
+          [label]="prop.name!"
+          [formControlName]="prop.id!"
+          icon="bar_chart">
+        </app-input-field>
+      </div>
+    </div>
+    <div class="actions">
+      <app-button-unfilled
+        type="button"
+        [bordered]="true"
+        (click)="navigateBack()"
+        i18n="@@actions.back">
+        Back
+      </app-button-unfilled>
+      <app-submit-button
+        *ngIf="!isLastStep"
+        class="button"
+        i18n="@@action.next_step">
+        Take to the next step
+      </app-submit-button>
+      <app-submit-button
+        *ngIf="isLastStep"
+        class="button"
+        i18n="@@action.finished">
+        Finished
+      </app-submit-button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: recast
+resources:
+  - namespace.yaml
+  - registry-credentials.yml
+  - service-account.yaml

@@ -1,0 +1,17 @@
+@mixin layout() {
+  .mat-icon {
+    height: 1em;
+    width: 1em;
+    overflow: inherit;
+    vertical-align: middle;
+
+    &.logo {
+      width: 56px;
+      height: 47px;
+    }
+  }
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include layout();
+}

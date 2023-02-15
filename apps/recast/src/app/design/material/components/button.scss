@@ -1,0 +1,138 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import '../essentials/button-layout.scss';
+@import 'src/app/design/material/essentials/media-queries';
+
+@mixin color($theme) {
+  .mat-stroked-button:not(.mat-button-disabled) {
+    border-color: currentColor;
+  }
+}
+
+@mixin layout() {
+  .mat-flat-button,
+  .mat-stroked-button {
+    border-radius: $btn-small-border-radius;
+    border-width: $btn-small-border-widht;
+    padding-top: $btn-small-padding-top;
+    padding-bottom: $btn-small-padding-bottom;
+    padding-left: $btn-small-padding-left;
+    padding-right: $btn-small-padding-right;
+
+    &.bordered {
+      padding-top: calc($btn-small-padding-top - $btn-small-border-widht);
+      padding-bottom: calc($btn-small-padding-bottom - $btn-small-border-widht);
+    }
+
+    @media #{$medium-and-up} {
+      border-radius: $btn-medium-border-radius;
+      border-width: $btn-medium-border-widht;
+      padding-top: $btn-medium-padding-top;
+      padding-bottom: $btn-medium-padding-bottom;
+      padding-left: $btn-medium-padding-left;
+      padding-right: $btn-medium-padding-right;
+
+      &.bordered {
+        padding-top: calc($btn-medium-padding-top - $btn-medium-border-widht);
+        padding-bottom: calc(
+          $btn-medium-padding-bottom - $btn-medium-border-widht
+        );
+      }
+    }
+
+    &.small {
+      border-radius: $btn-small-border-radius;
+      border-width: $btn-small-border-widht;
+      padding-top: $btn-small-padding-top;
+      padding-bottom: $btn-small-padding-bottom;
+      padding-left: $btn-small-padding-left;
+      padding-right: $btn-small-padding-right;
+
+      &.bordered {
+        padding-top: calc($btn-small-padding-top - $btn-small-border-widht);
+        padding-bottom: calc(
+          $btn-small-padding-bottom - $btn-small-border-widht
+        );
+      }
+    }
+
+    &.medium {
+      border-radius: $btn-medium-border-radius;
+      border-width: $btn-medium-border-widht;
+      padding-top: $btn-medium-padding-top;
+      padding-bottom: $btn-medium-padding-bottom;
+      padding-left: $btn-medium-padding-left;
+      padding-right: $btn-medium-padding-right;
+
+      &.bordered {
+        padding-top: calc($btn-medium-padding-top - $btn-medium-border-widht);
+        padding-bottom: calc(
+          $btn-medium-padding-bottom - $btn-medium-border-widht
+        );
+      }
+    }
+
+    &.large {
+      border-radius: $btn-large-border-radius;
+      border-width: $btn-large-border-widht;
+      padding-top: $btn-large-padding-top;
+      padding-bottom: $btn-large-padding-bottom;
+      padding-left: $btn-large-padding-left;
+      padding-right: $btn-large-padding-right;
+
+      &.bordered {
+        padding-top: calc($btn-large-padding-top - $btn-large-border-widht);
+        padding-bottom: calc(
+          $btn-large-padding-bottom - $btn-large-border-widht
+        );
+      }
+    }
+
+    &.text {
+      border: none;
+      padding-top: $btn-text-small-padding-top;
+      padding-bottom: $btn-text-small-padding-bottom;
+      padding-left: $btn-text-small-padding-left;
+      padding-right: $btn-text-small-padding-right;
+
+      @media #{$medium-and-up} {
+        padding-top: $btn-text-medium-padding-top;
+        padding-bottom: $btn-text-medium-padding-bottom;
+        padding-left: $btn-text-medium-padding-left;
+        padding-right: $btn-text-medium-padding-right;
+      }
+
+      &.small {
+        padding-top: $btn-text-small-padding-top;
+        padding-bottom: $btn-text-small-padding-bottom;
+        padding-left: $btn-text-small-padding-left;
+        padding-right: $btn-text-small-padding-right;
+      }
+
+      &.medium {
+        padding-top: $btn-text-medium-padding-top;
+        padding-bottom: $btn-text-medium-padding-bottom;
+        padding-left: $btn-text-medium-padding-left;
+        padding-right: $btn-text-medium-padding-right;
+      }
+
+      &.large {
+        padding-top: $btn-text-large-padding-top;
+        padding-bottom: $btn-text-large-padding-bottom;
+        padding-left: $btn-text-large-padding-left;
+        padding-right: $btn-text-large-padding-right;
+      }
+    }
+
+    .mat-icon {
+      height: 1em;
+      width: 1em;
+      padding-right: 0.5em;
+    }
+  }
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include color($theme);
+  @include layout();
+}

@@ -1,0 +1,34 @@
+<form
+  #f="ngForm"
+  (ngSubmit)="f.form.valid && updateProfile()"
+  class="form-widget"
+  [formGroup]="updateProfileForm">
+  <div>
+    <app-input-field
+      i18n-label="@@label.id"
+      label="id"
+      formControlName="id"></app-input-field>
+  </div>
+  <div>
+    <app-input-field
+      i18n-label="@@label.email"
+      formControlName="email"
+      label="email"></app-input-field>
+  </div>
+  <div>
+    <app-input-field
+      i18n-label="@@label.username"
+      i18n-errMsg="@@err.min_char"
+      formControlName="username"
+      label="username"
+      errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
+  </div>
+  <div class="actions">
+    <app-submit-button [disabled]="loading">
+      {{ loading ? 'Loading ...' : 'Update' }}
+    </app-submit-button>
+    <app-logout-button (click)="signOut()" i18n="@@actions.sign_out"
+      >Sign Out</app-logout-button
+    >
+  </div>
+</form>

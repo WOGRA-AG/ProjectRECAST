@@ -1,0 +1,37 @@
+{
+  "actions.sign_out": "Ausloggen",
+  "actions.update": "Update",
+  "actions.back": "Zurück",
+  "actions.create": "Erstellen",
+  "actions.save": "Speichern",
+  "action.scan_element": "Bauteil scannen",
+  "action.create_element": "Bauteil erstellen",
+  "action.next_step": "Zum nächsten Schritt bringen",
+  "action.finished": "Fertig",
+  "action.cancel": "Abbrechen",
+  "action.confirm": "Bestätigen",
+
+  "label.username": "Username",
+  "label.email": "Email",
+  "label.id": "Id",
+  "label.elements": "Bauteile",
+  "label.processes": "Prozesse",
+  "label.title": "Titel",
+  "label.search": "Suche",
+  "label.done": "Abgeschlossen",
+
+  "err.min_char": "Mindestens {$INTERPOLATION} Buchstaben",
+  "err.file.empty": "Die angegebene Datei scheint kein valides YAML Format zu besitzen",
+
+  "placeholder.upload_yaml": "Prozess-YAML Hochladen",
+
+  "info.no_data_text": "Noch keine Bauteile vorhanden",
+
+  "header.new_process": "Prozess Erstellen",
+  "header.overview": "Übersicht",
+  "header.create_element": "Bauteil erstellen",
+  "header.view_element": "Bauteil ansehen",
+
+  "dialog.delete_process": "Prozess und alle dazugehörigen Daten löschen?",
+  "dialog.delete_element": "Bauteil und alle dazugehörigen Daten löschen?"
+}

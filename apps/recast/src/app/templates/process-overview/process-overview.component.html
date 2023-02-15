@@ -1,0 +1,41 @@
+<div class="content-wrapper">
+  <app-page-header [breadcrumbs]="breadcrumbs">
+    {{ title }}
+  </app-page-header>
+
+  <app-stepper
+    [steps]="(stepTitles$ | async) || []"
+    (stepChanged)="changeContent($event)"
+    [disableRipple]="true"
+    [currentIndex]="currentIndex">
+  </app-stepper>
+
+  <div class="grid-wrapper">
+    <h5 class="title primary" i18n="@@label.elements">Bauteile</h5>
+    <app-table
+      class="table"
+      [columnsSchema]="dataColumns"
+      [data]="tableData$"
+      i18n-noDataText="@@info.no_data_text"
+      noDataText="Noch keine Bauteile vorhanden"
+      (deleteClicked)="deleteTableRow($event)"
+      (saveClicked)="editTableRow($event)"
+      (rowClicked)="navigateTo($event)">
+    </app-table>
+    <div class="buttons">
+      <app-button-unfilled
+        [bordered]="true"
+        svgIcon="rcst_scan"
+        class="button"
+        i18n="@@action.scan_element">
+        Bauteil scannen
+      </app-button-unfilled>
+      <app-button-filled
+        class="button"
+        i18n="@@action.create_element"
+        (click)="navigateToCreateElement()">
+        Bauteil erstellen
+      </app-button-filled>
+    </div>
+  </div>
+</div>

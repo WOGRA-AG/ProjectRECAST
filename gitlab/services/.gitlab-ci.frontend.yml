@@ -1,0 +1,126 @@
+include:
+  - local: 'gitlab/shared/.gitlab-ci.build-production.yml'
+
+variables:
+  npm_config_cache: '$CI_PROJECT_DIR/.npm'
+  CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - apps/recast.cache/*
+    - apps/recastcache/Cypress
+    - apps/recastnode_modules
+    - apps/recastbuild
+
+.build-frontend:
+  stage: build
+  needs: [ ]
+  image: $CI_REGISTRY/developer/images/node-java:node-16-jre-11
+  script:
+    - cd $DIR
+    - npm ci --cache .npm_cache
+    - npm run lint
+    - npm run build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: '$CI_COMMIT_TAG'
+
+.build-frontend-dev:
+  stage: build
+  needs: []
+  image: $CI_REGISTRY/developer/images/node-java:node-16-jre-11
+  script:
+    - cd $DIR
+    - npm ci --cache .npm_cache
+    - npm run lint
+    - npm run build-dev
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_TAG == null
+
+build-frontend:
+  extends:
+    - .build-frontend
+  variables:
+    DIR: 'apps/recast'
+    IMG_NAME: 'frontend'
+  artifacts:
+    paths:
+      - apps/recast/dist/recast
+  cache:
+    key: frontend
+    paths:
+      - apps/recast/node_modules
+      - apps/recast/.npm_cache
+
+build-frontend-dev:
+  extends:
+    - .build-frontend-dev
+  variables:
+    DIR: 'apps/recast'
+    IMG_NAME: 'frontend'
+  artifacts:
+    paths:
+      - apps/recast/dist/recast
+  cache:
+    key: frontend
+    paths:
+      - apps/recast/node_modules
+      - apps/recast/.npm_cache
+
+build-frontend-image:
+  extends:
+    - .build-production
+  needs:
+    - build-frontend
+  dependencies:
+    - build-frontend
+  variables:
+    DOCKERFILE: 'apps/recast/Dockerfile'
+    IMG_NAME: 'frontend'
+    BUILD_CONTEXT: 'apps/recast'
+  rules:
+    - !reference [.build-production, rules]
+    - if: '$CI_COMMIT_TAG'
+
+build-frontend-image-dev:
+  extends:
+    - .build-production
+  needs:
+    - build-frontend-dev
+  dependencies:
+    - build-frontend-dev
+  variables:
+    DOCKERFILE: 'apps/recast/Dockerfile'
+    IMG_NAME: 'frontend'
+    BUILD_CONTEXT: 'apps/recast'
+  rules:
+    - !reference [.build-production, rules]
+    - if: $CI_COMMIT_TAG == null
+
+ui-chrome-tests:
+  image: cypress/browsers:node16.16.0-chrome107-ff107-edge
+  stage: e2e
+  when: manual
+  before_script:
+    - apt-get update -y
+  script:
+    - cd apps/recast
+    # install dependencies
+    - npm ci --cache .npm_cache
+    # run Cypress tests in parallel
+    - npx cypress run --browser chrome
+  artifacts:
+    when: always
+    paths:
+      - apps/recast/cypress/videos/**/*.mp4
+      - apps/recast/cypress/screenshots/**/*.png
+    expire_in: 1 day
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+      when: manual

@@ -1,0 +1,10 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin color($theme) {
+  $primary-palette: map.get($theme, 'primary');
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include color($theme);
+}

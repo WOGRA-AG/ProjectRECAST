@@ -1,0 +1,84 @@
+{
+  "root": true,
+  "ignorePatterns": ["projects/**/*"],
+  "extends": ["prettier"],
+  "plugins": ["rxjs-angular"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.json"],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@angular-eslint/ng-cli-compat",
+        "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "rules": {
+        "max-len": [
+          "error",
+          {
+            "code": 120,
+            "ignoreUrls": true
+          }
+        ],
+        "no-underscore-dangle": 0,
+        "@typescript-eslint/no-non-null-assertion": 0,
+        "@typescript-eslint/member-ordering": [
+          "error",
+          {
+            "classes": [
+              "decorated-field",
+              "public-field",
+              "protected-field",
+              "private-field",
+              "constructor",
+              ["get", "set"],
+              "public-static-method",
+              "public-decorated-method",
+              "public-method",
+              "protected-static-method",
+              "protected-decorated-method",
+              "protected-method",
+              "private-static-method",
+              "private-decorated-method",
+              "private-method"
+            ]
+          }
+        ],
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "rxjs-angular/prefer-takeuntil": [
+          "error",
+          {
+            "alias": ["untilDestroyed", "take"],
+            "checkComplete": true,
+            "checkDecorators": ["Component"],
+            "checkDestroy": true
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "rules": {}
+    }
+  ]
+}

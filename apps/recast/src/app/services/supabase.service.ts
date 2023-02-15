@@ -1,86 +1,59 @@
-import { Injectable } from '@angular/core'
+import { Injectable } from '@angular/core';
 import {
-  AuthChangeEvent,
   AuthSession,
   createClient,
-  Session,
   SupabaseClient,
-  User,
-} from '@supabase/supabase-js'
-import { environment } from 'src/environments/environment'
-import {BehaviorSubject} from 'rxjs';
-
-export interface Profile {
-  id?: string
-  username: string
-  website: string
-  avatar_url: string
-}
+} from '@supabase/supabase-js';
+import { environment } from 'src/environments/environment';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SupabaseService {
-  private supabase: SupabaseClient
-  _session: AuthSession | null = null
-  profile$: BehaviorSubject<Profile> = new BehaviorSubject<Profile>({username: '', avatar_url: '', website: ''})
+  private readonly _supabase: SupabaseClient;
+  private readonly _session$: BehaviorSubject<AuthSession | null> =
+    new BehaviorSubject<AuthSession | null>(null);
 
   constructor() {
-    this.supabase = createClient(
+    this._supabase = createClient(
       environment.supabaseUrl,
       environment.supabaseKey
-    )
-    this.supabase.channel('profile-changes')
-    .on('postgres_changes', {event: 'UPDATE', schema: 'public', table: 'profiles'}, payload => {
-      this.profile$.next(payload.new as Profile);
-    })
-      .subscribe();
+    );
+    this.supabase.auth
+      .getSession()
+      .then(({ data }) => this.updateSession(data.session));
+    this.supabase.auth.onAuthStateChange((_, session) =>
+      this.updateSession(session)
+    );
   }
 
-  get session() {
-    this.supabase.auth.getSession().then(({ data }) => {
-      this._session = data.session
-    })
-    return this._session
+  get session$(): Observable<AuthSession | null> {
+    return this._session$;
   }
 
-  profile(user: User) {
-    return this.supabase
-      .from('profiles')
-      .select(`username, website, avatar_url`)
-      .eq('id', user.id)
-      .single()
+  get currentSession$(): Observable<AuthSession> {
+    return this._session$.pipe(
+      filter(session => !!session),
+      map(session => session!)
+    );
   }
 
-  authChanges(
-    callback: (event: AuthChangeEvent, session: Session | null) => void
-  ) {
-    return this.supabase.auth.onAuthStateChange(callback)
+  get supabase(): SupabaseClient {
+    return this._supabase;
   }
 
-  signIn(email: string) {
-    return this.supabase.auth.signInWithOAuth({ provider: 'keycloak' })
+  private updateSession(session: AuthSession | null): void {
+    this._session$.next(session);
   }
+}
 
-  signOut() {
-    this.supabase.auth.signOut()
-    window.location.href = 'https://login.os4ml.wogra.com/logout'
-  }
-
-  updateProfile(profile: Profile) {
-    const update = {
-      ...profile,
-      updated_at: new Date(),
-    }
-
-    return this.supabase.from('profiles').upsert(update)
-  }
-
-  downLoadImage(path: string) {
-    return this.supabase.storage.from('avatars').download(path)
-  }
-
-  uploadAvatar(filePath: string, file: File) {
-    return this.supabase.storage.from('avatars').upload(filePath, file)
-  }
+export enum Tables {
+  processes = 'processes',
+  steps = 'steps',
+  stepProperties = 'step_properties',
+  elements = 'elements',
+  elementProperties = 'element_properties',
+  profiles = 'profiles',
+  values = 'values',
 }
