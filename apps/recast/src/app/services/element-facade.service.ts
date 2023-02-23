@@ -4,6 +4,7 @@ import {
   catchError,
   concatAll,
   concatMap,
+  distinctUntilChanged,
   filter,
   from,
   map,
@@ -24,7 +25,8 @@ import {
 } from '@supabase/supabase-js';
 import { SupabaseService, Tables } from './supabase.service';
 import { ElementPropertyService } from './element-property.service';
-import { groupBy$ } from '../shared/util/common-utils';
+import { elementComparator, groupBy$ } from '../shared/util/common-utils';
+import { ProcessFacadeService } from './process-facade.service';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -39,7 +41,8 @@ export class ElementFacadeService {
 
   constructor(
     private readonly supabase: SupabaseService,
-    private readonly elementPropertyService: ElementPropertyService
+    private readonly elementPropertyService: ElementPropertyService,
+    private readonly processService: ProcessFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadElements$()),
@@ -61,7 +64,7 @@ export class ElementFacadeService {
   }
 
   get elements$(): Observable<Element[]> {
-    return this._elements$;
+    return this._elements$.pipe(distinctUntilChanged(elementComparator));
   }
 
   get elements(): Element[] {
@@ -102,7 +105,8 @@ export class ElementFacadeService {
   public elementById$(id: number): Observable<Element> {
     return this._elements$.pipe(
       mergeAll(),
-      filter(elements => elements.id === id)
+      filter(elements => elements.id === id),
+      distinctUntilChanged(elementComparator)
     );
   }
 
@@ -117,6 +121,29 @@ export class ElementFacadeService {
         )
       )
     );
+  }
+
+  public elementsByProcessId$(id: number | undefined): Observable<Element[]> {
+    return this.elements$.pipe(
+      map(elements => elements.filter(element => element.processId === id))
+    );
+  }
+
+  public elementsByProcessName$(processName: string): Observable<Element[]> {
+    const processByName = this.processService.processes.find(
+      proc => proc.name?.toLowerCase() === processName.toLowerCase()
+    );
+    return this.elementsByProcessId$(processByName?.id).pipe(
+      map(elements => elements.filter(e => e.currentStepId === null))
+    );
+  }
+
+  public elementById(id: number): Element {
+    const element = this.elements.find(e => e.id === id);
+    if (!element) {
+      throw Error(`Element with id ${id} not found`);
+    }
+    return element;
   }
 
   private upsertElement$({

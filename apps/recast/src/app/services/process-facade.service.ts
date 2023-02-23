@@ -13,6 +13,7 @@ import {
   combineLatest,
   concatAll,
   concatMap,
+  distinctUntilChanged,
   filter,
   from,
   map,
@@ -25,7 +26,7 @@ import {
   toArray,
 } from 'rxjs';
 import { Process, Step } from '../../../build/openapi/recast';
-import { groupBy$ } from '../shared/util/common-utils';
+import { elementComparator, groupBy$ } from '../shared/util/common-utils';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -107,7 +108,8 @@ export class ProcessFacadeService {
   public processById$(id: number): Observable<Process> {
     return this._processes$.pipe(
       mergeAll(),
-      filter(process => process.id === id)
+      filter(process => process.id === id),
+      distinctUntilChanged(elementComparator)
     );
   }
   private upsertProcess$({ id, name }: Process): Observable<Process> {

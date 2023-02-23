@@ -1,0 +1,22 @@
+<mat-form-field [appearance]="appearance">
+  <mat-label>{{ label }}</mat-label>
+  <mat-select
+    [formControl]="formControl"
+    (selectionChange)="change($event)"
+    (blur)="onTouch()"
+    [value]="value">
+    <mat-option
+      *ngFor="let option of transformedOptions"
+      [value]="option.value"
+      [disabled]="option.disabled"
+      [id]="option.id">
+      {{ option.viewValue }}
+    </mat-option>
+  </mat-select>
+  <mat-icon *ngIf="icon" matSuffix>{{ icon }}</mat-icon>
+  <mat-error *ngIf="ngControl.invalid">{{ errMsg }}</mat-error>
+</mat-form-field>
+
+<div style="display: none">
+  <ng-content></ng-content>
+</div>

@@ -13,6 +13,7 @@ import {
   takeUntil,
   tap,
   combineLatestWith,
+  Observable,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
@@ -38,6 +39,10 @@ export class ElementDetailComponent implements OnDestroy {
   private _currentStep: Step | undefined;
   private _steps: Step[] = [];
   private readonly _destroy$: Subject<void> = new Subject<void>();
+  private _steps$: Observable<Step[]> = this.steps$();
+  private _process$: Observable<Process> = this.process$();
+  private _element$: Observable<Element> = this.element$();
+  private _step$ = this.step$();
 
   constructor(
     private route: ActivatedRoute,
@@ -49,58 +54,31 @@ export class ElementDetailComponent implements OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router
   ) {
-    const steps$ = route.paramMap.pipe(
-      filter(param => !!param.get('processId')),
-      map(param => +param.get('processId')!),
-      mergeMap(id => this.stepService.stepsByProcessId$(id)),
-      distinctUntilChanged(elementComparator)
-    );
-
-    const process$ = route.paramMap.pipe(
-      filter(param => !!param.get('processId')),
-      map(param => +param.get('processId')!),
-      mergeMap(id => this.processService.processById$(id)),
-      distinctUntilChanged(elementComparator)
-    );
-
-    const element$ = route.paramMap.pipe(
-      filter(param => !!param.get('elementId')),
-      map(param => +param.get('elementId')!),
-      mergeMap(id => this.elementService.elementById$(id)),
-      distinctUntilChanged(elementComparator)
-    );
-
-    const step$ = route.paramMap.pipe(
-      filter(param => !!param.get('stepId')),
-      map(param => +param.get('stepId')!),
-      mergeMap(id => this.stepService.stepById$(id)),
-      distinctUntilChanged(elementComparator)
-    );
-
-    process$
+    this._process$
       .pipe(
-        combineLatestWith(element$, step$, steps$),
-        tap(([process, element, step, steps]) => {
+        combineLatestWith(this._element$, this._step$, this._steps$),
+        map(([process, element, step, steps]) => {
           this._steps = steps;
           this.stepTitles = steps.map(s => s.name!);
           this.element = element;
           this._currentStep = step;
           this.currentIndex = this._steps.indexOf(step);
           this.isLastStep = this._steps.length - 1 === this.currentIndex;
+          return { process, element, step };
         }),
         takeUntil(this._destroy$)
       )
-      .subscribe(([process, element, step, steps]) => {
+      .subscribe(({ process, element, step }) => {
         this.initBreadcrumbs(process);
         this.stepProperties = step.stepProperties!;
         this.stepProperties.forEach(p => {
           const elemProp = element.elementProperties?.find(
             e => e.stepPropertyId === p.id
           );
-          this.propertiesForm.addControl(
-            '' + p.id,
-            new FormControl(!!elemProp ? elemProp.value : p.defaultValue)
-          );
+          const value: string = !!elemProp
+            ? elemProp.value || ''
+            : p.defaultValue || '';
+          this.updateControl(`${p.id}`, value);
         });
       });
   }
@@ -124,9 +102,9 @@ export class ElementDetailComponent implements OnDestroy {
     this.router.navigate(['../../../..'], { relativeTo: this.route });
   }
 
-  public onSubmitClicked() {
+  public onSubmitClicked(): void {
     for (const prop of this.stepProperties) {
-      const value = this.propertiesForm.get('' + prop.id)?.value!;
+      const value = this.propertiesForm.get(`${prop.id}`)?.value!;
       this.updateElementProperty(prop, value);
       if (!this.isLastStep) {
         const nextStep = this._steps[this.currentIndex + 1];
@@ -139,11 +117,52 @@ export class ElementDetailComponent implements OnDestroy {
     }
   }
 
-  public stepChanged(event: number) {
+  public stepChanged(event: number): void {
     if (event >= this._steps.indexOf(this._currentStep!)) {
       return;
     }
     this.navigateStep(this._steps[event]);
+  }
+
+  public elementsByReference(
+    reference: string | undefined
+  ): Observable<Element[]> {
+    if (!reference) {
+      return of([]);
+    }
+    return this.elementService.elementsByProcessName$(reference);
+  }
+
+  private step$(): Observable<Step> {
+    return this.route.paramMap.pipe(
+      filter(param => !!param.get('stepId')),
+      map(param => +param.get('stepId')!),
+      mergeMap(id => this.stepService.stepById$(id))
+    );
+  }
+
+  private element$(): Observable<Element> {
+    return this.route.paramMap.pipe(
+      filter(param => !!param.get('elementId')),
+      map(param => +param.get('elementId')!),
+      mergeMap(id => this.elementService.elementById$(id))
+    );
+  }
+
+  private process$(): Observable<Process> {
+    return this.route.paramMap.pipe(
+      filter(param => !!param.get('processId')),
+      map(param => +param.get('processId')!),
+      mergeMap(id => this.processService.processById$(id))
+    );
+  }
+
+  private steps$(): Observable<Step[]> {
+    return this.route.paramMap.pipe(
+      filter(param => !!param.get('processId')),
+      map(param => +param.get('processId')!),
+      mergeMap(id => this.stepService.stepsByProcessId$(id))
+    );
   }
 
   private navigateStep(step: Step): void {
@@ -205,5 +224,14 @@ export class ElementDetailComponent implements OnDestroy {
       { label: process.name!, link: '/overview/process/' + process.id },
       { label: this.element?.name! },
     ];
+  }
+
+  private updateControl(name: string, value: any): void {
+    const control = this.propertiesForm.get(name);
+    if (!control) {
+      this.propertiesForm.addControl(name, new FormControl(value));
+      return;
+    }
+    control.setValue(value);
   }
 }
