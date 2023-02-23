@@ -20,7 +20,7 @@ cache:
   script:
     - cd $DIR
     - npm ci --cache .npm_cache
-    - npm run lint
+    - npm run lint:check
     - npm run build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
