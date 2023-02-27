@@ -5,14 +5,18 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  mergeMap,
   Observable,
   of,
   Subject,
+  switchMap,
   takeUntil,
   tap,
 } from 'rxjs';
-import { Element, StepProperty } from '../../../../build/openapi/recast';
+import {
+  Element,
+  Process,
+  StepProperty,
+} from '../../../../build/openapi/recast';
 import { ElementFacadeService } from '../../services/element-facade.service';
 import { ProcessFacadeService } from '../../services/process-facade.service';
 import { Breadcrumb } from '../../design/components/molecules/breadcrumb/breadcrumb.component';
@@ -43,36 +47,31 @@ export class ElementViewComponent implements OnDestroy {
     private readonly stepPropertyService: StepPropertyService,
     private readonly formBuilder: FormBuilder
   ) {
-    this._processId$
-      .pipe(
-        mergeMap(id => processService.processById$(id)),
-        takeUntil(this._destroy$)
-      )
-      .subscribe(process => {
-        this.breadcrumbs = [
-          { label: $localize`:@@header.overview:Overview`, link: '/overview' },
-          { label: process.name!, link: '/overview/process/' + process.id },
-          { label: $localize`:@@header.view_element:View Element` },
-        ];
-      });
-    this._processId$
-      .pipe(
-        combineLatestWith(
-          this.elementService.elements$,
-          this.stepPropertyService.stepProperties$,
-          this._elementId$
-        ),
-        filter(
-          ([_, elements, stepProps, _1]) =>
-            !!stepProps.length && !!elements.length
-        ),
-        mergeMap(([_, _1, _2, elementId]) =>
-          elementService.elementById$(elementId)
-        ),
-        filter(element => !!element?.elementProperties?.length),
-        takeUntil(this._destroy$)
-      )
-      .subscribe(element => {
+    const process$: Observable<Process | undefined> = this._processId$.pipe(
+      switchMap(id => processService.processById$(id)),
+      filter(process => !!process)
+    );
+
+    const element$: Observable<Element> = this._processId$.pipe(
+      combineLatestWith(
+        this.elementService.elements$,
+        this.stepPropertyService.stepProperties$,
+        this._elementId$
+      ),
+      filter(
+        ([_, elements, stepProps, _1]) =>
+          !!stepProps.length && !!elements.length
+      ),
+      switchMap(([_, _1, _2, elementId]) =>
+        elementService.elementById$(elementId)
+      ),
+      filter(element => !!element?.elementProperties?.length)
+    );
+
+    process$
+      .pipe(takeUntil(this._destroy$), combineLatestWith(element$))
+      .subscribe(([process, element]) => {
+        this.updateBreadcrumbs(process!);
         this.element = element;
         this.initFormGroup();
       });
@@ -139,5 +138,13 @@ export class ElementViewComponent implements OnDestroy {
       return;
     }
     control.setValue(value);
+  }
+
+  private updateBreadcrumbs(process: Process): void {
+    this.breadcrumbs = [
+      { label: $localize`:@@header.overview:Overview`, link: '/overview' },
+      { label: process?.name!, link: '/overview/process/' + process?.id },
+      { label: $localize`:@@header.view_element:View Element` },
+    ];
   }
 }

@@ -10,6 +10,7 @@ import {
   map,
   merge,
   mergeAll,
+  mergeMap,
   Observable,
   of,
   skip,
@@ -130,10 +131,8 @@ export class ElementFacadeService {
   }
 
   public elementsByProcessName$(processName: string): Observable<Element[]> {
-    const processByName = this.processService.processes.find(
-      proc => proc.name?.toLowerCase() === processName.toLowerCase()
-    );
-    return this.elementsByProcessId$(processByName?.id).pipe(
+    return this.processService.processByName$(processName).pipe(
+      mergeMap(process => this.elementsByProcessId$(process?.id)),
       map(elements => elements.filter(e => e.currentStepId === null))
     );
   }

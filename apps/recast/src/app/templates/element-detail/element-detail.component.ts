@@ -12,6 +12,7 @@ import {
   takeUntil,
   combineLatestWith,
   Observable,
+  tap,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
@@ -37,7 +38,7 @@ export class ElementDetailComponent implements OnDestroy {
   private _steps: Step[] = [];
   private readonly _destroy$: Subject<void> = new Subject<void>();
   private _steps$: Observable<Step[]> = this.steps$();
-  private _process$: Observable<Process> = this.process$();
+  private _process$: Observable<Process | undefined> = this.process$();
   private _element$: Observable<Element> = this.element$();
   private _step$ = this.step$();
 
@@ -53,21 +54,24 @@ export class ElementDetailComponent implements OnDestroy {
   ) {
     this._process$
       .pipe(
+        takeUntil(this._destroy$),
         combineLatestWith(this._element$, this._step$, this._steps$),
-        map(([process, element, step, steps]) => {
+        filter(
+          ([process, element, step, steps]) =>
+            !!process && !!element && !!step && !!steps
+        ),
+        tap(([_, element, step, steps]) => {
           this._steps = steps;
           this.stepTitles = steps.map(s => s.name!);
           this.element = element;
           this._currentStep = step;
           this.currentIndex = this._steps.indexOf(step);
           this.isLastStep = this._steps.length - 1 === this.currentIndex;
-          return { process, element, step };
-        }),
-        takeUntil(this._destroy$)
+          this.stepProperties = step.stepProperties!;
+        })
       )
-      .subscribe(({ process, element, step }) => {
-        this.initBreadcrumbs(process);
-        this.stepProperties = step.stepProperties!;
+      .subscribe(([process, element, _, _1]) => {
+        this.initBreadcrumbs(process!);
         this.stepProperties.forEach(p => {
           const elemProp = element.elementProperties?.find(
             e => e.stepPropertyId === p.id
@@ -146,7 +150,7 @@ export class ElementDetailComponent implements OnDestroy {
     );
   }
 
-  private process$(): Observable<Process> {
+  private process$(): Observable<Process | undefined> {
     return this.route.paramMap.pipe(
       filter(param => !!param.get('processId')),
       map(param => +param.get('processId')!),

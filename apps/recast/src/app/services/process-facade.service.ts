@@ -18,7 +18,6 @@ import {
   from,
   map,
   merge,
-  mergeAll,
   Observable,
   of,
   skip,
@@ -105,10 +104,18 @@ export class ProcessFacadeService {
     );
   }
 
-  public processById$(id: number): Observable<Process> {
+  public processById$(id: number): Observable<Process | undefined> {
     return this._processes$.pipe(
-      mergeAll(),
-      filter(process => process.id === id),
+      map(processes => processes.find(proc => proc.id === id)),
+      distinctUntilChanged(elementComparator)
+    );
+  }
+
+  public processByName$(name: string): Observable<Process | undefined> {
+    return this._processes$.pipe(
+      map(processes =>
+        processes.find(proc => proc.name?.toLowerCase() === name.toLowerCase())
+      ),
       distinctUntilChanged(elementComparator)
     );
   }

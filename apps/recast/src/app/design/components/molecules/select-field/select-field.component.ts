@@ -1,16 +1,14 @@
 import {
-  AfterContentInit,
   Component,
   ContentChildren,
   Input,
-  OnDestroy,
   Optional,
   QueryList,
   Self,
 } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
-import { Subject, takeUntil, tap } from 'rxjs';
+import { map, Observable, startWith } from 'rxjs';
 import { MatOption } from '@angular/material/core';
 
 @Component({
@@ -18,9 +16,7 @@ import { MatOption } from '@angular/material/core';
   templateUrl: './select-field.component.html',
   styleUrls: ['./select-field.component.scss'],
 })
-export class SelectFieldComponent
-  implements ControlValueAccessor, OnDestroy, AfterContentInit
-{
+export class SelectFieldComponent implements ControlValueAccessor {
   @ContentChildren(MatOption) queryOptions: QueryList<MatOption> =
     new QueryList<MatOption>();
 
@@ -30,12 +26,9 @@ export class SelectFieldComponent
   @Input() icon = '';
 
   public onTouch: any;
-  public transformedOptions: MatOption[] = [];
   private _value = '';
   private _onChange: any;
-  private readonly _destroy$: Subject<void> = new Subject<void>();
   constructor(@Optional() @Self() public ngControl: NgControl) {
-    this.transformedOptions = this.queryOptions.toArray();
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
     }
@@ -83,20 +76,10 @@ export class SelectFieldComponent
     this.onTouch();
   }
 
-  public ngAfterContentInit(): void {
-    this.transformedOptions = this.queryOptions.toArray();
-    this.queryOptions?.changes
-      .pipe(
-        takeUntil(this._destroy$),
-        tap((changes: MatOption[]) => {
-          this.transformedOptions = changes;
-        })
-      )
-      .subscribe();
-  }
-
-  public ngOnDestroy(): void {
-    this._destroy$.next();
-    this._destroy$.complete();
+  public transformedOptions$(): Observable<MatOption[]> {
+    return this.queryOptions?.changes.pipe(
+      startWith(this.queryOptions),
+      map((changes: MatOption[]) => changes)
+    );
   }
 }

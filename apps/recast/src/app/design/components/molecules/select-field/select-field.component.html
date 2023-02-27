@@ -6,7 +6,7 @@
     (blur)="onTouch()"
     [value]="value">
     <mat-option
-      *ngFor="let option of transformedOptions"
+      *ngFor="let option of transformedOptions$() | async"
       [value]="option.value"
       [disabled]="option.disabled"
       [id]="option.id">
@@ -17,6 +17,6 @@
   <mat-error *ngIf="ngControl.invalid">{{ errMsg }}</mat-error>
 </mat-form-field>
 
-<div style="display: none">
+<div class="content-hidden">
   <ng-content></ng-content>
 </div>
