@@ -80,7 +80,7 @@ export class ElementDetailComponent implements OnDestroy {
     process$
       .pipe(
         combineLatestWith(element$, step$, steps$),
-        tap(([process, element, step, steps]) => {
+        tap(([_, element, step, steps]) => {
           this._steps = steps;
           this.stepTitles = steps.map(s => s.name!);
           this.element = element;
@@ -90,7 +90,7 @@ export class ElementDetailComponent implements OnDestroy {
         }),
         takeUntil(this._destroy$)
       )
-      .subscribe(([process, element, step, steps]) => {
+      .subscribe(([process, element, step, _]) => {
         this.initBreadcrumbs(process);
         this.stepProperties = step.stepProperties!;
         this.stepProperties.forEach(p => {
@@ -115,7 +115,7 @@ export class ElementDetailComponent implements OnDestroy {
     }
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
@@ -124,7 +124,7 @@ export class ElementDetailComponent implements OnDestroy {
     this.router.navigate(['../../../..'], { relativeTo: this.route });
   }
 
-  public onSubmitClicked() {
+  public onSubmitClicked(): void {
     for (const prop of this.stepProperties) {
       const value = this.propertiesForm.get('' + prop.id)?.value!;
       this.updateElementProperty(prop, value);
@@ -139,7 +139,7 @@ export class ElementDetailComponent implements OnDestroy {
     }
   }
 
-  public stepChanged(event: number) {
+  public stepChanged(event: number): void {
     if (event >= this._steps.indexOf(this._currentStep!)) {
       return;
     }

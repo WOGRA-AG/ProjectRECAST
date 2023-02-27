@@ -20,13 +20,13 @@ export class SearchFieldComponent {
 
   public searchMode = false;
 
-  onClear(): void {
+  public onClear(): void {
     this.value = null;
     this.valueChange.emit(null);
     this.searchMode = false;
   }
 
-  onFocusOut(): void {
+  public onFocusOut(): void {
     if (!this.value || this.value.length <= 0) {
       this.onClear();
     }

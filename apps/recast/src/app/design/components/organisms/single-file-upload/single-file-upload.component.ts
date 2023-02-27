@@ -40,12 +40,12 @@ export class SingleFileUploadComponent implements OnDestroy {
       .subscribe(status => this.isValid.emit(status === 'VALID'));
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  emitFile() {
+  public emitFile(): void {
     this.fileChange.emit(this.uploadFileForm.value.file);
   }
 }

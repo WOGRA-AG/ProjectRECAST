@@ -1,5 +1,10 @@
 import { registerLocaleData } from '@angular/common';
-import { APP_INITIALIZER, Injectable, LOCALE_ID } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  Injectable,
+  InjectionToken,
+  LOCALE_ID,
+} from '@angular/core';
 import { loadTranslations } from '@angular/localize';
 
 @Injectable({
@@ -8,7 +13,7 @@ import { loadTranslations } from '@angular/localize';
 class I18n {
   locale = 'de';
 
-  async setLocale() {
+  public async setLocale(): Promise<void> {
     const userLocale = localStorage.getItem('locale');
 
     if (!userLocale) {
@@ -36,14 +41,14 @@ class I18n {
   }
 }
 
-const setLocale = () => ({
+const setLocale = (): Config => ({
   provide: APP_INITIALIZER,
   useFactory: (i18n: I18n) => () => i18n.setLocale(),
   deps: [I18n],
   multi: true,
 });
 
-const setLocaleId = () => ({
+const setLocaleId = (): Config => ({
   provide: LOCALE_ID,
   useFactory: (i18n: I18n) => i18n.locale,
   deps: [I18n],
@@ -52,4 +57,11 @@ const setLocaleId = () => ({
 export const i18nModule = {
   setLocale,
   setLocaleId,
+};
+
+type Config = {
+  provide: InjectionToken<string>;
+  useFactory: (i18n: I18n) => any;
+  deps: any[];
+  multi?: boolean;
 };
