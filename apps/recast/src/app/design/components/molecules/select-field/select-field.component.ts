@@ -3,12 +3,10 @@ import {
   Component,
   ContentChildren,
   Input,
-  OnChanges,
   OnDestroy,
   Optional,
   QueryList,
   Self,
-  SimpleChanges,
 } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';

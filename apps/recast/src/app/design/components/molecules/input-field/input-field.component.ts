@@ -45,22 +45,22 @@ export class InputFieldComponent implements ControlValueAccessor {
     return this.ngControl?.control as FormControl;
   }
 
-  registerOnChange(fn: any): void {
+  public registerOnChange(fn: any): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  public registerOnTouched(fn: any): void {
     this.onTouch = fn;
   }
 
-  writeValue(val: any): void {
+  public writeValue(val: any): void {
     if (!val) {
       return;
     }
     this.value = val;
   }
 
-  change(event: Event): void {
+  public change(event: Event): void {
     const target: HTMLInputElement = event.target as HTMLInputElement;
     this.onChange(target.value);
     this.onTouch();

@@ -63,10 +63,10 @@ export class ElementViewComponent implements OnDestroy {
           this._elementId$
         ),
         filter(
-          ([processId, elements, stepProps, elementId]) =>
+          ([_, elements, stepProps, _1]) =>
             !!stepProps.length && !!elements.length
         ),
-        mergeMap(([processId, elements, stepProps, elementId]) =>
+        mergeMap(([_, _1, _2, elementId]) =>
           elementService.elementById$(elementId)
         ),
         filter(element => !!element?.elementProperties?.length),
@@ -78,7 +78,7 @@ export class ElementViewComponent implements OnDestroy {
       });
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
@@ -115,7 +115,7 @@ export class ElementViewComponent implements OnDestroy {
     );
   }
 
-  private initFormGroup() {
+  private initFormGroup(): void {
     this.updateControl('name', this.element?.name);
     for (const prop of this.element?.elementProperties!) {
       let value: string = prop.value || '';
@@ -129,7 +129,7 @@ export class ElementViewComponent implements OnDestroy {
     }
   }
 
-  private updateControl(name: string, value: any) {
+  private updateControl(name: string, value: any): void {
     const control = this.propertiesForm.get(name);
     if (!control) {
       this.propertiesForm.addControl(

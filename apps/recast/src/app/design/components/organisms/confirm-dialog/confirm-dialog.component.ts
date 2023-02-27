@@ -16,7 +16,7 @@ export class ConfirmDialogComponent {
     dialogRef.disableClose = true;
   }
 
-  onConfirmClicked(): void {
+  public onConfirmClicked(): void {
     this.confirmed.emit(true);
   }
 }

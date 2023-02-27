@@ -50,7 +50,7 @@ export class StepFacadeService {
     const stepPropChanges$ = stepPropertyService.stepProperties$.pipe(
       skip(2),
       concatMap(value => groupBy$(value, 'stepId')),
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) =>
         this.addPropertiesToSteps(this._steps$.getValue(), key!, values)
       )
@@ -211,7 +211,7 @@ export class StepFacadeService {
     props: StepProperty[]
   ): Observable<Step[]> {
     return groupBy$(props, 'stepId').pipe(
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) => {
         step = this.addPropertiesToStep(step, key, values);
         return state.map(value => (value.id === step.id ? step : value));

@@ -4,14 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Element, Step, StepProperty, Process } from 'build/openapi/recast';
 import {
   catchError,
-  distinctUntilChanged,
   filter,
   map,
   mergeMap,
   of,
   Subject,
   takeUntil,
-  tap,
   combineLatestWith,
   Observable,
 } from 'rxjs';
@@ -21,7 +19,6 @@ import { ElementPropertyService } from 'src/app/services/element-property.servic
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
-import { elementComparator } from '../../shared/util/common-utils';
 
 @Component({
   selector: 'app-element-detail',
@@ -93,7 +90,7 @@ export class ElementDetailComponent implements OnDestroy {
     }
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }

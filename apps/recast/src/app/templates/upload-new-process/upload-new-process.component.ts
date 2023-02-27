@@ -24,12 +24,12 @@ export class UploadNewProcessComponent implements OnDestroy {
     private router: Router
   ) {}
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  uploadFile(file: File | null) {
+  public uploadFile(file: File | null): void {
     if (!file) {
       return;
     }
@@ -43,10 +43,10 @@ export class UploadNewProcessComponent implements OnDestroy {
         }),
         takeUntil(this._destroy$)
       )
-      .subscribe(proc => this.router.navigate(['']));
+      .subscribe(() => this.router.navigate(['']));
   }
 
-  cancel() {
+  public cancel(): void {
     this.router.navigate(['']);
   }
 }
