@@ -6,12 +6,12 @@ import { Inject, Injectable, LOCALE_ID } from '@angular/core';
 export class I18nService {
   constructor(@Inject(LOCALE_ID) private readonly locale: string) {}
 
-  setLocale(locale: string): void {
+  public setLocale(locale: string): void {
     localStorage.setItem('locale', locale);
     window.location.reload();
   }
 
-  getLocale(): string {
+  public getLocale(): string {
     return this.locale;
   }
 }

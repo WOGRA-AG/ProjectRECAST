@@ -48,7 +48,7 @@ export class ProcessFacadeService {
     const stepChanges$ = stepFacade.steps$.pipe(
       skip(2),
       concatMap(value => groupBy$(value, 'processId')),
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) =>
         this.addStepsToProcesses(this._processes$.getValue(), key!, values)
       )
@@ -211,7 +211,7 @@ export class ProcessFacadeService {
     steps: Step[]
   ): Observable<Process[]> {
     return groupBy$(steps, 'processId').pipe(
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) => {
         process = this.addStepsToProcess(process, key!, values);
         return state.map(value => (value.id === process.id ? process : value));

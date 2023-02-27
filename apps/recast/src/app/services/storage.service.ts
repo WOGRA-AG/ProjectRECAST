@@ -13,7 +13,6 @@ import {
   of,
 } from 'rxjs';
 import { UserFacadeService } from '../user/services/user-facade.service';
-const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
 @Injectable({

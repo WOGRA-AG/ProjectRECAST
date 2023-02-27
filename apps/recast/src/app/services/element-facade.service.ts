@@ -48,7 +48,7 @@ export class ElementFacadeService {
     const elemPropChanges$ = elementPropertyService.elementProperties$.pipe(
       skip(2),
       concatMap(value => groupBy$(value, 'elementId')),
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) =>
         this.addPropertiesToElements(this._elements$.getValue(), key!, values)
       )
@@ -220,7 +220,7 @@ export class ElementFacadeService {
     props: ElementProperty[]
   ): Observable<Element[]> {
     return groupBy$(props, 'elementId').pipe(
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) => {
         element = this.addPropertiesToElement(element, key!, values);
         return state.map(value => (value.id === element.id ? element : value));

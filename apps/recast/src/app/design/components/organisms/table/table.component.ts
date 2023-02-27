@@ -35,30 +35,30 @@ export class TableComponent<T>
   columns: string[] = this.columnsSchema.map(col => col.key);
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.columns = this.columnsSchema.map(col => col.key);
   }
 
-  ngOnChanges(): void {
+  public ngOnChanges(): void {
     this.data.pipe(takeUntil(this._destroy$)).subscribe(value => {
       this.dataSource.data = value;
     });
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  applyFilter(filterValue: string | null) {
+  public applyFilter(filterValue: string | null): void {
     this.dataSource.filter = filterValue?.trim().toLowerCase() || '';
   }
 
-  saved(element: T): void {
+  public saved(element: T): void {
     delete (element as any).isEdit;
     this.saveClicked.emit(element);
   }

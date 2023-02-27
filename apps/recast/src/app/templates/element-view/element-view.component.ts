@@ -84,7 +84,7 @@ export class ElementViewComponent implements OnDestroy {
     );
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
@@ -97,7 +97,7 @@ export class ElementViewComponent implements OnDestroy {
     );
   }
 
-  private initFormGroup(element: Element) {
+  private initFormGroup(element: Element): void {
     this.propertiesForm = this.formBuilder.group({});
     this.propertiesForm.addControl(
       'name',

@@ -41,7 +41,7 @@ export class OverviewComponent implements OnDestroy {
     this.tableData$ = processService.processes$;
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }

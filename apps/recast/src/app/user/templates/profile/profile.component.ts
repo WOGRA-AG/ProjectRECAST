@@ -49,12 +49,12 @@ export class ProfileComponent implements OnDestroy {
       });
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  updateProfile(): void {
+  public updateProfile(): void {
     this.loading = true;
     const username = this.profile.username;
     const email = this.profile.email;
@@ -81,7 +81,7 @@ export class ProfileComponent implements OnDestroy {
       });
   }
 
-  signOut() {
+  public signOut(): void {
     this.userService
       .signOut()
       .pipe(takeUntil(this._destroy$))
