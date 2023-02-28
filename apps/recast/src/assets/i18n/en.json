@@ -21,8 +21,10 @@
   "label.done": "Done",
 
   "err.min_char": "Minimum of {$INTERPOLATION} characters",
+  "err.file.empty": "No valid Yaml found in File",
 
   "placeholder.upload_yaml": "Upload Process-YAML",
+  "placeholder.select_element": "Select element",
 
   "info.no_data_text": "No parts available yet",
 

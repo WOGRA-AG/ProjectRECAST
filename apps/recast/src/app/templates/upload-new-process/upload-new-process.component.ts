@@ -24,29 +24,29 @@ export class UploadNewProcessComponent implements OnDestroy {
     private router: Router
   ) {}
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  uploadFile(file: File | null) {
+  public uploadFile(file: File | null): void {
     if (!file) {
       return;
     }
     yamlToProcess$(file)
       .pipe(
-        filter(proc => !!proc.name),
-        concatMap(proc => this.processFacade.saveProcess$(proc)),
+        filter(procs => !!procs.length),
+        concatMap(procs => this.processFacade.saveProcesses$(procs)),
         catchError(err => {
           console.error(err);
           return of(undefined);
         }),
         takeUntil(this._destroy$)
       )
-      .subscribe(proc => this.router.navigate(['']));
+      .subscribe(() => this.router.navigate(['']));
   }
 
-  cancel() {
+  public cancel(): void {
     this.router.navigate(['']);
   }
 }

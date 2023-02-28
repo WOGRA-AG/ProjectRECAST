@@ -6,8 +6,8 @@ import {
   groupBy as rxGroup,
   map,
 } from 'rxjs';
-import { parse } from 'yaml';
-import { Process } from '../../../../build/openapi/recast';
+import { Document, parseAllDocuments } from 'yaml';
+import { Process, StepProperty } from '../../../../build/openapi/recast';
 
 export const groupBy = <
   T extends Include<any, string | number | symbol>,
@@ -45,16 +45,23 @@ export const groupBy$ = <
 
 type Include<T, K extends keyof any> = Pick<T, Extract<keyof T, K>>;
 
-export const yamlToProcess$ = (file: File): Observable<Process> =>
+export const yamlToProcess$ = (file: File): Observable<Process[]> =>
   from(file.text()).pipe(
     map(text => {
-      const proc: Process = parse(text);
-      if (!proc.name) {
-        throw Error('No valid Process File');
+      const documents: Document[] = parseAllDocuments(text);
+      if (!documents.length) {
+        throw Error($localize`:@@err.file.empty:No valid Yaml found in File`);
       }
-      return proc;
+      return documents.map(doc => doc.toJSON() as Process);
     })
   );
 
 export const elementComparator = <T>(a: T, b: T): boolean =>
   JSON.stringify(a) === JSON.stringify(b);
+
+export const isReference = (stepProp: StepProperty): boolean =>
+  !(
+    stepProp?.type === 'text' ||
+    stepProp.type === 'number' ||
+    stepProp.type === 'file'
+  );
