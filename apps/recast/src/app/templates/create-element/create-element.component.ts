@@ -49,10 +49,10 @@ export class CreateElementComponent implements OnDestroy {
         takeUntil(this._destroy$)
       )
       .subscribe(process => {
-        this.processId = process.id;
+        this.processId = process?.id;
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },
-          { label: process.name!, link: '/overview/process/' + process.id },
+          { label: process?.name!, link: '/overview/process/' + process?.id },
           { label: $localize`:@@header.create_element:Create element` },
         ];
       });

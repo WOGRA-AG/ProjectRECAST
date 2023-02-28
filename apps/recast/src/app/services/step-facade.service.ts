@@ -12,6 +12,7 @@ import {
   catchError,
   concatAll,
   concatMap,
+  distinctUntilChanged,
   filter,
   from,
   map,
@@ -24,7 +25,7 @@ import {
   toArray,
 } from 'rxjs';
 import { StepPropertyService } from './step-property.service';
-import { groupBy$ } from '../shared/util/common-utils';
+import { elementComparator, groupBy$ } from '../shared/util/common-utils';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -92,7 +93,8 @@ export class StepFacadeService {
   public stepById$(id: number): Observable<Step> {
     return this._steps$.pipe(
       mergeAll(),
-      filter(step => step.id === id)
+      filter(step => step.id === id),
+      distinctUntilChanged(elementComparator)
     );
   }
 
@@ -100,7 +102,8 @@ export class StepFacadeService {
     return this._steps$.pipe(
       map(steps =>
         steps.filter(s => s.processId === id).sort((a, b) => a.id! - b.id!)
-      )
+      ),
+      distinctUntilChanged(elementComparator)
     );
   }
 

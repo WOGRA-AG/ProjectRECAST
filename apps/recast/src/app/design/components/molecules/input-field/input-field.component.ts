@@ -5,7 +5,6 @@ import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
   selector: 'app-input-field',
   templateUrl: './input-field.component.html',
   styleUrls: ['./input-field.component.scss'],
-  providers: [],
 })
 export class InputFieldComponent implements ControlValueAccessor {
   @Input() label = '';
@@ -20,7 +19,7 @@ export class InputFieldComponent implements ControlValueAccessor {
   private onChange: any;
 
   constructor(@Optional() @Self() public ngControl: NgControl) {
-    if (this.ngControl != null) {
+    if (this.ngControl !== null) {
       this.ngControl.valueAccessor = this;
     }
   }
@@ -42,9 +41,8 @@ export class InputFieldComponent implements ControlValueAccessor {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   public get formControl(): FormControl {
-    return this.ngControl.control as FormControl;
+    return this.ngControl?.control as FormControl;
   }
 
   public registerOnChange(fn: any): void {

@@ -21,7 +21,7 @@
         class="input-wrapper"
         *ngFor="let prop of element?.elementProperties!">
         <app-input-field
-          label="{{ propertyName(prop.stepPropertyId!) | async }}"
+          label="{{ propertyName$(prop.stepPropertyId!) | async }}"
           class="input"
           [formControlName]="prop.id!"
           icon="bar_chart">

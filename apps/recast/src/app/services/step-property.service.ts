@@ -11,6 +11,7 @@ import {
   BehaviorSubject,
   catchError,
   concatMap,
+  distinctUntilChanged,
   filter,
   from,
   map,
@@ -20,6 +21,7 @@ import {
   of,
   Subject,
 } from 'rxjs';
+import { elementComparator } from '../shared/util/common-utils';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -43,7 +45,7 @@ export class StepPropertyService {
   }
 
   get stepProperties$(): Observable<StepProperty[]> {
-    return this._stepProperties$;
+    return this._stepProperties$.pipe(distinctUntilChanged(elementComparator));
   }
 
   get stepProperties(): StepProperty[] {
@@ -73,6 +75,14 @@ export class StepPropertyService {
       mergeAll(),
       filter(step => step.id === id)
     );
+  }
+
+  public stepPropertyById(id: number): StepProperty {
+    const stepProp = this.stepProperties.find(prop => prop.id === id);
+    if (!stepProp) {
+      throw Error(`stepProperty with id ${id} not found`);
+    }
+    return stepProp;
   }
 
   public stepPropertiesByStepId$(id: number): Observable<StepProperty[]> {

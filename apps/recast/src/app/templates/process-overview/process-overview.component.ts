@@ -52,10 +52,11 @@ export class ProcessOverviewComponent implements OnDestroy {
     this.processId$
       .pipe(
         concatMap(id => this.processService.processById$(id)),
+        filter(process => !!process),
         takeUntil(this._destroy$)
       )
       .subscribe(process => {
-        this.title = process.name!;
+        this.title = process?.name!;
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },
           { label: this.title },
