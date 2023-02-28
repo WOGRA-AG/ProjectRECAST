@@ -107,15 +107,8 @@ export class ElementDetailComponent implements OnDestroy {
     for (const prop of this.stepProperties) {
       const value = this.propertiesForm.get(`${prop.id}`)?.value!;
       this.updateElementProperty(prop, value);
-      if (!this.isLastStep) {
-        const nextStep = this._steps[this.currentIndex + 1];
-        this.updateElement(this.element?.id!, nextStep.id!);
-        this.navigateStep(nextStep);
-        return;
-      }
-      this.updateElement(this.element?.id!, null);
-      this.navigateBack();
     }
+    this.navigateForward();
   }
 
   public stepChanged(event: number): void {
@@ -132,6 +125,17 @@ export class ElementDetailComponent implements OnDestroy {
       return of([]);
     }
     return this.elementService.elementsByProcessName$(reference);
+  }
+
+  private navigateForward(): void {
+    if (!this.isLastStep) {
+      const nextStep = this._steps[this.currentIndex + 1];
+      this.updateElementStepId(this.element?.id!, nextStep.id!);
+      this.navigateStep(nextStep);
+      return;
+    }
+    this.updateElementStepId(this.element?.id!, null);
+    this.navigateBack();
   }
 
   private step$(): Observable<Step> {
@@ -200,7 +204,7 @@ export class ElementDetailComponent implements OnDestroy {
       .subscribe();
   }
 
-  private updateElement(id: number, stepId: number | null): void {
+  private updateElementStepId(id: number, stepId: number | null): void {
     this.elementService
       .saveElement$({
         id,
