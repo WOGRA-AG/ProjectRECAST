@@ -93,8 +93,10 @@
             "accessibility": "explicit",
             "overrides": {
               "accessors": "off",
+              "constructors": "no-public",
+              "methods": "explicit",
               "properties": "off",
-              "constructors": "non-public"
+              "parameterProperties": "explicit"
             }
           }
         ],

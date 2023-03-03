@@ -1,5 +1,6 @@
 import { Component, Input, Optional, Self } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
+import { MatFormFieldAppearance } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-input-field',
@@ -10,11 +11,11 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() errMsg = '';
   @Input() hint = '';
-  @Input() appearance: 'outline' | 'fill' = 'outline';
+  @Input() appearance: MatFormFieldAppearance = 'outline';
   @Input() type: 'text' | 'number' = 'text';
   @Input() icon = '';
 
-  onTouch: any;
+  public onTouch: any;
   private _val = '';
   private _onChange: any;
 

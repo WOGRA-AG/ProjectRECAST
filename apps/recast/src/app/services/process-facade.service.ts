@@ -189,7 +189,7 @@ export class ProcessFacadeService {
         if (error) {
           throw error;
         }
-        return this.processesToCamelCase(data);
+        return this.processesToCamelCase(data as Process[]);
       })
     );
   }

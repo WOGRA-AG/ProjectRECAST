@@ -18,10 +18,18 @@
     }
   }
 
+  tr.mat-mdc-row:hover {
+    td {
+      background-color: $primary-color-50;
+    }
+  }
+
   td.mat-mdc-cell {
     border-color: $primary-color;
     color: $accent-color;
     height: inherit;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .mat-sort-header-arrow {
@@ -43,20 +51,8 @@
   }
 
   td.mat-mdc-cell {
-    /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-    /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-    .mat-form-field-wrapper {
-      padding: 0;
-      /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-      .mat-form-field-infix {
-        max-width: 183px;
-        width: 100%;
-      }
-      /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-      .mat-form-field-underline {
-        display: block;
-        bottom: 0.4em;
-      }
+    .mat-mdc-form-field {
+      padding-top: 10px;
     }
   }
 

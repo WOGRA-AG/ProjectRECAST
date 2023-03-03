@@ -231,8 +231,8 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
       font-size: map-get($button-large, font-size);
     }
   }
-  /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
-  .mat-tab-label {
+
+  .mat-mdc-tab {
     font-family: map-get($button-medium, font-family);
     font-weight: map-get($button-medium, font-weight);
     line-height: map-get($button-medium, line-height);

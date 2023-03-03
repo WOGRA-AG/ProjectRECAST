@@ -3,12 +3,7 @@
   </app-search-field>
 </div>
 
-<table
-  mat-table
-  [dataSource]="dataSource"
-  matSort
-  cdkFocusInitial
-  matSortDisableClear>
+<table mat-table [dataSource]="dataSource" matSort matSortDisableClear>
   <ng-container
     matColumnDef="{{ column.key }}"
     *ngFor="let column of columnsSchema">
@@ -63,16 +58,18 @@
             (click)="deleteClicked.emit(element)"></app-icon-button>
         </ng-container>
         <ng-container *ngSwitchDefault>
-          <app-input-field
-            [(ngModel)]="element[column.key]"
-            [label]="column.key"
-            [required]="!!column.required"
-            appearance="outline"
-            [type]="
-              column.type === 'text' || column.type === 'number'
-                ? column.type
-                : 'text'
-            "></app-input-field>
+          <div>
+            <app-input-field
+              [(ngModel)]="element[column.key]"
+              [label]="column.key"
+              [required]="!!column.required"
+              appearance="outline"
+              [type]="
+                column.type === 'text' || column.type === 'number'
+                  ? column.type
+                  : 'text'
+              "></app-input-field>
+          </div>
         </ng-container>
       </div>
     </td>

@@ -7,13 +7,9 @@
   $primary-color: mat.get-color-from-palette($primary-palette, 500);
   $accent-palette: map.get($theme, 'accent');
   $accent-color: mat.get-color-from-palette($accent-palette, 500);
-  /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
-  .mat-tab-label {
+
+  .mat-mdc-tab {
     color: $accent-color;
-  }
-  /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
-  .mat-tab-label-active {
-    color: $primary-color;
   }
 }
 
@@ -22,8 +18,8 @@
   .mat-mdc-tab-header {
     border-bottom: none;
   }
-  /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
-  .mat-tab-label {
+
+  .mat-mdc-tab {
     opacity: 1;
     padding: 0;
     flex-grow: 1;
