@@ -5,8 +5,8 @@
   $primary-palette: map.get($theme, 'primary');
   $primary-color: mat.get-color-from-palette($primary-palette, 500);
 
-  .mat-list {
-    .mat-list-item {
+  .mat-mdc-list {
+    .mat-mdc-list-item {
       &.active {
         border-color: $primary-color;
       }
@@ -15,10 +15,10 @@
 }
 
 @mixin layout() {
-  .mat-list {
+  .mat-mdc-list {
     width: 100%;
     overflow: auto;
-    .mat-list-item {
+    .mat-mdc-list-item {
       width: auto;
       height: 82px;
       margin-top: 8px;
@@ -26,8 +26,10 @@
       border-radius: 14px;
       border-width: 2px;
       border-style: solid;
-
-      .mat-list-item-content {
+      .mat-mdc-list-item-unscoped-content {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         justify-content: space-between;
         width: 100%;
       }

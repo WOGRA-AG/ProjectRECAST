@@ -1,6 +1,6 @@
 <mat-form-field [appearance]="appearance">
-  <mat-label>{{ label }}</mat-label>
-  <mat-hint>{{ hint }}</mat-hint>
+  <mat-label *ngIf="label">{{ label }}</mat-label>
+  <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
   <input
     matInput
     [type]="type"

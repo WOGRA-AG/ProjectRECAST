@@ -67,6 +67,7 @@ export class OverviewComponent implements OnDestroy {
             data: {
               title: $localize`:@@dialog.delete_process:Delete Process?`,
             },
+            autoFocus: false,
           })
           .afterClosed()
           .pipe(
@@ -82,6 +83,7 @@ export class OverviewComponent implements OnDestroy {
             data: {
               title: $localize`:@@dialog.delete_element:Delete Element?`,
             },
+            autoFocus: false,
           })
           .afterClosed()
           .pipe(

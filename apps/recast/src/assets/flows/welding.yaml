@@ -8,7 +8,7 @@ steps:
         defaultValue: 'Purchase'
       - name: FiberType
         type: text
-        dafault: T700G
+        dafaultValue: T700G
       - name: Supplier
         type: text
       - name: Matrix

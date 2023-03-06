@@ -1,5 +1,6 @@
 @mixin layout() {
   .mat-icon {
+    display: flex;
     height: 1em;
     width: 1em;
     overflow: inherit;

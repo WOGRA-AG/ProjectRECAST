@@ -14,7 +14,7 @@ import {
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-file-upload',
+  selector: 'app-single-file-upload',
   templateUrl: './single-file-upload.component.html',
   styleUrls: ['./single-file-upload.component.scss'],
 })
