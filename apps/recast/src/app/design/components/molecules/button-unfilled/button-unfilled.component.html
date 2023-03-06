@@ -2,10 +2,10 @@
   mat-stroked-button
   color="{{ color }}"
   [type]="type"
-  [class]="size"
+  [class]="'medium'"
   [disabled]="disabled"
   [ngClass]="{ text: !bordered, bordered: bordered }">
-  <mat-icon *ngIf="icon" [class]="size">{{ icon }}</mat-icon>
+  <app-icon *ngIf="icon" [size]="size">{{ icon }}</app-icon>
   <app-icon *ngIf="svgIcon" [size]="size" [svgIcon]="svgIcon">{{
     svgIcon
   }}</app-icon>

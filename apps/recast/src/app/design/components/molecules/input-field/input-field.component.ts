@@ -1,5 +1,6 @@
 import { Component, Input, Optional, Self } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
+import { MatFormFieldAppearance } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-input-field',
@@ -10,13 +11,13 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() errMsg = '';
   @Input() hint = '';
-  @Input() appearance: 'outline' | 'fill' | 'legacy' | 'standard' = 'outline';
+  @Input() appearance: MatFormFieldAppearance = 'outline';
   @Input() type: 'text' | 'number' = 'text';
   @Input() icon = '';
 
-  onTouch: any;
-  private val = '';
-  private onChange: any;
+  public onTouch: any;
+  private _val = '';
+  private _onChange: any;
 
   constructor(@Optional() @Self() public ngControl: NgControl) {
     if (this.ngControl !== null) {
@@ -26,15 +27,15 @@ export class InputFieldComponent implements ControlValueAccessor {
 
   @Input()
   get value(): string {
-    return this.val;
+    return this._val;
   }
   set value(val: string) {
     if (!val) {
       return;
     }
-    this.val = val;
-    if (this.onChange) {
-      this.onChange(val);
+    this._val = val;
+    if (this._onChange) {
+      this._onChange(val);
     }
     if (this.onTouch) {
       this.onTouch();
@@ -46,7 +47,7 @@ export class InputFieldComponent implements ControlValueAccessor {
   }
 
   public registerOnChange(fn: any): void {
-    this.onChange = fn;
+    this._onChange = fn;
   }
 
   public registerOnTouched(fn: any): void {
@@ -62,7 +63,7 @@ export class InputFieldComponent implements ControlValueAccessor {
 
   public change(event: Event): void {
     const target: HTMLInputElement = event.target as HTMLInputElement;
-    this.onChange(target.value);
+    this._onChange(target.value);
     this.onTouch();
   }
 }

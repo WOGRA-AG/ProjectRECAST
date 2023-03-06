@@ -137,11 +137,8 @@ export class ElementFacadeService {
     );
   }
 
-  public elementById(id: number): Element {
+  public elementById(id: number): Element | undefined {
     const element = this.elements.find(e => e.id === id);
-    if (!element) {
-      throw Error(`Element with id ${id} not found`);
-    }
     return element;
   }
 
