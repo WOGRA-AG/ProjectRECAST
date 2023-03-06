@@ -140,6 +140,7 @@ export class ProcessOverviewComponent implements OnDestroy {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: { title: $localize`:@@dialog.delete_element:Delete Element?` },
+        autoFocus: false,
       })
       .afterClosed()
       .pipe(
