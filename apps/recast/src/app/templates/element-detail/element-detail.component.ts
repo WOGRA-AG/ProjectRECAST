@@ -20,6 +20,8 @@ import { ElementPropertyService } from 'src/app/services/element-property.servic
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
+import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-element-detail',
@@ -50,7 +52,8 @@ export class ElementDetailComponent implements OnDestroy {
     private elementService: ElementFacadeService,
     private elementPropertyService: ElementPropertyService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {
     this._process$
       .pipe(
@@ -105,18 +108,32 @@ export class ElementDetailComponent implements OnDestroy {
 
   public onSubmitClicked(): void {
     for (const prop of this.stepProperties) {
-      console.log('property', prop.name);
       const value = this.propertiesForm.get(`${prop.id}`)?.value!;
       this.updateElementProperty(prop, value);
-      if (!this.isLastStep) {
-        const nextStep = this._steps[this.currentIndex + 1];
-        this.updateElement(this.element?.id!, nextStep.id!);
-        this.navigateStep(nextStep);
-        continue;
-      }
-      this.updateElement(this.element?.id!, null);
-      this.navigateBack();
     }
+    if (!this.isLastStep) {
+      const nextStep = this._steps[this.currentIndex + 1];
+      this.updateElementCurrentStep(this.element?.id!, nextStep.id!);
+      this.navigateStep(nextStep);
+      return;
+    }
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: $localize`:@@dialog.submit_element:Save Element?`,
+        },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .pipe(
+        takeUntil(this._destroy$),
+        filter(confirmed => !!confirmed),
+        map(() => {
+          this.updateElementCurrentStep(this.element?.id!, null);
+          this.navigateBack();
+        })
+      )
+      .subscribe();
   }
 
   public stepChanged(event: number): void {
@@ -201,7 +218,7 @@ export class ElementDetailComponent implements OnDestroy {
       .subscribe();
   }
 
-  private updateElement(id: number, stepId: number | null): void {
+  private updateElementCurrentStep(id: number, stepId: number | null): void {
     this.elementService
       .saveElement$({
         id,
