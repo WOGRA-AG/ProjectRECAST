@@ -13,11 +13,11 @@ import {
   combineLatest,
   concatAll,
   concatMap,
+  distinctUntilChanged,
   filter,
   from,
   map,
   merge,
-  mergeAll,
   Observable,
   of,
   skip,
@@ -25,7 +25,7 @@ import {
   toArray,
 } from 'rxjs';
 import { Process, Step } from '../../../build/openapi/recast';
-import { groupBy$ } from '../shared/util/common-utils';
+import { elementComparator, groupBy$ } from '../shared/util/common-utils';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -48,7 +48,7 @@ export class ProcessFacadeService {
     const stepChanges$ = stepFacade.steps$.pipe(
       skip(2),
       concatMap(value => groupBy$(value, 'processId')),
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) =>
         this.addStepsToProcesses(this._processes$.getValue(), key!, values)
       )
@@ -104,10 +104,19 @@ export class ProcessFacadeService {
     );
   }
 
-  public processById$(id: number): Observable<Process> {
+  public processById$(id: number): Observable<Process | undefined> {
     return this._processes$.pipe(
-      mergeAll(),
-      filter(process => process.id === id)
+      map(processes => processes.find(proc => proc.id === id)),
+      distinctUntilChanged(elementComparator)
+    );
+  }
+
+  public processByName$(name: string): Observable<Process | undefined> {
+    return this._processes$.pipe(
+      map(processes =>
+        processes.find(proc => proc.name?.toLowerCase() === name.toLowerCase())
+      ),
+      distinctUntilChanged(elementComparator)
     );
   }
   private upsertProcess$({ id, name }: Process): Observable<Process> {
@@ -180,7 +189,7 @@ export class ProcessFacadeService {
         if (error) {
           throw error;
         }
-        return this.processesToCamelCase(data);
+        return this.processesToCamelCase(data as Process[]);
       })
     );
   }
@@ -211,7 +220,7 @@ export class ProcessFacadeService {
     steps: Step[]
   ): Observable<Process[]> {
     return groupBy$(steps, 'processId').pipe(
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) => {
         process = this.addStepsToProcess(process, key!, values);
         return state.map(value => (value.id === process.id ? process : value));

@@ -21,7 +21,7 @@ export class StepperComponent implements AfterContentChecked {
 
   @ViewChild('stepper') stepper: MatStepper | undefined;
 
-  ngAfterContentChecked() {
+  public ngAfterContentChecked(): void {
     if (this.stepper && this.currentIndex !== undefined) {
       this.stepper.selectedIndex = this.currentIndex;
     }

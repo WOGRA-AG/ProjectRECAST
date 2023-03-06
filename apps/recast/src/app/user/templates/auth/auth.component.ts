@@ -21,12 +21,12 @@ export class AuthComponent implements OnDestroy {
     private readonly formBuilder: FormBuilder
   ) {}
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  onSubmit(): void {
+  public onSubmit(): void {
     this.loading = true;
     this.userService
       .signIn()

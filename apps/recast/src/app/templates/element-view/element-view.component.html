@@ -19,11 +19,12 @@
       </div>
       <div
         class="input-wrapper"
-        *ngFor="let prop of element?.elementProperties!">
+        *ngFor="let prop of element?.elementProperties">
         <app-input-field
-          label="{{ propertyName(prop.stepPropertyId!) | async }}"
+          *ngIf="prop.id"
+          label="{{ propertyName$(prop.stepPropertyId!) | async }}"
           class="input"
-          [formControlName]="prop.id!"
+          [formControlName]="prop.id"
           icon="bar_chart">
         </app-input-field>
       </div>

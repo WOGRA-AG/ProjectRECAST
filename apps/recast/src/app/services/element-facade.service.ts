@@ -4,11 +4,13 @@ import {
   catchError,
   concatAll,
   concatMap,
+  distinctUntilChanged,
   filter,
   from,
   map,
   merge,
   mergeAll,
+  mergeMap,
   Observable,
   of,
   skip,
@@ -24,7 +26,8 @@ import {
 } from '@supabase/supabase-js';
 import { SupabaseService, Tables } from './supabase.service';
 import { ElementPropertyService } from './element-property.service';
-import { groupBy$ } from '../shared/util/common-utils';
+import { elementComparator, groupBy$ } from '../shared/util/common-utils';
+import { ProcessFacadeService } from './process-facade.service';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -39,7 +42,8 @@ export class ElementFacadeService {
 
   constructor(
     private readonly supabase: SupabaseService,
-    private readonly elementPropertyService: ElementPropertyService
+    private readonly elementPropertyService: ElementPropertyService,
+    private readonly processService: ProcessFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadElements$()),
@@ -48,7 +52,7 @@ export class ElementFacadeService {
     const elemPropChanges$ = elementPropertyService.elementProperties$.pipe(
       skip(2),
       concatMap(value => groupBy$(value, 'elementId')),
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) =>
         this.addPropertiesToElements(this._elements$.getValue(), key!, values)
       )
@@ -61,7 +65,7 @@ export class ElementFacadeService {
   }
 
   get elements$(): Observable<Element[]> {
-    return this._elements$;
+    return this._elements$.pipe(distinctUntilChanged(elementComparator));
   }
 
   get elements(): Element[] {
@@ -102,7 +106,8 @@ export class ElementFacadeService {
   public elementById$(id: number): Observable<Element> {
     return this._elements$.pipe(
       mergeAll(),
-      filter(elements => elements.id === id)
+      filter(elements => elements.id === id),
+      distinctUntilChanged(elementComparator)
     );
   }
 
@@ -117,6 +122,24 @@ export class ElementFacadeService {
         )
       )
     );
+  }
+
+  public elementsByProcessId$(id: number | undefined): Observable<Element[]> {
+    return this.elements$.pipe(
+      map(elements => elements.filter(element => element.processId === id))
+    );
+  }
+
+  public elementsByProcessName$(processName: string): Observable<Element[]> {
+    return this.processService.processByName$(processName).pipe(
+      mergeMap(process => this.elementsByProcessId$(process?.id)),
+      map(elements => elements.filter(e => e.currentStepId === null))
+    );
+  }
+
+  public elementById(id: number): Element | undefined {
+    const element = this.elements.find(e => e.id === id);
+    return element;
   }
 
   private upsertElement$({
@@ -220,7 +243,7 @@ export class ElementFacadeService {
     props: ElementProperty[]
   ): Observable<Element[]> {
     return groupBy$(props, 'elementId').pipe(
-      filter(({ key, values }) => !!key),
+      filter(({ key }) => !!key),
       map(({ key, values }) => {
         element = this.addPropertiesToElement(element, key!, values);
         return state.map(value => (value.id === element.id ? element : value));

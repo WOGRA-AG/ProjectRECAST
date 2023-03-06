@@ -4,14 +4,54 @@
 @import 'src/app/design/material/essentials/media-queries';
 
 @mixin color($theme) {
-  .mat-stroked-button:not(.mat-button-disabled) {
+  $accent-palette: map.get($theme, 'accent');
+  $warn-palette: map.get($theme, 'warn');
+  $primary-palette: map.get($theme, 'primary');
+  $primary-contrast-500: mat.get-contrast-color-from-palette(
+    $primary-palette,
+    500
+  );
+  $accent-contrast-500: mat.get-contrast-color-from-palette(
+    $accent-palette,
+    500
+  );
+  $warn-contrast-500: mat.get-contrast-color-from-palette($warn-palette, 500);
+
+  //TODO: Contrast color does not work properly with mdc as of Angular Material 15.2. So this is a temporary workaround and should be removed as soon as possible
+  .mat-mdc-unelevated-button.mat-primary:not(.mdc-button:disabled) {
+    color: $primary-contrast-500;
+  }
+
+  .mat-mdc-unelevated-button.mat-accent:not(.mdc-button:disabled) {
+    color: $accent-contrast-500;
+  }
+
+  .mat-mdc-raised-button.mat-primary:not(.mdc-button:disabled) {
+    color: $accent-contrast-500;
+  }
+
+  .mat-mdc-raised-button.mat-accent:not(.mdc-button:disabled) {
+    color: $accent-contrast-500;
+  }
+
+  .mat-mdc-raised-button.mat-warn:not(.mdc-button:disabled) {
+    color: $warn-contrast-500;
+  }
+
+  .mat-mdc-raised-button.mat-warn:not(.mdc-button:disabled) {
+    color: $warn-contrast-500;
+  }
+
+  .mat-mdc-outlined-button:not(.mdc-button:disabled) {
     border-color: currentColor;
   }
 }
 
 @mixin layout() {
-  .mat-flat-button,
-  .mat-stroked-button {
+  .mat-mdc-unelevated-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-outlined-button {
+    height: auto;
     border-radius: $btn-small-border-radius;
     border-width: $btn-small-border-widht;
     padding-top: $btn-small-padding-top;
@@ -25,6 +65,7 @@
     }
 
     @media #{$medium-and-up} {
+      height: auto;
       border-radius: $btn-medium-border-radius;
       border-width: $btn-medium-border-widht;
       padding-top: $btn-medium-padding-top;
@@ -41,6 +82,7 @@
     }
 
     &.small {
+      height: auto;
       border-radius: $btn-small-border-radius;
       border-width: $btn-small-border-widht;
       padding-top: $btn-small-padding-top;
@@ -57,6 +99,7 @@
     }
 
     &.medium {
+      height: auto;
       border-radius: $btn-medium-border-radius;
       border-width: $btn-medium-border-widht;
       padding-top: $btn-medium-padding-top;
@@ -73,6 +116,7 @@
     }
 
     &.large {
+      height: auto;
       border-radius: $btn-large-border-radius;
       border-width: $btn-large-border-widht;
       padding-top: $btn-large-padding-top;
@@ -90,6 +134,7 @@
 
     &.text {
       border: none;
+      height: auto;
       padding-top: $btn-text-small-padding-top;
       padding-bottom: $btn-text-small-padding-bottom;
       padding-left: $btn-text-small-padding-left;
@@ -125,8 +170,7 @@
     }
 
     .mat-icon {
-      height: 1em;
-      width: 1em;
+      display: inline-block;
       padding-right: 0.5em;
     }
   }

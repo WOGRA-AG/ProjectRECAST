@@ -24,6 +24,20 @@
             "ignoreUrls": true
           }
         ],
+        "no-empty-function": ["error", { "allow": ["constructors"] }],
+        "no-useless-constructor": "off",
+        "@typescript-eslint/no-useless-constructor": "error",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "vars": "all",
+            "args": "after-used",
+            "argsIgnorePattern": "^_\\d*"
+          }
+        ],
+        "@typescript-eslint/explicit-function-return-type": "error",
+        "@typescript-eslint/no-inferrable-types": "error",
         "no-underscore-dangle": 0,
         "@typescript-eslint/no-non-null-assertion": 0,
         "@typescript-eslint/member-ordering": [
@@ -71,6 +85,34 @@
             "checkComplete": true,
             "checkDecorators": ["Component"],
             "checkDestroy": true
+          }
+        ],
+        "@typescript-eslint/explicit-member-accessibility": [
+          "error",
+          {
+            "accessibility": "explicit",
+            "overrides": {
+              "accessors": "off",
+              "constructors": "no-public",
+              "methods": "explicit",
+              "properties": "off",
+              "parameterProperties": "explicit"
+            }
+          }
+        ],
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            "selector": "classProperty",
+            "modifiers": ["private"],
+            "format": ["camelCase"],
+            "leadingUnderscore": "require"
+          },
+          {
+            "selector": "variable",
+            "types": ["boolean"],
+            "format": ["PascalCase"],
+            "prefix": ["is", "should", "has", "can", "did", "will"]
           }
         ]
       }

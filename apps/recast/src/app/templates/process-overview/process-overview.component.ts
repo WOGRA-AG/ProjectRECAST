@@ -11,7 +11,6 @@ import {
   Observable,
   Subject,
   takeUntil,
-  tap,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
@@ -53,10 +52,11 @@ export class ProcessOverviewComponent implements OnDestroy {
     this.processId$
       .pipe(
         concatMap(id => this.processService.processById$(id)),
+        filter(process => !!process),
         takeUntil(this._destroy$)
       )
       .subscribe(process => {
-        this.title = process.name!;
+        this.title = process?.name!;
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },
           { label: this.title },
@@ -94,7 +94,7 @@ export class ProcessOverviewComponent implements OnDestroy {
     );
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
@@ -119,7 +119,7 @@ export class ProcessOverviewComponent implements OnDestroy {
   }
 
   public navigateToCreateElement(): void {
-    this.router.navigate(['./step/' + this.currentStepId + '/element'], {
+    this.router.navigate([`./step/${this.steps[0].id}/element`], {
       relativeTo: this.activatedRoute,
     });
   }
@@ -140,6 +140,7 @@ export class ProcessOverviewComponent implements OnDestroy {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: { title: $localize`:@@dialog.delete_element:Delete Element?` },
+        autoFocus: false,
       })
       .afterClosed()
       .pipe(

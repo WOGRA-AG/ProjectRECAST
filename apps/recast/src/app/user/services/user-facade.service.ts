@@ -58,7 +58,7 @@ export class UserFacadeService {
     return this._currentProfile$;
   }
 
-  saveProfile(profile: Profile): Observable<PostgrestError> {
+  public saveProfile(profile: Profile): Observable<PostgrestError> {
     const update = {
       ...profile,
       updatedAt: new Date(),
@@ -69,7 +69,7 @@ export class UserFacadeService {
     return from(upsert).pipe(map(({ error }) => error!));
   }
 
-  signIn(): Observable<AuthError> {
+  public signIn(): Observable<AuthError> {
     const signIn = this._supabaseClient.auth.signInWithOAuth({
       provider: 'keycloak',
       options: { redirectTo: window.location.origin },
@@ -77,7 +77,7 @@ export class UserFacadeService {
     return from(signIn).pipe(map(({ error }) => error!));
   }
 
-  signOut(): Observable<AuthError | undefined> {
+  public signOut(): Observable<AuthError | undefined> {
     const signout = this._supabaseClient.auth.signOut();
     return from(signout).pipe(
       map(({ error }) => {

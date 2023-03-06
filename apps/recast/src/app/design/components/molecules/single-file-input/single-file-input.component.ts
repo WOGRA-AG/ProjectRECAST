@@ -1,4 +1,3 @@
-/* eslint-disable  @typescript-eslint/member-ordering*/
 import {
   Component,
   EventEmitter,
@@ -29,19 +28,19 @@ import { coerceBooleanProperty } from '@angular/cdk/coercion';
 export class SingleFileInputComponent
   implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy
 {
-  static nextId = 0;
+  @HostBinding()
+  id = `app-single-file-input-${SingleFileInputComponent._nextId++}`;
   // eslint-disable-next-line  @angular-eslint/no-input-rename
   @Input('aria-describedby') ariaDescribedBy = '';
   @Output() cancelUpload: EventEmitter<null> = new EventEmitter<null>();
 
-  stateChanges: Subject<void> = new Subject<void>();
-  focused = false;
-  touched = false;
-  controlType = 'single-file-input';
-  @HostBinding()
-  id = `app-single-file-input-${SingleFileInputComponent.nextId++}`;
+  public stateChanges: Subject<void> = new Subject<void>();
+  public focused = false;
+  public touched = false;
+  public controlType = 'single-file-input';
 
-  onTouch: any;
+  public onTouch: any;
+  private static _nextId = 0;
   private _placeholder = '';
   private _value: File | null = null;
   private _onChange: any;
@@ -86,12 +85,12 @@ export class SingleFileInputComponent
   }
 
   @HostBinding('class.floating')
-  get shouldLabelFloat() {
+  get shouldLabelFloat(): boolean {
     return this.focused || !this.empty;
   }
 
   @Input()
-  get required() {
+  get required(): boolean {
     return this._required;
   }
   set required(req) {
@@ -108,7 +107,7 @@ export class SingleFileInputComponent
     this.stateChanges.next();
   }
 
-  get empty() {
+  get empty(): boolean {
     return !this.value;
   }
 
@@ -120,64 +119,40 @@ export class SingleFileInputComponent
     return this.ngControl.control as FormControl;
   }
 
-  onFocusIn(event: FocusEvent) {
-    if (!this.focused) {
-      this.focused = true;
-      this.stateChanges.next();
-    }
-  }
-
-  onFocusOut(event: FocusEvent) {
-    if (
-      !this._elementRef.nativeElement.contains(event.relatedTarget as Element)
-    ) {
-      this.touched = true;
-      this.focused = false;
-      this.onTouch();
-      this.stateChanges.next();
-    }
-  }
-
-  setDescribedByIds(ids: string[]) {
+  public setDescribedByIds(ids: string[]): void {
     const controlElement = this._elementRef.nativeElement.querySelector(
       '.single-file-input-container'
     )!;
     controlElement.setAttribute('aria-describedby', ids.join(' '));
   }
 
-  onContainerClick(event: MouseEvent) {
+  public onContainerClick(event: MouseEvent): void {
     if ((event.target as Element).tagName.toLowerCase() !== 'input') {
       this._elementRef.nativeElement.querySelector('input').focus();
     }
   }
 
-  writeValue(val: File | null): void {
+  public writeValue(val: File | null): void {
     this.value = val;
   }
-  registerOnChange(fn: any): void {
+  public registerOnChange(fn: any): void {
     this._onChange = fn;
   }
-  registerOnTouched(fn: any): void {
+  public registerOnTouched(fn: any): void {
     this.onTouch = fn;
   }
 
-  changeFile(event: Event) {
+  public changeFile(event: Event): void {
     const element = event.currentTarget as HTMLInputElement;
     const fileList: FileList | null = element.files;
     if (!fileList) {
       return;
     }
     this.value = fileList[0];
-    if (this._onChange) {
-      this._onChange(this.value);
-    }
-    if (this.onTouch) {
-      this.onTouch();
-    }
-    this.stateChanges.next();
+    this.emitDroppedFile(fileList);
   }
 
-  uploadDroppedFile(files: File[]) {
+  public emitDroppedFile(files: FileList): void {
     if (!files) {
       return;
     }
@@ -191,7 +166,7 @@ export class SingleFileInputComponent
     this.stateChanges.next();
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.stateChanges.complete();
   }
 }

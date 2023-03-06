@@ -24,6 +24,7 @@
   "err.file.empty": "Die angegebene Datei scheint kein valides YAML Format zu besitzen",
 
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
+  "placeholder.select_element": "Bauteil wählen",
 
   "info.no_data_text": "Noch keine Bauteile vorhanden",
 
@@ -33,5 +34,6 @@
   "header.view_element": "Bauteil ansehen",
 
   "dialog.delete_process": "Prozess und alle dazugehörigen Daten löschen?",
-  "dialog.delete_element": "Bauteil und alle dazugehörigen Daten löschen?"
+  "dialog.delete_element": "Bauteil und alle dazugehörigen Daten löschen?",
+  "dialog.submit_element": "Element speichern und sperren?"
 }

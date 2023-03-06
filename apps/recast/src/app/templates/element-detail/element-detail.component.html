@@ -16,12 +16,41 @@
     (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
       <div class="input-wrapper" *ngFor="let prop of stepProperties">
-        <app-input-field
-          class="input"
-          [label]="prop.name!"
-          [formControlName]="prop.id!"
-          icon="bar_chart">
-        </app-input-field>
+        <ng-container [ngSwitch]="prop.type?.toLowerCase()">
+          <app-input-field
+            *ngSwitchCase="'text'"
+            class="input"
+            [label]="prop.name!"
+            [formControlName]="prop.id!"
+            icon="bar_chart">
+          </app-input-field>
+          <app-input-field
+            *ngSwitchCase="'number'"
+            class="input"
+            type="number"
+            [label]="prop.name!"
+            [formControlName]="prop.id!">
+          </app-input-field>
+          <app-file-input-field
+            *ngSwitchCase="'file'"
+            [id]="prop.id!"
+            [label]="prop.name!"></app-file-input-field>
+          <div *ngSwitchDefault>
+            <app-select-field [formControlName]="prop.id!" [label]="prop.name!">
+              <mat-option
+                disabled
+                [value]="''"
+                i18n="@@placeholder.select_element"
+                >Select element</mat-option
+              >
+              <mat-option
+                *ngFor="let e of elementsByReference(prop.type) | async"
+                [value]="'' + e.id">
+                {{ e.name }}
+              </mat-option>
+            </app-select-field>
+          </div>
+        </ng-container>
       </div>
     </div>
     <div class="actions">

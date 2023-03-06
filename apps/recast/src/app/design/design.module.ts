@@ -22,6 +22,8 @@ import { ButtonFilledComponent } from './components/molecules/button-filled/butt
 import { ButtonUnfilledComponent } from './components/molecules/button-unfilled/button-unfilled.component';
 import { StepperComponent } from './components/molecules/stepper/stepper.component';
 import { ConfirmDialogComponent } from './components/organisms/confirm-dialog/confirm-dialog.component';
+import { SelectFieldComponent } from './components/molecules/select-field/select-field.component';
+import { FileInputFieldComponent } from './components/molecules/file-input-field/file-input-field.component';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -45,8 +47,15 @@ const COMPONENTS = [
 ];
 
 @NgModule({
-  declarations: [...COMPONENTS],
-  exports: [...COMPONENTS, MaterialModule, FormsModule, ReactiveFormsModule],
+  declarations: [...COMPONENTS, SelectFieldComponent, FileInputFieldComponent],
+  exports: [
+    ...COMPONENTS,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SelectFieldComponent,
+    FileInputFieldComponent,
+  ],
   imports: [
     CommonModule,
     MaterialModule,

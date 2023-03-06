@@ -7,7 +7,7 @@ import {
   map,
 } from 'rxjs';
 import { Document, parseAllDocuments } from 'yaml';
-import { Process } from '../../../../build/openapi/recast';
+import { Process, StepProperty } from '../../../../build/openapi/recast';
 
 export const groupBy = <
   T extends Include<any, string | number | symbol>,
@@ -58,3 +58,10 @@ export const yamlToProcess$ = (file: File): Observable<Process[]> =>
 
 export const elementComparator = <T>(a: T, b: T): boolean =>
   JSON.stringify(a) === JSON.stringify(b);
+
+export const isReference = (stepProp: StepProperty): boolean =>
+  !(
+    stepProp?.type === 'text' ||
+    stepProp.type === 'number' ||
+    stepProp.type === 'file'
+  );
