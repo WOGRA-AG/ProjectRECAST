@@ -34,5 +34,6 @@
   "header.view_element": "View Element",
 
   "dialog.delete_process": "Delete process and all corresponding data?",
-  "dialog.delete_element": "Delete Element and all corresponding data?"
+  "dialog.delete_element": "Delete Element and all corresponding data?",
+  "dialog.submit_element": "Save and lock element?"
 }
