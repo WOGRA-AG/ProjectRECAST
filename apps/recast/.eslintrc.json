@@ -93,9 +93,26 @@
             "accessibility": "explicit",
             "overrides": {
               "accessors": "off",
+              "constructors": "no-public",
+              "methods": "explicit",
               "properties": "off",
-              "constructors": "non-public"
+              "parameterProperties": "explicit"
             }
+          }
+        ],
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            "selector": "classProperty",
+            "modifiers": ["private"],
+            "format": ["camelCase"],
+            "leadingUnderscore": "require"
+          },
+          {
+            "selector": "variable",
+            "types": ["boolean"],
+            "format": ["PascalCase"],
+            "prefix": ["is", "should", "has", "can", "did", "will"]
           }
         ]
       }

@@ -9,7 +9,7 @@ $_ripple-opacity: 0.1;
   $config: mat.get-color-config($config-or-theme);
 
   @each $variant, $variant-palette in $variants {
-    &.mat-#{$variant} .mat-button-focus-overlay {
+    &.mat-#{$variant} .mat-mdc-focus-indicator {
       background-color: mat.get-color-from-palette($variant-palette);
     }
   }
@@ -42,7 +42,7 @@ $_ripple-opacity: 0.1;
     }
 
     &.mat-#{$variant} {
-      &.mat-button-disabled {
+      &.mat-mdc-button:disabled {
         $palette: if($property == 'color', $foreground, $background);
         #{$property}: mat.get-color-from-palette($palette, disabled-button);
       }
@@ -55,17 +55,17 @@ $_ripple-opacity: 0.1;
   $foreground: map.get($config, foreground);
   $background: map.get($config, background);
 
-  .mat-button,
-  .mat-icon-button,
-  .mat-stroked-button {
+  .mat-mdc-button,
+  .mat-mdc-icon-button,
+  .mat-mdc-outlined-button {
     @include _theme-property($config, 'color', text, $variants);
-    @include _focus-overlay-color($config, $variants);
+    @include _ripple-color($config, transparent, $_ripple-opacity, $variants);
   }
 
-  .mat-flat-button,
-  .mat-raised-button,
-  .mat-fab,
-  .mat-mini-fab {
+  .mat-mdc-unelevated-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-fab,
+  .mat-mdc-mini-fab {
     @include _theme-property($config, 'color', default-contrast, $variants);
     @include _theme-property($config, 'background-color', default, $variants);
     @include _ripple-color(

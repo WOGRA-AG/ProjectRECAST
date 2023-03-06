@@ -119,7 +119,7 @@ export class ProcessOverviewComponent implements OnDestroy {
   }
 
   public navigateToCreateElement(): void {
-    this.router.navigate(['./step/' + this.currentStepId + '/element'], {
+    this.router.navigate([`./step/${this.steps[0].id}/element`], {
       relativeTo: this.activatedRoute,
     });
   }
@@ -140,6 +140,7 @@ export class ProcessOverviewComponent implements OnDestroy {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: { title: $localize`:@@dialog.delete_element:Delete Element?` },
+        autoFocus: false,
       })
       .afterClosed()
       .pipe(

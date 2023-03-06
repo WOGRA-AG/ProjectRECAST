@@ -116,16 +116,16 @@ export class ElementViewComponent implements OnDestroy {
 
   private initFormGroup(): void {
     this.updateControl('name', this.element?.name);
-    for (const prop of this.element?.elementProperties!) {
+    this.element?.elementProperties?.forEach(prop => {
       let value: string = prop.value || '';
       const stepProp = this.stepPropertyService.stepPropertyById(
         prop.stepPropertyId || 0
       );
       if (isReference(stepProp) && value) {
-        value = this.elementService.elementById(+value).name || '';
+        value = this.elementService.elementById(+value)?.name || '';
       }
       this.updateControl(`${prop.id}`, value);
-    }
+    });
   }
 
   private updateControl(name: string, value: any): void {

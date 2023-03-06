@@ -10,6 +10,7 @@ import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { map, Observable, startWith } from 'rxjs';
 import { MatOption } from '@angular/material/core';
+import { MatFormFieldAppearance } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-select-field',
@@ -22,7 +23,7 @@ export class SelectFieldComponent implements ControlValueAccessor {
 
   @Input() label = '';
   @Input() errMsg = '';
-  @Input() appearance: 'outline' | 'fill' | 'legacy' | 'standard' = 'outline';
+  @Input() appearance: MatFormFieldAppearance = 'outline';
   @Input() icon = '';
 
   public onTouch: any;
