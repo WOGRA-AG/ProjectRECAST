@@ -4,14 +4,15 @@
       {{ data.title }}
     </h4>
   </div>
-  <mat-dialog-content class="mat-body-2 content">
+  <div mat-dialog-content class="mat-body-2 content">
     {{ data.content }}
-  </mat-dialog-content>
+  </div>
   <mat-dialog-actions>
-    <app-button-unfilled mat-dialog-close i18n="@@action.cancel">
+    <app-button-unfilled [mat-dialog-close]="false" i18n="@@action.cancel">
       Cancel
     </app-button-unfilled>
     <app-submit-button
+      cdkFocusInitial
       [mat-dialog-close]="true"
       (click)="onConfirmClicked()"
       i18n="@@action.confirm">
