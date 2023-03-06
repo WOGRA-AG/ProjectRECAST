@@ -70,7 +70,7 @@ export class ElementDetailComponent implements OnDestroy {
           this._currentStep = step;
           this.currentIndex = this._steps.indexOf(step);
           this.isLastStep = this._steps.length - 1 === this.currentIndex;
-          this.stepProperties = step.stepProperties!;
+          this.stepProperties = step.stepProperties || [];
         })
       )
       .subscribe(([process, element, _, _1]) => {
