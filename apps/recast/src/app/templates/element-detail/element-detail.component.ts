@@ -105,13 +105,14 @@ export class ElementDetailComponent implements OnDestroy {
 
   public onSubmitClicked(): void {
     for (const prop of this.stepProperties) {
+      console.log('property', prop.name);
       const value = this.propertiesForm.get(`${prop.id}`)?.value!;
       this.updateElementProperty(prop, value);
       if (!this.isLastStep) {
         const nextStep = this._steps[this.currentIndex + 1];
         this.updateElement(this.element?.id!, nextStep.id!);
         this.navigateStep(nextStep);
-        return;
+        continue;
       }
       this.updateElement(this.element?.id!, null);
       this.navigateBack();
