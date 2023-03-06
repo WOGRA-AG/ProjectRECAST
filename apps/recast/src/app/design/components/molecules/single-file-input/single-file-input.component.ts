@@ -1,4 +1,3 @@
-/* eslint-disable  @typescript-eslint/member-ordering*/
 import {
   Component,
   EventEmitter,
@@ -29,19 +28,19 @@ import { coerceBooleanProperty } from '@angular/cdk/coercion';
 export class SingleFileInputComponent
   implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy
 {
+  @HostBinding()
+  id = `app-single-file-input-${SingleFileInputComponent._nextId++}`;
   // eslint-disable-next-line  @angular-eslint/no-input-rename
   @Input('aria-describedby') ariaDescribedBy = '';
   @Output() cancelUpload: EventEmitter<null> = new EventEmitter<null>();
-  static nextId = 0;
 
-  stateChanges: Subject<void> = new Subject<void>();
-  focused = false;
-  touched = false;
-  controlType = 'single-file-input';
-  @HostBinding()
-  id = `app-single-file-input-${SingleFileInputComponent.nextId++}`;
+  public stateChanges: Subject<void> = new Subject<void>();
+  public focused = false;
+  public touched = false;
+  public controlType = 'single-file-input';
 
-  onTouch: any;
+  public onTouch: any;
+  private static _nextId = 0;
   private _placeholder = '';
   private _value: File | null = null;
   private _onChange: any;
