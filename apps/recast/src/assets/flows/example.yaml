@@ -13,3 +13,4 @@ steps:
       - name: Bild
         description: Ein Bild des Ballons
         type: file
+  - name: empty step

@@ -70,7 +70,7 @@ export class ElementDetailComponent implements OnDestroy {
           this._currentStep = step;
           this.currentIndex = this._steps.indexOf(step);
           this.isLastStep = this._steps.length - 1 === this.currentIndex;
-          this.stepProperties = step.stepProperties!;
+          this.stepProperties = step.stepProperties || [];
         })
       )
       .subscribe(([process, element, _, _1]) => {
@@ -111,6 +111,26 @@ export class ElementDetailComponent implements OnDestroy {
       const value = this.propertiesForm.get(`${prop.id}`)?.value!;
       this.updateElementProperty(prop, value);
     }
+    this.navigateForward();
+  }
+
+  public stepChanged(event: number): void {
+    if (event >= this._steps.indexOf(this._currentStep!)) {
+      return;
+    }
+    this.navigateStep(this._steps[event]);
+  }
+
+  public elementsByReference(
+    reference: string | undefined
+  ): Observable<Element[]> {
+    if (!reference) {
+      return of([]);
+    }
+    return this.elementService.elementsByProcessName$(reference);
+  }
+
+  private navigateForward(): void {
     if (!this.isLastStep) {
       const nextStep = this._steps[this.currentIndex + 1];
       this.updateElementCurrentStep(this.element?.id!, nextStep.id!);
@@ -134,22 +154,6 @@ export class ElementDetailComponent implements OnDestroy {
         })
       )
       .subscribe();
-  }
-
-  public stepChanged(event: number): void {
-    if (event >= this._steps.indexOf(this._currentStep!)) {
-      return;
-    }
-    this.navigateStep(this._steps[event]);
-  }
-
-  public elementsByReference(
-    reference: string | undefined
-  ): Observable<Element[]> {
-    if (!reference) {
-      return of([]);
-    }
-    return this.elementService.elementsByProcessName$(reference);
   }
 
   private step$(): Observable<Step> {
