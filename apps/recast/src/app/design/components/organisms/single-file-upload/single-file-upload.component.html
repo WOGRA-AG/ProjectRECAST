@@ -5,11 +5,11 @@
   class="form-widget"
   [formGroup]="uploadFileForm">
   <mat-form-field appearance="fill">
-    <app-single-file-input
+    <app-drag-and-drop-file-input
       class="file-input"
       formControlName="file"
       [placeholder]="placeholder">
-    </app-single-file-input>
+    </app-drag-and-drop-file-input>
     <div class="actions">
       <ng-content select="[actions]"></ng-content>
     </div>

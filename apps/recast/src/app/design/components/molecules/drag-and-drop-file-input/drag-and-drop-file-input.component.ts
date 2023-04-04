@@ -18,18 +18,21 @@ import { Subject } from 'rxjs';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 
 @Component({
-  selector: 'app-single-file-input',
-  templateUrl: './single-file-input.component.html',
-  styleUrls: ['./single-file-input.component.scss'],
+  selector: 'app-drag-and-drop-file-input',
+  templateUrl: './drag-and-drop-file-input.component.html',
+  styleUrls: ['./drag-and-drop-file-input.component.scss'],
   providers: [
-    { provide: MatFormFieldControl, useExisting: SingleFileInputComponent },
+    {
+      provide: MatFormFieldControl,
+      useExisting: DragAndDropFileInputComponent,
+    },
   ],
 })
-export class SingleFileInputComponent
+export class DragAndDropFileInputComponent
   implements ControlValueAccessor, MatFormFieldControl<File | null>, OnDestroy
 {
   @HostBinding()
-  id = `app-single-file-input-${SingleFileInputComponent._nextId++}`;
+  id = `app-drag-and-drop-file-input-${DragAndDropFileInputComponent._nextId++}`;
   // eslint-disable-next-line  @angular-eslint/no-input-rename
   @Input('aria-describedby') ariaDescribedBy = '';
   @Output() cancelUpload: EventEmitter<null> = new EventEmitter<null>();
@@ -37,7 +40,7 @@ export class SingleFileInputComponent
   public stateChanges: Subject<void> = new Subject<void>();
   public focused = false;
   public touched = false;
-  public controlType = 'single-file-input';
+  public controlType = 'drag-and-drop-file-input';
 
   public onTouch: any;
   private static _nextId = 0;
@@ -121,7 +124,7 @@ export class SingleFileInputComponent
 
   public setDescribedByIds(ids: string[]): void {
     const controlElement = this._elementRef.nativeElement.querySelector(
-      '.single-file-input-container'
+      '.drag-and-drop-file-input-container'
     )!;
     controlElement.setAttribute('aria-describedby', ids.join(' '));
   }

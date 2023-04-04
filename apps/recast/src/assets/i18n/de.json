@@ -10,6 +10,7 @@
   "action.finished": "Fertig",
   "action.cancel": "Abbrechen",
   "action.confirm": "Bestätigen",
+  "action.upload": "Upload",
 
   "label.username": "Username",
   "label.email": "Email",
