@@ -33,7 +33,7 @@
           </app-input-field>
           <app-file-input-field
             *ngSwitchCase="'file'"
-            [id]="prop.id!"
+            [formControlName]="prop.id!"
             [label]="prop.name!"></app-file-input-field>
           <div *ngSwitchDefault>
             <app-select-field [formControlName]="prop.id!" [label]="prop.name!">

@@ -13,7 +13,8 @@
 @use 'button_variants.scss' as button_variants;
 @use 'icon.scss' as icon;
 @use 'icon_variants' as icon_variants;
-@use 'single-file-input.scss' as single_file_input;
+@use 'drag_and_drop_file_input' as single_file_input;
+@use 'file_input' as file_input;
 
 @mixin theme($theme, $typography-config, $variants) {
   @include button.theme($theme, $typography-config, $variants);
@@ -32,4 +33,5 @@
   @include icon.theme($theme, $typography-config, $variants);
   @include icon_variants.color($theme, $variants);
   @include single_file_input.theme($theme, $typography-config, $variants);
+  @include file_input.theme($theme, $typography-config, $variants);
 }

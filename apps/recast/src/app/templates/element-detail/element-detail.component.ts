@@ -22,6 +22,8 @@ import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
 import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { strToFile, fileToStr } from '../../shared/util/common-utils';
+import TypeEnum = StepProperty.TypeEnum;
 
 @Component({
   selector: 'app-element-detail',
@@ -82,7 +84,7 @@ export class ElementDetailComponent implements OnDestroy {
           const value: string = !!elemProp
             ? elemProp.value || ''
             : p.defaultValue || '';
-          this.updateControl(`${p.id}`, value);
+          this.updateControl(`${p.id}`, value, p.type!);
         });
       });
   }
@@ -106,9 +108,12 @@ export class ElementDetailComponent implements OnDestroy {
     this.router.navigate(['../../../..'], { relativeTo: this.route });
   }
 
-  public onSubmitClicked(): void {
+  public async onSubmitClicked(): Promise<void> {
     for (const prop of this.stepProperties) {
-      const value = this.propertiesForm.get(`${prop.id}`)?.value!;
+      let value: any = this.propertiesForm.get(`${prop.id}`)?.value;
+      if (prop.type === TypeEnum.File && value) {
+        value = await fileToStr(value);
+      }
       this.updateElementProperty(prop, value);
     }
     this.navigateForward();
@@ -249,7 +254,14 @@ export class ElementDetailComponent implements OnDestroy {
     ];
   }
 
-  private updateControl(name: string, value: any): void {
+  private async updateControl(
+    name: string,
+    value: any,
+    type: TypeEnum
+  ): Promise<void> {
+    if (value && type === TypeEnum.File) {
+      value = await strToFile(value);
+    }
     const control = this.propertiesForm.get(name);
     if (!control) {
       this.propertiesForm.addControl(name, new FormControl(value));
