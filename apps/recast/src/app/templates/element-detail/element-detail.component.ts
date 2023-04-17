@@ -1,7 +1,13 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Element, Step, StepProperty, Process } from 'build/openapi/recast';
+import {
+  Element,
+  Step,
+  StepProperty,
+  Process,
+  ElementProperty,
+} from 'build/openapi/recast';
 import {
   catchError,
   filter,
@@ -16,7 +22,6 @@ import {
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
-import { ElementPropertyService } from 'src/app/services/element-property.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
@@ -24,6 +29,8 @@ import { ConfirmDialogComponent } from '../../design/components/organisms/confir
 import { MatDialog } from '@angular/material/dialog';
 import { strToFile, fileToStr } from '../../shared/util/common-utils';
 import TypeEnum = StepProperty.TypeEnum;
+import { StorageService } from 'src/app/services/storage.service';
+import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 
 @Component({
   selector: 'app-element-detail',
@@ -52,7 +59,7 @@ export class ElementDetailComponent implements OnDestroy {
     private stepService: StepFacadeService,
     private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
-    private elementPropertyService: ElementPropertyService,
+    private storageService: StorageService,
     private formBuilder: FormBuilder,
     private router: Router,
     private dialog: MatDialog
@@ -114,7 +121,12 @@ export class ElementDetailComponent implements OnDestroy {
       if (prop.type === TypeEnum.File && value) {
         value = await fileToStr(value);
       }
-      this.updateElementProperty(prop, value);
+      this.storageService.updateValue(
+        this.element?.id,
+        prop,
+        value,
+        StorageBackendEnum.Postgres
+      );
     }
     this.navigateForward();
   }
@@ -206,25 +218,6 @@ export class ElementDetailComponent implements OnDestroy {
             this.element?.id
         )
       );
-  }
-
-  private updateElementProperty(property: StepProperty, value: string): void {
-    this.elementPropertyService
-      .saveElementProp$(
-        {
-          value,
-          stepPropertyId: property.id,
-        },
-        this.element?.id
-      )
-      .pipe(
-        catchError(err => {
-          console.error(err);
-          return of(undefined);
-        }),
-        takeUntil(this._destroy$)
-      )
-      .subscribe();
   }
 
   private updateElementCurrentStep(id: number, stepId: number | null): void {
