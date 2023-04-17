@@ -14,6 +14,7 @@ import {
 } from 'rxjs';
 import {
   Element,
+  ElementProperty,
   Process,
   StepProperty,
 } from '../../../../build/openapi/recast';
@@ -24,6 +25,8 @@ import { isReference, strToFile } from '../../shared/util/common-utils';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { StepPropertyService } from '../../services/step-property.service';
 import TypeEnum = StepProperty.TypeEnum;
+import StorageBackendEnum = ElementProperty.StorageBackendEnum;
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-element-view',
@@ -39,6 +42,7 @@ export class ElementViewComponent implements OnDestroy {
   private readonly _destroy$: Subject<void> = new Subject<void>();
   private _processId$: Observable<number> = this.processId$();
   private _elementId$: Observable<number> = this.elementId$();
+  private _storageBackend: StorageBackendEnum = StorageBackendEnum.Postgres;
 
   constructor(
     private readonly router: Router,
@@ -46,6 +50,7 @@ export class ElementViewComponent implements OnDestroy {
     private readonly elementService: ElementFacadeService,
     private readonly processService: ProcessFacadeService,
     private readonly stepPropertyService: StepPropertyService,
+    private storageService: StorageService,
     private readonly formBuilder: FormBuilder
   ) {
     const process$: Observable<Process | undefined> = this._processId$.pipe(
@@ -118,16 +123,19 @@ export class ElementViewComponent implements OnDestroy {
   private async initFormGroup(): Promise<void> {
     this.updateControl('name', this.element?.name);
     for (const prop of this.element?.elementProperties!) {
-      let value: string = prop.value || '';
+      let value: string = this.storageService.loadValue(
+        prop.value,
+        this._storageBackend
+      );
       const stepProp = this.stepPropertyService.stepPropertyById(
-        prop.stepPropertyId || 0
+        prop.stepPropertyId ?? 0
       );
       if (value && stepProp.type === TypeEnum.File) {
         const file = await strToFile(value);
-        value = file?.name || '';
+        value = file?.name ?? '';
       }
       if (isReference(stepProp) && value) {
-        value = this.elementService.elementById(+value)?.name || '';
+        value = this.elementService.elementById(+value)?.name ?? '';
       }
       this.updateControl(`${prop.id}`, value);
     }

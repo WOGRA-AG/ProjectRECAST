@@ -51,7 +51,8 @@ export class ElementDetailComponent implements OnDestroy {
   private _steps$: Observable<Step[]> = this.steps$();
   private _process$: Observable<Process | undefined> = this.process$();
   private _element$: Observable<Element> = this.element$();
-  private _step$ = this.step$();
+  private _step$: Observable<Step> = this.step$();
+  private _storageBackend: StorageBackendEnum = StorageBackendEnum.Postgres;
 
   constructor(
     private route: ActivatedRoute,
@@ -89,8 +90,11 @@ export class ElementDetailComponent implements OnDestroy {
             e => e.stepPropertyId === p.id
           );
           const value: string = !!elemProp
-            ? elemProp.value || ''
-            : p.defaultValue || '';
+            ? this.storageService.loadValue(
+                elemProp.value,
+                this._storageBackend
+              )
+            : p.defaultValue ?? '';
           this.updateControl(`${p.id}`, value, p.type!);
         });
       });
@@ -125,7 +129,7 @@ export class ElementDetailComponent implements OnDestroy {
         this.element?.id,
         prop,
         value,
-        StorageBackendEnum.Postgres
+        this._storageBackend
       );
     }
     this.navigateForward();

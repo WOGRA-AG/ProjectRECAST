@@ -18,8 +18,8 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
     return StorageBackendEnum.Postgres;
   }
 
-  public loadValue(): string {
-    throw new Error('Not Implemented Yet');
+  public loadValue(val: string | undefined): string {
+    return val ?? '';
   }
 
   public saveValue(

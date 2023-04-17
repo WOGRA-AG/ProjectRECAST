@@ -7,7 +7,7 @@ import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 
 export interface StorageAdapterInterface {
   getType(): StorageBackendEnum;
-  loadValue(): string;
+  loadValue(val: string | undefined): string;
   saveValue(
     elementId: number | undefined,
     property: StepProperty,

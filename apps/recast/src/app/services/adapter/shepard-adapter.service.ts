@@ -15,7 +15,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
     return StorageBackendEnum.Shepard;
   }
 
-  public loadValue(): string {
+  public loadValue(_: string | undefined): string {
     throw new Error('Not Implemented Yet');
   }
 

@@ -12,6 +12,21 @@ export class StorageService {
     private readonly storageAdapters: StorageAdapterInterface[]
   ) {}
 
+  public loadValue(
+    val: string | undefined,
+    storageBackend: StorageBackendEnum
+  ): string {
+    const storageAdapter = this.storageAdapters.find(
+      adapter => adapter.getType() === storageBackend
+    );
+
+    if (!storageAdapter) {
+      throw new Error(`No such Storage Backend: ${storageBackend}`);
+    }
+
+    return storageAdapter.loadValue(val);
+  }
+
   public updateValue(
     elementId: number | undefined,
     property: StepProperty,

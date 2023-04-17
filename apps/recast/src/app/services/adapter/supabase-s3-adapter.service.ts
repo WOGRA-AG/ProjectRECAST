@@ -70,7 +70,7 @@ export class SupabaseS3Adapter implements StorageAdapterInterface {
     );
   }
 
-  public loadValue(): string {
+  public loadValue(_: string | undefined): string {
     throw new Error('Not Implemented Yet');
   }
 
