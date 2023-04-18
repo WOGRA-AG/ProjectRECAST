@@ -7,11 +7,12 @@ import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 
 export interface StorageAdapterInterface {
   getType(): StorageBackendEnum;
-  loadValue(val: string | undefined): string;
+  loadValue(val: string | undefined, type: TypeEnum): Promise<string>;
   saveValue(
     elementId: number | undefined,
     property: StepProperty,
     value: any,
-    type: TypeEnum
+    type: TypeEnum,
+    storageBackend: StorageBackendEnum
   ): void;
 }

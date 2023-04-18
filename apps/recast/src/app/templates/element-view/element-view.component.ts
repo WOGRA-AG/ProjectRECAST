@@ -21,10 +21,9 @@ import {
 import { ElementFacadeService } from '../../services/element-facade.service';
 import { ProcessFacadeService } from '../../services/process-facade.service';
 import { Breadcrumb } from '../../design/components/molecules/breadcrumb/breadcrumb.component';
-import { isReference, strToFile } from '../../shared/util/common-utils';
+import { isReference } from '../../shared/util/common-utils';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { StepPropertyService } from '../../services/step-property.service';
-import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import { StorageService } from '../../services/storage.service';
 
@@ -123,21 +122,18 @@ export class ElementViewComponent implements OnDestroy {
   private async initFormGroup(): Promise<void> {
     this.updateControl('name', this.element?.name);
     for (const prop of this.element?.elementProperties!) {
-      let value: string = this.storageService.loadValue(
-        prop.value,
-        this._storageBackend
-      );
       const stepProp = this.stepPropertyService.stepPropertyById(
         prop.stepPropertyId ?? 0
       );
-      if (value && stepProp.type === TypeEnum.File) {
-        const file = await strToFile(value);
-        value = file?.name ?? '';
-      }
-      if (isReference(stepProp) && value) {
-        value = this.elementService.elementById(+value)?.name ?? '';
-      }
-      this.updateControl(`${prop.id}`, value);
+      this.storageService
+        .loadValue(prop.value, stepProp.type!, this._storageBackend)
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(value => {
+          if (isReference(stepProp.type!)) {
+            value = this.elementService.elementById(+value)?.name!;
+          }
+          this.updateControl(`${prop.id}`, value);
+        });
     }
   }
 

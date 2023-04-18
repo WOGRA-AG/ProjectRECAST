@@ -15,7 +15,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
     return StorageBackendEnum.Shepard;
   }
 
-  public loadValue(_: string | undefined): string {
+  public async loadValue(_: string | undefined, _2: TypeEnum): Promise<string> {
     throw new Error('Not Implemented Yet');
   }
 
@@ -24,7 +24,8 @@ export class ShepardAdapter implements StorageAdapterInterface {
     elementId: number | undefined,
     property: StepProperty,
     value: any,
-    type: TypeEnum
+    type: TypeEnum,
+    storageBackend: StorageBackendEnum
   ): void {
     throw new Error('Not Implemented Yet');
   }

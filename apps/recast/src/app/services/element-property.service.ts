@@ -49,11 +49,8 @@ export class ElementPropertyService {
     return this._elementProperties$.getValue();
   }
 
-  public saveElementProp$(
-    prop: ElementProperty,
-    elementId: number | undefined
-  ): Observable<ElementProperty> {
-    return this.upsertElementProp$(prop, elementId);
+  public saveElementProp$(prop: ElementProperty): Observable<ElementProperty> {
+    return this.upsertElementProp$(prop);
   }
 
   public deleteElementProperty$(id: number): Observable<PostgrestError> {
@@ -76,13 +73,11 @@ export class ElementPropertyService {
   }
 
   private upsertElementProp$(
-    { id, value, stepPropertyId }: ElementProperty,
-    elementId: number | undefined
+    elementProperty: ElementProperty
   ): Observable<ElementProperty> {
-    const upsertProp = { id, value, stepPropertyId, elementId };
     const upsert = this._supabaseClient
       .from(Tables.elementProperties)
-      .upsert(snakeCase(upsertProp), {
+      .upsert(snakeCase(elementProperty), {
         onConflict: 'step_property_id, element_id',
       })
       .select();

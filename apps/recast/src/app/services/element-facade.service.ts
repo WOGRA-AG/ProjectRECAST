@@ -9,12 +9,12 @@ import {
   from,
   map,
   merge,
-  mergeAll,
   mergeMap,
   Observable,
   of,
   skip,
   Subject,
+  switchMap,
   toArray,
 } from 'rxjs';
 import { ElementProperty, Element } from '../../../build/openapi/recast';
@@ -46,7 +46,7 @@ export class ElementFacadeService {
     private readonly processService: ProcessFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
-      concatMap(() => this.loadElements$()),
+      switchMap(() => this.loadElements$()),
       catchError(() => of([]))
     );
     const elemPropChanges$ = elementPropertyService.elementProperties$.pipe(
@@ -57,11 +57,11 @@ export class ElementFacadeService {
         this.addPropertiesToElements(this._elements$.getValue(), key!, values)
       )
     );
-    merge(this.elementChanges$(), sessionChanges$, elemPropChanges$).subscribe(
-      properties => {
+    merge(this.elementChanges$(), sessionChanges$, elemPropChanges$)
+      .pipe(distinctUntilChanged(elementComparator))
+      .subscribe(properties => {
         this._elements$.next(properties);
-      }
-    );
+      });
   }
 
   get elements$(): Observable<Element[]> {
@@ -78,9 +78,10 @@ export class ElementFacadeService {
         const props = elem.elementProperties;
         elem = newElem;
         return (
-          props?.map(val =>
-            this.elementPropertyService.saveElementProp$(val, newElem.id)
-          ) || of([])
+          props?.map(val => {
+            val.elementId = elem.id;
+            return this.elementPropertyService.saveElementProp$(val);
+          }) || of([])
         );
       }),
       concatAll(),
@@ -105,8 +106,9 @@ export class ElementFacadeService {
 
   public elementById$(id: number): Observable<Element> {
     return this._elements$.pipe(
-      mergeAll(),
-      filter(elements => elements.id === id),
+      map(elements => elements.find(e => e.id === id)),
+      filter(Boolean),
+      filter(e => !!e.elementProperties),
       distinctUntilChanged(elementComparator)
     );
   }
@@ -187,9 +189,9 @@ export class ElementFacadeService {
                 state,
                 camelCase(payload.new),
                 props
-              ).subscribe(elements => {
-                changes$.next(elements);
-              });
+              )
+                .pipe(distinctUntilChanged(elementComparator))
+                .subscribe(elements => changes$.next(elements));
               break;
             case 'DELETE':
               const element: Element = payload.old;
@@ -234,6 +236,7 @@ export class ElementFacadeService {
   }
 
   private insertElement(state: Element[], element: Element): Element[] {
+    element.elementProperties = [];
     return state.concat(element);
   }
 
