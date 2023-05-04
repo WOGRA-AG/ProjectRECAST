@@ -31,7 +31,6 @@ import {
   switchMap,
   Observable,
   of,
-  take,
   tap,
 } from 'rxjs';
 import { elementComparator } from '../../shared/util/common-utils';
@@ -91,12 +90,10 @@ export class ShepardService {
     );
   }
 
-  public getCollectionByName$(
-    name: string
+  public getCollectionByProcessId$(
+    processId: number
   ): Observable<Collection | undefined> {
-    return this.collections$.pipe(
-      map(collections => collections.find(c => c.name === name))
-    );
+    return this.getCollectionByAttribute$('process_id', '' + processId);
   }
 
   public getFileContainerByName$(
@@ -209,39 +206,44 @@ export class ShepardService {
     return from(req).pipe(distinctUntilChanged(elementComparator));
   }
 
-  public getStructuredDataById$(
-    structuredDataId: string
-  ): Observable<StructuredDataPayload> {
-    return this._strucDataContainers.pipe(
-      map(sdc => sdc.find(s => s.name === this._structuredDataContainerName)),
-      switchMap(scd =>
-        this._structuredDataApi!.getStructuredData({
-          structureddataContainerId: scd?.id!,
-          oid: structuredDataId,
-        })
-      )
-    );
-  }
-
   public createDataObject$(
-    dataObjectName: string
+    dataObjectName: string,
+    processId: number,
+    elementId: number
   ): Observable<number | undefined> {
-    return this.getCollectionByName$(this._collectionName).pipe(
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       switchMap(collection =>
         this._dataObjectApi!.createDataObject({
           collectionId: collection.id!,
-          dataObject: { collectionId: collection.id!, name: dataObjectName },
+          dataObject: {
+            collectionId: collection.id!,
+            name: dataObjectName,
+            attributes: { element_id: '' + elementId },
+          },
         })
       ),
       map(dataObj => dataObj.id)
     );
   }
 
-  public getDataObjectByName$(
-    dataObjectName: string
+  public getDataObjectByElementId$(
+    elementId: number,
+    processId: number
   ): Observable<DataObject | undefined> {
-    return this.getCollectionByName$(this._collectionName).pipe(
+    console.log('getDataObjectByElementId$', elementId);
+    return this.getDataObjectByAttribute$(
+      'element_id',
+      '' + elementId,
+      processId
+    );
+  }
+
+  public getDataObjectByName$(
+    dataObjectName: string,
+    processId: number
+  ): Observable<DataObject | undefined> {
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       switchMap(collection =>
         this._dataObjectApi!.getAllDataObjects({
@@ -252,8 +254,11 @@ export class ShepardService {
     );
   }
 
-  public getDataObjectById$(dataObjectId: number): Observable<DataObject> {
-    return this.getCollectionByName$(this._collectionName).pipe(
+  public getDataObjectById$(
+    dataObjectId: number,
+    processId: number
+  ): Observable<DataObject> {
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       switchMap(collection =>
         this._dataObjectApi!.getDataObject({
@@ -264,20 +269,17 @@ export class ShepardService {
     );
   }
 
-  public deleteDataObject$(name: string): Observable<void> {
-    let collectionId: number;
-    return this.getCollectionByName$(this._collectionName).pipe(
-      filter(Boolean),
-      switchMap(collection => {
-        collectionId = collection.id!;
-        return this.getDataObjectByName$(name);
-      }),
+  public deleteDataObject$(
+    processId: number,
+    elementId: number
+  ): Observable<void> {
+    return this.getDataObjectByElementId$(elementId, processId).pipe(
       switchMap(dataObject => {
         if (!dataObject?.id) {
           return of(undefined);
         }
         return this._dataObjectApi!.deleteDataObject({
-          collectionId,
+          collectionId: dataObject.collectionId!,
           dataObjectId: dataObject.id!,
         });
       }),
@@ -288,9 +290,10 @@ export class ShepardService {
   public addFileToDataObject$(
     dataObjectId: number,
     fileOid: string,
-    refName: string
+    refName: string,
+    processId: number
   ): Observable<number> {
-    return this.getCollectionByName$(this._collectionName).pipe(
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       combineLatestWith(this.getFileContainerByName$(this._fileContainerName)),
       switchMap(([collection, fileContainer]) =>
@@ -310,10 +313,11 @@ export class ShepardService {
 
   public removeFileFromDataObject$(
     dataObjectId: number,
-    fileOid: string
+    fileOid: string,
+    processId: number
   ): Observable<void> {
     let collectionId: number;
-    return this.getCollectionByName$(this._collectionName).pipe(
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       switchMap(collection => {
         collectionId = collection.id!;
@@ -338,13 +342,16 @@ export class ShepardService {
   public addDataObjectToDataObject$(
     refId: number,
     dataObjectId: number,
-    refName: string
+    refName: string,
+    processId: number
   ): Observable<DataObjectReference> {
     let collectionId: number;
-    return this.getCollectionByName$(this._collectionName).pipe(
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       tap(collection => (collectionId = collection.id!)),
-      switchMap(() => this.getDataObjectRefByRefName$(dataObjectId, refName)),
+      switchMap(() =>
+        this.getDataObjectRefByRefName$(dataObjectId, refName, processId)
+      ),
       switchMap(ref => {
         if (ref) {
           return this._dataObjectReferenceApi!.deleteDataObjectReference({
@@ -371,9 +378,10 @@ export class ShepardService {
   public addStructuredDataToDataObject$(
     dataObjectId: number,
     structuredDataOid: string,
-    refName: string
+    refName: string,
+    processId: number
   ): Observable<DataObject> {
-    return this.getCollectionByName$(this._collectionName).pipe(
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       combineLatestWith(
         this.getStructuredDataContainerByName$(
@@ -396,10 +404,11 @@ export class ShepardService {
 
   public removeStructuredDataFromDataObject$(
     dataObjectId: number,
-    refName: string
+    refName: string,
+    processId: number
   ): Observable<void> {
     let collectionId: number;
-    return this.getCollectionByName$(this._collectionName).pipe(
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       switchMap(collection => {
         collectionId = collection.id!;
@@ -428,7 +437,8 @@ export class ShepardService {
 
   public getStructuredDataFromDataObject$(
     dataObjId: number,
-    refName: string
+    refName: string,
+    processId: number
   ): Observable<StructuredDataPayload> {
     let structureddataContainerId: number;
     return this.getStructuredDataContainerByName$(
@@ -436,7 +446,7 @@ export class ShepardService {
     ).pipe(
       filter(Boolean),
       tap(sdc => (structureddataContainerId = sdc.id!)),
-      switchMap(() => this.getCollectionByName$(this._collectionName)),
+      switchMap(() => this.getCollectionByProcessId$(processId)),
       filter(Boolean),
       switchMap(collection =>
         this._structuredDataReferenceApi!.getAllStructuredDataReferences({
@@ -458,11 +468,67 @@ export class ShepardService {
     );
   }
 
+  public createCollection$(
+    name: string,
+    permission: PermissionsPermissionTypeEnum,
+    processId: number
+  ): Observable<Collection> {
+    return this.getCollectionByProcessId$(processId).pipe(
+      switchMap(collection => {
+        if (collection) {
+          return of(collection);
+        } else {
+          return this.createCollection(name, permission, processId);
+        }
+      })
+    );
+  }
+
+  private getDataObjectByAttribute$(
+    attribute: string,
+    value: string,
+    processId: number
+  ): Observable<DataObject | undefined> {
+    return this.getCollectionByProcessId$(processId).pipe(
+      switchMap(collection => {
+        if (!collection) {
+          return of([]);
+        }
+        return this._dataObjectApi!.getAllDataObjects({
+          collectionId: collection.id!,
+        });
+      }),
+      map(dataObjects =>
+        dataObjects.find(
+          d =>
+            d.attributes?.hasOwnProperty(attribute) &&
+            d.attributes[attribute] === value
+        )
+      )
+    );
+  }
+
+  private getCollectionByAttribute$(
+    attribute: string,
+    value: string
+  ): Observable<Collection | undefined> {
+    return this.collections$.pipe(
+      map(collections =>
+        collections.find(
+          c =>
+            c.attributes?.hasOwnProperty(attribute) &&
+            c.attributes[attribute] === value
+        )
+      )
+    );
+  }
+
   private getDataObjectRefByRefName$(
     dataObjectId: number,
-    refName: string
+    refName: string,
+    processId: number
   ): Observable<DataObjectReference | undefined> {
-    return this.getCollectionByName$(this._collectionName).pipe(
+    return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       switchMap(collection =>
         this._dataObjectReferenceApi!.getAllDataObjectReferences({
@@ -543,10 +609,11 @@ export class ShepardService {
 
   private createCollection(
     name: string,
-    permission: PermissionsPermissionTypeEnum
+    permission: PermissionsPermissionTypeEnum,
+    processId: number
   ): Observable<Collection> {
     const req = this._collectionApi!.createCollection({
-      collection: { name },
+      collection: { name, attributes: { process_id: '' + processId } },
     });
     let collection: Collection;
     return from(req).pipe(
@@ -571,18 +638,15 @@ export class ShepardService {
           })
         )
       ),
-      map(() => collection)
+      map(() => {
+        this._collections.next(this._collections.value.concat(collection));
+        return collection;
+      })
     );
   }
+
   private initCollections(): void {
     this._collectionApi!.getAllCollections({}).then(col => {
-      if (!col.some(c => c.name === this._collectionName)) {
-        this.createCollection(this._collectionName, 'Private')
-          .pipe(take(1))
-          .subscribe(value =>
-            this._collections.next(this.insertCollection(col, value))
-          );
-      }
       this._collections.next(col);
     });
   }
