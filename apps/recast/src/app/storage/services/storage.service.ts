@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import {
   Element,
   ElementProperty,
+  Process,
   StepProperty,
 } from '../../../../build/openapi/recast';
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
@@ -82,6 +83,21 @@ export class StorageService {
           throw new Error(`No such Storage Backend: ${backend}`);
         }
         return storageAdapter.deleteElement$(element);
+      })
+    );
+  }
+
+  public deleteProcess$(process: Process): Observable<void> {
+    return this._storageBackend$.pipe(
+      filter(Boolean),
+      switchMap(backend => {
+        const storageAdapter = this.storageAdapters.find(
+          adapter => adapter.getType() === backend
+        );
+        if (!storageAdapter) {
+          throw new Error(`No such Storage Backend: ${backend}`);
+        }
+        return storageAdapter.deleteProcess$(process);
       })
     );
   }

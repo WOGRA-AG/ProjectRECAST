@@ -17,6 +17,7 @@ import { StorageAdapterInterface } from './storage-adapter-interface';
 import {
   Element,
   ElementProperty,
+  Process,
   StepProperty,
 } from '../../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
@@ -86,6 +87,10 @@ export class SupabaseS3Adapter implements StorageAdapterInterface {
   }
 
   public deleteElement$(_: Element): Observable<void> {
+    return of(undefined);
+  }
+
+  public deleteProcess$(_: Process): Observable<void> {
     return of(undefined);
   }
 

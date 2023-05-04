@@ -9,7 +9,7 @@ import {
 } from 'src/../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
-import { ShepardService } from '../shepard.service';
+import { ShepardService } from '../shepard/shepard.service';
 import {
   catchError,
   concatMap,
@@ -258,6 +258,19 @@ export class ShepardAdapter implements StorageAdapterInterface {
           return;
         })
       );
+  }
+
+  public deleteProcess$(process: Process): Observable<void> {
+    return this.shepardService.deleteCollection$(process.id!).pipe(
+      switchMap(() => this.processService.deleteProcess$(process.id!)),
+      catchError(() => of(undefined)),
+      map(err => {
+        if (err) {
+          console.error(err);
+        }
+        return;
+      })
+    );
   }
 
   private addStructuredDataToDataObj$(

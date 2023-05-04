@@ -17,8 +17,8 @@ import {
   DataObjectReferenceApi,
   DataObjectReference,
 } from '@dlr-shepard/shepard-client';
-import { environment } from '../../../environments/environment';
-import { UserFacadeService } from '../../user/services/user-facade.service';
+import { environment } from '../../../../environments/environment';
+import { UserFacadeService } from '../../../user/services/user-facade.service';
 import {
   BehaviorSubject,
   catchError,
@@ -33,8 +33,8 @@ import {
   of,
   tap,
 } from 'rxjs';
-import { elementComparator } from '../../shared/util/common-utils';
-import { Profile } from '../../../../build/openapi/recast';
+import { elementComparator } from '../../../shared/util/common-utils';
+import { Profile } from '../../../../../build/openapi/recast';
 
 @Injectable({
   providedIn: 'root',
@@ -484,6 +484,27 @@ export class ShepardService {
     );
   }
 
+  public deleteCollection$(processId: number): Observable<void> {
+    let collectionId: number;
+    return this.getCollectionByProcessId$(processId).pipe(
+      switchMap(collection => {
+        if (!collection) {
+          return of(undefined);
+        }
+        collectionId = collection.id!;
+        return this._collectionApi!.deleteCollection({
+          collectionId,
+        });
+      }),
+      map(() => {
+        this._collections.next(
+          this._collections.value.filter(c => c.id !== collectionId)
+        );
+      }),
+      catchError(() => of(undefined))
+    );
+  }
+
   private getDataObjectByAttribute$(
     attribute: string,
     value: string,
@@ -639,7 +660,9 @@ export class ShepardService {
         )
       ),
       map(() => {
-        this._collections.next(this._collections.value.concat(collection));
+        this._collections.next(
+          this.insertCollection(this._collections.value, collection)
+        );
         return collection;
       })
     );

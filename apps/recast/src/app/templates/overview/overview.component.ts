@@ -77,7 +77,9 @@ export class OverviewComponent implements OnDestroy {
           .afterClosed()
           .pipe(
             filter(confirmed => !!confirmed),
-            concatMap(() => this.processService.deleteProcess$(element.id!)),
+            concatMap(() =>
+              this.storageService.deleteProcess$(element as Process)
+            ),
             takeUntil(this._destroy$)
           )
           .subscribe();
@@ -93,7 +95,9 @@ export class OverviewComponent implements OnDestroy {
           .afterClosed()
           .pipe(
             filter(confirmed => !!confirmed),
-            concatMap(() => this.storageService.deleteElement$(element)),
+            concatMap(() =>
+              this.storageService.deleteElement$(element as Element)
+            ),
             takeUntil(this._destroy$)
           )
           .subscribe();

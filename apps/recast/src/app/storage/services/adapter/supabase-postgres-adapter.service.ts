@@ -3,6 +3,7 @@ import { StorageAdapterInterface } from './storage-adapter-interface';
 import {
   Element,
   ElementProperty,
+  Process,
   StepProperty,
 } from '../../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
@@ -15,6 +16,7 @@ import {
   strToFile,
 } from '../../../shared/util/common-utils';
 import { ElementFacadeService } from '../../../services/element-facade.service';
+import { ProcessFacadeService } from '../../../services/process-facade.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +24,8 @@ import { ElementFacadeService } from '../../../services/element-facade.service';
 export class SupabasePostgresAdapter implements StorageAdapterInterface {
   constructor(
     private elementPropertyService: ElementPropertyService,
-    private elementService: ElementFacadeService
+    private elementService: ElementFacadeService,
+    private processService: ProcessFacadeService
   ) {}
   public getType(): StorageBackendEnum {
     return StorageBackendEnum.Postgres;
@@ -72,6 +75,17 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
 
   public deleteElement$(element: Element): Observable<void> {
     return this.elementService.deleteElement$(element.id!).pipe(
+      map(err => {
+        if (err) {
+          console.error(err);
+        }
+        return;
+      })
+    );
+  }
+
+  public deleteProcess$(process: Process): Observable<void> {
+    return this.processService.deleteProcess$(process.id).pipe(
       map(err => {
         if (err) {
           console.error(err);

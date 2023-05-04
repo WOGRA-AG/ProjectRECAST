@@ -1,6 +1,7 @@
 import {
   Element,
   ElementProperty,
+  Process,
   StepProperty,
 } from '../../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
@@ -20,4 +21,5 @@ export interface StorageAdapterInterface {
     type: TypeEnum
   ): Promise<void>;
   deleteElement$(element: Element): Observable<void>;
+  deleteProcess$(process: Process): Observable<void>;
 }
