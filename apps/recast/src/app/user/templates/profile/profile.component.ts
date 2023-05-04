@@ -1,8 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Profile } from '../../../../../build/openapi/recast';
+import {
+  ElementProperty,
+  Profile,
+  StepProperty,
+} from '../../../../../build/openapi/recast';
 import { UserFacadeService } from '../../services/user-facade.service';
 import { catchError, filter, of, Subject, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
+import TypeEnum = StepProperty.TypeEnum;
+import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 
 @Component({
   selector: 'app-account',
@@ -22,13 +29,22 @@ export class ProfileComponent implements OnDestroy {
       Validators.required,
     ]),
     avatarUrl: '',
+    shepardApiKey: new FormControl('', [Validators.minLength(this._minlength)]),
+    storageBackend: new FormControl(StorageBackendEnum.Postgres, [
+      Validators.required,
+    ]),
   });
 
+  protected readonly StepProperty = StepProperty;
+  protected readonly TypeEnum = TypeEnum;
+  protected readonly ElementProperty = ElementProperty;
+  protected readonly StorageBackendEnum = StorageBackendEnum;
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     private formBuilder: FormBuilder,
-    private readonly userService: UserFacadeService
+    private readonly userService: UserFacadeService,
+    private readonly router: Router
   ) {
     userService.currentProfile$
       .pipe(takeUntil(this._destroy$))
@@ -46,6 +62,10 @@ export class ProfileComponent implements OnDestroy {
         this.profile.id = values.id || this.profile.id;
         this.profile.email = values.email || this.profile.email;
         this.profile.avatarUrl = values.avatarUrl || this.profile.avatarUrl;
+        this.profile.shepardApiKey =
+          values.shepardApiKey || this.profile.shepardApiKey;
+        this.profile.storageBackend =
+          values.storageBackend || this.profile.storageBackend;
       });
   }
 
@@ -60,12 +80,16 @@ export class ProfileComponent implements OnDestroy {
     const email = this.profile.email;
     const avatarUrl = this.profile.avatarUrl;
     const id = this.profile.id;
+    const shepardApiKey = this.profile.shepardApiKey;
+    const storageBackend = this.profile.storageBackend;
     this.userService
       .saveProfile({
         id,
         username,
         email,
         avatarUrl,
+        shepardApiKey,
+        storageBackend,
       })
       .pipe(
         catchError(err => {
@@ -78,6 +102,7 @@ export class ProfileComponent implements OnDestroy {
       )
       .subscribe(() => {
         this.loading = false;
+        this.router.navigate(['']);
       });
   }
 

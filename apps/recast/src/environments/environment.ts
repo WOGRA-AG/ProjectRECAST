@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  shepardUrl: 'https://shepard.os4ml.wogra.com/shepard/api',
   supabaseUrl: 'https://fbrhcyxrfnfojfuioexq.supabase.co',
   supabaseKey:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn' +

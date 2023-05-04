@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ShepardAdapter } from '../services/adapter/shepard-adapter.service';
-import { SupabaseS3Adapter } from '../services/adapter/supabase-s3-adapter.service';
-import { SupabasePostgresAdapter } from '../services/adapter/supabase-postgres-adapter.service';
+import { ShepardAdapter } from './services/adapter/shepard-adapter.service';
+import { SupabaseS3Adapter } from './services/adapter/supabase-s3-adapter.service';
+import { SupabasePostgresAdapter } from './services/adapter/supabase-postgres-adapter.service';
 
 @NgModule({
   declarations: [],

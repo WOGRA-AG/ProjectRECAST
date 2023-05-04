@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  PostgrestError,
+  PostgrestSingleResponse,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient,
@@ -53,15 +53,14 @@ export class ElementPropertyService {
     return this.upsertElementProp$(prop);
   }
 
-  public deleteElementProperty$(id: number): Observable<PostgrestError> {
+  public deleteElementProperty$(
+    id: number
+  ): Observable<PostgrestSingleResponse<any>> {
     const del = this._supabaseClient
       .from(Tables.elementProperties)
       .delete()
       .eq('id', id);
-    return from(del).pipe(
-      filter(({ error }) => !!error),
-      map(({ error }) => error!)
-    );
+    return from(del);
   }
 
   public elementPropertiesByElementId$(
@@ -69,6 +68,25 @@ export class ElementPropertyService {
   ): Observable<ElementProperty[]> {
     return this._elementProperties$.pipe(
       map(props => props.filter(p => p.elementId === id))
+    );
+  }
+
+  public elementPropertyByStepPropertyId(
+    stepPropId: number
+  ): ElementProperty | undefined {
+    return this.elementProperties.find(p => p.stepPropertyId === stepPropId);
+  }
+
+  public elementPropertyByStepPropertyId$(
+    elementId: number,
+    stepPropId: number
+  ): Observable<ElementProperty | undefined> {
+    return this.elementProperties$.pipe(
+      map(props =>
+        props.find(
+          p => p.stepPropertyId === stepPropId && p.elementId === elementId
+        )
+      )
     );
   }
 

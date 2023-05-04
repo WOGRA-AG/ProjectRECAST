@@ -14,7 +14,6 @@ import {
 } from 'rxjs';
 import {
   Element,
-  ElementProperty,
   Process,
   StepProperty,
 } from '../../../../build/openapi/recast';
@@ -24,8 +23,7 @@ import { Breadcrumb } from '../../design/components/molecules/breadcrumb/breadcr
 import { isReference } from '../../shared/util/common-utils';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { StepPropertyService } from '../../services/step-property.service';
-import StorageBackendEnum = ElementProperty.StorageBackendEnum;
-import { StorageService } from '../../services/storage.service';
+import { StorageService } from '../../storage/services/storage.service';
 
 @Component({
   selector: 'app-element-view',
@@ -41,7 +39,6 @@ export class ElementViewComponent implements OnDestroy {
   private readonly _destroy$: Subject<void> = new Subject<void>();
   private _processId$: Observable<number> = this.processId$();
   private _elementId$: Observable<number> = this.elementId$();
-  private _storageBackend: StorageBackendEnum = StorageBackendEnum.Postgres;
 
   constructor(
     private readonly router: Router,
@@ -49,7 +46,7 @@ export class ElementViewComponent implements OnDestroy {
     private readonly elementService: ElementFacadeService,
     private readonly processService: ProcessFacadeService,
     private readonly stepPropertyService: StepPropertyService,
-    private storageService: StorageService,
+    private readonly storageService: StorageService,
     private readonly formBuilder: FormBuilder
   ) {
     const process$: Observable<Process | undefined> = this._processId$.pipe(
@@ -126,14 +123,21 @@ export class ElementViewComponent implements OnDestroy {
         prop.stepPropertyId ?? 0
       );
       this.storageService
-        .loadValue(prop.value, stepProp.type!, this._storageBackend)
-        .pipe(takeUntil(this._destroy$))
-        .subscribe(value => {
-          if (isReference(stepProp.type!)) {
-            value = this.elementService.elementById(+value)?.name!;
-          }
-          this.updateControl(`${prop.id}`, value);
-        });
+        .loadValue$(prop, stepProp.type!)
+        .pipe(
+          takeUntil(this._destroy$),
+          map(val => {
+            if (isReference(stepProp.type!)) {
+              val = this.elementService.elementById(+val)?.name!;
+            }
+            if (val instanceof File) {
+              val = val.name;
+            }
+            this.updateControl(`${prop.id}`, val);
+            return val;
+          })
+        )
+        .subscribe();
     }
   }
 

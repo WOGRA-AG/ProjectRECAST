@@ -17,16 +17,16 @@
           icon="bar_chart">
         </app-input-field>
       </div>
-      <div
-        class="input-wrapper"
-        *ngFor="let prop of element?.elementProperties">
-        <app-input-field
-          *ngIf="prop.id"
-          label="{{ propertyName$(prop.stepPropertyId!) | async }}"
-          class="input"
-          [formControlName]="prop.id"
-          icon="bar_chart">
-        </app-input-field>
+      <div class="input-wrapper" *ngFor="let prop of element.elementProperties">
+        <ng-container *ngIf="propertiesForm.controls['' + prop.id]">
+          <app-input-field
+            *ngIf="prop.id"
+            label="{{ propertyName$(prop.stepPropertyId!) | async }}"
+            class="input"
+            [formControlName]="prop.id"
+            icon="bar_chart">
+          </app-input-field>
+        </ng-container>
       </div>
     </div>
     <div class="actions">

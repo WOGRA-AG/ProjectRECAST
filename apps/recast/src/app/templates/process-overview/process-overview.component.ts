@@ -19,6 +19,7 @@ import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { elementComparator } from '../../shared/util/common-utils';
+import { StorageService } from '../../storage/services/storage.service';
 
 @Component({
   selector: 'app-process-overview',
@@ -45,6 +46,7 @@ export class ProcessOverviewComponent implements OnDestroy {
     private readonly processService: ProcessFacadeService,
     private readonly elementService: ElementFacadeService,
     private readonly stepService: StepFacadeService,
+    private readonly storageService: StorageService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog
@@ -145,7 +147,7 @@ export class ProcessOverviewComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         filter(confirmed => !!confirmed),
-        concatMap(() => this.elementService.deleteElement$(element.id!)),
+        concatMap(() => this.storageService.deleteElement$(element)),
         takeUntil(this._destroy$)
       )
       .subscribe();

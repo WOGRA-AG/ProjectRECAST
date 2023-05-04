@@ -17,7 +17,7 @@ import {
   switchMap,
   toArray,
 } from 'rxjs';
-import { ElementProperty, Element } from '../../../build/openapi/recast';
+import { Element, ElementProperty } from '../../../build/openapi/recast';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
@@ -28,6 +28,7 @@ import { SupabaseService, Tables } from './supabase.service';
 import { ElementPropertyService } from './element-property.service';
 import { elementComparator, groupBy$ } from '../shared/util/common-utils';
 import { ProcessFacadeService } from './process-facade.service';
+
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -140,8 +141,7 @@ export class ElementFacadeService {
   }
 
   public elementById(id: number): Element | undefined {
-    const element = this.elements.find(e => e.id === id);
-    return element;
+    return this.elements.find(e => e.id === id);
   }
 
   private upsertElement$({
@@ -245,6 +245,13 @@ export class ElementFacadeService {
     element: Element,
     props: ElementProperty[]
   ): Observable<Element[]> {
+    const filteredProps = props.filter(prop => prop.elementId === element.id);
+    if (!filteredProps.length) {
+      element = this.addPropertiesToElement(element, element.id!, []);
+      return of(
+        state.map(value => (value.id === element.id ? element : value))
+      );
+    }
     return groupBy$(props, 'elementId').pipe(
       filter(({ key }) => !!key),
       map(({ key, values }) => {

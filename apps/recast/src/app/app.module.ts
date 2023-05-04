@@ -16,6 +16,8 @@ import { CreateElementComponent } from './templates/create-element/create-elemen
 import { ElementDetailComponent } from './templates/element-detail/element-detail.component';
 import { ElementViewComponent } from './templates/element-view/element-view.component';
 import { StorageModule } from './storage/storage.module';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,7 @@ import { StorageModule } from './storage/storage.module';
     SupabaseService,
     i18nModule.setLocale(),
     i18nModule.setLocaleId(),
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

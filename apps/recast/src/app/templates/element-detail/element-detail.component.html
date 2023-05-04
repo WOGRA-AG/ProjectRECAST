@@ -16,11 +16,13 @@
     (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
       <div class="input-wrapper" *ngFor="let prop of stepProperties">
-        <ng-container [ngSwitch]="prop.type?.toLowerCase()">
+        <ng-container
+          [ngSwitch]="prop.type?.toLowerCase()"
+          *ngIf="propertiesForm.contains('' + prop.id)">
           <app-input-field
             *ngSwitchCase="'text'"
             class="input"
-            [label]="prop.name!"
+            [label]="prop.name ?? ''"
             [formControlName]="prop.id!"
             icon="bar_chart">
           </app-input-field>
@@ -28,13 +30,13 @@
             *ngSwitchCase="'number'"
             class="input"
             type="number"
-            [label]="prop.name!"
+            [label]="prop.name ?? ''"
             [formControlName]="prop.id!">
           </app-input-field>
           <app-file-input-field
             *ngSwitchCase="'file'"
             [formControlName]="prop.id!"
-            [label]="prop.name!"></app-file-input-field>
+            [label]="prop.name ?? ''"></app-file-input-field>
           <div *ngSwitchDefault>
             <app-select-field [formControlName]="prop.id!" [label]="prop.name!">
               <mat-option
@@ -54,6 +56,12 @@
       </div>
     </div>
     <div class="actions">
+      <mat-progress-spinner
+        [diameter]="40"
+        color="primary"
+        *ngIf="loading"
+        mode="indeterminate">
+      </mat-progress-spinner>
       <app-button-unfilled
         type="button"
         [bordered]="true"
@@ -63,12 +71,14 @@
       </app-button-unfilled>
       <app-submit-button
         *ngIf="!isLastStep"
+        [disabled]="loading"
         class="button"
         i18n="@@action.next_step">
         Take to the next step
       </app-submit-button>
       <app-submit-button
         *ngIf="isLastStep"
+        [disabled]="loading"
         class="button"
         i18n="@@action.finished">
         Finished

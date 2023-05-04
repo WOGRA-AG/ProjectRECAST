@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthComponent } from './user/templates/auth/auth.component';
 import { ProfileComponent } from './user/templates/profile/profile.component';
 import { PageNotFoundComponent } from './templates/page-not-found/page-not-found.component';
-import { AuthGuard } from './user/guards/auth.guard';
+import { authGuard } from './user/guards/auth.guard';
 import { OverviewComponent } from './templates/overview/overview.component';
 import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
 import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
@@ -13,13 +12,9 @@ import { ElementViewComponent } from './templates/element-view/element-view.comp
 
 const routes: Routes = [
   {
-    path: 'login',
-    component: AuthComponent,
-  },
-  {
     path: 'profile',
     component: ProfileComponent,
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: '',
@@ -28,7 +23,7 @@ const routes: Routes = [
   },
   {
     path: 'overview',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     children: [
       {
         path: '',

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SupabaseService, Tables } from 'src/app/services/supabase.service';
+import { SupabaseService, Tables } from '../../../services/supabase.service';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { FileObject } from '@supabase/storage-js';
 import {
@@ -12,12 +12,13 @@ import {
   Observable,
   of,
 } from 'rxjs';
-import { UserFacadeService } from 'src/app/user/services/user-facade.service';
+import { UserFacadeService } from '../../../user/services/user-facade.service';
 import { StorageAdapterInterface } from './storage-adapter-interface';
 import {
+  Element,
   ElementProperty,
   StepProperty,
-} from '../../../../build/openapi/recast';
+} from '../../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 const camelCase = require('camelcase-keys');
@@ -70,19 +71,22 @@ export class SupabaseS3Adapter implements StorageAdapterInterface {
     );
   }
 
-  public async loadValue(_: string | undefined, _2: TypeEnum): Promise<string> {
+  public loadValue$(_2: ElementProperty, _3: TypeEnum): Observable<string> {
     throw new Error('Not Implemented Yet');
   }
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  public saveValue(
-    elementId: number | undefined,
+  public async saveValue(
+    element: Element,
     property: StepProperty,
     value: any,
-    type: TypeEnum,
-    storageBackend: StorageBackendEnum
-  ): void {
+    type: TypeEnum
+  ): Promise<void> {
     throw new Error('Not Implemented Yet');
+  }
+
+  public deleteElement$(_: Element): Observable<void> {
+    return of(undefined);
   }
 
   private deleteObject$(path: string): Observable<any> {

@@ -23,6 +23,30 @@
       label="username"
       errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
   </div>
+  <div>
+    <app-input-field
+      i18n-label="@@label.shep_api_key"
+      i18n-errMsg="@@err.min_char"
+      formControlName="shepardApiKey"
+      label="Shepard Api Key"
+      errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
+  </div>
+  <div>
+    <app-select-field
+      [formControlName]="'storageBackend'"
+      label="Storage Backend">
+      <mat-option disabled [value]="''">Select element</mat-option>
+      <mat-option [value]="StorageBackendEnum.Postgres">{{
+        StorageBackendEnum.Postgres
+      }}</mat-option>
+      <mat-option [value]="StorageBackendEnum.Shepard">{{
+        StorageBackendEnum.Shepard
+      }}</mat-option>
+      <mat-option [value]="StorageBackendEnum.S3">{{
+        StorageBackendEnum.S3
+      }}</mat-option>
+    </app-select-field>
+  </div>
   <div class="actions">
     <app-submit-button [disabled]="loading">
       {{ loading ? 'Loading ...' : 'Update' }}

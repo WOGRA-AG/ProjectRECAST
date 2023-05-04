@@ -137,3 +137,11 @@ components:
           type: string
         avatarUrl:
           type: string
+        shepardApiKey:
+          type: string
+        storageBackend:
+          type: string
+          enum:
+            - POSTGRES
+            - S3
+            - SHEPARD

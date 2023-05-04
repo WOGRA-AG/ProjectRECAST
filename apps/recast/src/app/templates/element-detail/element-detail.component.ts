@@ -1,13 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  Element,
-  Step,
-  StepProperty,
-  Process,
-  ElementProperty,
-} from 'build/openapi/recast';
+import { Element, Step, StepProperty, Process } from 'build/openapi/recast';
 import {
   catchError,
   filter,
@@ -30,10 +24,7 @@ import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { StepPropertyService } from 'src/app/services/step-property.service';
 import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { fileToStr } from '../../shared/util/common-utils';
-import TypeEnum = StepProperty.TypeEnum;
-import { StorageService } from 'src/app/services/storage.service';
-import StorageBackendEnum = ElementProperty.StorageBackendEnum;
+import { StorageService } from '../../storage/services/storage.service';
 
 @Component({
   selector: 'app-element-detail',
@@ -47,6 +38,7 @@ export class ElementDetailComponent implements OnDestroy {
   public isLastStep = false;
   public stepProperties: StepProperty[] = [];
   public propertiesForm = this.formBuilder.group({});
+  public loading = false;
   private _currentIndex = 0;
   private _currentStep: Step | undefined;
   private _steps: Step[] = [];
@@ -55,7 +47,6 @@ export class ElementDetailComponent implements OnDestroy {
   private _process$: Observable<Process | undefined> = this.process$();
   private _element$: Observable<Element> = this.element$();
   private _step$: Observable<Step> = this.step$();
-  private _storageBackend: StorageBackendEnum = StorageBackendEnum.Postgres;
 
   constructor(
     private route: ActivatedRoute,
@@ -90,18 +81,16 @@ export class ElementDetailComponent implements OnDestroy {
                 this.updateControl(`${p.id}`, p.defaultValue);
                 return of(null);
               }
-              return this.storageService
-                .loadValue(elemProp.value, p.type!, this._storageBackend)
-                .pipe(
-                  map(val => {
-                    this.updateControl(`${p.id}`, val);
-                    return val;
-                  }),
-                  catchError(error => {
-                    console.error(error);
-                    return of(null);
-                  })
-                );
+              return this.storageService.loadValue$(elemProp, p.type!).pipe(
+                map(val => {
+                  this.updateControl(`${p.id}`, val);
+                  return val;
+                }),
+                catchError(error => {
+                  console.error(error);
+                  return of(null);
+                })
+              );
             }),
             toArray(),
             takeUntil(this._destroy$)
@@ -131,19 +120,33 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   public async onSubmitClicked(): Promise<void> {
-    for (const prop of this.stepProperties) {
-      let value: any = this.propertiesForm.get(`${prop.id}`)?.value;
-      if (prop.type === TypeEnum.File && value) {
-        value = await fileToStr(value);
-      }
-      this.storageService.updateValue(
-        this.element?.id,
-        prop,
-        value,
-        this._storageBackend
-      );
+    this.loading = true;
+    if (!this.element) {
+      return;
     }
-    this.navigateForward();
+    if (!this.isLastStep) {
+      await this.updateValues();
+      this.navigateForward();
+      return;
+    }
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: $localize`:@@dialog.submit_element:Save Element?`,
+        },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .pipe(
+        tap(() => (this.loading = false)),
+        takeUntil(this._destroy$),
+        filter(confirmed => !!confirmed),
+        map(async () => {
+          await this.updateValues();
+        }),
+        tap(() => this.navigateForward())
+      )
+      .subscribe();
   }
 
   public stepChanged(event: number): void {
@@ -160,6 +163,13 @@ export class ElementDetailComponent implements OnDestroy {
       return of([]);
     }
     return this.elementService.elementsByProcessName$(reference);
+  }
+
+  private async updateValues(): Promise<void> {
+    for (const prop of this.stepProperties) {
+      const value: any = this.propertiesForm.get(`${prop.id}`)?.value;
+      await this.storageService.updateValue(this.element!, prop, value);
+    }
   }
 
   private initializeComponentProperties(
@@ -183,23 +193,8 @@ export class ElementDetailComponent implements OnDestroy {
       this.navigateStep(nextStep);
       return;
     }
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: {
-          title: $localize`:@@dialog.submit_element:Save Element?`,
-        },
-        autoFocus: false,
-      })
-      .afterClosed()
-      .pipe(
-        takeUntil(this._destroy$),
-        filter(confirmed => !!confirmed),
-        map(() => {
-          this.updateElementCurrentStep(this.element?.id!, null);
-          this.navigateBack();
-        })
-      )
-      .subscribe();
+    this.updateElementCurrentStep(this.element?.id!, null);
+    this.navigateBack();
   }
 
   private step$(): Observable<Step> {
@@ -276,7 +271,7 @@ export class ElementDetailComponent implements OnDestroy {
     ];
   }
 
-  private async updateControl(name: string, value: any): Promise<void> {
+  private updateControl(name: string, value: any): void {
     const control = this.propertiesForm.get(name);
     if (!control) {
       this.propertiesForm.addControl(name, new FormControl(value));
