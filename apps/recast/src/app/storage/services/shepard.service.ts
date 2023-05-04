@@ -56,9 +56,15 @@ export class ShepardService {
     new BehaviorSubject<FileContainer[]>([]);
   private _strucDataContainers: BehaviorSubject<StructuredDataContainer[]> =
     new BehaviorSubject<StructuredDataContainer[]>([]);
-  private readonly _collectionName: string = 'recast';
-  private readonly _fileContainerName: string = 'recast';
-  private readonly _structuredDataContainerName: string = 'recast';
+  private readonly _collectionName: string = environment.production
+    ? 'recast'
+    : 'recast-dev';
+  private readonly _fileContainerName: string = environment.production
+    ? 'recast'
+    : 'recast-dev';
+  private readonly _structuredDataContainerName: string = environment.production
+    ? 'recast'
+    : 'recast-dev';
 
   constructor(private readonly userService: UserFacadeService) {
     this.userService.currentProfile$.subscribe(profile => {
