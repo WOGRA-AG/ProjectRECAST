@@ -231,7 +231,6 @@ export class ShepardService {
     elementId: number,
     processId: number
   ): Observable<DataObject | undefined> {
-    console.log('getDataObjectByElementId$', elementId);
     return this.getDataObjectByAttribute$(
       'element_id',
       '' + elementId,
