@@ -28,7 +28,7 @@ import {
   filter,
   from,
   map,
-  mergeMap,
+  switchMap,
   Observable,
   of,
   take,
@@ -146,7 +146,7 @@ export class ShepardService {
 
   public uploadFile$(file: File): Observable<string> {
     return this.fileContainerByName$(this._fileContainerName).pipe(
-      mergeMap(fc =>
+      switchMap(fc =>
         this._fileApi!.createFile({ fileContainerId: fc.id!, file })
       ),
       filter(res => !!res.oid),
@@ -156,7 +156,7 @@ export class ShepardService {
 
   public deleteFile$(fileOid: string): Observable<void> {
     return this.fileContainerByName$(this._fileContainerName).pipe(
-      mergeMap(fc =>
+      switchMap(fc =>
         this._fileApi!.deleteFile({ fileContainerId: fc.id!, oid: fileOid })
       ),
       catchError(() => of(undefined))
@@ -172,11 +172,11 @@ export class ShepardService {
     return this.getStructuredDataContainerByName$(
       this._structuredDataContainerName
     ).pipe(
-      mergeMap(container => {
+      switchMap(container => {
         structureddataContainerId = container.id!;
         return this.getStructuredData$(container.id!);
       }),
-      mergeMap(sd => {
+      switchMap(sd => {
         const strucData = sd.find(e => e.name === structuredDataName);
         if (!strucData) {
           return this.createStructuredData$(
@@ -208,7 +208,7 @@ export class ShepardService {
   ): Observable<StructuredDataPayload> {
     return this._strucDataContainers.pipe(
       map(sdc => sdc.find(s => s.name === this._structuredDataContainerName)),
-      mergeMap(scd =>
+      switchMap(scd =>
         this._structuredDataApi!.getStructuredData({
           structureddataContainerId: scd?.id!,
           oid: structuredDataId,
@@ -222,7 +222,7 @@ export class ShepardService {
   ): Observable<number | undefined> {
     return this.getCollectionByName$(this._collectionName).pipe(
       filter(Boolean),
-      mergeMap(collection =>
+      switchMap(collection =>
         this._dataObjectApi!.createDataObject({
           collectionId: collection.id!,
           dataObject: { collectionId: collection.id!, name: dataObjectName },
@@ -237,7 +237,7 @@ export class ShepardService {
   ): Observable<DataObject | undefined> {
     return this.getCollectionByName$(this._collectionName).pipe(
       filter(Boolean),
-      mergeMap(collection =>
+      switchMap(collection =>
         this._dataObjectApi!.getAllDataObjects({
           collectionId: collection.id!,
         })
@@ -249,7 +249,7 @@ export class ShepardService {
   public getDataObjectById$(dataObjectId: number): Observable<DataObject> {
     return this.getCollectionByName$(this._collectionName).pipe(
       filter(Boolean),
-      mergeMap(collection =>
+      switchMap(collection =>
         this._dataObjectApi!.getDataObject({
           collectionId: collection.id!,
           dataObjectId,
@@ -262,11 +262,11 @@ export class ShepardService {
     let collectionId: number;
     return this.getCollectionByName$(this._collectionName).pipe(
       filter(Boolean),
-      mergeMap(collection => {
+      switchMap(collection => {
         collectionId = collection.id!;
         return this.getDataObjectByName$(name);
       }),
-      mergeMap(dataObject => {
+      switchMap(dataObject => {
         if (!dataObject?.id) {
           return of(undefined);
         }
@@ -287,7 +287,7 @@ export class ShepardService {
     return this.getCollectionByName$(this._collectionName).pipe(
       filter(Boolean),
       combineLatestWith(this.getFileContainerByName$(this._fileContainerName)),
-      mergeMap(([collection, fileContainer]) =>
+      switchMap(([collection, fileContainer]) =>
         this._fileReferenceApi!.createFileReference({
           collectionId: collection.id!,
           dataObjectId,
@@ -309,7 +309,7 @@ export class ShepardService {
     let collectionId: number;
     return this.getCollectionByName$(this._collectionName).pipe(
       filter(Boolean),
-      mergeMap(collection => {
+      switchMap(collection => {
         collectionId = collection.id!;
         return this._fileReferenceApi!.getAllFileReferences({
           collectionId,
@@ -319,7 +319,7 @@ export class ShepardService {
       map(fileRefs =>
         fileRefs.find(fileRef => fileRef.fileOids.includes(fileOid))
       ),
-      mergeMap(fileRef =>
+      switchMap(fileRef =>
         this._fileReferenceApi!.deleteFileReference({
           collectionId,
           dataObjectId,
@@ -329,19 +329,32 @@ export class ShepardService {
       catchError(() => of(undefined))
     );
   }
-
   public addDataObjectToDataObject$(
     refId: number,
-    dataObjectId: number
+    dataObjectId: number,
+    refName: string
   ): Observable<DataObjectReference> {
+    let collectionId: number;
     return this.getCollectionByName$(this._collectionName).pipe(
       filter(Boolean),
-      concatMap(collection =>
+      tap(collection => (collectionId = collection.id!)),
+      switchMap(() => this.getDataObjectRefByRefName$(dataObjectId, refName)),
+      switchMap(ref => {
+        if (ref) {
+          return this._dataObjectReferenceApi!.deleteDataObjectReference({
+            collectionId,
+            dataObjectId,
+            dataObjectReferenceId: ref.id!,
+          });
+        }
+        return of(undefined);
+      }),
+      concatMap(() =>
         this._dataObjectReferenceApi!.createDataObjectReference({
-          collectionId: collection.id!,
+          collectionId,
           dataObjectId,
           dataObjectReference: {
-            name: '' + refId,
+            name: refName,
             dataObjectId,
             referencedDataObjectId: refId,
           },
@@ -361,7 +374,7 @@ export class ShepardService {
           this._structuredDataContainerName
         )
       ),
-      mergeMap(([collection, sdc]) =>
+      switchMap(([collection, sdc]) =>
         this._structuredDataReferenceApi!.createStructuredDataReference({
           collectionId: collection.id!,
           dataObjectId,
@@ -382,7 +395,7 @@ export class ShepardService {
     let collectionId: number;
     return this.getCollectionByName$(this._collectionName).pipe(
       filter(Boolean),
-      mergeMap(collection => {
+      switchMap(collection => {
         collectionId = collection.id!;
         return this._structuredDataReferenceApi!.getAllStructuredDataReferences(
           {
@@ -396,7 +409,7 @@ export class ShepardService {
           structuredDataRef => structuredDataRef.name === refName
         )
       ),
-      mergeMap(structuredDataRef =>
+      switchMap(structuredDataRef =>
         this._structuredDataReferenceApi!.deleteStructuredDataReference({
           collectionId,
           dataObjectId,
@@ -417,9 +430,9 @@ export class ShepardService {
     ).pipe(
       filter(Boolean),
       tap(sdc => (structureddataContainerId = sdc.id!)),
-      mergeMap(() => this.getCollectionByName$(this._collectionName)),
+      switchMap(() => this.getCollectionByName$(this._collectionName)),
       filter(Boolean),
-      mergeMap(collection =>
+      switchMap(collection =>
         this._structuredDataReferenceApi!.getAllStructuredDataReferences({
           collectionId: collection.id!,
           dataObjectId: dataObjId,
@@ -430,12 +443,28 @@ export class ShepardService {
       ),
       filter(Boolean),
       map(structDataRef => structDataRef.structuredDataOids[0]),
-      mergeMap(structuredDataOid =>
+      switchMap(structuredDataOid =>
         this._structuredDataApi!.getStructuredData({
           oid: structuredDataOid,
           structureddataContainerId,
         })
       )
+    );
+  }
+
+  private getDataObjectRefByRefName$(
+    dataObjectId: number,
+    refName: string
+  ): Observable<DataObjectReference | undefined> {
+    return this.getCollectionByName$(this._collectionName).pipe(
+      filter(Boolean),
+      switchMap(collection =>
+        this._dataObjectReferenceApi!.getAllDataObjectReferences({
+          collectionId: collection.id!,
+          dataObjectId,
+        })
+      ),
+      map(refs => refs.find(r => r.name === refName))
     );
   }
 
@@ -451,12 +480,12 @@ export class ShepardService {
         oid: strucData.oid!,
       })
     ).pipe(
-      mergeMap(strucDataPay =>
+      switchMap(strucDataPay =>
         this.deleteStructuredData$(strucData, structureddataContainerId).pipe(
           map(() => strucDataPay)
         )
       ),
-      mergeMap((sdp: StructuredDataPayload) => {
+      switchMap((sdp: StructuredDataPayload) => {
         let payload = sdp.payload ? JSON.parse(sdp.payload) : {};
         payload[propertyName] = value;
         delete payload._id;
@@ -517,7 +546,7 @@ export class ShepardService {
     return from(req).pipe(
       filter(col => !!col.id),
       tap(col => (collection = col)),
-      mergeMap(col =>
+      switchMap(col =>
         from(
           this._collectionApi!.getCollectionPermissions({
             collectionId: col.id!,
@@ -528,7 +557,7 @@ export class ShepardService {
         perm.permissionType = permission;
         return perm;
       }),
-      mergeMap(perm =>
+      switchMap(perm =>
         from(
           this._collectionApi!.editCollectionPermissions({
             collectionId: collection.id!,

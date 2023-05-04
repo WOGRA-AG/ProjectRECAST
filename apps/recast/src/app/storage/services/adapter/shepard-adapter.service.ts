@@ -104,7 +104,9 @@ export class ShepardAdapter implements StorageAdapterInterface {
     const dataObjectId = await firstValueFrom(dataObj$);
 
     if (isReference(type)) {
-      //TODO: prevent duplicate references
+      if (!value) {
+        return;
+      }
       return firstValueFrom(
         this.elementService.elementById$(+value).pipe(
           concatMap(ele => {
@@ -119,7 +121,8 @@ export class ShepardAdapter implements StorageAdapterInterface {
             }
             return this.shepardService.addDataObjectToDataObject$(
               dataObject.id!,
-              dataObjectId
+              dataObjectId,
+              property.name!
             );
           }),
           concatMap(() =>

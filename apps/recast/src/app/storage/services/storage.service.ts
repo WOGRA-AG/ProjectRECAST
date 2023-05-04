@@ -7,14 +7,7 @@ import {
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import { StorageAdapterInterface } from './adapter/storage-adapter-interface';
 import TypeEnum = StepProperty.TypeEnum;
-import {
-  BehaviorSubject,
-  filter,
-  firstValueFrom,
-  map,
-  Observable,
-  switchMap,
-} from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, switchMap } from 'rxjs';
 import { UserFacadeService } from '../../user/services/user-facade.service';
 
 @Injectable({
@@ -54,29 +47,27 @@ export class StorageService {
     );
   }
 
-  public updateValue(
+  public updateValue$(
     element: Element,
     stepProperty: StepProperty,
     value: any
-  ): Promise<void> {
-    return firstValueFrom(
-      this._storageBackend$.pipe(
-        filter(Boolean),
-        switchMap(backend => {
-          const storageAdapter = this.storageAdapters.find(
-            adapter => adapter.getType() === backend
-          );
-          if (!storageAdapter) {
-            throw new Error(`No such Storage Backend: ${backend}`);
-          }
-          return storageAdapter.saveValue(
-            element,
-            stepProperty,
-            value,
-            stepProperty.type!
-          );
-        })
-      )
+  ): Observable<void> {
+    return this._storageBackend$.pipe(
+      filter(Boolean),
+      switchMap(backend => {
+        const storageAdapter = this.storageAdapters.find(
+          adapter => adapter.getType() === backend
+        );
+        if (!storageAdapter) {
+          throw new Error(`No such Storage Backend: ${backend}`);
+        }
+        return storageAdapter.saveValue(
+          element,
+          stepProperty,
+          value,
+          stepProperty.type!
+        );
+      })
     );
   }
 

@@ -16,6 +16,7 @@ import {
   switchMap,
   from,
   toArray,
+  firstValueFrom,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
@@ -168,7 +169,9 @@ export class ElementDetailComponent implements OnDestroy {
   private async updateValues(): Promise<void> {
     for (const prop of this.stepProperties) {
       const value: any = this.propertiesForm.get(`${prop.id}`)?.value;
-      await this.storageService.updateValue(this.element!, prop, value);
+      await firstValueFrom(
+        this.storageService.updateValue$(this.element!, prop, value)
+      );
     }
   }
 
