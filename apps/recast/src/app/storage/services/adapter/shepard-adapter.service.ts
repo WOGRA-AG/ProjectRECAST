@@ -9,7 +9,7 @@ import {
 } from 'src/../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
-import { ShepardService } from '../shepard/shepard.service';
+import { ShepardFacadeService } from '../shepard/shepard-facade.service';
 import {
   catchError,
   concatMap,
@@ -40,7 +40,7 @@ import { ProcessFacadeService } from '../../../services/process-facade.service';
 })
 export class ShepardAdapter implements StorageAdapterInterface {
   constructor(
-    private readonly shepardService: ShepardService,
+    private readonly shepardService: ShepardFacadeService,
     private readonly elementPropertyService: ElementPropertyService,
     private readonly stepPropertyService: StepPropertyService,
     private readonly stepService: StepFacadeService,
@@ -65,7 +65,9 @@ export class ShepardAdapter implements StorageAdapterInterface {
         .pipe(map(e => '' + e?.id ?? ''));
     }
     if (type === TypeEnum.File) {
-      return this.shepardService.getFileById$(value);
+      return this.shepardService
+        .getFileById$(value)
+        .pipe(catchError(() => of(new File([], ''))));
     }
     let stepProp: StepProperty;
     let dataObjId: number;
@@ -133,20 +135,21 @@ export class ShepardAdapter implements StorageAdapterInterface {
           element.processId!
         )
       ),
+      catchError(() => of(undefined)),
       switchMap(dataObject => {
         if (!!dataObject) {
-          return of(dataObject).pipe(map(dataObj => dataObj.id));
+          return of(dataObject);
         }
         return this.shepardService.createDataObject$(
-          element.name ?? '',
           processId,
-          element.id!
+          element.id!,
+          element.name ?? ''
         );
       }),
-      filter(Boolean)
+      map((dataObject: DataObject) => dataObject.id!)
     );
 
-    const dataObjectId = await firstValueFrom(dataObj$);
+    const dataObjectId: number = await firstValueFrom(dataObj$);
 
     if (isReference(type)) {
       if (!value) {
@@ -247,10 +250,10 @@ export class ShepardAdapter implements StorageAdapterInterface {
 
   public deleteElement$(element: Element): Observable<void> {
     return this.shepardService
-      .deleteDataObject$(element.processId!, element.id!)
+      .deleteDataObjectById$(element.processId!, element.id!)
       .pipe(
-        mergeMap(() => this.elementService.deleteElement$(element.id!)),
         catchError(() => of(undefined)),
+        mergeMap(() => this.elementService.deleteElement$(element.id!)),
         map(err => {
           if (err) {
             console.error(err);
@@ -309,7 +312,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
   ): Observable<string> {
     return this.stepService.stepById$(property.stepId!).pipe(
       mergeMap(step =>
-        this.shepardService.uploadStructuredData$(
+        this.shepardService.upsertStructuredData$(
           step.name ?? '',
           property.name ?? '',
           value
@@ -332,12 +335,12 @@ export class ShepardAdapter implements StorageAdapterInterface {
     refName: string
   ): Observable<string> {
     let fileOid = '';
-    return this.shepardService.uploadFile$(value).pipe(
+    return this.shepardService.createFile$(value).pipe(
       catchError(err => {
         console.error(err);
         return of(undefined);
       }),
-      filter(fileId => !!fileId),
+      filter(Boolean),
       mergeMap(fileId => {
         fileOid = fileId!;
         return this.shepardService.addFileToDataObject$(
@@ -371,6 +374,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
       .removeFileFromDataObject$(dataObjectId, prop.value!, processId)
       .pipe(
         concatMap(() => this.shepardService.deleteFile$(prop.value!)),
+        catchError(() => of(undefined)),
         concatMap(() =>
           this.elementPropertyService.deleteElementProperty$(prop.id!)
         )
