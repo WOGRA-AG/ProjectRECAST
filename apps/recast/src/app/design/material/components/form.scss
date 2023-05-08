@@ -50,6 +50,16 @@
   .mat-mdc-form-field {
     width: 100%;
     .mat-mdc-text-field-wrapper {
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      input[type='number'] {
+        -moz-appearance: textfield;
+      }
+
       width: 100%;
       margin: 0;
       .mat-mdc-form-field-flex {

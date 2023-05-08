@@ -26,7 +26,7 @@ import { StepPropertyService } from 'src/app/services/step-property.service';
 import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { StorageService } from '../../storage/services/storage.service';
-
+import TypeEnum = StepProperty.TypeEnum;
 @Component({
   selector: 'app-element-detail',
   templateUrl: './element-detail.component.html',
@@ -40,6 +40,7 @@ export class ElementDetailComponent implements OnDestroy {
   public stepProperties: StepProperty[] = [];
   public propertiesForm = this.formBuilder.group({});
   public loading = false;
+  protected readonly TypeEnum = TypeEnum;
   private _currentIndex = 0;
   private _currentStep: Step | undefined;
   private _steps: Step[] = [];
@@ -79,12 +80,12 @@ export class ElementDetailComponent implements OnDestroy {
                 e => e.stepPropertyId === p.id
               );
               if (!elemProp) {
-                this.updateControl(`${p.id}`, p.defaultValue);
+                this.updateControl(`${p.id}`, p.defaultValue, p.type!);
                 return of(null);
               }
               return this.storageService.loadValue$(elemProp, p.type!).pipe(
                 map(val => {
-                  this.updateControl(`${p.id}`, val);
+                  this.updateControl(`${p.id}`, val, p.type!);
                   return val;
                 }),
                 catchError(error => {
@@ -274,7 +275,10 @@ export class ElementDetailComponent implements OnDestroy {
     ];
   }
 
-  private updateControl(name: string, value: any): void {
+  private updateControl(name: string, value: any, type: TypeEnum): void {
+    if (type === TypeEnum.Boolean) {
+      value = value === 'true';
+    }
     const control = this.propertiesForm.get(name);
     if (!control) {
       this.propertiesForm.addControl(name, new FormControl(value));

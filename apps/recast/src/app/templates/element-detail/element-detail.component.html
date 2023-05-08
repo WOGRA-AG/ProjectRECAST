@@ -20,23 +20,30 @@
           [ngSwitch]="prop.type?.toLowerCase()"
           *ngIf="propertiesForm.contains('' + prop.id)">
           <app-input-field
-            *ngSwitchCase="'text'"
+            *ngSwitchCase="TypeEnum.Text"
+            type="text"
             class="input"
             [label]="prop.name ?? ''"
             [formControlName]="prop.id!"
             icon="bar_chart">
           </app-input-field>
           <app-input-field
-            *ngSwitchCase="'number'"
+            *ngSwitchCase="TypeEnum.Number"
             class="input"
             type="number"
             [label]="prop.name ?? ''"
             [formControlName]="prop.id!">
           </app-input-field>
           <app-file-input-field
-            *ngSwitchCase="'file'"
+            *ngSwitchCase="TypeEnum.File"
             [formControlName]="prop.id!"
-            [label]="prop.name ?? ''"></app-file-input-field>
+            [label]="prop.name!"></app-file-input-field>
+          <mat-checkbox
+            *ngSwitchCase="TypeEnum.Boolean"
+            [formControlName]="prop.id!"
+            color="primary">
+            {{ prop.name }}
+          </mat-checkbox>
           <div *ngSwitchDefault>
             <app-select-field [formControlName]="prop.id!" [label]="prop.name!">
               <mat-option
