@@ -20,6 +20,12 @@ export class OverviewComponent implements OnDestroy {
   ];
   public dataColumns: TableColumn[] = [
     {
+      key: 'id',
+      label: $localize`:@@label.id:ID`,
+      type: 'text',
+      required: true,
+    },
+    {
       key: 'name',
       label: $localize`:@@label.title:Title`,
       type: 'text',
