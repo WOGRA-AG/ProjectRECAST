@@ -17,6 +17,10 @@ table {
   width: 100%;
   z-index: 1;
 
+  .mat-column-id {
+    width: 10%;
+  }
+
   .text {
     cursor: pointer;
     height: inherit;
