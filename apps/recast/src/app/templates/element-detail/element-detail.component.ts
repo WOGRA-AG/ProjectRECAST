@@ -37,6 +37,7 @@ export class ElementDetailComponent implements OnDestroy {
   public isLastStep = false;
   public stepProperties: StepProperty[] = [];
   public propertiesForm = this.formBuilder.group({});
+  protected readonly TypeEnum = TypeEnum;
   private _currentIndex = 0;
   private _currentStep: Step | undefined;
   private _steps: Step[] = [];
@@ -261,6 +262,9 @@ export class ElementDetailComponent implements OnDestroy {
   ): Promise<void> {
     if (value && type === TypeEnum.File) {
       value = await strToFile(value);
+    }
+    if (type === TypeEnum.Boolean) {
+      value = value === 'true';
     }
     const control = this.propertiesForm.get(name);
     if (!control) {
