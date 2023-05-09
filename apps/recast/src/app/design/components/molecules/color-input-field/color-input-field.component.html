@@ -8,7 +8,9 @@
     [value]="value"
     (blur)="onTouch()"
     (change)="change($event)" />
-  <mat-icon matSuffix [ngStyle]="{ color: value }">square</mat-icon>
+  <mat-icon matSuffix [ngStyle]="{ color: value }" (click)="colorInput.click()"
+    >square</mat-icon
+  >
   <input
     #colorInput
     class="hidden"
