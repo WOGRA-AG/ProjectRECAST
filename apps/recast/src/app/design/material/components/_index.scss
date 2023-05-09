@@ -1,20 +1,22 @@
-@use 'button.scss' as button;
-@use 'sidenav.scss' as sidenav;
-@use 'toolbar.scss' as toolbar;
-@use 'navlist.scss' as navlist;
-@use 'expansion-module.scss' as expansionModule;
-@use 'dialog.scss' as dialog;
-@use 'list.scss' as list;
-@use 'table.scss' as table;
-@use 'chips.scss' as chips;
-@use 'stepper.scss' as stepper;
-@use 'form.scss' as form;
-@use 'tab.scss' as tab;
-@use 'button_variants.scss' as button_variants;
-@use 'icon.scss' as icon;
-@use 'icon_variants' as icon_variants;
-@use 'drag_and_drop_file_input' as single_file_input;
-@use 'file_input' as file_input;
+@use './button.scss' as button;
+@use './sidenav.scss' as sidenav;
+@use './toolbar.scss' as toolbar;
+@use './navlist.scss' as navlist;
+@use './expansion-module.scss' as expansionModule;
+@use './dialog.scss' as dialog;
+@use './list.scss' as list;
+@use './table.scss' as table;
+@use './chips.scss' as chips;
+@use './stepper.scss' as stepper;
+@use './form.scss' as form;
+@use './tab.scss' as tab;
+@use './button_variants.scss' as button_variants;
+@use './icon.scss' as icon;
+@use './icon_variants.scss' as icon_variants;
+@use './drag_and_drop_file_input.scss' as single_file_input;
+@use './file_input.scss' as file_input;
+@use './checkbox.scss' as checkbox;
+@use './color_input.scss' as color_input;
 
 @mixin theme($theme, $typography-config, $variants) {
   @include button.theme($theme, $typography-config, $variants);
@@ -34,4 +36,6 @@
   @include icon_variants.color($theme, $variants);
   @include single_file_input.theme($theme, $typography-config, $variants);
   @include file_input.theme($theme, $typography-config, $variants);
+  @include checkbox.theme($theme, $typography-config, $variants);
+  @include color_input.theme($theme, $typography-config, $variants);
 }
