@@ -26,6 +26,7 @@ import { ConfirmDialogComponent } from './components/organisms/confirm-dialog/co
 import { SelectFieldComponent } from './components/molecules/select-field/select-field.component';
 import { FileInputFieldComponent } from './components/molecules/file-input-field/file-input-field.component';
 import { DateInputFieldComponent } from './components/molecules/date-input-field/date-input-field.component';
+import { ColorInputFieldComponent } from './components/molecules/color-input-field/color-input-field.component';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -46,24 +47,15 @@ const COMPONENTS = [
   BreadcrumbComponent,
   StepperComponent,
   ConfirmDialogComponent,
+  SelectFieldComponent,
+  FileInputFieldComponent,
+  DateInputFieldComponent,
+  ColorInputFieldComponent,
 ];
 
 @NgModule({
-  declarations: [
-    ...COMPONENTS,
-    SelectFieldComponent,
-    FileInputFieldComponent,
-    DateInputFieldComponent,
-  ],
-  exports: [
-    ...COMPONENTS,
-    MaterialModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SelectFieldComponent,
-    FileInputFieldComponent,
-    DateInputFieldComponent,
-  ],
+  declarations: [...COMPONENTS],
+  exports: [...COMPONENTS, MaterialModule, FormsModule, ReactiveFormsModule],
   imports: [
     CommonModule,
     MaterialModule,

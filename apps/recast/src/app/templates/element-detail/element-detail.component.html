@@ -49,6 +49,11 @@
             class="input"
             [label]="prop.name ?? ''"
             [formControlName]="prop.id!" />
+          <app-color-input-field
+            *ngSwitchCase="TypeEnum.Color"
+            class="input"
+            [label]="prop.name ?? ''"
+            [formControlName]="prop.id!" />
           <div *ngSwitchDefault>
             <app-select-field [formControlName]="prop.id!" [label]="prop.name!">
               <mat-option
