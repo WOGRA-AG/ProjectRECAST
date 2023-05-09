@@ -24,6 +24,7 @@ import { isReference } from '../../shared/util/common-utils';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { StepPropertyService } from '../../services/step-property.service';
 import { StorageService } from '../../storage/services/storage.service';
+import TypeEnum = StepProperty.TypeEnum;
 
 @Component({
   selector: 'app-element-view',
@@ -36,6 +37,7 @@ export class ElementViewComponent implements OnDestroy {
   public processId: number | undefined;
   public properties: [{ id: string; name: string; value: any }] | undefined;
   public propertiesForm: FormGroup = this.formBuilder.group({});
+  protected readonly TypeEnum = TypeEnum;
   private readonly _destroy$: Subject<void> = new Subject<void>();
   private _processId$: Observable<number> = this.processId$();
   private _elementId$: Observable<number> = this.elementId$();
@@ -88,6 +90,14 @@ export class ElementViewComponent implements OnDestroy {
     return this.stepPropertyById$(id).pipe(
       filter(property => !!property),
       map(property => property.name || ''),
+      distinctUntilChanged()
+    );
+  }
+
+  public propertyType$(id: number): Observable<TypeEnum> {
+    return this.stepPropertyById$(id).pipe(
+      filter(property => !!property),
+      map(property => property.type ?? TypeEnum.Text),
       distinctUntilChanged()
     );
   }

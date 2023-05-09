@@ -3,14 +3,24 @@ steps:
   - name: Farbe definieren
     stepProperties:
       - name: Farbe
-        defaultValue: Rot
+        defaultValue: #ff0000
         description: Die Farbe des Ballons
-        type: text
+        type: color
+  - name: Ballon aufblasen
+    stepProperties:
       - name: Volumen
         defaultValue: 2
         description: Das Volumen des Ballons in Litern
         type: number
+  - name: Prüfen
+    stepProperties:
+      - name: Datum
+        description: Das Datum der Prüfung
+        type: date
+      - name: Dicht
+        defaultValue: true
+        description: Ist der Ballon dicht?
+        type: boolean
       - name: Bild
         description: Ein Bild des Ballons
         type: file
-  - name: empty step
