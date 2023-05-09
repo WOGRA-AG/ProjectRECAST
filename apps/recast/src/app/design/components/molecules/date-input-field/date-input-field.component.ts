@@ -80,11 +80,4 @@ export class DateInputFieldComponent implements ControlValueAccessor {
     this._onChange(iso);
     this.onTouch();
   }
-
-  protected dateInput(event: MatDatepickerInputEvent<any, any>): void {
-    const value = event.target.value;
-    const iso = this._dateAdapter.parse(value, 'L')?.toISOString();
-    this._onChange(iso);
-    this.onTouch();
-  }
 }
