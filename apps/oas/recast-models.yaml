@@ -75,6 +75,7 @@ components:
             - number
             - file
             - boolean
+            - date
 
     Element:
       properties:

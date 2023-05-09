@@ -25,6 +25,7 @@ import { StepperComponent } from './components/molecules/stepper/stepper.compone
 import { ConfirmDialogComponent } from './components/organisms/confirm-dialog/confirm-dialog.component';
 import { SelectFieldComponent } from './components/molecules/select-field/select-field.component';
 import { FileInputFieldComponent } from './components/molecules/file-input-field/file-input-field.component';
+import { DateInputFieldComponent } from './components/molecules/date-input-field/date-input-field.component';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -48,7 +49,12 @@ const COMPONENTS = [
 ];
 
 @NgModule({
-  declarations: [...COMPONENTS, SelectFieldComponent, FileInputFieldComponent],
+  declarations: [
+    ...COMPONENTS,
+    SelectFieldComponent,
+    FileInputFieldComponent,
+    DateInputFieldComponent,
+  ],
   exports: [
     ...COMPONENTS,
     MaterialModule,
@@ -56,6 +62,7 @@ const COMPONENTS = [
     ReactiveFormsModule,
     SelectFieldComponent,
     FileInputFieldComponent,
+    DateInputFieldComponent,
   ],
   imports: [
     CommonModule,
