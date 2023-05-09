@@ -44,7 +44,6 @@ export class SelectFieldComponent implements ControlValueAccessor {
       return;
     }
     this._value = val;
-    this.ngControl.control?.setValue(val);
     if (this._onChange) {
       this._onChange(val);
     }

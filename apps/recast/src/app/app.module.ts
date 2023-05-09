@@ -15,6 +15,9 @@ import { i18nModule } from './i18n/i18n.module';
 import { CreateElementComponent } from './templates/create-element/create-element.component';
 import { ElementDetailComponent } from './templates/element-detail/element-detail.component';
 import { ElementViewComponent } from './templates/element-view/element-view.component';
+import { StorageModule } from './storage/storage.module';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -34,11 +37,13 @@ import { ElementViewComponent } from './templates/element-view/element-view.comp
     UserModule,
     DesignModule,
     SharedModule,
+    StorageModule,
   ],
   providers: [
     SupabaseService,
     i18nModule.setLocale(),
     i18nModule.setLocaleId(),
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
 import { Process, Step, Element } from '../../../../build/openapi/recast';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
+import { StorageService } from '../../storage/services/storage.service';
 
 @Component({
   selector: 'app-overview',
@@ -42,7 +43,8 @@ export class OverviewComponent implements OnDestroy {
     public readonly processService: ProcessFacadeService,
     public readonly elementService: ElementFacadeService,
     public dialog: MatDialog,
-    public router: Router
+    public router: Router,
+    private readonly storageService: StorageService
   ) {
     this.tableData$ = processService.processes$;
   }
@@ -67,6 +69,9 @@ export class OverviewComponent implements OnDestroy {
       return;
     }
     switch (this.currentIndex) {
+      // Get storage backend from profile
+      // move delete routes to storage service
+      // implement delete in storage adapters
       case 0:
         this.dialog
           .open(ConfirmDialogComponent, {
@@ -78,7 +83,9 @@ export class OverviewComponent implements OnDestroy {
           .afterClosed()
           .pipe(
             filter(confirmed => !!confirmed),
-            concatMap(() => this.processService.deleteProcess$(element.id!)),
+            concatMap(() =>
+              this.storageService.deleteProcess$(element as Process)
+            ),
             takeUntil(this._destroy$)
           )
           .subscribe();
@@ -94,7 +101,9 @@ export class OverviewComponent implements OnDestroy {
           .afterClosed()
           .pipe(
             filter(confirmed => !!confirmed),
-            concatMap(() => this.elementService.deleteElement$(element.id!)),
+            concatMap(() =>
+              this.storageService.deleteElement$(element as Element)
+            ),
             takeUntil(this._destroy$)
           )
           .subscribe();

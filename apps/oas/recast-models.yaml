@@ -109,6 +109,12 @@ components:
           $ref: '#/components/schemas/Id'
         stepPropertyId:
           $ref: '#/components/schemas/Id'
+        storageBackend:
+          type: string
+          enum:
+            - POSTGRES
+            - S3
+            - SHEPARD
         value:
           $ref: '#/components/schemas/UuId'
 
@@ -134,3 +140,11 @@ components:
           type: string
         avatarUrl:
           type: string
+        shepardApiKey:
+          type: string
+        storageBackend:
+          type: string
+          enum:
+            - POSTGRES
+            - S3
+            - SHEPARD

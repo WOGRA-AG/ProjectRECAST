@@ -202,6 +202,7 @@ export class StepFacadeService {
   }
 
   private insertStep(state: Step[], step: Step): Step[] {
+    step.stepProperties = [];
     return state.concat(step);
   }
 

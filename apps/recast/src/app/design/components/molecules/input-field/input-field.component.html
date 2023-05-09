@@ -9,5 +9,5 @@
     (blur)="onTouch()"
     [value]="value" />
   <mat-icon *ngIf="icon" matSuffix>{{ icon }}</mat-icon>
-  <mat-error *ngIf="ngControl?.invalid">{{ errMsg }}</mat-error>
+  <mat-error *ngIf="formControl.invalid">{{ errMsg }}</mat-error>
 </mat-form-field>

@@ -14,15 +14,19 @@ export class SupabaseService {
   private readonly _supabase: SupabaseClient;
   private readonly _session$: BehaviorSubject<AuthSession | null> =
     new BehaviorSubject<AuthSession | null>(null);
+  private readonly _providerToken$: BehaviorSubject<string> =
+    new BehaviorSubject<string>('');
+  private readonly _providerRefreshToken$: BehaviorSubject<string> =
+    new BehaviorSubject<string>('');
 
   constructor() {
     this._supabase = createClient(
       environment.supabaseUrl,
       environment.supabaseKey
     );
-    this.supabase.auth
-      .getSession()
-      .then(({ data }) => this.updateSession(data.session));
+    this.supabase.auth.getSession().then(({ data }) => {
+      this.updateSession(data.session);
+    });
     this.supabase.auth.onAuthStateChange((_, session) =>
       this.updateSession(session)
     );
@@ -43,7 +47,35 @@ export class SupabaseService {
     return this._supabase;
   }
 
+  get provider_token$(): Observable<string> {
+    return this._providerToken$.pipe(filter(token => !!token));
+  }
+
+  get provider_token(): string {
+    return this._providerToken$.getValue();
+  }
+
+  get provider_refresh_token(): string {
+    return this._providerRefreshToken$.getValue();
+  }
+
   private updateSession(session: AuthSession | null): void {
+    if (session?.provider_token && session.provider_refresh_token) {
+      const kcData = {
+        providerToken: session.provider_token,
+        providerRefreshToken: session.provider_refresh_token,
+      };
+      localStorage.setItem('kc', JSON.stringify(kcData));
+      this._providerToken$.next(session.provider_token);
+      this._providerRefreshToken$.next(session.provider_refresh_token);
+    } else {
+      const storageToken = localStorage.getItem('kc');
+      if (storageToken) {
+        const jsonToken = JSON.parse(storageToken);
+        this._providerToken$.next(jsonToken.providerToken);
+        this._providerRefreshToken$.next(jsonToken.providerRefreshToken);
+      }
+    }
     this._session$.next(session);
   }
 }

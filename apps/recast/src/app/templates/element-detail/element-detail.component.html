@@ -16,12 +16,14 @@
     (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
       <div class="input-wrapper" *ngFor="let prop of stepProperties">
-        <ng-container [ngSwitch]="prop.type?.toLowerCase()">
+        <ng-container
+          [ngSwitch]="prop.type?.toLowerCase()"
+          *ngIf="propertiesForm.contains('' + prop.id)">
           <app-input-field
             *ngSwitchCase="TypeEnum.Text"
             type="text"
             class="input"
-            [label]="prop.name!"
+            [label]="prop.name ?? ''"
             [formControlName]="prop.id!"
             icon="text_fields">
           </app-input-field>
@@ -29,7 +31,7 @@
             *ngSwitchCase="TypeEnum.Number"
             class="input"
             type="number"
-            [label]="prop.name!"
+            [label]="prop.name ?? ''"
             [formControlName]="prop.id!"
             icon="bar_chart">
             >
@@ -73,6 +75,12 @@
       </div>
     </div>
     <div class="actions">
+      <mat-progress-spinner
+        [diameter]="40"
+        color="primary"
+        *ngIf="loading"
+        mode="indeterminate">
+      </mat-progress-spinner>
       <app-button-unfilled
         type="button"
         [bordered]="true"
@@ -82,12 +90,14 @@
       </app-button-unfilled>
       <app-submit-button
         *ngIf="!isLastStep"
+        [disabled]="loading"
         class="button"
         i18n="@@action.next_step">
         Take to the next step
       </app-submit-button>
       <app-submit-button
         *ngIf="isLastStep"
+        [disabled]="loading"
         class="button"
         i18n="@@action.finished">
         Finished

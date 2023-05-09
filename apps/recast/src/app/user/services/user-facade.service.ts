@@ -9,6 +9,7 @@ import {
   BehaviorSubject,
   catchError,
   concatMap,
+  distinctUntilChanged,
   filter,
   from,
   map,
@@ -17,6 +18,7 @@ import {
   Subject,
 } from 'rxjs';
 import { Profile } from '../../../../build/openapi/recast';
+import { elementComparator } from '../../shared/util/common-utils';
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -33,14 +35,15 @@ export class UserFacadeService {
       .pipe(
         filter(session => !!session),
         concatMap(() => this.updateProfile()),
-        catchError(() => of(null))
+        catchError(() => of(null)),
+        distinctUntilChanged(elementComparator)
       )
       .subscribe(profile => {
         this._currentProfile$.next(profile);
       });
-    this.profileChanges$().subscribe(profile =>
-      this._currentProfile$.next(profile)
-    );
+    this.profileChanges$()
+      .pipe(distinctUntilChanged(elementComparator))
+      .subscribe(profile => this._currentProfile$.next(profile));
   }
 
   get currentProfile$(): Observable<Profile> {
@@ -108,7 +111,7 @@ export class UserFacadeService {
   private updateProfile(): Observable<Profile> {
     const select = this._supabaseClient
       .from(Tables.profiles)
-      .select(`id, username, email, avatar_url`)
+      .select(`*`)
       .single();
     return from(select).pipe(
       map(({ data: profile, error }) => {

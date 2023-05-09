@@ -20,10 +20,10 @@ import {
 import { ElementFacadeService } from '../../services/element-facade.service';
 import { ProcessFacadeService } from '../../services/process-facade.service';
 import { Breadcrumb } from '../../design/components/molecules/breadcrumb/breadcrumb.component';
-import { isReference, strToFile } from '../../shared/util/common-utils';
+import { isReference } from '../../shared/util/common-utils';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { StepPropertyService } from '../../services/step-property.service';
-import TypeEnum = StepProperty.TypeEnum;
+import { StorageService } from '../../storage/services/storage.service';
 
 @Component({
   selector: 'app-element-view',
@@ -46,6 +46,7 @@ export class ElementViewComponent implements OnDestroy {
     private readonly elementService: ElementFacadeService,
     private readonly processService: ProcessFacadeService,
     private readonly stepPropertyService: StepPropertyService,
+    private readonly storageService: StorageService,
     private readonly formBuilder: FormBuilder
   ) {
     const process$: Observable<Process | undefined> = this._processId$.pipe(
@@ -118,18 +119,25 @@ export class ElementViewComponent implements OnDestroy {
   private async initFormGroup(): Promise<void> {
     this.updateControl('name', this.element?.name);
     for (const prop of this.element?.elementProperties!) {
-      let value: string = prop.value || '';
       const stepProp = this.stepPropertyService.stepPropertyById(
-        prop.stepPropertyId || 0
+        prop.stepPropertyId ?? 0
       );
-      if (value && stepProp.type === TypeEnum.File) {
-        const file = await strToFile(value);
-        value = file?.name || '';
-      }
-      if (isReference(stepProp) && value) {
-        value = this.elementService.elementById(+value)?.name || '';
-      }
-      this.updateControl(`${prop.id}`, value);
+      this.storageService
+        .loadValue$(prop, stepProp.type!)
+        .pipe(
+          takeUntil(this._destroy$),
+          map(val => {
+            if (isReference(stepProp.type!)) {
+              val = this.elementService.elementById(+val)?.name!;
+            }
+            if (val instanceof File) {
+              val = val.name;
+            }
+            this.updateControl(`${prop.id}`, val);
+            return val;
+          })
+        )
+        .subscribe();
     }
   }
 

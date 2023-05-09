@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SupabaseService, Tables } from './supabase.service';
+import { SupabaseService, Tables } from '../../../services/supabase.service';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { FileObject } from '@supabase/storage-js';
 import {
@@ -12,13 +12,22 @@ import {
   Observable,
   of,
 } from 'rxjs';
-import { UserFacadeService } from '../user/services/user-facade.service';
+import { UserFacadeService } from '../../../user/services/user-facade.service';
+import { StorageAdapterInterface } from './storage-adapter-interface';
+import {
+  Element,
+  ElementProperty,
+  Process,
+  StepProperty,
+} from '../../../../../build/openapi/recast';
+import TypeEnum = StepProperty.TypeEnum;
+import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 const camelCase = require('camelcase-keys');
 
 @Injectable({
   providedIn: 'root',
 })
-export class StorageService {
+export class SupabaseS3Adapter implements StorageAdapterInterface {
   private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
   private readonly _objects: BehaviorSubject<FileObject[]> =
     new BehaviorSubject<FileObject[]>([]);
@@ -39,6 +48,10 @@ export class StorageService {
     return this._objects;
   }
 
+  public getType(): StorageBackendEnum {
+    return StorageBackendEnum.S3;
+  }
+
   public upsertObject$(
     elementId: number,
     file: File
@@ -57,6 +70,28 @@ export class StorageService {
         return camelCase(data);
       })
     );
+  }
+
+  public loadValue$(_2: ElementProperty, _3: TypeEnum): Observable<string> {
+    throw new Error('Not Implemented Yet');
+  }
+
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  public async saveValue(
+    element: Element,
+    property: StepProperty,
+    value: any,
+    type: TypeEnum
+  ): Promise<void> {
+    throw new Error('Not Implemented Yet');
+  }
+
+  public deleteElement$(_: Element): Observable<void> {
+    return of(undefined);
+  }
+
+  public deleteProcess$(_: Process): Observable<void> {
+    return of(undefined);
   }
 
   private deleteObject$(path: string): Observable<any> {

@@ -60,8 +60,9 @@ export const yamlToProcess$ = (file: File): Observable<Process[]> =>
 export const elementComparator = <T>(a: T, b: T): boolean =>
   JSON.stringify(a) === JSON.stringify(b);
 
-export const isReference = (stepProp: StepProperty): boolean =>
-  !Object.values(TypeEnum).includes(stepProp.type as TypeEnum);
+export const isReference = (type: string): boolean =>
+  !Object.values(TypeEnum).toString().includes(type);
+// && in Process Names
 
 export const fileToBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
