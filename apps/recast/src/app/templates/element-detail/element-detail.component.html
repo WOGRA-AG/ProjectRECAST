@@ -23,14 +23,16 @@
             class="input"
             [label]="prop.name!"
             [formControlName]="prop.id!"
-            icon="bar_chart">
+            icon="text_fields">
           </app-input-field>
           <app-input-field
             *ngSwitchCase="TypeEnum.Number"
             class="input"
             type="number"
             [label]="prop.name!"
-            [formControlName]="prop.id!">
+            [formControlName]="prop.id!"
+            icon="bar_chart">
+            >
           </app-input-field>
           <app-file-input-field
             *ngSwitchCase="TypeEnum.File"
@@ -42,6 +44,11 @@
             color="primary">
             {{ prop.name }}</mat-checkbox
           >
+          <app-date-input-field
+            *ngSwitchCase="TypeEnum.Date"
+            class="input"
+            [label]="prop.name ?? ''"
+            [formControlName]="prop.id!" />
           <div *ngSwitchDefault>
             <app-select-field [formControlName]="prop.id!" [label]="prop.name!">
               <mat-option
