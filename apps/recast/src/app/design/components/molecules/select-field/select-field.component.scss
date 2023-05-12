@@ -1,3 +1,7 @@
 .content-hidden {
   display: none;
 }
+.filter-form-field {
+  position: relative;
+  z-index: 1001;
+}

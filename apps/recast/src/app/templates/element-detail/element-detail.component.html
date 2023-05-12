@@ -34,7 +34,6 @@
             [label]="prop.name ?? ''"
             [formControlName]="prop.id!"
             icon="bar_chart">
-            >
           </app-input-field>
           <app-file-input-field
             *ngSwitchCase="TypeEnum.File"
@@ -57,13 +56,14 @@
             [label]="prop.name ?? ''"
             [formControlName]="prop.id!" />
           <div *ngSwitchDefault>
-            <app-select-field [formControlName]="prop.id!" [label]="prop.name!">
-              <mat-option
-                disabled
-                [value]="''"
-                i18n="@@placeholder.select_element"
-                >Select element</mat-option
-              >
+            <app-select-field
+              i18n-hint="@@placeholder.select_element"
+              i18n-filterLabel="@@placeholder.filter_elements"
+              [formControlName]="prop.id!"
+              [label]="prop.name!"
+              filterIcon="filter_list"
+              filterLabel="Filter elements"
+              hint="Select element">
               <mat-option
                 *ngFor="let e of elementsByReference(prop.type) | async"
                 [value]="'' + e.id">
