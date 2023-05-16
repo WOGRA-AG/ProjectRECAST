@@ -6,7 +6,8 @@ import {
 } from '@dlr-shepard/shepard-client';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
 import { environment } from '../../../../environments/environment';
-import { from, map, Observable } from 'rxjs';
+import { filter, from, map, Observable } from 'rxjs';
+import { isShepardUser } from '../../../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -15,13 +16,15 @@ export class DataObjectService {
   private _dataObjectApi: DataObjectApi | undefined;
 
   constructor(private readonly userService: UserFacadeService) {
-    this.userService.currentProfile$.subscribe(profile => {
-      const config: Configuration = new Configuration({
-        basePath: environment.shepardUrl,
-        apiKey: profile.shepardApiKey,
+    this.userService.currentProfile$
+      .pipe(filter(isShepardUser))
+      .subscribe(profile => {
+        const config: Configuration = new Configuration({
+          basePath: environment.shepardUrl,
+          apiKey: profile.shepardApiKey,
+        });
+        this._dataObjectApi = new DataObjectApi(config);
       });
-      this._dataObjectApi = new DataObjectApi(config);
-    });
   }
 
   public createDataObject$(

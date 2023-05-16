@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  combineLatestWith,
+  catchError,
   distinctUntilChanged,
   filter,
   map,
@@ -13,9 +13,9 @@ import {
   tap,
 } from 'rxjs';
 import {
-  Element,
   Process,
   StepProperty,
+  Element,
 } from '../../../../build/openapi/recast';
 import { ElementFacadeService } from '../../services/element-facade.service';
 import { ProcessFacadeService } from '../../services/process-facade.service';
@@ -25,6 +25,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { StepPropertyService } from '../../services/step-property.service';
 import { StorageService } from '../../storage/services/storage.service';
 import TypeEnum = StepProperty.TypeEnum;
+import { ElementViewModel } from '../../model/element-view-model';
 
 @Component({
   selector: 'app-element-view',
@@ -32,15 +33,15 @@ import TypeEnum = StepProperty.TypeEnum;
   styleUrls: ['./element-view.component.scss'],
 })
 export class ElementViewComponent implements OnDestroy {
-  public element: Element | undefined = undefined;
+  public elementViewModel: ElementViewModel | undefined = undefined;
   public breadcrumbs: Breadcrumb[] = [];
   public processId: number | undefined;
-  public properties: [{ id: string; name: string; value: any }] | undefined;
   public propertiesForm: FormGroup = this.formBuilder.group({});
   protected readonly TypeEnum = TypeEnum;
   private readonly _destroy$: Subject<void> = new Subject<void>();
-  private _processId$: Observable<number> = this.processId$();
   private _elementId$: Observable<number> = this.elementId$();
+  private _elementViewModel$: Observable<ElementViewModel> =
+    this.elementViewModel$();
 
   constructor(
     private readonly router: Router,
@@ -51,71 +52,21 @@ export class ElementViewComponent implements OnDestroy {
     private readonly storageService: StorageService,
     private readonly formBuilder: FormBuilder
   ) {
-    const process$: Observable<Process | undefined> = this._processId$.pipe(
-      switchMap(id => processService.processById$(id)),
-      filter(process => !!process)
-    );
-
-    const element$: Observable<Element> = this._processId$.pipe(
-      combineLatestWith(
-        this.elementService.elements$,
-        this.stepPropertyService.stepProperties$,
-        this._elementId$
-      ),
-      filter(
-        ([_, elements, stepProps, _1]) =>
-          !!stepProps.length && !!elements.length
-      ),
-      switchMap(([_, _1, _2, elementId]) =>
-        elementService.elementById$(elementId)
-      ),
-      filter(element => !!element?.elementProperties?.length)
-    );
-
-    process$
-      .pipe(takeUntil(this._destroy$), combineLatestWith(element$))
-      .subscribe(([process, element]) => {
-        this.updateBreadcrumbs(process!);
-        this.element = element;
-        this.initFormGroup();
-      });
+    this._elementViewModel$
+      .pipe(
+        takeUntil(this._destroy$),
+        tap(elementViewModel => {
+          this.elementViewModel = elementViewModel;
+          this.updateBreadcrumbs(elementViewModel.process);
+        }),
+        switchMap(elementViewModel => this.initFormGroup$(elementViewModel))
+      )
+      .subscribe();
   }
 
   public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
-  }
-
-  public propertyName$(id: number): Observable<string> {
-    return this.stepPropertyById$(id).pipe(
-      filter(property => !!property),
-      map(property => property.name || ''),
-      distinctUntilChanged()
-    );
-  }
-
-  public propertyType$(id: number): Observable<TypeEnum> {
-    return this.stepPropertyById$(id).pipe(
-      filter(property => !!property),
-      map(property => property.type ?? TypeEnum.Text),
-      distinctUntilChanged()
-    );
-  }
-
-  public stepPropertyById$(id: number | undefined): Observable<StepProperty> {
-    if (!id) {
-      return of({});
-    }
-    return this.stepPropertyService.stepPropertyById$(id);
-  }
-
-  private processId$(): Observable<number> {
-    return this.activatedRoute.paramMap.pipe(
-      filter(param => !!param.get('processId')),
-      map(param => +param.get('processId')!),
-      tap(id => (this.processId = id)),
-      distinctUntilChanged()
-    );
   }
 
   private elementId$(): Observable<number> {
@@ -126,41 +77,41 @@ export class ElementViewComponent implements OnDestroy {
     );
   }
 
-  private async initFormGroup(): Promise<void> {
-    this.updateControl('name', this.element?.name);
-    for (const prop of this.element?.elementProperties!) {
-      const stepProp = this.stepPropertyService.stepPropertyById(
-        prop.stepPropertyId ?? 0
-      );
-      this.storageService
-        .loadValue$(prop, stepProp.type!)
-        .pipe(
-          takeUntil(this._destroy$),
-          map(val => {
-            if (isReference(stepProp.type!)) {
-              val = this.elementService.elementById(+val)?.name!;
-            }
-            if (val instanceof File) {
-              val = val.name;
-            }
-            this.updateControl(`${prop.id}`, val);
-            return val;
-          })
-        )
-        .subscribe();
-    }
+  private elementViewModel$(): Observable<ElementViewModel> {
+    return this._elementId$.pipe(
+      switchMap(elementId => this.storageService.loadValues$(elementId)),
+      catchError(() => {
+        alert('View Model not found');
+        return of(undefined);
+      }),
+      filter(Boolean)
+    );
   }
 
-  private updateControl(name: string, value: any): void {
+  private initFormGroup$(elementViewModel: ElementViewModel): Observable<void> {
+    this.updateControl$('name', elementViewModel.element.name);
+    for (const prop of elementViewModel.properties ?? []) {
+      let val = prop.value ?? prop.defaultValue;
+      if (isReference(prop.type) && val.hasOwnProperty('name')) {
+        val = val as Element;
+        val = val.name!;
+      }
+      this.updateControl$(`${prop.stepPropId}`, val);
+    }
+    return of(undefined);
+  }
+
+  private updateControl$(name: string, value: any): Observable<void> {
     const control = this.propertiesForm.get(name);
     if (!control) {
       this.propertiesForm.addControl(
         name,
         new FormControl({ value, disabled: true })
       );
-      return;
+      return of(undefined);
     }
     control.setValue(value);
+    return of(undefined);
   }
 
   private updateBreadcrumbs(process: Process): void {

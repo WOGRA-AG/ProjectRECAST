@@ -15,7 +15,10 @@ import {
 } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
-import { elementComparator } from '../../../shared/util/common-utils';
+import {
+  elementComparator,
+  isShepardUser,
+} from '../../../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -28,14 +31,16 @@ export class FileService {
     ? 'recast'
     : 'recast-dev';
   constructor(private readonly userService: UserFacadeService) {
-    this.userService.currentProfile$.subscribe(profile => {
-      const config: Configuration = new Configuration({
-        basePath: environment.shepardUrl,
-        apiKey: profile.shepardApiKey,
+    this.userService.currentProfile$
+      .pipe(filter(isShepardUser))
+      .subscribe(profile => {
+        const config: Configuration = new Configuration({
+          basePath: environment.shepardUrl,
+          apiKey: profile.shepardApiKey,
+        });
+        this._fileApi = new FileApi(config);
+        this.initFileContainers$().subscribe();
       });
-      this._fileApi = new FileApi(config);
-      this.initFileContainers$().subscribe();
-    });
   }
 
   get fileContainers$(): Observable<FileContainer[]> {

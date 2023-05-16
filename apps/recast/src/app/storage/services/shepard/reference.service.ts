@@ -10,7 +10,8 @@ import {
 } from '@dlr-shepard/shepard-client';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
 import { environment } from '../../../../environments/environment';
-import { from, map, Observable } from 'rxjs';
+import { filter, from, map, Observable } from 'rxjs';
+import { isShepardUser } from '../../../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -20,15 +21,19 @@ export class ReferenceService {
   private _structuredDataReferenceApi: StructureddataReferenceApi | undefined;
   private _dataObjectReferenceApi: DataObjectReferenceApi | undefined;
   constructor(private readonly userService: UserFacadeService) {
-    this.userService.currentProfile$.subscribe(profile => {
-      const config: Configuration = new Configuration({
-        basePath: environment.shepardUrl,
-        apiKey: profile.shepardApiKey,
+    this.userService.currentProfile$
+      .pipe(filter(isShepardUser))
+      .subscribe(profile => {
+        const config: Configuration = new Configuration({
+          basePath: environment.shepardUrl,
+          apiKey: profile.shepardApiKey,
+        });
+        this._fileReferenceApi = new FileReferenceApi(config);
+        this._structuredDataReferenceApi = new StructureddataReferenceApi(
+          config
+        );
+        this._dataObjectReferenceApi = new DataObjectReferenceApi(config);
       });
-      this._fileReferenceApi = new FileReferenceApi(config);
-      this._structuredDataReferenceApi = new StructureddataReferenceApi(config);
-      this._dataObjectReferenceApi = new DataObjectReferenceApi(config);
-    });
   }
 
   public getAllFileReferences$(

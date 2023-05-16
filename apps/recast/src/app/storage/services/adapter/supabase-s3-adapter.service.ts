@@ -22,6 +22,7 @@ import {
 } from '../../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
+import { ElementViewProperty } from '../../../model/element-view-model';
 const camelCase = require('camelcase-keys');
 
 @Injectable({
@@ -36,7 +37,7 @@ export class SupabaseS3Adapter implements StorageAdapterInterface {
     private readonly userFacade: UserFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
-      concatMap(() => this.loadValues$(1)),
+      concatMap(() => this._loadValues$(1)),
       catchError(() => of([]))
     );
     sessionChanges$.subscribe(properties => {
@@ -72,7 +73,7 @@ export class SupabaseS3Adapter implements StorageAdapterInterface {
     );
   }
 
-  public loadValue$(_2: ElementProperty, _3: TypeEnum): Observable<string> {
+  public loadValue$(_: number, _2: ElementViewProperty): Observable<string> {
     throw new Error('Not Implemented Yet');
   }
 
@@ -99,7 +100,7 @@ export class SupabaseS3Adapter implements StorageAdapterInterface {
     return from(rm);
   }
 
-  private loadValues$(elementId?: number): Observable<FileObject[]> {
+  private _loadValues$(elementId?: number): Observable<FileObject[]> {
     const user = this.userFacade.currentProfile;
     const path = `${user?.id}/${elementId?.toString()}`;
     const select = this._supabaseClient.storage.from(Tables.values).list(path);

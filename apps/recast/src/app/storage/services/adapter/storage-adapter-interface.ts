@@ -7,13 +7,17 @@ import {
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import { Observable } from 'rxjs';
+import {
+  ElementViewProperty,
+  ValueType,
+} from '../../../model/element-view-model';
 
 export interface StorageAdapterInterface {
   getType(): StorageBackendEnum;
   loadValue$(
-    elementProperty: ElementProperty,
-    type: TypeEnum
-  ): Observable<string | File>;
+    elementId: number,
+    elementViewProperty: ElementViewProperty
+  ): Observable<ValueType>;
   saveValue(
     element: Element,
     stepProperty: StepProperty,

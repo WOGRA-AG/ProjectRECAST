@@ -7,7 +7,11 @@ import {
   map,
 } from 'rxjs';
 import { Document, parseAllDocuments } from 'yaml';
-import { Process, StepProperty } from '../../../../build/openapi/recast';
+import {
+  Process,
+  Profile,
+  StepProperty,
+} from '../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 
 export const groupBy = <
@@ -101,3 +105,6 @@ export const strToFile = async (
   const fileName = dbString.substring(0, splitIndex);
   return base64ToFile(dbString.substring(splitIndex + 2), fileName);
 };
+
+export const isShepardUser = (profile: Profile): boolean =>
+  !!profile && !!profile.shepardApiKey;

@@ -17,6 +17,11 @@ import {
 } from '../../../shared/util/common-utils';
 import { ElementFacadeService } from '../../../services/element-facade.service';
 import { ProcessFacadeService } from '../../../services/process-facade.service';
+import { StepPropertyService } from '../../../services/step-property.service';
+import {
+  ElementViewProperty,
+  ValueType,
+} from '../../../model/element-view-model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +29,7 @@ import { ProcessFacadeService } from '../../../services/process-facade.service';
 export class SupabasePostgresAdapter implements StorageAdapterInterface {
   constructor(
     private elementPropertyService: ElementPropertyService,
+    private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
     private processService: ProcessFacadeService
   ) {}
@@ -32,17 +38,16 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
   }
 
   public loadValue$(
-    elementProperty: ElementProperty,
-    type: string
-  ): Observable<string | File> {
-    const val = elementProperty.value;
+    elementId: number,
+    elementViewProperty: ElementViewProperty
+  ): Observable<ValueType> {
+    const val = '' + elementViewProperty.value;
+    const type = elementViewProperty.type;
     if (val && type === TypeEnum.File) {
-      return from(strToFile(val)).pipe(filter(Boolean));
+      return from(strToFile(val)).pipe(filter(Boolean), take(1));
     }
     if (isReference(type) && val) {
-      return this.elementService
-        .elementById$(+val)
-        .pipe(map(e => '' + e?.id ?? ''));
+      return this.elementService.elementById$(+val);
     }
     return of(val ?? '');
   }

@@ -1,63 +1,77 @@
 <div class="page-wrapper">
   <app-page-header [breadcrumbs]="breadcrumbs">{{
-    element?.name
+    elementViewModel?.element?.name
   }}</app-page-header>
 
   <form
     #f="ngForm"
-    *ngIf="element"
+    *ngIf="elementViewModel"
     [formGroup]="propertiesForm"
     (ngSubmit)="(f.valid)">
     <div class="grid-wrapper">
-      <div class="input-wrapper">
+      <div class="input-wrapper" *ngIf="propertiesForm.controls['name']">
         <app-input-field
           class="input"
           label="Name"
           formControlName="name"
-          icon="bar_chart">
+          icon="text_fields">
         </app-input-field>
       </div>
-      <div class="input-wrapper" *ngFor="let prop of element.elementProperties">
+      <div
+        class="input-wrapper"
+        *ngFor="let prop of elementViewModel?.properties">
         <ng-container
-          *ngIf="propertiesForm.controls['' + prop.id]"
-          [ngSwitch]="
-            (propertyType$(prop?.stepPropertyId!) | async)?.toLowerCase()
-          ">
+          *ngIf="propertiesForm.controls['' + prop.stepPropId]"
+          [ngSwitch]="prop.type">
           <app-input-field
             *ngSwitchCase="TypeEnum.Text"
-            label="{{ propertyName$(prop.stepPropertyId!) | async }}"
+            [label]="prop.label"
             class="input"
             type="text"
-            [formControlName]="prop.id!"
+            [formControlName]="prop.stepPropId"
             icon="text_fields">
           </app-input-field>
           <app-input-field
             *ngSwitchCase="TypeEnum.Number"
-            label="{{ propertyName$(prop.stepPropertyId!) | async }}"
+            [label]="prop.label"
             class="input"
             type="number"
-            [formControlName]="prop.id!"
+            [formControlName]="prop.stepPropId"
             icon="bar_chart">
           </app-input-field>
           <app-input-field
             *ngSwitchCase="TypeEnum.Boolean"
-            [formControlName]="prop.id!"
+            [label]="prop.label"
             class="input"
+            [formControlName]="prop.stepPropId"
             icon="checkbox">
-            {{ propertyName$(prop.stepPropertyId!) | async }}
           </app-input-field>
           <app-date-input-field
             *ngSwitchCase="TypeEnum.Date"
-            label="{{ propertyName$(prop.stepPropertyId!) | async }}"
+            [label]="prop.label"
             class="input"
-            [formControlName]="prop.id!">
+            [formControlName]="prop.stepPropId">
           </app-date-input-field>
           <app-color-input-field
             *ngSwitchCase="TypeEnum.Color"
-            label="{{ propertyName$(prop.stepPropertyId!) | async }}"
+            [label]="prop.label"
             class="input"
-            [formControlName]="prop.id!">
+            [formControlName]="prop.stepPropId">
           </app-color-input-field>
+          <app-file-input-field
+            *ngSwitchCase="TypeEnum.File"
+            [label]="prop.label"
+            class="input"
+            [formControlName]="prop.stepPropId">
+          </app-file-input-field>
+          <app-input-field
+            *ngSwitchDefault
+            [label]="prop.label"
+            class="input"
+            type="text"
+            [formControlName]="prop.stepPropId"
+            icon="text_fields">
+          </app-input-field>
         </ng-container>
       </div>
     </div>
@@ -65,7 +79,7 @@
       <app-button-unfilled
         type="button"
         [bordered]="true"
-        routerLink="/overview/process/{{ processId }}"
+        routerLink="/overview/process/{{ elementViewModel.process.id }}"
         i18n="@@actions.back">
         Back
       </app-button-unfilled>

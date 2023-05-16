@@ -34,6 +34,10 @@ import { StepPropertyService } from '../../../services/step-property.service';
 import { ElementFacadeService } from '../../../services/element-facade.service';
 import { isReference } from '../../../shared/util/common-utils';
 import { ProcessFacadeService } from '../../../services/process-facade.service';
+import {
+  ElementViewProperty,
+  ValueType,
+} from '../../../model/element-view-model';
 
 @Injectable({
   providedIn: 'root',
@@ -52,10 +56,11 @@ export class ShepardAdapter implements StorageAdapterInterface {
   }
 
   public loadValue$(
-    elementProperty: ElementProperty,
-    type: TypeEnum
-  ): Observable<string | File> {
-    const value = elementProperty.value;
+    elementId: number,
+    elementViewProperty: ElementViewProperty
+  ): Observable<ValueType> {
+    const value = '' + elementViewProperty.value;
+    const type = elementViewProperty.type;
     if (!value) {
       return of('');
     }
@@ -72,14 +77,14 @@ export class ShepardAdapter implements StorageAdapterInterface {
     let stepProp: StepProperty;
     let dataObjId: number;
     let processId: number;
-    return this.elementService.elementById$(elementProperty.elementId!).pipe(
+    return this.elementService.elementById$(elementId).pipe(
       concatMap((element: Element): Observable<StepProperty | undefined> => {
         if (!element) {
           return of(undefined);
         }
         processId = element.processId!;
         return this.stepPropertyService.stepPropertyById$(
-          elementProperty.stepPropertyId!
+          elementViewProperty.stepPropId
         );
       }),
       filter(Boolean),
@@ -94,15 +99,15 @@ export class ShepardAdapter implements StorageAdapterInterface {
         (): Observable<DataObject> =>
           this.shepardService.getDataObjectById$(+value, processId)
       ),
-      concatMap((dataObj: DataObject): Observable<Step> => {
+      concatMap((dataObj: DataObject): Observable<Step | undefined> => {
         dataObjId = dataObj.id!;
         return this.stepService.stepById$(stepProp.stepId!);
       }),
       concatMap(
-        (step: Step): Observable<StructuredDataPayload> =>
+        (step: Step | undefined): Observable<StructuredDataPayload> =>
           this.shepardService.getStructuredDataFromDataObject$(
             dataObjId,
-            step.name!,
+            step?.name!,
             processId
           )
       ),
@@ -313,7 +318,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
     return this.stepService.stepById$(property.stepId!).pipe(
       mergeMap(step =>
         this.shepardService.upsertStructuredData$(
-          step.name ?? '',
+          step?.name ?? '',
           property.name ?? '',
           value
         )

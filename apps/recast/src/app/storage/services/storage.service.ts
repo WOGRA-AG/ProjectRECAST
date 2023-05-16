@@ -7,9 +7,25 @@ import {
 } from '../../../../build/openapi/recast';
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import { StorageAdapterInterface } from './adapter/storage-adapter-interface';
-import TypeEnum = StepProperty.TypeEnum;
-import { BehaviorSubject, filter, map, Observable, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  from,
+  map,
+  mergeAll,
+  Observable,
+  of,
+  switchMap,
+  take,
+  toArray,
+} from 'rxjs';
 import { UserFacadeService } from '../../user/services/user-facade.service';
+import {
+  ElementViewModel,
+  ElementViewProperty,
+  ValueType,
+} from '../../model/element-view-model';
+import { ElementViewModelFacadeService } from '../../services/element-view-model-facade.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +36,8 @@ export class StorageService {
   constructor(
     @Inject('StorageAdapterInterface')
     private readonly storageAdapters: StorageAdapterInterface[],
-    private readonly userService: UserFacadeService
+    private readonly userService: UserFacadeService,
+    private readonly elementViewModelService: ElementViewModelFacadeService
   ) {
     this.userService.currentProfile$.subscribe(profile => {
       const storageBackend =
@@ -29,10 +46,41 @@ export class StorageService {
     });
   }
 
+  public loadValues$(elementId: number): Observable<ElementViewModel> {
+    return this.elementViewModelService
+      .elementViewModelByElementId$(elementId)
+      .pipe(
+        filter(Boolean),
+        switchMap(elementViewModel => {
+          const properties = elementViewModel.properties;
+          const observables = properties.map(property => {
+            if (!property.value) {
+              return of(property);
+            }
+            return this.loadValue$(elementId, property).pipe(
+              take(1),
+              map(value => ({
+                ...property,
+                value,
+              }))
+            );
+          });
+          return from(observables).pipe(
+            mergeAll(),
+            toArray(),
+            map(props => ({
+              ...elementViewModel,
+              props,
+            }))
+          );
+        })
+      );
+  }
+
   public loadValue$(
-    elementProperty: ElementProperty,
-    type: TypeEnum
-  ): Observable<string | File> {
+    elementId: number,
+    elementProperty: ElementViewProperty
+  ): Observable<ValueType> {
     return this._storageBackend$.pipe(
       filter(Boolean),
       map(backend => elementProperty.storageBackend ?? backend),
@@ -43,7 +91,7 @@ export class StorageService {
         if (!storageAdapter) {
           throw new Error(`No such Storage Backend: ${backend}`);
         }
-        return storageAdapter.loadValue$(elementProperty, type);
+        return storageAdapter.loadValue$(elementId, elementProperty);
       })
     );
   }

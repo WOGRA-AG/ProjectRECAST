@@ -17,7 +17,10 @@ import {
 } from '@dlr-shepard/shepard-client';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
 import { environment } from '../../../../environments/environment';
-import { elementComparator } from '../../../shared/util/common-utils';
+import {
+  elementComparator,
+  isShepardUser,
+} from '../../../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -29,14 +32,16 @@ export class CollectionService {
   >([]);
 
   constructor(private readonly userService: UserFacadeService) {
-    this.userService.currentProfile$.subscribe(profile => {
-      const config: Configuration = new Configuration({
-        basePath: environment.shepardUrl,
-        apiKey: profile.shepardApiKey,
+    this.userService.currentProfile$
+      .pipe(filter(isShepardUser))
+      .subscribe(profile => {
+        const config: Configuration = new Configuration({
+          basePath: environment.shepardUrl,
+          apiKey: profile.shepardApiKey,
+        });
+        this._collectionApi = new CollectionApi(config);
+        this.initCollections$().subscribe();
       });
-      this._collectionApi = new CollectionApi(config);
-      this.initCollections$().subscribe();
-    });
   }
 
   get collections$(): Observable<Collection[]> {
