@@ -1,0 +1,10 @@
+name: Ballonstraus
+steps:
+  - name: Ballons wählen
+    stepProperties:
+      - name: Ballon1
+        description: Ballon1
+        type: Ballonfabrik
+      - name: Ballon2
+        description: Ballon2
+        type: Ballonfabrik

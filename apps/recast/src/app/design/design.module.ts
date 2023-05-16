@@ -15,7 +15,6 @@ import { SearchFieldComponent } from './components/molecules/search-field/search
 import { IconButtonComponent } from './components/molecules/icon-button/icon-button.component';
 import { SingleFileUploadComponent } from './components/organisms/single-file-upload/single-file-upload.component';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
-// eslint-disable-next-line  max-len
 import { DragAndDropFileInputComponent } from './components/molecules/drag-and-drop-file-input/drag-and-drop-file-input.component';
 import { BreadcrumbComponent } from './components/molecules/breadcrumb/breadcrumb.component';
 import { AppRoutingModule } from '../app-routing.module';
@@ -27,6 +26,7 @@ import { SelectFieldComponent } from './components/molecules/select-field/select
 import { FileInputFieldComponent } from './components/molecules/file-input-field/file-input-field.component';
 import { DateInputFieldComponent } from './components/molecules/date-input-field/date-input-field.component';
 import { ColorInputFieldComponent } from './components/molecules/color-input-field/color-input-field.component';
+import { AutocompleteInputFieldComponent } from './components/molecules/autocomplete-input-field/autocomplete-input-field.component';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -54,8 +54,14 @@ const COMPONENTS = [
 ];
 
 @NgModule({
-  declarations: [...COMPONENTS],
-  exports: [...COMPONENTS, MaterialModule, FormsModule, ReactiveFormsModule],
+  declarations: [...COMPONENTS, AutocompleteInputFieldComponent],
+  exports: [
+    ...COMPONENTS,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AutocompleteInputFieldComponent,
+  ],
   imports: [
     CommonModule,
     MaterialModule,

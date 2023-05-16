@@ -8,6 +8,7 @@
       [value]="value?.name"
       class="file-name" />
     <app-button-filled
+      *ngIf="!value"
       i18n="@@action.upload"
       matSuffix
       type="button"
@@ -15,6 +16,15 @@
       [color]="color">
       Upload
     </app-button-filled>
+    <app-button-unfilled
+      *ngIf="!!value"
+      i18n="@@action.upload"
+      matSuffix
+      type="button"
+      [size]="size"
+      [color]="color">
+      Upload
+    </app-button-unfilled>
   </mat-form-field>
   <input
     #fileInput

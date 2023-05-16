@@ -27,6 +27,7 @@ import {
   MatMomentDateModule,
   MomentDateModule,
 } from '@angular/material-moment-adapter';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 export const MATERIAL_MODULES: (typeof MatInputModule)[] = [
   MatButtonModule,
@@ -54,6 +55,7 @@ export const MATERIAL_MODULES: (typeof MatInputModule)[] = [
   MatDatepickerModule,
   MatMomentDateModule,
   MomentDateModule,
+  MatAutocompleteModule,
 ];
 
 const DATE_FORMATS = {

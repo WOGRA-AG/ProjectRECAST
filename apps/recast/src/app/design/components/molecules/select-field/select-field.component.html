@@ -1,12 +1,20 @@
-<mat-form-field [appearance]="appearance">
+<mat-form-field
+  [appearance]="appearance"
+  [ngStyle]="{ display: isOpen ? 'none' : 'block' }">
   <mat-label>{{ label }}</mat-label>
   <mat-select
+    #select
     [formControl]="formControl"
     (selectionChange)="change($event)"
+    (opened)="isOpen = true; filterInput.focus()"
+    (closed)="resetFilter()"
     (blur)="onTouch()"
     [value]="value">
+    <mat-option disabled>
+      {{ hint }}
+    </mat-option>
     <mat-option
-      *ngFor="let option of transformedOptions$() | async"
+      *ngFor="let option of filteredOptions$() | async"
       [value]="option.value"
       [disabled]="option.disabled"
       [id]="option.id">
@@ -15,6 +23,21 @@
   </mat-select>
   <mat-icon *ngIf="icon" matSuffix>{{ icon }}</mat-icon>
   <mat-error *ngIf="ngControl.invalid">{{ errMsg }}</mat-error>
+</mat-form-field>
+
+<mat-form-field
+  [appearance]="appearance"
+  [ngStyle]="{ display: isOpen ? 'block' : 'none' }"
+  class="filter-form-field"
+  (keydown.enter)="onFilterSubmit($event); select.close()">
+  <mat-label>{{ filterLabel }}</mat-label>
+  <input
+    #filterInput
+    matInput
+    (blur)="onTouch()"
+    [(ngModel)]="filterValue"
+    [placeholder]="filterLabel" />
+  <mat-icon *ngIf="filterIcon" matSuffix>{{ filterIcon }}</mat-icon>
 </mat-form-field>
 
 <div class="content-hidden">
