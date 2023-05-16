@@ -12,7 +12,7 @@
       [disabled]="formControl.disabled"
       [ngClass]="{ 'file-name': !formControl.disabled }" />
     <app-button-filled
-      *ngIf="!formControl.disabled"
+      *ngIf="!formControl.disabled && !value"
       i18n="@@action.upload"
       matSuffix
       type="button"
@@ -21,6 +21,15 @@
       [color]="color">
       Upload
     </app-button-filled>
+    <app-button-unfilled
+      *ngIf="!formControl.disabled && !!value"
+      i18n="@@action.upload"
+      matSuffix
+      type="button"
+      [size]="size"
+      [color]="color">
+      Upload
+    </app-button-unfilled>
   </mat-form-field>
   <input
     #fileInput

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { ColorPalette } from '../../../types';
 
 @Component({
   selector: 'app-button-unfilled',
@@ -6,7 +7,7 @@ import { Component, Input } from '@angular/core';
 })
 export class ButtonUnfilledComponent {
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
-  @Input() color = 'primary';
+  @Input() color: ColorPalette = 'primary';
   @Input() icon = '';
   @Input() svgIcon = '';
   @Input() disabled = false;
