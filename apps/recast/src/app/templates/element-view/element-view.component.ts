@@ -89,29 +89,29 @@ export class ElementViewComponent implements OnDestroy {
   }
 
   private initFormGroup$(elementViewModel: ElementViewModel): Observable<void> {
-    this.updateControl$('name', elementViewModel.element.name);
+    this.updateControl('name', elementViewModel.element.name);
     for (const prop of elementViewModel.properties ?? []) {
       let val = prop.value ?? prop.defaultValue;
       if (isReference(prop.type) && val.hasOwnProperty('name')) {
         val = val as Element;
         val = val.name!;
       }
-      this.updateControl$(`${prop.stepPropId}`, val);
+      this.updateControl(`${prop.stepPropId}`, val);
     }
     return of(undefined);
   }
 
-  private updateControl$(name: string, value: any): Observable<void> {
+  private updateControl(name: string, value: any): void {
     const control = this.propertiesForm.get(name);
     if (!control) {
       this.propertiesForm.addControl(
         name,
         new FormControl({ value, disabled: true })
       );
-      return of(undefined);
+      return;
     }
     control.setValue(value);
-    return of(undefined);
+    return;
   }
 
   private updateBreadcrumbs(process: Process): void {

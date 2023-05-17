@@ -1,58 +1,56 @@
 import { Component, OnDestroy } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Element, Step, StepProperty, Process } from 'build/openapi/recast';
 import {
   catchError,
   filter,
   map,
-  mergeMap,
   of,
   Subject,
   takeUntil,
-  combineLatestWith,
   Observable,
   tap,
   switchMap,
-  from,
-  toArray,
   firstValueFrom,
+  take,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
-import { ElementFacadeService } from 'src/app/services/element-facade.service';
-import { ProcessFacadeService } from 'src/app/services/process-facade.service';
-import { StepFacadeService } from 'src/app/services/step-facade.service';
-import { StepPropertyService } from 'src/app/services/step-property.service';
+import {
+  ElementFacadeService,
+  ProcessFacadeService,
+  StepFacadeService,
+  StepPropertyService,
+  ElementViewModelFacadeService,
+} from 'src/app/services';
 import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { StorageService } from '../../storage/services/storage.service';
 import TypeEnum = StepProperty.TypeEnum;
-import { ElementViewModelFacadeService } from '../../services/element-view-model-facade.service';
-import { ElementViewModel } from '../../model/element-view-model';
+import {
+  ElementViewModel,
+  ElementViewProperty,
+} from '../../model/element-view-model';
+import { isReference } from '../../shared/util/common-utils';
 @Component({
   selector: 'app-element-detail',
   templateUrl: './element-detail.component.html',
   styleUrls: ['./element-detail.component.scss'],
 })
 export class ElementDetailComponent implements OnDestroy {
-  public element: Element | undefined;
   public breadcrumbs: Breadcrumb[] = [];
   public stepTitles: string[] = [];
   public isLastStep = false;
-  public stepProperties: StepProperty[] = [];
-  public propertiesForm = this.formBuilder.group({});
+  public propertiesForm: FormGroup = this.formBuilder.group({});
   public loading = false;
   public elementViewModel: ElementViewModel | undefined;
   protected readonly TypeEnum = TypeEnum;
+  protected currentProperties: ElementViewProperty[] = [];
+  private _stepProperties: StepProperty[] = [];
   private _currentIndex = 0;
   private _currentStep: Step | undefined;
   private _steps: Step[] = [];
   private readonly _destroy$: Subject<void> = new Subject<void>();
-  private _steps$: Observable<Step[]> = this.steps$();
-  private _process$: Observable<Process | undefined> = this.process$();
-  private _element$: Observable<Element> = this.element$();
-  private _step$: Observable<Step | undefined> = this.step$();
-  private _elementId$: Observable<number> = this.elementId$();
   private _elementViewModel$: Observable<ElementViewModel> =
     this.elementViewModel$();
 
@@ -72,75 +70,14 @@ export class ElementDetailComponent implements OnDestroy {
       .pipe(
         takeUntil(this._destroy$),
         tap(elementViewModel => {
-          console.log('element view model', elementViewModel);
           this.elementViewModel = elementViewModel;
           this.initBreadcrumbs(elementViewModel.process);
           this.initializeComponentProperties(
-            elementViewModel.element,
             elementViewModel.currentStep,
             elementViewModel.sortedSteps
           );
-        })
-      )
-      .subscribe();
-
-    this._elementId$
-      .pipe(
-        switchMap(elementId => this.storageService.loadValues$(elementId)),
-        takeUntil(this._destroy$),
-        catchError(() => {
-          alert('Element not found');
-          return of(undefined);
         }),
-        filter(Boolean)
-      )
-      .subscribe(elementViewModel => {
-        console.log('element view model', elementViewModel);
-        this.elementViewModel = elementViewModel;
-        this.element = elementViewModel.element;
-      });
-    this._process$
-      .pipe(
-        takeUntil(this._destroy$),
-        combineLatestWith(this._element$, this._step$, this._steps$),
-        filter(
-          ([process, element, step, steps]) =>
-            !!process && !!element && !!step && !!steps
-        ),
-        switchMap(([_2, element, _, _1]) =>
-          from(this.stepProperties).pipe(
-            mergeMap(p => {
-              const elemProp = element.elementProperties?.find(
-                e => e.stepPropertyId === p.id
-              );
-              if (!elemProp) {
-                this.updateControl(`${p.id}`, p.defaultValue, p.type!);
-                return of(null);
-              }
-              const elementViewProp = this.elementViewModel?.properties.find(
-                e => e.stepPropId === p.id
-              );
-              if (!elementViewProp) {
-                this.updateControl(`${p.id}`, p.defaultValue, p.type!);
-                return of(null);
-              }
-              return this.storageService
-                .loadValue$(this.element?.id!, elementViewProp)
-                .pipe(
-                  map(val => {
-                    this.updateControl(`${p.id}`, val, p.type!);
-                    return val;
-                  }),
-                  catchError(error => {
-                    console.error(error);
-                    return of(null);
-                  })
-                );
-            }),
-            toArray(),
-            takeUntil(this._destroy$)
-          )
-        )
+        switchMap(elementViewModel => this.initFormGroup$(elementViewModel))
       )
       .subscribe();
   }
@@ -166,7 +103,7 @@ export class ElementDetailComponent implements OnDestroy {
 
   public async onSubmitClicked(): Promise<void> {
     this.loading = true;
-    if (!this.element) {
+    if (!this.elementViewModel?.element) {
       return;
     }
     if (!this.isLastStep) {
@@ -210,58 +147,67 @@ export class ElementDetailComponent implements OnDestroy {
     return this.elementService.elementsByProcessName$(reference);
   }
 
+  private initFormGroup$(elementViewModel: ElementViewModel): Observable<void> {
+    for (const prop of elementViewModel.properties ?? []) {
+      let val = prop.value ?? prop.defaultValue;
+      if (isReference(prop.type) && val.hasOwnProperty('name')) {
+        val = val as Element;
+        val = val.name!;
+      }
+      this.updateControl(`${prop.stepPropId}`, val, prop.type);
+    }
+    return of(undefined);
+  }
+
   private async updateValues(): Promise<void> {
-    for (const prop of this.stepProperties) {
+    if (!this.elementViewModel) {
+      return;
+    }
+    for (const prop of this._stepProperties) {
       const value: any = this.propertiesForm.get(`${prop.id}`)?.value;
       await firstValueFrom(
-        this.storageService.updateValue$(this.element!, prop, value)
+        this.storageService.updateValue$(
+          this.elementViewModel.element,
+          prop,
+          value
+        )
       );
     }
   }
 
   private initializeComponentProperties(
-    element: Element,
     step: Step | undefined,
     steps: Step[]
   ): void {
     this.stepTitles = steps.map(s => s.name!);
     this._steps = steps;
-    this.element = element;
     this._currentStep = step;
     this.currentIndex = step ? this._steps.indexOf(step) : 0;
     this.isLastStep = this._steps.length - 1 === this.currentIndex;
-    this.stepProperties = step?.stepProperties || [];
+    this._stepProperties = step?.stepProperties || [];
+    this.currentProperties =
+      this.elementViewModel?.properties.filter(
+        p => p.stepId === this._currentStep?.id
+      ) ?? [];
   }
 
   private navigateForward(): void {
     if (!this.isLastStep) {
       const nextStep = this.stepService.nextStep(this._currentStep!);
-      this.updateElementCurrentStep(this.element?.id!, nextStep?.id!);
       this.navigateStep(nextStep!);
       return;
     }
-    this.updateElementCurrentStep(this.element?.id!, null);
-    this.navigateBack();
-  }
-
-  private step$(): Observable<Step | undefined> {
-    return this.route.paramMap.pipe(
-      filter(param => !!param.get('stepId')),
-      map(param => +param.get('stepId')!),
-      switchMap(id => this.stepService.stepById$(id))
-    );
+    this.updateElementCurrentStep$(this.elementViewModel?.element.id!, null)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.navigateBack();
+      });
   }
 
   private elementId$(): Observable<number> {
     return this.route.paramMap.pipe(
       filter(param => !!param.get('elementId')),
       map(param => +param.get('elementId')!)
-    );
-  }
-
-  private element$(): Observable<Element> {
-    return this.elementId$().pipe(
-      switchMap(id => this.elementService.elementById$(id))
     );
   }
 
@@ -293,22 +239,29 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   private navigateStep(step: Step): void {
-    this.router
-      .navigate(['/'], { skipLocationChange: false })
-      .then(() =>
-        this.router.navigateByUrl(
-          '/overview/process/' +
-            step.processId! +
-            '/step/' +
-            step.id! +
-            '/element/' +
-            this.element?.id
-        )
-      );
+    this.updateElementCurrentStep$(this.elementViewModel?.element.id!, step.id!)
+      .pipe(take(1), filter(Boolean))
+      .subscribe(element => {
+        this.router
+          .navigate(['/'], { skipLocationChange: false })
+          .then(() =>
+            this.router.navigateByUrl(
+              '/overview/process/' +
+                step.processId! +
+                '/step/' +
+                step.id! +
+                '/element/' +
+                element.id
+            )
+          );
+      });
   }
 
-  private updateElementCurrentStep(id: number, stepId: number | null): void {
-    this.elementService
+  private updateElementCurrentStep$(
+    id: number,
+    stepId: number | null
+  ): Observable<Element | undefined> {
+    return this.elementService
       .saveElement$({
         id,
         currentStepId: stepId,
@@ -319,8 +272,7 @@ export class ElementDetailComponent implements OnDestroy {
           return of(undefined);
         }),
         takeUntil(this._destroy$)
-      )
-      .subscribe();
+      );
   }
 
   private initBreadcrumbs(process: Process): void {
@@ -330,13 +282,17 @@ export class ElementDetailComponent implements OnDestroy {
         link: '/overview',
       },
       { label: process.name!, link: '/overview/process/' + process.id },
-      { label: this.element?.name! },
+      { label: this.elementViewModel?.element.name! },
     ];
   }
 
   private updateControl(name: string, value: any, type: TypeEnum): void {
     if (type === TypeEnum.Boolean) {
       value = value === 'true';
+    }
+    if (isReference(type) && value.hasOwnProperty('name')) {
+      value = value as Element;
+      value = value.id!;
     }
     const control = this.propertiesForm.get(name);
     if (!control) {

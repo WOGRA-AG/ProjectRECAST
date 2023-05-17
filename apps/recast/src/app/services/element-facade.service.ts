@@ -60,8 +60,8 @@ export class ElementFacadeService {
     );
     merge(this.elementChanges$(), sessionChanges$, elemPropChanges$)
       .pipe(distinctUntilChanged(elementComparator))
-      .subscribe(properties => {
-        this._elements$.next(properties);
+      .subscribe(elements => {
+        this._elements$.next(elements);
       });
   }
 
@@ -253,7 +253,7 @@ export class ElementFacadeService {
       );
     }
     return groupBy$(props, 'elementId').pipe(
-      filter(({ key }) => !!key),
+      filter(({ key }) => key === element.id),
       map(({ key, values }) => {
         element = this.addPropertiesToElement(element, key!, values);
         return state.map(value => (value.id === element.id ? element : value));

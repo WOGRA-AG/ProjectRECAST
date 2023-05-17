@@ -53,14 +53,6 @@ export class ElementViewModelFacadeService {
       .subscribe();
   }
 
-  public get elementViewModels$(): Observable<ElementViewModel[]> {
-    return this._elementViewModels$.asObservable();
-  }
-
-  public get elementViewModels(): ElementViewModel[] {
-    return this._elementViewModels$.getValue();
-  }
-
   public elementViewModelByElementId$(
     elementId: number
   ): Observable<ElementViewModel | undefined> {
@@ -75,17 +67,6 @@ export class ElementViewModelFacadeService {
     );
   }
 
-  public elementViewModelByProcessId$(
-    processId: number
-  ): Observable<ElementViewModel | undefined> {
-    return this._elementViewModels$.pipe(
-      map(elementViewModels =>
-        elementViewModels.find(
-          elementViewModel => elementViewModel.element.processId === processId
-        )
-      )
-    );
-  }
   private _initElementViewModels$(): Observable<ElementViewModel> {
     return this._elements$().pipe(
       switchMap(elements =>
@@ -103,18 +84,16 @@ export class ElementViewModelFacadeService {
       combineLatestWith(
         this._stepById$(element.currentStepId!),
         this._stepsByProcessId$(element.processId!),
-        this._stepPropertiesByProcessId$(element.processId!),
-        this._elementPropertiesByElementId$(element.id!)
+        this._stepPropertiesByProcessId$(element.processId!)
       ),
-      filter(([process, _1, _2, _3, _4]) => !!process),
-      switchMap(([process, step, steps, stepProperties, elementProperties]) =>
+      filter(([process, _1, _2, _3]) => !!process),
+      switchMap(([process, step, steps, stepProperties]) =>
         this._elementViewModelFromElementAndProcessAndStepAndStepPropertiesAndElementProperties$(
           element,
           process,
           step,
           steps,
-          stepProperties,
-          elementProperties
+          stepProperties
         )
       )
     );
@@ -125,18 +104,16 @@ export class ElementViewModelFacadeService {
     process: Process | undefined,
     step: Step | undefined,
     steps: Step[],
-    stepProperties: StepProperty[],
-    elementProperties: ElementProperty[]
+    stepProperties: StepProperty[]
   ): Observable<ElementViewModel> {
     if (!process) {
       throw new Error('Process is undefined');
     }
     const elementViewProperties: ElementViewProperty[] =
       this._elementViewModelsFromElementPropertiesAndStepProperties(
-        elementProperties,
+        element.elementProperties ?? [],
         stepProperties
       );
-    console.log('elementViewProperties', elementViewProperties);
     return of({
       element,
       process,
@@ -162,12 +139,6 @@ export class ElementViewModelFacadeService {
     return this.stepService.stepsByProcessId$(id);
   }
 
-  private _stepPropertiesByStepId$(id: number): Observable<StepProperty[]> {
-    return this.stepService
-      .stepById$(id)
-      .pipe(map(step => step?.stepProperties ?? []));
-  }
-
   private _stepPropertiesByProcessId$(id: number): Observable<StepProperty[]> {
     return this.stepService.stepsByProcessId$(id).pipe(
       map(steps => {
@@ -176,16 +147,9 @@ export class ElementViewModelFacadeService {
           stepProperties.push(...(step.stepProperties ?? []));
         });
         return stepProperties;
-      })
+      }),
+      distinctUntilChanged(elementComparator)
     );
-  }
-
-  private _elementPropertiesByElementId$(
-    id: number
-  ): Observable<ElementProperty[]> {
-    return this.elementService
-      .elementById$(id)
-      .pipe(map(element => element?.elementProperties ?? []));
   }
 
   private _elementViewModelsFromElementPropertiesAndStepProperties(

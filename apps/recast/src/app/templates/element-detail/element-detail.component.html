@@ -1,6 +1,6 @@
 <div class="content-wrapper">
   <app-page-header [breadcrumbs]="breadcrumbs">
-    {{ element?.name! }}
+    {{ elementViewModel?.element?.name ?? '' }}
   </app-page-header>
 
   <app-stepper
@@ -15,52 +15,56 @@
     [formGroup]="propertiesForm"
     (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
-      <div class="input-wrapper" *ngFor="let prop of stepProperties">
+      <div class="input-wrapper" *ngFor="let prop of currentProperties">
         <ng-container
-          [ngSwitch]="prop.type?.toLowerCase()"
-          *ngIf="propertiesForm.contains('' + prop.id)">
+          [ngSwitch]="prop.type"
+          *ngIf="propertiesForm.controls['' + prop.stepPropId]">
           <app-input-field
             *ngSwitchCase="TypeEnum.Text"
             type="text"
             class="input"
-            [label]="prop.name ?? ''"
-            [formControlName]="prop.id!"
+            [hint]="prop.hint"
+            [label]="prop.label"
+            [formControlName]="prop.stepPropId"
             icon="text_fields">
           </app-input-field>
           <app-input-field
             *ngSwitchCase="TypeEnum.Number"
             class="input"
             type="number"
-            [label]="prop.name ?? ''"
-            [formControlName]="prop.id!"
+            [hint]="prop.hint"
+            [label]="prop.label"
+            [formControlName]="prop.stepPropId"
             icon="bar_chart">
           </app-input-field>
           <app-file-input-field
             *ngSwitchCase="TypeEnum.File"
-            [formControlName]="prop.id!"
-            [label]="prop.name!"></app-file-input-field>
+            [formControlName]="prop.stepPropId"
+            [label]="prop.label"></app-file-input-field>
           <mat-checkbox
             *ngSwitchCase="TypeEnum.Boolean"
-            [formControlName]="prop.id!"
+            [formControlName]="prop.stepPropId"
             color="primary">
-            {{ prop.name }}</mat-checkbox
+            {{ prop.label }}</mat-checkbox
           >
           <app-date-input-field
             *ngSwitchCase="TypeEnum.Date"
             class="input"
-            [label]="prop.name ?? ''"
-            [formControlName]="prop.id!" />
+            [hint]="prop.hint"
+            [label]="prop.label"
+            [formControlName]="prop.stepPropId" />
           <app-color-input-field
             *ngSwitchCase="TypeEnum.Color"
             class="input"
-            [label]="prop.name ?? ''"
-            [formControlName]="prop.id!" />
+            [label]="prop.label"
+            [hint]="prop.hint"
+            [formControlName]="prop.stepPropId" />
           <div *ngSwitchDefault>
             <app-select-field
               i18n-hint="@@placeholder.select_element"
               i18n-filterLabel="@@placeholder.filter_elements"
-              [formControlName]="prop.id!"
-              [label]="prop.name!"
+              [formControlName]="prop.stepPropId"
+              [label]="prop.label"
               filterIcon="filter_list"
               filterLabel="Filter elements"
               hint="Select element">

@@ -70,7 +70,7 @@ export class StorageService {
             toArray(),
             map(props => ({
               ...elementViewModel,
-              props,
+              properties: props,
             }))
           );
         })
