@@ -8,17 +8,29 @@ import {
 } from '../../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
-import { catchError, filter, from, map, Observable, of, take } from 'rxjs';
-import { ElementPropertyService } from '../../../services/element-property.service';
 import {
-  fileToStr,
+  filter,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  switchMap,
+  take,
+} from 'rxjs';
+import {
+  ElementPropertyService,
+  ElementFacadeService,
+  ProcessFacadeService,
+  StepPropertyService,
+} from '../../../services';
+import {
+  fileToStr$,
   isReference,
   strToFile,
 } from '../../../shared/util/common-utils';
-import { ElementFacadeService } from '../../../services/element-facade.service';
-import { ProcessFacadeService } from '../../../services/process-facade.service';
-import { StepPropertyService } from '../../../services/step-property.service';
 import {
+  ElementViewModel,
   ElementViewProperty,
   ValueType,
 } from '../../../model/element-view-model';
@@ -52,30 +64,18 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
     return of(val ?? '');
   }
 
-  public async saveValue(
-    element: Element,
-    property: StepProperty,
-    value: any,
-    type: TypeEnum
-  ): Promise<void> {
-    if (type === TypeEnum.File && value) {
-      value = await fileToStr(value);
-    }
-    this.elementPropertyService
-      .saveElementProp$({
-        value,
-        stepPropertyId: property.id,
-        storageBackend: this.getType(),
-        elementId: element.id,
-      })
-      .pipe(
-        catchError(err => {
-          console.error(err);
-          return of(undefined);
-        }),
-        take(1)
-      )
-      .subscribe();
+  public saveValues$(elementViewModel: ElementViewModel): Observable<void> {
+    return from(elementViewModel.properties).pipe(
+      mergeMap(property =>
+        this.saveValue$(
+          elementViewModel.element,
+          property.stepPropId,
+          property.value,
+          property.type
+        )
+      ),
+      map(() => undefined)
+    );
   }
 
   public deleteElement$(element: Element): Observable<void> {
@@ -97,6 +97,32 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
         }
         return;
       })
+    );
+  }
+
+  private saveValue$(
+    element: Element,
+    stepPropertyId: number,
+    value: any,
+    type: TypeEnum
+  ): Observable<ElementProperty | undefined> {
+    if (!value) {
+      return of(undefined);
+    }
+    const obs = of(value);
+    if (type === TypeEnum.File && value) {
+      obs.pipe(switchMap(val => fileToStr$(val)));
+    }
+    return obs.pipe(
+      mergeMap(val =>
+        this.elementPropertyService.saveElementProp$({
+          value: val,
+          stepPropertyId,
+          storageBackend: this.getType(),
+          elementId: element.id,
+        })
+      ),
+      take(1)
     );
   }
 }

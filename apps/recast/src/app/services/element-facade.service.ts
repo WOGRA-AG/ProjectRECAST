@@ -144,6 +144,20 @@ export class ElementFacadeService {
     return this.elements.find(e => e.id === id);
   }
 
+  public updateCurrentStepInState$(
+    elementId: number,
+    stepId: number | null
+  ): Observable<Element | undefined> {
+    const element = JSON.parse(JSON.stringify(this.elementById(elementId)));
+    if (!element) {
+      return of(undefined);
+    }
+    element.currentStepId = stepId;
+    const newState = this.deleteElement(this._elements$.getValue(), elementId);
+    this._elements$.next(newState.concat(element));
+    return of(element);
+  }
+
   private upsertElement$({
     id,
     name,

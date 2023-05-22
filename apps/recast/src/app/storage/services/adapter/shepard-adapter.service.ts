@@ -35,6 +35,7 @@ import { ElementFacadeService } from '../../../services/element-facade.service';
 import { isReference } from '../../../shared/util/common-utils';
 import { ProcessFacadeService } from '../../../services/process-facade.service';
 import {
+  ElementViewModel,
   ElementViewProperty,
   ValueType,
 } from '../../../model/element-view-model';
@@ -116,6 +117,10 @@ export class ShepardAdapter implements StorageAdapterInterface {
         return payload[stepProp.name!];
       })
     );
+  }
+
+  public saveValues$(_: ElementViewModel): Observable<void> {
+    throw new Error('Method not implemented.');
   }
 
   public async saveValue(

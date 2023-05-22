@@ -95,6 +95,9 @@ export const fileToStr = async (file: File): Promise<string> => {
   return `${fileName}__${base64}`;
 };
 
+export const fileToStr$ = (file: File): Observable<string> =>
+  from(fileToStr(file));
+
 export const strToFile = async (
   dbString: string
 ): Promise<File | undefined> => {

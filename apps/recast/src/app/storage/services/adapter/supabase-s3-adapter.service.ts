@@ -22,7 +22,10 @@ import {
 } from '../../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
-import { ElementViewProperty } from '../../../model/element-view-model';
+import {
+  ElementViewModel,
+  ElementViewProperty,
+} from '../../../model/element-view-model';
 const camelCase = require('camelcase-keys');
 
 @Injectable({
@@ -71,6 +74,10 @@ export class SupabaseS3Adapter implements StorageAdapterInterface {
         return camelCase(data);
       })
     );
+  }
+
+  public saveValues$(_: ElementViewModel): Observable<void> {
+    throw new Error('Not Implemented Yet');
   }
 
   public loadValue$(_: number, _2: ElementViewProperty): Observable<string> {

@@ -12,8 +12,9 @@ import {
   Observable,
   tap,
   switchMap,
-  firstValueFrom,
   take,
+  distinctUntilChanged,
+  mergeMap,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import {
@@ -31,7 +32,9 @@ import {
   ElementViewModel,
   ElementViewProperty,
 } from '../../model/element-view-model';
-import { isReference } from '../../shared/util/common-utils';
+import { elementComparator, isReference } from '../../shared/util/common-utils';
+
+// TODO: refactor this class
 @Component({
   selector: 'app-element-detail',
   templateUrl: './element-detail.component.html',
@@ -80,6 +83,20 @@ export class ElementDetailComponent implements OnDestroy {
         switchMap(elementViewModel => this.initFormGroup$(elementViewModel))
       )
       .subscribe();
+    this.propertiesForm.valueChanges
+      .pipe(takeUntil(this._destroy$), distinctUntilChanged(elementComparator))
+      .subscribe(values => {
+        const props = this.elementViewModel?.properties ?? [];
+        for (const key of Object.keys(values)) {
+          const elementViewProperty = props.find(
+            prop => '' + prop.stepPropId === key
+          );
+          if (!elementViewProperty) {
+            continue;
+          }
+          elementViewProperty.value = values[key];
+        }
+      });
   }
 
   get currentIndex(): number {
@@ -102,13 +119,25 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   public async onSubmitClicked(): Promise<void> {
-    this.loading = true;
     if (!this.elementViewModel?.element) {
       return;
     }
+    this.loading = true;
     if (!this.isLastStep) {
-      await this.updateValues();
-      this.navigateForward();
+      this.storageService
+        .updateValues$(this.elementViewModel)
+        .pipe(
+          take(1),
+          takeUntil(this._destroy$),
+          catchError(err => {
+            console.log(err);
+            return of(undefined);
+          })
+        )
+        .subscribe(() => {
+          this.navigateForward();
+          this.loading = false;
+        });
       return;
     }
     this.dialog
@@ -123,12 +152,11 @@ export class ElementDetailComponent implements OnDestroy {
         tap(() => (this.loading = false)),
         takeUntil(this._destroy$),
         filter(confirmed => !!confirmed),
-        map(async () => {
-          await this.updateValues();
-        }),
-        tap(() => this.navigateForward())
+        mergeMap(() =>
+          this.storageService.updateValues$(this.elementViewModel!)
+        )
       )
-      .subscribe();
+      .subscribe(() => this.navigateForward());
   }
 
   public stepChanged(event: number): void {
@@ -159,22 +187,6 @@ export class ElementDetailComponent implements OnDestroy {
     return of(undefined);
   }
 
-  private async updateValues(): Promise<void> {
-    if (!this.elementViewModel) {
-      return;
-    }
-    for (const prop of this._stepProperties) {
-      const value: any = this.propertiesForm.get(`${prop.id}`)?.value;
-      await firstValueFrom(
-        this.storageService.updateValue$(
-          this.elementViewModel.element,
-          prop,
-          value
-        )
-      );
-    }
-  }
-
   private initializeComponentProperties(
     step: Step | undefined,
     steps: Step[]
@@ -192,14 +204,21 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   private navigateForward(): void {
-    if (!this.isLastStep) {
-      const nextStep = this.stepService.nextStep(this._currentStep!);
-      this.navigateStep(nextStep!);
+    if (!this.elementViewModel) {
       return;
     }
-    this.updateElementCurrentStep$(this.elementViewModel?.element.id!, null)
+    const element = JSON.parse(JSON.stringify(this.elementViewModel.element));
+    element.elementProperties = [];
+    const nextStep = this.stepService.nextStep(this._currentStep!);
+    element.currentStepId = nextStep ? nextStep.id : null;
+    this.elementService
+      .saveElement$(element)
       .pipe(take(1))
       .subscribe(() => {
+        if (nextStep) {
+          this.navigateStep(nextStep);
+          return;
+        }
         this.navigateBack();
       });
   }
@@ -222,24 +241,9 @@ export class ElementDetailComponent implements OnDestroy {
     );
   }
 
-  private process$(): Observable<Process | undefined> {
-    return this.route.paramMap.pipe(
-      filter(param => !!param.get('processId')),
-      map(param => +param.get('processId')!),
-      switchMap(id => this.processService.processById$(id))
-    );
-  }
-
-  private steps$(): Observable<Step[]> {
-    return this.route.paramMap.pipe(
-      filter(param => !!param.get('processId')),
-      map(param => +param.get('processId')!),
-      switchMap(id => this.stepService.stepsByProcessId$(id))
-    );
-  }
-
   private navigateStep(step: Step): void {
-    this.updateElementCurrentStep$(this.elementViewModel?.element.id!, step.id!)
+    this.elementService
+      .updateCurrentStepInState$(this.elementViewModel?.element.id!, step.id!)
       .pipe(take(1), filter(Boolean))
       .subscribe(element => {
         this.router
@@ -255,24 +259,6 @@ export class ElementDetailComponent implements OnDestroy {
             )
           );
       });
-  }
-
-  private updateElementCurrentStep$(
-    id: number,
-    stepId: number | null
-  ): Observable<Element | undefined> {
-    return this.elementService
-      .saveElement$({
-        id,
-        currentStepId: stepId,
-      })
-      .pipe(
-        catchError(err => {
-          console.error(err);
-          return of(undefined);
-        }),
-        takeUntil(this._destroy$)
-      );
   }
 
   private initBreadcrumbs(process: Process): void {

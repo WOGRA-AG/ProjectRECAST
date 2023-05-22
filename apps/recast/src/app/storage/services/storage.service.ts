@@ -3,7 +3,6 @@ import {
   Element,
   ElementProperty,
   Process,
-  StepProperty,
 } from '../../../../build/openapi/recast';
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import { StorageAdapterInterface } from './adapter/storage-adapter-interface';
@@ -13,6 +12,7 @@ import {
   from,
   map,
   mergeAll,
+  mergeMap,
   Observable,
   of,
   switchMap,
@@ -25,7 +25,7 @@ import {
   ElementViewProperty,
   ValueType,
 } from '../../model/element-view-model';
-import { ElementViewModelFacadeService } from '../../services/element-view-model-facade.service';
+import { ElementViewModelFacadeService } from '../../services';
 
 @Injectable({
   providedIn: 'root',
@@ -96,26 +96,17 @@ export class StorageService {
     );
   }
 
-  public updateValue$(
-    element: Element,
-    stepProperty: StepProperty,
-    value: any
-  ): Observable<void> {
+  public updateValues$(elementViewModel: ElementViewModel): Observable<void> {
     return this._storageBackend$.pipe(
       filter(Boolean),
-      switchMap(backend => {
+      mergeMap(backend => {
         const storageAdapter = this.storageAdapters.find(
           adapter => adapter.getType() === backend
         );
         if (!storageAdapter) {
           throw new Error(`No such Storage Backend: ${backend}`);
         }
-        return storageAdapter.saveValue(
-          element,
-          stepProperty,
-          value,
-          stepProperty.type!
-        );
+        return storageAdapter.saveValues$(elementViewModel);
       })
     );
   }
