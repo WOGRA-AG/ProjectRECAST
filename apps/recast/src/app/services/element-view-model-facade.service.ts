@@ -67,6 +67,29 @@ export class ElementViewModelFacadeService {
     );
   }
 
+  public saveElementFromElementViewModel$(
+    elementViewModel: ElementViewModel
+  ): Observable<Element> {
+    const element: Element = {
+      id: elementViewModel.element.id,
+      processId: elementViewModel.process.id,
+      currentStepId: elementViewModel.currentStep
+        ? elementViewModel.currentStep.id
+        : null,
+      elementProperties: elementViewModel.properties
+        .filter(prop => !!prop.value)
+        .map(
+          (elementViewProperty: ElementViewProperty): ElementProperty => ({
+            value: '' + elementViewProperty.value,
+            stepPropertyId: elementViewProperty.stepPropId,
+            storageBackend: elementViewProperty.storageBackend,
+            elementId: elementViewModel.element.id,
+          })
+        ),
+    };
+    return this.elementService.saveElement$(element);
+  }
+
   private _initElementViewModels$(): Observable<ElementViewModel> {
     return this._elements$().pipe(
       switchMap(elements =>

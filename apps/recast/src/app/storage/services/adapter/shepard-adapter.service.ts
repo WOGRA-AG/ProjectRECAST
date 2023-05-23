@@ -15,6 +15,7 @@ import {
   concatMap,
   filter,
   firstValueFrom,
+  from,
   map,
   mergeMap,
   Observable,
@@ -119,8 +120,33 @@ export class ShepardAdapter implements StorageAdapterInterface {
     );
   }
 
-  public saveValues$(_: ElementViewModel): Observable<void> {
-    throw new Error('Method not implemented.');
+  public saveValues$(
+    elementViewModel: ElementViewModel
+  ): Observable<ElementViewModel> {
+    // saveValue so umschreiben, dass es den Wert für die ElementProperty zurück gibt,
+    // saveValues$ so umschreiben, dass es das geupdatete ElementViewModel zurück gibt,
+    // beim iterieren über die properties das structured data für die einzelnen steps erstellen,
+    // die structureddata elemente speichern
+    // und das Updaten der ElementProperties im Storage Adapter für alle Backends gleich implementieren
+    return from(elementViewModel.properties).pipe(
+      mergeMap(elementViewProp =>
+        this.stepPropertyService
+          .stepPropertyById$(elementViewProp.stepPropId)
+          .pipe(
+            mergeMap(stepProperty =>
+              from(
+                this.saveValue(
+                  elementViewModel.element,
+                  stepProperty,
+                  elementViewProp.value,
+                  elementViewProp.type
+                )
+              )
+            )
+          )
+      ),
+      map(() => elementViewModel)
+    );
   }
 
   public async saveValue(

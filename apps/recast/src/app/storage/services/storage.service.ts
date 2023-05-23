@@ -96,7 +96,9 @@ export class StorageService {
     );
   }
 
-  public updateValues$(elementViewModel: ElementViewModel): Observable<void> {
+  public updateValues$(
+    elementViewModel: ElementViewModel
+  ): Observable<Element> {
     return this._storageBackend$.pipe(
       filter(Boolean),
       mergeMap(backend => {
@@ -107,7 +109,10 @@ export class StorageService {
           throw new Error(`No such Storage Backend: ${backend}`);
         }
         return storageAdapter.saveValues$(elementViewModel);
-      })
+      }),
+      switchMap(model =>
+        this.elementViewModelService.saveElementFromElementViewModel$(model)
+      )
     );
   }
 

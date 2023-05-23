@@ -31,6 +31,7 @@ import TypeEnum = StepProperty.TypeEnum;
 import {
   ElementViewModel,
   ElementViewProperty,
+  ValueType,
 } from '../../model/element-view-model';
 import { elementComparator, isReference } from '../../shared/util/common-utils';
 
@@ -91,7 +92,14 @@ export class ElementDetailComponent implements OnDestroy {
           const elementViewProperty = props.find(
             prop => '' + prop.stepPropId === key
           );
-          if (!elementViewProperty) {
+          if (!elementViewProperty || !this._currentStep) {
+            continue;
+          }
+          const currStepIdx = this._steps.indexOf(this._currentStep);
+          const valStepIdx = this._steps.findIndex(
+            step => step.id === elementViewProperty.stepId
+          );
+          if (currStepIdx < valStepIdx) {
             continue;
           }
           elementViewProperty.value = values[key];
@@ -177,7 +185,7 @@ export class ElementDetailComponent implements OnDestroy {
 
   private initFormGroup$(elementViewModel: ElementViewModel): Observable<void> {
     for (const prop of elementViewModel.properties ?? []) {
-      let val = prop.value ?? prop.defaultValue;
+      let val: ValueType = prop.value ?? prop.defaultValue;
       if (isReference(prop.type) && val.hasOwnProperty('name')) {
         val = val as Element;
         val = val.name!;
@@ -210,13 +218,13 @@ export class ElementDetailComponent implements OnDestroy {
     const element = JSON.parse(JSON.stringify(this.elementViewModel.element));
     element.elementProperties = [];
     const nextStep = this.stepService.nextStep(this._currentStep!);
-    element.currentStepId = nextStep ? nextStep.id : null;
+    element.currentStepId = !this.isLastStep && !!nextStep ? nextStep.id : null;
     this.elementService
       .saveElement$(element)
       .pipe(take(1))
       .subscribe(() => {
-        if (nextStep) {
-          this.navigateStep(nextStep);
+        if (!this.isLastStep) {
+          this.navigateStep(nextStep!);
           return;
         }
         this.navigateBack();

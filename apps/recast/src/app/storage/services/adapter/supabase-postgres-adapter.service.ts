@@ -15,8 +15,8 @@ import {
   mergeMap,
   Observable,
   of,
-  switchMap,
   take,
+  toArray,
 } from 'rxjs';
 import {
   ElementPropertyService,
@@ -61,20 +61,27 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
     if (isReference(type) && val) {
       return this.elementService.elementById$(+val);
     }
+    if (val && type === TypeEnum.Boolean) {
+      return of(val === 'true');
+    }
     return of(val ?? '');
   }
 
-  public saveValues$(elementViewModel: ElementViewModel): Observable<void> {
+  public saveValues$(
+    elementViewModel: ElementViewModel
+  ): Observable<ElementViewModel> {
     return from(elementViewModel.properties).pipe(
-      mergeMap(property =>
-        this.saveValue$(
-          elementViewModel.element,
-          property.stepPropId,
-          property.value,
-          property.type
-        )
-      ),
-      map(() => undefined)
+      mergeMap(elemViewProp => this.saveValue$(elemViewProp)),
+      map((val, index) => ({
+        ...elementViewModel.properties[index],
+        value: val,
+        storageBackend: this.getType(),
+      })),
+      toArray(),
+      map(elementViewProperties => ({
+        ...elementViewModel,
+        properties: elementViewProperties,
+      }))
     );
   }
 
@@ -101,28 +108,19 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
   }
 
   private saveValue$(
-    element: Element,
-    stepPropertyId: number,
-    value: any,
-    type: TypeEnum
-  ): Observable<ElementProperty | undefined> {
+    elementViewProperty: ElementViewProperty
+  ): Observable<string | undefined> {
+    const value = elementViewProperty.value;
+    const type = elementViewProperty.type;
+    if (type === TypeEnum.Boolean) {
+      return of('' + value);
+    }
     if (!value) {
       return of(undefined);
     }
-    const obs = of(value);
-    if (type === TypeEnum.File && value) {
-      obs.pipe(switchMap(val => fileToStr$(val)));
+    if (type === TypeEnum.File && value instanceof File) {
+      return fileToStr$(value);
     }
-    return obs.pipe(
-      mergeMap(val =>
-        this.elementPropertyService.saveElementProp$({
-          value: val,
-          stepPropertyId,
-          storageBackend: this.getType(),
-          elementId: element.id,
-        })
-      ),
-      take(1)
-    );
+    return of('' + value);
   }
 }

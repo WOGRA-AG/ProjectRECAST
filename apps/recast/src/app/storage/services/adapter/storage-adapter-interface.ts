@@ -17,7 +17,7 @@ export interface StorageAdapterInterface {
     elementId: number,
     elementViewProperty: ElementViewProperty
   ): Observable<ValueType>;
-  saveValues$(elementViewModel: ElementViewModel): Observable<void>;
+  saveValues$(elementViewModel: ElementViewModel): Observable<ElementViewModel>;
   deleteElement$(element: Element): Observable<void>;
   deleteProcess$(process: Process): Observable<void>;
 }
