@@ -37,7 +37,7 @@ export class StructuredDataService {
       .pipe(filter(isShepardUser))
       .subscribe(profile => {
         const config: Configuration = new Configuration({
-          basePath: environment.shepardUrl,
+          basePath: profile.shepardUrl,
           apiKey: profile.shepardApiKey,
         });
         this._structuredDataApi = new StructureddataApi(config);
@@ -70,6 +70,18 @@ export class StructuredDataService {
     );
   }
 
+  public createStructuredData$(
+    structureddataContainerId: number,
+    payload: StructuredDataPayload
+  ): Observable<StructuredData> {
+    return from(
+      this._structuredDataApi!.createStructuredData({
+        structureddataContainerId,
+        structuredDataPayload: payload,
+      })
+    );
+  }
+
   public upsertStructuredData$(
     structuredDataContainerId: number,
     structuredDataName: string,
@@ -81,14 +93,14 @@ export class StructuredDataService {
       map(sd => sd.find(e => e.name === structuredDataName)),
       switchMap(sd => {
         if (!sd) {
-          return this.createStructuredData$(
+          return this._createStructuredData$(
             structureddataContainerId,
             propertyName,
             structuredDataName,
             value
           );
         }
-        return this.updateStructuredData$(
+        return this._updateStructuredData$(
           structureddataContainerId,
           propertyName,
           sd,
@@ -113,7 +125,7 @@ export class StructuredDataService {
       filter(Boolean)
     );
   }
-  private updateStructuredData$(
+  private _updateStructuredData$(
     structureddataContainerId: number,
     propertyName: string,
     strucData: StructuredData,
@@ -126,7 +138,7 @@ export class StructuredDataService {
       })
     ).pipe(
       switchMap(strucDataPay =>
-        this.deleteStructuredData$(strucData, structureddataContainerId).pipe(
+        this._deleteStructuredData$(strucData, structureddataContainerId).pipe(
           map(() => strucDataPay)
         )
       ),
@@ -149,7 +161,7 @@ export class StructuredDataService {
     );
   }
 
-  private createStructuredData$(
+  private _createStructuredData$(
     structureddataContainerId: number,
     propertyName: string,
     elementName: string,
@@ -168,7 +180,7 @@ export class StructuredDataService {
     );
   }
 
-  private deleteStructuredData$(
+  private _deleteStructuredData$(
     strucData: StructuredData,
     structureddataContainerId: number
   ): Observable<void> {

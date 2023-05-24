@@ -7,6 +7,11 @@
     $primary-palette,
     500
   );
+  $foreground-palette: map.get($theme, 'foreground');
+  $text-disabled: mat.get-color-from-palette(
+    $foreground-palette,
+    'disabled-text'
+  );
   //TODO: Contrast color does not work properly with mdc as of Angular Material 15.2. So this is a temporary workaround and should be removed as soon as possible
   .mat-mdc-checkbox
     .mdc-checkbox
@@ -14,6 +19,10 @@
     ~ .mdc-checkbox__background
     .mdc-checkbox__checkmark {
     color: $primary-contrast-color;
+  }
+
+  .mat-mdc-checkbox.mat-mdc-checkbox-disabled label {
+    color: $text-disabled;
   }
 }
 

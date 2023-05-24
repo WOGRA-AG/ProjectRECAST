@@ -122,15 +122,13 @@ export class ProcessOverviewComponent implements OnDestroy {
   }
 
   public navigateToCreateElement(): void {
-    this.router.navigate([`./step/${this.steps[0].id}/element`], {
+    this.router.navigate([`./element`], {
       relativeTo: this.activatedRoute,
     });
   }
 
   public navigateTo(element: Element): void {
-    const route = element.currentStepId
-      ? `./step/${this.currentStepId}/element/${element.id}`
-      : `./element/${element.id}`;
+    const route = `./element/${element.id}`;
     this.router.navigate([route], {
       relativeTo: this.activatedRoute,
     });

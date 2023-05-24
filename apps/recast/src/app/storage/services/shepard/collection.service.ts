@@ -16,7 +16,6 @@ import {
   PermissionsPermissionTypeEnum,
 } from '@dlr-shepard/shepard-client';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
-import { environment } from '../../../../environments/environment';
 import {
   elementComparator,
   isShepardUser,
@@ -36,7 +35,7 @@ export class CollectionService {
       .pipe(filter(isShepardUser))
       .subscribe(profile => {
         const config: Configuration = new Configuration({
-          basePath: environment.shepardUrl,
+          basePath: profile.shepardUrl,
           apiKey: profile.shepardApiKey,
         });
         this._collectionApi = new CollectionApi(config);

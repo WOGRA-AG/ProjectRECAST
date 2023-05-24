@@ -5,8 +5,7 @@ import {
   DataObjectApi,
 } from '@dlr-shepard/shepard-client';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
-import { environment } from '../../../../environments/environment';
-import { filter, from, map, Observable } from 'rxjs';
+import { filter, from, map, Observable, switchMap } from 'rxjs';
 import { isShepardUser } from '../../../shared/util/common-utils';
 
 @Injectable({
@@ -20,7 +19,7 @@ export class DataObjectService {
       .pipe(filter(isShepardUser))
       .subscribe(profile => {
         const config: Configuration = new Configuration({
-          basePath: environment.shepardUrl,
+          basePath: profile.shepardUrl,
           apiKey: profile.shepardApiKey,
         });
         this._dataObjectApi = new DataObjectApi(config);
@@ -65,6 +64,19 @@ export class DataObjectService {
         collectionId,
         dataObjectId,
       })
+    );
+  }
+
+  public deleteDataObjectByAttribute$(
+    collectionId: number,
+    attribute: string,
+    value: string
+  ): Observable<void> {
+    return this.getDataObjectByAttribute$(collectionId, attribute, value).pipe(
+      filter(Boolean),
+      switchMap(dataObject =>
+        this.deleteDataObjectById$(collectionId, dataObject.id!)
+      )
     );
   }
 

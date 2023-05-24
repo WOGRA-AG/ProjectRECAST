@@ -26,6 +26,7 @@ import { StepPropertyService } from '../../services/step-property.service';
 import { StorageService } from '../../storage/services/storage.service';
 import TypeEnum = StepProperty.TypeEnum;
 import { ElementViewModel } from '../../model/element-view-model';
+import { ElementViewModelFacadeService } from '../../services';
 
 @Component({
   selector: 'app-element-view',
@@ -49,6 +50,7 @@ export class ElementViewComponent implements OnDestroy {
     private readonly elementService: ElementFacadeService,
     private readonly processService: ProcessFacadeService,
     private readonly stepPropertyService: StepPropertyService,
+    private readonly viewModelService: ElementViewModelFacadeService,
     private readonly storageService: StorageService,
     private readonly formBuilder: FormBuilder
   ) {
@@ -79,7 +81,11 @@ export class ElementViewComponent implements OnDestroy {
 
   private elementViewModel$(): Observable<ElementViewModel> {
     return this._elementId$.pipe(
-      switchMap(elementId => this.storageService.loadValues$(elementId)),
+      switchMap(elementId =>
+        this.viewModelService.elementViewModelByElementId$(elementId)
+      ),
+      filter(Boolean),
+      switchMap(model => this.storageService.loadValues$(model)),
       catchError(() => {
         alert('View Model not found');
         return of(undefined);

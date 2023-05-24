@@ -35,7 +35,7 @@ export class FileService {
       .pipe(filter(isShepardUser))
       .subscribe(profile => {
         const config: Configuration = new Configuration({
-          basePath: environment.shepardUrl,
+          basePath: profile.shepardUrl,
           apiKey: profile.shepardApiKey,
         });
         this._fileApi = new FileApi(config);

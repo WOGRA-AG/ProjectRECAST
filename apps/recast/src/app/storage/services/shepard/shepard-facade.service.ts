@@ -19,12 +19,14 @@ import {
   Observable,
   of,
   tap,
+  zip,
 } from 'rxjs';
 import { FileService } from './file.service';
 import { StructuredDataService } from './structured-data.service';
 import { CollectionService } from './collection.service';
 import { ReferenceService } from './reference.service';
 import { DataObjectService } from './data-object.service';
+import { ElementFacadeService, ProcessFacadeService } from '../../../services';
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +38,9 @@ export class ShepardFacadeService {
     private readonly structuredDataService: StructuredDataService,
     private readonly collectionService: CollectionService,
     private readonly referenceService: ReferenceService,
-    private readonly dataObjectService: DataObjectService
+    private readonly dataObjectService: DataObjectService,
+    private readonly elementService: ElementFacadeService,
+    private readonly processService: ProcessFacadeService
   ) {}
 
   public getCollectionByProcessId$(
@@ -45,6 +49,24 @@ export class ShepardFacadeService {
     return this.collectionService.getCollectionByAttribute$(
       'process_id',
       '' + processId
+    );
+  }
+
+  public getOrCreateCollectionByProcessId$(
+    processId: number
+  ): Observable<Collection> {
+    return this.getCollectionByProcessId$(processId).pipe(
+      switchMap(collection => {
+        if (collection) {
+          return of(collection);
+        }
+        const processName = this.processService.processById(processId)?.name!;
+        return this.createCollection$(
+          processName,
+          PermissionsPermissionTypeEnum.Private,
+          processId
+        );
+      })
     );
   }
 
@@ -133,8 +155,8 @@ export class ShepardFacadeService {
   public getDataObjectByElementId$(
     elementId: number,
     processId: number
-  ): Observable<DataObject | undefined> {
-    return this.getCollectionByProcessId$(processId).pipe(
+  ): Observable<DataObject> {
+    return this.getOrCreateCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       switchMap(collection =>
         this.dataObjectService.getDataObjectByAttribute$(
@@ -142,7 +164,14 @@ export class ShepardFacadeService {
           'element_id',
           '' + elementId
         )
-      )
+      ),
+      switchMap(dataObject => {
+        if (dataObject) {
+          return of(dataObject);
+        }
+        const elementName = this.elementService.elementById(elementId)?.name!;
+        return this.createDataObject$(processId, elementId, elementName);
+      })
     );
   }
 
@@ -176,6 +205,77 @@ export class ShepardFacadeService {
           dataObjectId
         )
       )
+    );
+  }
+
+  public deleteDataObjectByElementId$(
+    processId: number,
+    elementId: number
+  ): Observable<void> {
+    return this.getCollectionByProcessId$(processId).pipe(
+      filter(Boolean),
+      switchMap(collection =>
+        this.dataObjectService.deleteDataObjectByAttribute$(
+          collection.id!,
+          'element_id',
+          '' + elementId
+        )
+      )
+    );
+  }
+
+  public createStructuredDataOnDataObject$(
+    elementId: number,
+    processId: number,
+    name: string,
+    payload: string
+  ): Observable<StructuredData | undefined> {
+    const structuredDataPayload: StructuredDataPayload = {
+      structuredData: {
+        name,
+      },
+      payload,
+    };
+    return this.getDataObjectByElementId$(elementId, processId).pipe(
+      filter(Boolean),
+      switchMap(dataObject =>
+        this.removeStructuredDataFromDataObject$(
+          dataObject.id!,
+          name,
+          processId
+        )
+      ),
+      switchMap(() =>
+        this.structuredDataService.getRecastStructuredDataContainer$()
+      ),
+      filter(Boolean),
+      switchMap(container =>
+        this.structuredDataService.createStructuredData$(
+          container.id!,
+          structuredDataPayload
+        )
+      ),
+      switchMap(structuredData =>
+        zip(
+          this.getDataObjectByElementId$(elementId, processId),
+          of(structuredData)
+        )
+      ),
+      switchMap(([dataObject, structuredData]) => {
+        if (!dataObject) {
+          return zip(of(undefined), of(structuredData));
+        }
+        return zip(
+          this.addStructuredDataToDataObject$(
+            dataObject.id!,
+            structuredData.oid!,
+            name,
+            processId
+          ),
+          of(structuredData)
+        );
+      }),
+      map(([_, structuredData]) => structuredData)
     );
   }
 
@@ -248,7 +348,7 @@ export class ShepardFacadeService {
     );
   }
   public addDataObjectToDataObject$(
-    refId: number,
+    referencedDataObjectId: number,
     dataObjectId: number,
     refName: string,
     processId: number
@@ -278,7 +378,7 @@ export class ShepardFacadeService {
         this.referenceService.createDataObjectReference$(
           collectionId,
           dataObjectId,
-          refId,
+          referencedDataObjectId,
           refName
         )
       )
@@ -364,5 +464,11 @@ export class ShepardFacadeService {
         this.structuredDataService.getStructuredDataPayload$(structuredDataOid)
       )
     );
+  }
+
+  public getStructuredDataById$(
+    oid: string
+  ): Observable<StructuredDataPayload> {
+    return this.structuredDataService.getStructuredDataPayload$(oid);
   }
 }

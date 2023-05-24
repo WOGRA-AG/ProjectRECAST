@@ -4,7 +4,6 @@ import {
   Element,
   ElementProperty,
   Process,
-  Step,
   StepProperty,
 } from 'src/../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
@@ -13,31 +12,29 @@ import { ShepardFacadeService } from '../shepard/shepard-facade.service';
 import {
   catchError,
   concatMap,
-  filter,
-  firstValueFrom,
   from,
   map,
   mergeMap,
   Observable,
   of,
   switchMap,
-  tap,
+  take,
+  toArray,
+  zip,
 } from 'rxjs';
-import { ElementPropertyService } from '../../../services/element-property.service';
-import { PostgrestSingleResponse } from '@supabase/supabase-js';
-import { StepFacadeService } from '../../../services/step-facade.service';
 import {
-  DataObject,
-  PermissionsPermissionTypeEnum,
-  StructuredDataPayload,
-} from '@dlr-shepard/shepard-client';
-import { StepPropertyService } from '../../../services/step-property.service';
-import { ElementFacadeService } from '../../../services/element-facade.service';
-import { isReference } from '../../../shared/util/common-utils';
-import { ProcessFacadeService } from '../../../services/process-facade.service';
+  ElementPropertyService,
+  StepFacadeService,
+  StepPropertyService,
+  ElementFacadeService,
+  ProcessFacadeService,
+} from '../../../services';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
+import { groupBy$, isReference } from '../../../shared/util/common-utils';
 import {
   ElementViewModel,
   ElementViewProperty,
+  ShepardValue,
   ValueType,
 } from '../../../model/element-view-model';
 
@@ -58,64 +55,27 @@ export class ShepardAdapter implements StorageAdapterInterface {
   }
 
   public loadValue$(
-    elementId: number,
     elementViewProperty: ElementViewProperty
   ): Observable<ValueType> {
-    const value = '' + elementViewProperty.value;
+    const val = '' + elementViewProperty.value;
     const type = elementViewProperty.type;
-    if (!value) {
-      return of('');
-    }
-    if (isReference(type) && value) {
-      return this.elementService
-        .elementById$(+value)
-        .pipe(map(e => '' + e?.id ?? ''));
-    }
-    if (type === TypeEnum.File) {
+    if (val && type === TypeEnum.File) {
       return this.shepardService
-        .getFileById$(value)
+        .getFileById$(val)
         .pipe(catchError(() => of(new File([], ''))));
     }
-    let stepProp: StepProperty;
-    let dataObjId: number;
-    let processId: number;
-    return this.elementService.elementById$(elementId).pipe(
-      concatMap((element: Element): Observable<StepProperty | undefined> => {
-        if (!element) {
-          return of(undefined);
+    if (isReference(type) && val) {
+      return this.elementService.elementById$(+val);
+    }
+    return this.shepardService.getStructuredDataById$(val).pipe(
+      map(structuredData => {
+        if (!structuredData.payload) {
+          return '';
         }
-        processId = element.processId!;
-        return this.stepPropertyService.stepPropertyById$(
-          elementViewProperty.stepPropId
-        );
-      }),
-      filter(Boolean),
-      concatMap(
-        (stepProperty: StepProperty): Observable<Process | undefined> => {
-          stepProp = stepProperty;
-          return this.processService.processById$(processId);
-        }
-      ),
-      filter(Boolean),
-      concatMap(
-        (): Observable<DataObject> =>
-          this.shepardService.getDataObjectById$(+value, processId)
-      ),
-      concatMap((dataObj: DataObject): Observable<Step | undefined> => {
-        dataObjId = dataObj.id!;
-        return this.stepService.stepById$(stepProp.stepId!);
-      }),
-      concatMap(
-        (step: Step | undefined): Observable<StructuredDataPayload> =>
-          this.shepardService.getStructuredDataFromDataObject$(
-            dataObjId,
-            step?.name!,
-            processId
-          )
-      ),
-      map((structuredData: StructuredDataPayload): string | File => {
-        const payload = JSON.parse(structuredData.payload!);
-        return payload[stepProp.name!];
+        const payload = JSON.parse(structuredData.payload);
+        const parsedValue = payload[elementViewProperty.label] as ShepardValue;
+        const value = parsedValue.value;
+        return type === TypeEnum.Boolean ? value === 'true' : value;
       })
     );
   }
@@ -123,180 +83,75 @@ export class ShepardAdapter implements StorageAdapterInterface {
   public saveValues$(
     elementViewModel: ElementViewModel
   ): Observable<ElementViewModel> {
-    // saveValue so umschreiben, dass es den Wert für die ElementProperty zurück gibt,
-    // saveValues$ so umschreiben, dass es das geupdatete ElementViewModel zurück gibt,
-    // beim iterieren über die properties das structured data für die einzelnen steps erstellen,
-    // die structureddata elemente speichern
-    // und das Updaten der ElementProperties im Storage Adapter für alle Backends gleich implementieren
-    return from(elementViewModel.properties).pipe(
-      mergeMap(elementViewProp =>
-        this.stepPropertyService
-          .stepPropertyById$(elementViewProp.stepPropId)
-          .pipe(
-            mergeMap(stepProperty =>
-              from(
-                this.saveValue(
-                  elementViewModel.element,
-                  stepProperty,
-                  elementViewProp.value,
-                  elementViewProp.type
-                )
-              )
-            )
-          )
-      ),
-      map(() => elementViewModel)
-    );
-  }
-
-  public async saveValue(
-    element: Element,
-    property: StepProperty,
-    value: any,
-    type: TypeEnum
-  ): Promise<void> {
-    const processId = element.processId!;
-    const dataObj$ = this.processService.processById$(processId).pipe(
-      filter(Boolean),
-      switchMap(process =>
-        this.shepardService.createCollection$(
-          process.name!,
-          PermissionsPermissionTypeEnum.Private,
-          processId
-        )
-      ),
-      switchMap(() =>
-        this.shepardService.getDataObjectByElementId$(
-          element.id!,
-          element.processId!
-        )
-      ),
-      catchError(() => of(undefined)),
-      switchMap(dataObject => {
-        if (!!dataObject) {
-          return of(dataObject);
+    const elementViewModelCopy = { ...elementViewModel };
+    return this._updateElementViewPropertiesWithReferences$(
+      elementViewModelCopy.properties,
+      elementViewModelCopy.element.id!,
+      elementViewModelCopy.process.id!
+    ).pipe(
+      map(elementProperties => elementProperties.filter(p => !!p.value)),
+      concatMap(elementProperties => groupBy$(elementProperties, 'stepId')),
+      concatMap(({ key, values }) => {
+        if (!values.length) {
+          return zip(of(key), of(undefined));
         }
-        return this.shepardService.createDataObject$(
-          processId,
-          element.id!,
-          element.name ?? ''
+        const stepName = this.stepService.stepById(key)?.name;
+        const structuredDataPayload: string = JSON.stringify(
+          values.reduce(
+            (acc, elementViewProperty) => ({
+              ...acc,
+              [elementViewProperty.label]: elementViewProperty.value,
+            }),
+            { stepName }
+          )
         );
+        return zip(of(key), of(structuredDataPayload));
       }),
-      map((dataObject: DataObject) => dataObject.id!)
-    );
-
-    const dataObjectId: number = await firstValueFrom(dataObj$);
-
-    if (isReference(type)) {
-      if (!value) {
-        return;
-      }
-      return firstValueFrom(
-        this.elementService.elementById$(+value).pipe(
-          switchMap(ele => {
-            if (!ele) {
-              return of(undefined);
+      concatMap(([key, payload]) =>
+        zip(
+          of(key),
+          this.shepardService.createStructuredDataOnDataObject$(
+            elementViewModelCopy.element.id!,
+            elementViewModelCopy.process.id!,
+            '' + key,
+            payload!
+          )
+        )
+      ),
+      map(([stepId, structuredData]) => {
+        elementViewModelCopy.properties = elementViewModel.properties
+          .filter(p => p.stepId === stepId)
+          .map(p => {
+            if (p.type === TypeEnum.File || isReference(p.type)) {
+              const val = p.value;
+              if (val?.hasOwnProperty('value')) {
+                const parsedValue = val as ShepardValue;
+                return {
+                  ...p,
+                  value: parsedValue.value,
+                  storageBackend: this.getType(),
+                };
+              }
             }
-            return this.shepardService.getDataObjectByElementId$(
-              ele.id!,
-              ele.processId!
-            );
-          }),
-          switchMap(dataObject => {
-            if (!dataObject) {
-              return of(undefined);
+            if (!p.value) {
+              return p;
             }
-            return this.shepardService.addDataObjectToDataObject$(
-              dataObject.id!,
-              dataObjectId,
-              property.name!,
-              processId
-            );
-          }),
-          switchMap(() =>
-            this.elementPropertyService.saveElementProp$({
-              value: `${value}`,
-              stepPropertyId: property.id,
+            return {
+              ...p,
+              value: '' + structuredData?.oid,
               storageBackend: this.getType(),
-              elementId: element.id,
-            })
-          ),
-          map(ref => {
-            if (!ref) {
-              console.error('Could not save reference');
-            }
-            return;
-          })
-        )
-      );
-    }
-
-    if (type === TypeEnum.File) {
-      const elementProperty = await firstValueFrom(
-        this.elementPropertyService.elementPropertyByStepPropertyId$(
-          element.id!,
-          property.id!
-        )
-      );
-      if (!!elementProperty) {
-        await firstValueFrom(
-          this.deleteFileProp$(elementProperty, dataObjectId, processId),
-          {
-            defaultValue: undefined,
-          }
-        );
-      }
-      if (!!value && value instanceof File) {
-        value = await firstValueFrom(
-          this.saveFile$(
-            value,
-            property,
-            element,
-            dataObjectId,
-            property.name!
-          ),
-          { defaultValue: undefined }
-        );
-      }
-    }
-
-    const structuredDataId = await firstValueFrom(
-      this.saveStructuredData$(property, value)
-    );
-
-    await firstValueFrom(
-      this.addStructuredDataToDataObj$(
-        property,
-        dataObjectId,
-        structuredDataId,
-        processId
-      )
-    );
-
-    await firstValueFrom(
-      this.elementPropertyService.saveElementProp$({
-        value: type !== TypeEnum.File ? `${dataObjectId}` : value,
-        stepPropertyId: property.id,
-        storageBackend: this.getType(),
-        elementId: element.id,
+            };
+          });
+        return elementViewModelCopy;
       })
     );
-    return;
   }
 
   public deleteElement$(element: Element): Observable<void> {
-    return this.shepardService
-      .deleteDataObjectById$(element.processId!, element.id!)
-      .pipe(
-        catchError(() => of(undefined)),
-        mergeMap(() => this.elementService.deleteElement$(element.id!)),
-        map(err => {
-          if (err) {
-            console.error(err);
-          }
-          return;
-        })
-      );
+    return this.shepardService.deleteDataObjectByElementId$(
+      element.processId!,
+      element.id!
+    );
   }
 
   public deleteProcess$(process: Process): Observable<void> {
@@ -312,89 +167,102 @@ export class ShepardAdapter implements StorageAdapterInterface {
     );
   }
 
-  private addStructuredDataToDataObj$(
-    property: StepProperty,
-    dataObjectId: number,
-    strucDataId: string,
+  private _updateElementViewPropertiesWithReferences$(
+    elementViewProperties: ElementViewProperty[],
+    elementId: number,
     processId: number
-  ): Observable<DataObject> {
-    let stepName = '';
-    return this.stepService.stepById$(property.stepId!).pipe(
-      filter(Boolean),
-      tap(step => {
-        stepName = step.name!;
-      }),
-      mergeMap(() =>
-        this.shepardService.removeStructuredDataFromDataObject$(
-          dataObjectId,
-          stepName,
-          processId
-        )
+  ): Observable<ElementViewProperty[]> {
+    return from(elementViewProperties).pipe(
+      concatMap(elemViewProp =>
+        this._saveValue$(elemViewProp, elementId, processId).pipe(take(1))
       ),
-      mergeMap(() =>
-        this.shepardService.addStructuredDataToDataObject$(
-          dataObjectId,
-          strucDataId,
-          stepName,
-          processId
-        )
-      )
-    );
-  }
-
-  private saveStructuredData$(
-    property: StepProperty,
-    value: any
-  ): Observable<string> {
-    return this.stepService.stepById$(property.stepId!).pipe(
-      mergeMap(step =>
-        this.shepardService.upsertStructuredData$(
-          step?.name ?? '',
-          property.name ?? '',
-          value
-        )
-      ),
-      catchError(err => {
-        console.error(err);
-        return of(undefined);
-      }),
-      filter(strucData => !!strucData),
-      map(strucData => strucData?.oid ?? '')
-    );
-  }
-
-  private saveFile$(
-    value: File,
-    property: StepProperty,
-    element: Element,
-    dataObjectId: number,
-    refName: string
-  ): Observable<string> {
-    let fileOid = '';
-    return this.shepardService.createFile$(value).pipe(
-      catchError(err => {
-        console.error(err);
-        return of(undefined);
-      }),
-      filter(Boolean),
-      mergeMap(fileId => {
-        fileOid = fileId!;
-        return this.shepardService.addFileToDataObject$(
-          dataObjectId,
-          fileOid,
-          refName,
-          element.processId!
-        );
-      }),
-      mergeMap(() =>
-        this.elementPropertyService.saveElementProp$({
-          value: fileOid,
-          stepPropertyId: property.id,
+      concatMap((val, index) =>
+        of({
+          ...elementViewProperties[index],
+          value: {
+            type: elementViewProperties[index].type,
+            value: val,
+          },
           storageBackend: this.getType(),
-          elementId: element.id,
         })
       ),
-      map(elementProp => elementProp.value ?? '')
+      toArray()
+    );
+  }
+
+  private _saveValue$(
+    elementViewProperty: ElementViewProperty,
+    elementId: number,
+    processId: number
+  ): Observable<string | undefined> {
+    const value = elementViewProperty.value;
+    const type = elementViewProperty.type;
+    if (typeof value === 'undefined' || !type) {
+      return of(undefined);
+    }
+    if (type === TypeEnum.File && value instanceof File) {
+      return this._saveFile$(
+        elementId,
+        processId,
+        value,
+        elementViewProperty.label
+      );
+    }
+    if (isReference(type)) {
+      return zip(
+        this.shepardService.getDataObjectByElementId$(elementId, processId),
+        this.shepardService.getDataObjectByElementId$(+value, processId)
+      ).pipe(
+        mergeMap(([dataObject, refDataObject]) =>
+          zip(
+            of(refDataObject),
+            this.shepardService.addDataObjectToDataObject$(
+              refDataObject.id!,
+              dataObject.id!,
+              refDataObject.name!,
+              processId
+            )
+          )
+        ),
+        map(([refDataObject, _]) => '' + refDataObject.id)
+      );
+    }
+    return of('' + value);
+  }
+
+  private _saveFile$(
+    elementId: number,
+    processId: number,
+    value: File,
+    refName: string
+  ): Observable<string> {
+    return zip(
+      this.shepardService.createFile$(value),
+      this.shepardService.getDataObjectByElementId$(elementId, processId)
+    ).pipe(
+      mergeMap(([fileId, dataObject]) =>
+        zip(
+          of(fileId),
+          of(dataObject),
+          this.shepardService.removeFileFromDataObject$(
+            dataObject.id!,
+            fileId,
+            processId
+          )
+        )
+      ),
+      mergeMap(([fileId, dataObject]) =>
+        zip(
+          of(fileId),
+          this.shepardService.addFileToDataObject$(
+            dataObject.id!,
+            fileId,
+            refName,
+            processId
+          )
+        )
+      ),
+      map(([fileId, _]) => fileId)
     );
   }
 

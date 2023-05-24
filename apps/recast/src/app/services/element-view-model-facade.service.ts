@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   ElementViewModel,
   ElementViewProperty,
+  ValueType,
 } from '../model/element-view-model';
 import {
   BehaviorSubject,
@@ -31,6 +32,7 @@ import {
   addObjectToState,
   removeObjectFromState,
 } from '../shared/util/state-management';
+import TypeEnum = StepProperty.TypeEnum;
 
 @Injectable({
   providedIn: 'root',
@@ -191,11 +193,25 @@ export class ElementViewModelFacadeService {
         stepPropId: stepProperty.id!,
         stepId: stepProperty.stepId!,
         storageBackend: elementProperty?.storageBackend,
-        defaultValue: stepProperty.defaultValue ?? '',
+        defaultValue: this._formatDefaultValue(
+          stepProperty.defaultValue,
+          stepProperty.type!
+        ),
         value: elementProperty?.value,
       });
     });
     return elementViewProperties;
+  }
+
+  private _formatDefaultValue(
+    defaultValue: string | null | undefined,
+    type: TypeEnum
+  ): ValueType {
+    let value: ValueType = defaultValue ?? '';
+    if (type === TypeEnum.Boolean) {
+      value = defaultValue === 'true';
+    }
+    return value;
   }
 
   private _addOrUpdateElementViewModel(

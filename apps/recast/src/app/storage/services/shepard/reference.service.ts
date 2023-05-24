@@ -9,7 +9,6 @@ import {
   StructureddataReferenceApi,
 } from '@dlr-shepard/shepard-client';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
-import { environment } from '../../../../environments/environment';
 import { filter, from, map, Observable } from 'rxjs';
 import { isShepardUser } from '../../../shared/util/common-utils';
 
@@ -25,7 +24,7 @@ export class ReferenceService {
       .pipe(filter(isShepardUser))
       .subscribe(profile => {
         const config: Configuration = new Configuration({
-          basePath: environment.shepardUrl,
+          basePath: profile.shepardUrl,
           apiKey: profile.shepardApiKey,
         });
         this._fileReferenceApi = new FileReferenceApi(config);

@@ -28,6 +28,7 @@ import { SupabaseService, Tables } from './supabase.service';
 import { ElementPropertyService } from './element-property.service';
 import { elementComparator, groupBy$ } from '../shared/util/common-utils';
 import { ProcessFacadeService } from './process-facade.service';
+import { StepFacadeService } from './step-facade.service';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -44,7 +45,8 @@ export class ElementFacadeService {
   constructor(
     private readonly supabase: SupabaseService,
     private readonly elementPropertyService: ElementPropertyService,
-    private readonly processService: ProcessFacadeService
+    private readonly processService: ProcessFacadeService,
+    private readonly stepService: StepFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       switchMap(() => this.loadElements$()),
@@ -90,6 +92,19 @@ export class ElementFacadeService {
       map(elemProps => {
         elem.elementProperties = elemProps;
         return elem;
+      })
+    );
+  }
+
+  public createElement$(processId: number, name: string): Observable<Element> {
+    return this.stepService.stepsByProcessId$(processId).pipe(
+      concatMap(steps => {
+        const stepId = steps.length > 0 ? steps[0].id : null;
+        return this.saveElement$({
+          processId,
+          name,
+          currentStepId: stepId,
+        });
       })
     );
   }

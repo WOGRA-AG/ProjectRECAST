@@ -50,7 +50,6 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
   }
 
   public loadValue$(
-    elementId: number,
     elementViewProperty: ElementViewProperty
   ): Observable<ValueType> {
     const val = '' + elementViewProperty.value;
@@ -85,26 +84,12 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
     );
   }
 
-  public deleteElement$(element: Element): Observable<void> {
-    return this.elementService.deleteElement$(element.id!).pipe(
-      map(err => {
-        if (err) {
-          console.error(err);
-        }
-        return;
-      })
-    );
+  public deleteElement$(_: Element): Observable<void> {
+    return of(undefined);
   }
 
-  public deleteProcess$(process: Process): Observable<void> {
-    return this.processService.deleteProcess$(process.id).pipe(
-      map(err => {
-        if (err) {
-          console.error(err);
-        }
-        return;
-      })
-    );
+  public deleteProcess$(_: Process): Observable<void> {
+    return of(undefined);
   }
 
   private saveValue$(
@@ -112,11 +97,11 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
   ): Observable<string | undefined> {
     const value = elementViewProperty.value;
     const type = elementViewProperty.type;
-    if (type === TypeEnum.Boolean) {
-      return of('' + value);
-    }
-    if (!value) {
+    if (!value && type !== TypeEnum.Boolean) {
       return of(undefined);
+    }
+    if (type === TypeEnum.Boolean && typeof value === 'undefined') {
+      return of(value);
     }
     if (type === TypeEnum.File && value instanceof File) {
       return fileToStr$(value);

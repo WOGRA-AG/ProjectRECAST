@@ -13,10 +13,7 @@ import {
 
 export interface StorageAdapterInterface {
   getType(): StorageBackendEnum;
-  loadValue$(
-    elementId: number,
-    elementViewProperty: ElementViewProperty
-  ): Observable<ValueType>;
+  loadValue$(elementViewProperty: ElementViewProperty): Observable<ValueType>;
   saveValues$(elementViewModel: ElementViewModel): Observable<ElementViewModel>;
   deleteElement$(element: Element): Observable<void>;
   deleteProcess$(process: Process): Observable<void>;

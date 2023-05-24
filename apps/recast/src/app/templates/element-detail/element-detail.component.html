@@ -4,6 +4,7 @@
   </app-page-header>
 
   <app-stepper
+    *ngIf="!!elementViewModel?.currentStep"
     [steps]="stepTitles"
     (stepChanged)="stepChanged($event)"
     [currentIndex]="currentIndex"
@@ -38,12 +39,15 @@
             icon="bar_chart">
           </app-input-field>
           <app-file-input-field
+            class="input"
             *ngSwitchCase="TypeEnum.File"
             [formControlName]="prop.stepPropId"
             [label]="prop.label"></app-file-input-field>
           <mat-checkbox
+            class="input"
             *ngSwitchCase="TypeEnum.Boolean"
             [formControlName]="prop.stepPropId"
+            [labelPosition]="'after'"
             color="primary">
             {{ prop.label }}</mat-checkbox
           >
@@ -88,7 +92,7 @@
       <app-button-unfilled
         type="button"
         [bordered]="true"
-        (click)="navigateBack()"
+        (click)="navigateBack$()"
         i18n="@@actions.back">
         Back
       </app-button-unfilled>

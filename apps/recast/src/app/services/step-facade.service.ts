@@ -96,6 +96,10 @@ export class StepFacadeService {
     );
   }
 
+  public stepById(id: number): Step | undefined {
+    return this._steps$.getValue().find(s => s.id === id);
+  }
+
   public stepsByProcessId$(id: number): Observable<Step[]> {
     return this._steps$.pipe(
       map(steps =>

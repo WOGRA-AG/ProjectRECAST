@@ -8,7 +8,6 @@ import { ProcessOverviewComponent } from './templates/process-overview/process-o
 import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
 import { CreateElementComponent } from './templates/create-element/create-element.component';
 import { ElementDetailComponent } from './templates/element-detail/element-detail.component';
-import { ElementViewComponent } from './templates/element-view/element-view.component';
 
 const routes: Routes = [
   {
@@ -44,34 +43,15 @@ const routes: Routes = [
                 component: ProcessOverviewComponent,
               },
               {
-                path: 'step',
-                children: [
-                  {
-                    path: ':stepId',
-                    children: [
-                      {
-                        path: 'element',
-                        children: [
-                          {
-                            path: '',
-                            component: CreateElementComponent,
-                          },
-                          {
-                            path: ':elementId',
-                            component: ElementDetailComponent,
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              {
                 path: 'element',
                 children: [
                   {
+                    path: '',
+                    component: CreateElementComponent,
+                  },
+                  {
                     path: ':elementId',
-                    component: ElementViewComponent,
+                    component: ElementDetailComponent,
                   },
                 ],
               },
