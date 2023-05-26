@@ -74,7 +74,7 @@
               hint="Select element">
               <mat-option
                 *ngFor="let e of elementsByReference(prop.type) | async"
-                [value]="'' + e.id">
+                [value]="e.id">
                 {{ e.name }}
               </mat-option>
             </app-select-field>

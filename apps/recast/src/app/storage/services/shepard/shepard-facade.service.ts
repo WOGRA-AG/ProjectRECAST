@@ -20,6 +20,10 @@ import {
   of,
   tap,
   zip,
+  mergeMap,
+  mergeAll,
+  toArray,
+  take,
 } from 'rxjs';
 import { FileService } from './file.service';
 import { StructuredDataService } from './structured-data.service';
@@ -90,12 +94,14 @@ export class ShepardFacadeService {
     );
   }
 
-  public deleteCollection$(processId: number): Observable<void> {
+  public deleteCollectionByProcessId$(processId: number): Observable<void> {
     return this.getCollectionByProcessId$(processId).pipe(
-      filter(Boolean),
-      switchMap(collection =>
-        this.collectionService.deleteCollection$(collection.id!)
-      )
+      switchMap(collection => {
+        if (!collection) {
+          return of(undefined);
+        }
+        return this.collectionService.deleteCollection$(collection.id!);
+      })
     );
   }
 
@@ -140,7 +146,47 @@ export class ShepardFacadeService {
       concatMap(fc => this.fileService.deleteFileByOid$(fc.id!, fileId))
     );
 
-  public getDataObjectById$(
+  public getAllDataObjects$(): Observable<DataObject[]> {
+    return this.collectionService.collections$.pipe(
+      take(1),
+      filter(Boolean),
+      switchMap(collections => collections),
+      mergeMap(collection =>
+        this.dataObjectService.getDataObjectsByCollectionId$(collection.id!)
+      ),
+      mergeAll(),
+      toArray()
+    );
+  }
+
+  public getDataObjectById$(dataObjectId: number): Observable<DataObject> {
+    return this.getAllDataObjects$().pipe(
+      filter(Boolean),
+      map(dataObjects => {
+        const obj = dataObjects.find(d => d.id === dataObjectId);
+        if (!obj) {
+          throw Error('Could not find data object');
+        }
+        return obj;
+      })
+    );
+  }
+
+  public getElementIdFromDataObjectId$(
+    dataObjectId: number
+  ): Observable<number> {
+    return this.getDataObjectById$(dataObjectId).pipe(
+      map(dataObject => {
+        if (!dataObject.attributes) {
+          throw Error('Could not find data object for element');
+        }
+        const elementId = dataObject.attributes['element_id'];
+        return +elementId;
+      })
+    );
+  }
+
+  public getDataObjectByIdAndProcessId$(
     dataObjectId: number,
     processId: number
   ): Observable<DataObject> {
@@ -152,7 +198,7 @@ export class ShepardFacadeService {
     );
   }
 
-  public getDataObjectByElementId$(
+  public getDataObjectByElementIdAndProcessId$(
     elementId: number,
     processId: number
   ): Observable<DataObject> {
@@ -213,14 +259,16 @@ export class ShepardFacadeService {
     elementId: number
   ): Observable<void> {
     return this.getCollectionByProcessId$(processId).pipe(
-      filter(Boolean),
-      switchMap(collection =>
-        this.dataObjectService.deleteDataObjectByAttribute$(
+      switchMap(collection => {
+        if (!collection) {
+          return of(undefined);
+        }
+        return this.dataObjectService.deleteDataObjectByAttribute$(
           collection.id!,
           'element_id',
           '' + elementId
-        )
-      )
+        );
+      })
     );
   }
 
@@ -236,7 +284,10 @@ export class ShepardFacadeService {
       },
       payload,
     };
-    return this.getDataObjectByElementId$(elementId, processId).pipe(
+    return this.getDataObjectByElementIdAndProcessId$(
+      elementId,
+      processId
+    ).pipe(
       filter(Boolean),
       switchMap(dataObject =>
         this.removeStructuredDataFromDataObject$(
@@ -257,7 +308,7 @@ export class ShepardFacadeService {
       ),
       switchMap(structuredData =>
         zip(
-          this.getDataObjectByElementId$(elementId, processId),
+          this.getDataObjectByElementIdAndProcessId$(elementId, processId),
           of(structuredData)
         )
       ),
@@ -470,5 +521,21 @@ export class ShepardFacadeService {
     oid: string
   ): Observable<StructuredDataPayload> {
     return this.structuredDataService.getStructuredDataPayload$(oid);
+  }
+
+  public getDataObjectByElementId$(
+    elementId: number
+  ): Observable<DataObject | undefined> {
+    return this.getAllDataObjects$().pipe(
+      map(dataObjects =>
+        dataObjects.find(obj => {
+          const attributes = obj.attributes;
+          if (!attributes) {
+            return false;
+          }
+          return attributes['element_id'] === '' + elementId;
+        })
+      )
+    );
   }
 }

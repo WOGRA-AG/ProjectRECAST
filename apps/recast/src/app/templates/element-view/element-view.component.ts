@@ -85,7 +85,6 @@ export class ElementViewComponent implements OnDestroy {
         this.viewModelService.elementViewModelByElementId$(elementId)
       ),
       filter(Boolean),
-      switchMap(model => this.storageService.loadValues$(model)),
       catchError(() => {
         alert('View Model not found');
         return of(undefined);
@@ -98,7 +97,7 @@ export class ElementViewComponent implements OnDestroy {
     this.updateControl('name', elementViewModel.element.name);
     for (const prop of elementViewModel.properties ?? []) {
       let val = prop.value ?? prop.defaultValue;
-      if (isReference(prop.type) && val.hasOwnProperty('name')) {
+      if (isReference(prop.type) && val?.hasOwnProperty('name')) {
         val = val as Element;
         val = val.name!;
       }

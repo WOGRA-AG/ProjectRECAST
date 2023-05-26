@@ -11,6 +11,7 @@ import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 export interface ElementViewModel {
   element: Element;
   process: Process;
+  storageBackends: StorageBackendEnum[];
   currentStep?: Step;
   sortedSteps: Step[];
   properties: ElementViewProperty[];

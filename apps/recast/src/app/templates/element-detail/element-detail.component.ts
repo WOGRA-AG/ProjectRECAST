@@ -13,7 +13,6 @@ import {
   tap,
   switchMap,
   take,
-  distinctUntilChanged,
   mergeMap,
   from,
 } from 'rxjs';
@@ -27,14 +26,13 @@ import {
 } from 'src/app/services';
 import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { StorageService } from '../../storage/services/storage.service';
 import TypeEnum = StepProperty.TypeEnum;
 import {
   ElementViewModel,
   ElementViewProperty,
   ValueType,
 } from '../../model/element-view-model';
-import { elementComparator, isReference } from '../../shared/util/common-utils';
+import { isReference } from '../../shared/util/common-utils';
 
 // TODO: refactor this class
 @Component({
@@ -64,7 +62,6 @@ export class ElementDetailComponent implements OnDestroy {
     private stepService: StepFacadeService,
     private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
-    private storageService: StorageService,
     private elementViewService: ElementViewModelFacadeService,
     private formBuilder: FormBuilder,
     private router: Router,
@@ -84,27 +81,6 @@ export class ElementDetailComponent implements OnDestroy {
         switchMap(elementViewModel => this.initFormGroup$(elementViewModel))
       )
       .subscribe();
-    this.propertiesForm.valueChanges
-      .pipe(takeUntil(this._destroy$), distinctUntilChanged(elementComparator))
-      .subscribe(values => {
-        const props = this.elementViewModel?.properties ?? [];
-        for (const key of Object.keys(values)) {
-          const elementViewProperty = props.find(
-            prop => '' + prop.stepPropId === key
-          );
-          if (!elementViewProperty || !this._currentStep) {
-            continue;
-          }
-          const currStepIdx = this._steps.indexOf(this._currentStep);
-          const valStepIdx = this._steps.findIndex(
-            step => step.id === elementViewProperty.stepId
-          );
-          if (currStepIdx < valStepIdx) {
-            continue;
-          }
-          elementViewProperty.value = values[key];
-        }
-      });
   }
 
   get currentIndex(): number {
@@ -132,13 +108,13 @@ export class ElementDetailComponent implements OnDestroy {
     if (!this.elementViewModel?.element) {
       return;
     }
+    const newModel = this._prepareValueModel();
     this.loading = true;
     if (!this.isLastStep) {
-      this.storageService
-        .updateValues$(this.elementViewModel)
+      this.elementViewService
+        .updateValuesFromElementViewModel$(newModel)
         .pipe(
           take(1),
-          takeUntil(this._destroy$),
           catchError(err => {
             console.error(err);
             return of(undefined);
@@ -160,10 +136,10 @@ export class ElementDetailComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         tap(() => (this.loading = false)),
-        takeUntil(this._destroy$),
+        take(1),
         filter(confirmed => !!confirmed),
         mergeMap(() =>
-          this.storageService.updateValues$(this.elementViewModel!)
+          this.elementViewService.updateValuesFromElementViewModel$(newModel)
         )
       )
       .subscribe(() => this.navigateForward());
@@ -188,7 +164,7 @@ export class ElementDetailComponent implements OnDestroy {
   private initFormGroup$(elementViewModel: ElementViewModel): Observable<void> {
     for (const prop of elementViewModel.properties ?? []) {
       let val: ValueType = prop.value ?? prop.defaultValue;
-      if (isReference(prop.type) && val.hasOwnProperty('name')) {
+      if (isReference(prop.type) && val?.hasOwnProperty('name')) {
         val = val as Element;
         val = val.name!;
       }
@@ -248,7 +224,6 @@ export class ElementDetailComponent implements OnDestroy {
     return this.elementId$().pipe(
       switchMap(id => this.elementViewService.elementViewModelByElementId$(id)),
       filter(Boolean),
-      switchMap(model => this.storageService.loadValues$(model)),
       catchError(err => {
         console.error(err);
         return of(undefined);
@@ -292,5 +267,16 @@ export class ElementDetailComponent implements OnDestroy {
       return;
     }
     control.setValue(value);
+  }
+
+  private _prepareValueModel(): ElementViewModel {
+    return {
+      ...this.elementViewModel!,
+      properties: this.elementViewModel!.properties.map(prop => {
+        const stepIndex = this._steps.findIndex(s => s.id === prop.stepId);
+        const value = this.propertiesForm.get('' + prop.stepPropId)?.value;
+        return stepIndex <= this.currentIndex ? { ...prop, value } : prop;
+      }),
+    };
   }
 }

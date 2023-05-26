@@ -5,7 +5,7 @@ import {
   DataObjectApi,
 } from '@dlr-shepard/shepard-client';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
-import { filter, from, map, Observable, switchMap } from 'rxjs';
+import { filter, from, map, Observable, of, switchMap } from 'rxjs';
 import { isShepardUser } from '../../../shared/util/common-utils';
 
 @Injectable({
@@ -73,10 +73,13 @@ export class DataObjectService {
     value: string
   ): Observable<void> {
     return this.getDataObjectByAttribute$(collectionId, attribute, value).pipe(
-      filter(Boolean),
-      switchMap(dataObject =>
-        this.deleteDataObjectById$(collectionId, dataObject.id!)
-      )
+      map(dataObject => dataObject),
+      switchMap(dataObject => {
+        if (!dataObject) {
+          return of(undefined);
+        }
+        return this.deleteDataObjectById$(collectionId, dataObject.id!);
+      })
     );
   }
 
@@ -97,6 +100,16 @@ export class DataObjectService {
             d.attributes[attribute] === value
         )
       )
+    );
+  }
+
+  public getDataObjectsByCollectionId$(
+    collectionId: number
+  ): Observable<DataObject[]> {
+    return from(
+      this._dataObjectApi!.getAllDataObjects({
+        collectionId,
+      })
     );
   }
 }

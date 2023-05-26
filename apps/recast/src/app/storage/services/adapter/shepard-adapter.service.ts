@@ -59,23 +59,28 @@ export class ShepardAdapter implements StorageAdapterInterface {
   ): Observable<ValueType> {
     const val = '' + elementViewProperty.value;
     const type = elementViewProperty.type;
-    if (val && type === TypeEnum.File) {
-      return this.shepardService
-        .getFileById$(val)
-        .pipe(catchError(() => of(new File([], ''))));
-    }
-    if (isReference(type) && val) {
-      return this.elementService.elementById$(+val);
-    }
     return this.shepardService.getStructuredDataById$(val).pipe(
-      map(structuredData => {
+      mergeMap(structuredData => {
         if (!structuredData.payload) {
-          return '';
+          return of('');
         }
         const payload = JSON.parse(structuredData.payload);
         const parsedValue = payload[elementViewProperty.label] as ShepardValue;
+        if (!parsedValue) {
+          return of('');
+        }
         const value = parsedValue.value;
-        return type === TypeEnum.Boolean ? value === 'true' : value;
+        if (value && type === TypeEnum.File) {
+          return this.shepardService
+            .getFileById$(value)
+            .pipe(catchError(() => of(new File([], ''))));
+        }
+        if (isReference(type) && value) {
+          return this.shepardService
+            .getElementIdFromDataObjectId$(+value)
+            .pipe(map(elementId => elementId));
+        }
+        return of(type === TypeEnum.Boolean ? value === 'true' : value);
       })
     );
   }
@@ -148,14 +153,13 @@ export class ShepardAdapter implements StorageAdapterInterface {
   }
 
   public deleteElement$(element: Element): Observable<void> {
-    return this.shepardService.deleteDataObjectByElementId$(
-      element.processId!,
-      element.id!
-    );
+    return this.shepardService
+      .deleteDataObjectByElementId$(element.processId!, element.id!)
+      .pipe(take(1));
   }
 
   public deleteProcess$(process: Process): Observable<void> {
-    return this.shepardService.deleteCollection$(process.id!).pipe(
+    return this.shepardService.deleteCollectionByProcessId$(process.id!).pipe(
       switchMap(() => this.processService.deleteProcess$(process.id!)),
       catchError(() => of(undefined)),
       map(err => {
@@ -210,11 +214,17 @@ export class ShepardAdapter implements StorageAdapterInterface {
     }
     if (isReference(type)) {
       return zip(
-        this.shepardService.getDataObjectByElementId$(elementId, processId),
-        this.shepardService.getDataObjectByElementId$(+value, processId)
+        this.shepardService.getDataObjectByElementIdAndProcessId$(
+          elementId,
+          processId
+        ),
+        this.shepardService.getDataObjectByElementId$(+value)
       ).pipe(
-        mergeMap(([dataObject, refDataObject]) =>
-          zip(
+        mergeMap(([dataObject, refDataObject]) => {
+          if (!dataObject || !refDataObject) {
+            throw new Error('Invalid data');
+          }
+          return zip(
             of(refDataObject),
             this.shepardService.addDataObjectToDataObject$(
               refDataObject.id!,
@@ -222,8 +232,8 @@ export class ShepardAdapter implements StorageAdapterInterface {
               refDataObject.name!,
               processId
             )
-          )
-        ),
+          );
+        }),
         map(([refDataObject, _]) => '' + refDataObject.id)
       );
     }
@@ -238,7 +248,10 @@ export class ShepardAdapter implements StorageAdapterInterface {
   ): Observable<string> {
     return zip(
       this.shepardService.createFile$(value),
-      this.shepardService.getDataObjectByElementId$(elementId, processId)
+      this.shepardService.getDataObjectByElementIdAndProcessId$(
+        elementId,
+        processId
+      )
     ).pipe(
       mergeMap(([fileId, dataObject]) =>
         zip(

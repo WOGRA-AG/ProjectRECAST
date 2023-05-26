@@ -1,12 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
 import { concatMap, filter, Observable, Subject, takeUntil } from 'rxjs';
-import { ElementFacadeService, ProcessFacadeService } from 'src/app/services';
+import {
+  ElementFacadeService,
+  ElementViewModelFacadeService,
+  ProcessFacadeService,
+} from 'src/app/services';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
 import { Process, Step, Element } from '../../../../build/openapi/recast';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
-import { StorageService } from '../../storage/services/storage.service';
 
 @Component({
   selector: 'app-overview',
@@ -43,7 +46,7 @@ export class OverviewComponent implements OnDestroy {
     public readonly elementService: ElementFacadeService,
     public dialog: MatDialog,
     public router: Router,
-    private readonly storageService: StorageService
+    private readonly elementViewModelService: ElementViewModelFacadeService
   ) {
     this.tableData$ = processService.processes$;
   }
@@ -80,7 +83,7 @@ export class OverviewComponent implements OnDestroy {
           .pipe(
             filter(confirmed => !!confirmed),
             concatMap(() =>
-              this.storageService.deleteProcess$(element as Process)
+              this.elementViewModelService.deleteProcess$(element as Process)
             ),
             takeUntil(this._destroy$)
           )
@@ -98,7 +101,7 @@ export class OverviewComponent implements OnDestroy {
           .pipe(
             filter(confirmed => !!confirmed),
             concatMap(() =>
-              this.storageService.deleteElement$(element as Element)
+              this.elementViewModelService.deleteElement$(element as Element)
             ),
             takeUntil(this._destroy$)
           )

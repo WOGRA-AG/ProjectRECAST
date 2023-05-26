@@ -9,6 +9,7 @@ import { StorageAdapterInterface } from './adapter/storage-adapter-interface';
 import {
   BehaviorSubject,
   catchError,
+  concatAll,
   filter,
   from,
   map,
@@ -19,6 +20,7 @@ import {
   switchMap,
   take,
   toArray,
+  zip,
 } from 'rxjs';
 import { UserFacadeService } from '../../user/services/user-facade.service';
 import {
@@ -26,11 +28,7 @@ import {
   ElementViewProperty,
   ValueType,
 } from '../../model/element-view-model';
-import {
-  ElementFacadeService,
-  ElementViewModelFacadeService,
-  ProcessFacadeService,
-} from '../../services';
+import { ElementFacadeService, ProcessFacadeService } from '../../services';
 
 @Injectable({
   providedIn: 'root',
@@ -42,7 +40,6 @@ export class StorageService {
     @Inject('StorageAdapterInterface')
     private readonly storageAdapters: StorageAdapterInterface[],
     private readonly userService: UserFacadeService,
-    private readonly elementViewModelService: ElementViewModelFacadeService,
     private readonly elementService: ElementFacadeService,
     private readonly processService: ProcessFacadeService
   ) {
@@ -57,7 +54,7 @@ export class StorageService {
     elementViewModel: ElementViewModel
   ): Observable<ElementViewModel> {
     return of(elementViewModel).pipe(
-      switchMap(viewModel => {
+      mergeMap(viewModel => {
         const properties = viewModel.properties;
         const observables = properties.map(property => {
           if (!property.value) {
@@ -72,7 +69,7 @@ export class StorageService {
           );
         });
         return from(observables).pipe(
-          mergeAll(),
+          concatAll(),
           toArray(),
           map(props => ({
             ...viewModel,
@@ -85,7 +82,7 @@ export class StorageService {
 
   public updateValues$(
     elementViewModel: ElementViewModel
-  ): Observable<Element> {
+  ): Observable<ElementViewModel> {
     return this._storageBackend$.pipe(
       filter(Boolean),
       mergeMap(backend => {
@@ -96,56 +93,92 @@ export class StorageService {
           throw new Error(`No such Storage Backend: ${backend}`);
         }
         return storageAdapter.saveValues$(elementViewModel);
-      }),
-      switchMap(model =>
-        this.elementViewModelService.saveElementFromElementViewModel$(model)
-      )
-    );
-  }
-
-  public deleteElement$(element: Element): Observable<void> {
-    return this._storageBackend$.pipe(
-      filter(Boolean),
-      switchMap(backend => {
-        const storageAdapter = this.storageAdapters.find(
-          adapter => adapter.getType() === backend
-        );
-        if (!storageAdapter) {
-          throw new Error(`No such Storage Backend: ${backend}`);
-        }
-        return storageAdapter.deleteElement$(element).pipe(
-          catchError(() => of(undefined)),
-          mergeMap(() => this.elementService.deleteElement$(element.id!)),
-          map(err => {
-            if (err) {
-              console.error(err);
-            }
-            return;
-          })
-        );
       })
     );
   }
 
-  public deleteProcess$(process: Process): Observable<void> {
+  public deleteElement$(
+    element: Element,
+    elementViewModel: ElementViewModel
+  ): Observable<void> {
+    if (!element.id) {
+      return of(undefined);
+    }
     return this._storageBackend$.pipe(
-      filter(Boolean),
-      switchMap(backend => {
-        const storageAdapter = this.storageAdapters.find(
-          adapter => adapter.getType() === backend
+      mergeMap(defaultBackend => {
+        const observables = [];
+        const defaultAdapter = this.storageAdapters.find(
+          adapter => adapter.getType() === defaultBackend
         );
-        if (!storageAdapter) {
-          throw new Error(`No such Storage Backend: ${backend}`);
-        }
-        return storageAdapter.deleteProcess$(process).pipe(
-          mergeMap(() => this.processService.deleteProcess$(process.id!)),
-          map(err => {
-            if (err) {
-              console.error(err);
+        if (!elementViewModel?.storageBackends.length) {
+          if (!defaultAdapter) {
+            throw new Error(`No such Storage Backend: ${defaultBackend}`);
+          }
+          observables.push(defaultAdapter.deleteElement$(element));
+        } else {
+          for (const storageBackend of elementViewModel?.storageBackends) {
+            const storageAdapter = this.storageAdapters.find(
+              adapter => adapter.getType() === storageBackend
+            );
+            if (!storageAdapter) {
+              throw new Error(`No such Storage Backend: ${storageBackend}`);
             }
-            return;
-          })
+            observables.push(storageAdapter.deleteElement$(element));
+          }
+        }
+        return observables;
+      }),
+      mergeAll(),
+      catchError(() => of(undefined)),
+      mergeMap(() => this.elementService.deleteElement$(element.id!)),
+      map(err => {
+        if (err) {
+          console.error(err);
+        }
+        return;
+      })
+    );
+  }
+
+  public deleteProcess$(
+    process: Process,
+    backends: StorageBackendEnum[]
+  ): Observable<void> {
+    if (!process.id) {
+      return of(undefined);
+    }
+    return zip(this._storageBackend$, of(backends)).pipe(
+      switchMap(([defaultBackend, processBackends]) => {
+        const observables = [];
+        const defaultAdapter = this.storageAdapters.find(
+          adapter => adapter.getType() === defaultBackend
         );
+        if (!processBackends.length) {
+          if (!defaultAdapter) {
+            throw new Error(`No such Storage Backend: ${defaultBackend}`);
+          }
+          observables.push(defaultAdapter.deleteProcess$(process));
+        } else {
+          for (const storageBackend of processBackends) {
+            const storageAdapter = this.storageAdapters.find(
+              adapter => adapter.getType() === storageBackend
+            );
+            if (!storageAdapter) {
+              throw new Error(`No such Storage Backend: ${storageBackend}`);
+            }
+            observables.push(storageAdapter.deleteProcess$(process));
+          }
+        }
+        return from(observables);
+      }),
+      mergeAll(),
+      catchError(() => of(undefined)),
+      mergeMap(() => this.processService.deleteProcess$(process.id!)),
+      map(err => {
+        if (err) {
+          console.error(err);
+        }
+        return;
       })
     );
   }

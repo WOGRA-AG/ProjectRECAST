@@ -7,7 +7,6 @@ import {
 import {
   BehaviorSubject,
   map,
-  merge,
   Observable,
   of,
   filter,
@@ -15,10 +14,12 @@ import {
   distinctUntilChanged,
   combineLatestWith,
   mergeMap,
+  from,
+  toArray,
+  take,
 } from 'rxjs';
 import { ElementFacadeService } from './element-facade.service';
 import { ProcessFacadeService } from './process-facade.service';
-import { SupabaseService } from './supabase.service';
 import {
   Element,
   Process,
@@ -33,6 +34,8 @@ import {
   removeObjectFromState,
 } from '../shared/util/state-management';
 import TypeEnum = StepProperty.TypeEnum;
+import StorageBackendEnum = ElementProperty.StorageBackendEnum;
+import { StorageService } from '../storage/services/storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -40,14 +43,15 @@ import TypeEnum = StepProperty.TypeEnum;
 export class ElementViewModelFacadeService {
   private _elementViewModels$ = new BehaviorSubject<ElementViewModel[]>([]);
   constructor(
-    private readonly supabase: SupabaseService,
     private readonly processService: ProcessFacadeService,
     private readonly elementService: ElementFacadeService,
-    private readonly stepService: StepFacadeService
+    private readonly stepService: StepFacadeService,
+    private readonly storageService: StorageService
   ) {
-    merge(supabase.currentSession$, elementService.elements$)
+    this._elements$()
       .pipe(
-        switchMap(() => this._initElementViewModels$()),
+        mergeMap(elements => from(elements)),
+        mergeMap(elements => this._initElementViewModels$(elements)),
         map(elementViewModel =>
           this._addOrUpdateElementViewModel(elementViewModel)
         )
@@ -65,7 +69,8 @@ export class ElementViewModelFacadeService {
           (elementViewModel: ElementViewModel) =>
             elementViewModel.element.id === elementId
         )
-      )
+      ),
+      distinctUntilChanged(elementComparator)
     );
   }
 
@@ -92,12 +97,65 @@ export class ElementViewModelFacadeService {
     return this.elementService.saveElement$(element);
   }
 
-  private _initElementViewModels$(): Observable<ElementViewModel> {
-    return this._elements$().pipe(
-      switchMap(elements =>
-        elements.map(element => this._elementViewModelFromElement$(element))
+  public storageBackendsByProcessId$(
+    processId: number
+  ): Observable<StorageBackendEnum[]> {
+    return this.elementService.elementsByProcessId$(processId).pipe(
+      take(1),
+      mergeMap(elements => from(elements)),
+      mergeMap(element =>
+        this.elementViewModelByElementId$(element.id!).pipe(take(1))
       ),
-      mergeMap(elementViewModel => elementViewModel),
+      map(elementViewModel => elementViewModel?.storageBackends ?? []),
+      toArray(),
+      map(backends => {
+        if (!backends) {
+          return [];
+        }
+        return [...new Set(backends.flat())];
+      })
+    );
+  }
+
+  public updateValuesFromElementViewModel$(
+    elementViewModel: ElementViewModel
+  ): Observable<Element> {
+    return this.storageService
+      .updateValues$(elementViewModel)
+      .pipe(mergeMap(model => this.saveElementFromElementViewModel$(model)));
+  }
+
+  public deleteProcess$(process: Process): Observable<void> {
+    if (!process.id!) {
+      return of(undefined);
+    }
+    return this.storageBackendsByProcessId$(process.id).pipe(
+      switchMap(backends =>
+        this.storageService.deleteProcess$(process, backends)
+      )
+    );
+  }
+
+  public deleteElement$(element: Element): Observable<void> {
+    if (!element.id!) {
+      return of(undefined);
+    }
+    return this.elementViewModelByElementId$(element.id).pipe(
+      switchMap(elementViewModel => {
+        if (!elementViewModel) {
+          return of(undefined);
+        }
+        return this.storageService.deleteElement$(element, elementViewModel);
+      })
+    );
+  }
+
+  private _initElementViewModels$(
+    element: Element
+  ): Observable<ElementViewModel> {
+    return this._elementViewModelFromElement$(element).pipe(
+      distinctUntilChanged(elementComparator),
+      mergeMap(model => this.storageService.loadValues$(model)),
       distinctUntilChanged(elementComparator)
     );
   }
@@ -139,9 +197,14 @@ export class ElementViewModelFacadeService {
         element.elementProperties ?? [],
         stepProperties
       );
+    const storageBackendsList: StorageBackendEnum[] = elementViewProperties
+      .filter((evp: ElementViewProperty) => !!evp.storageBackend)
+      .map((evp: ElementViewProperty) => evp.storageBackend!);
+    const uniqueStorageBackends = [...new Set(storageBackendsList)];
     return of({
       element,
       process,
+      storageBackends: uniqueStorageBackends,
       currentStep: step,
       sortedSteps: steps,
       properties: elementViewProperties,
