@@ -70,6 +70,12 @@ export class ElementViewModelFacadeService {
             elementViewModel.element.id === elementId
         )
       ),
+      mergeMap(model => {
+        if (!model) {
+          return of(undefined);
+        }
+        return this.storageService.loadValues$(model);
+      }),
       distinctUntilChanged(elementComparator)
     );
   }
@@ -154,8 +160,6 @@ export class ElementViewModelFacadeService {
     element: Element
   ): Observable<ElementViewModel> {
     return this._elementViewModelFromElement$(element).pipe(
-      distinctUntilChanged(elementComparator),
-      mergeMap(model => this.storageService.loadValues$(model)),
       distinctUntilChanged(elementComparator)
     );
   }

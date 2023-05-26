@@ -29,7 +29,6 @@ import {
   ElementFacadeService,
   ProcessFacadeService,
 } from '../../../services';
-import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { groupBy$, isReference } from '../../../shared/util/common-utils';
 import {
   ElementViewModel,
@@ -277,24 +276,5 @@ export class ShepardAdapter implements StorageAdapterInterface {
       ),
       map(([fileId, _]) => fileId)
     );
-  }
-
-  private deleteFileProp$(
-    prop: ElementProperty,
-    dataObjectId: number,
-    processId: number
-  ): Observable<PostgrestSingleResponse<any> | undefined> {
-    if (!(prop.id && prop.value)) {
-      return of(undefined);
-    }
-    return this.shepardService
-      .removeFileFromDataObject$(dataObjectId, prop.value!, processId)
-      .pipe(
-        concatMap(() => this.shepardService.deleteFile$(prop.value!)),
-        catchError(() => of(undefined)),
-        concatMap(() =>
-          this.elementPropertyService.deleteElementProperty$(prop.id!)
-        )
-      );
   }
 }
