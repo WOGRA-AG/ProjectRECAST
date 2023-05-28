@@ -30,6 +30,7 @@ export class ProfileComponent implements OnDestroy {
     ]),
     avatarUrl: '',
     shepardApiKey: new FormControl('', [Validators.minLength(this._minlength)]),
+    shepardUrl: new FormControl('', [Validators.minLength(this._minlength)]),
     storageBackend: new FormControl(StorageBackendEnum.Postgres, [
       Validators.required,
     ]),
@@ -64,6 +65,7 @@ export class ProfileComponent implements OnDestroy {
         this.profile.avatarUrl = values.avatarUrl || this.profile.avatarUrl;
         this.profile.shepardApiKey =
           values.shepardApiKey || this.profile.shepardApiKey;
+        this.profile.shepardUrl = values.shepardUrl || this.profile.shepardUrl;
         this.profile.storageBackend =
           values.storageBackend || this.profile.storageBackend;
       });
@@ -81,6 +83,7 @@ export class ProfileComponent implements OnDestroy {
     const avatarUrl = this.profile.avatarUrl;
     const id = this.profile.id;
     const shepardApiKey = this.profile.shepardApiKey;
+    const shepardUrl = this.profile.shepardUrl;
     const storageBackend = this.profile.storageBackend;
     this.userService
       .saveProfile({
@@ -89,6 +92,7 @@ export class ProfileComponent implements OnDestroy {
         email,
         avatarUrl,
         shepardApiKey,
+        shepardUrl,
         storageBackend,
       })
       .pipe(

@@ -5,7 +5,14 @@ import {
   SupabaseClient,
 } from '@supabase/supabase-js';
 import { environment } from 'src/environments/environment';
-import { BehaviorSubject, filter, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+} from 'rxjs';
+import { elementComparator } from '../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +46,8 @@ export class SupabaseService {
   get currentSession$(): Observable<AuthSession> {
     return this._session$.pipe(
       filter(session => !!session),
-      map(session => session!)
+      map(session => session!),
+      distinctUntilChanged(elementComparator)
     );
   }
 

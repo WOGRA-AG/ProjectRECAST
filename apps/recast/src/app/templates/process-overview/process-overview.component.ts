@@ -19,7 +19,7 @@ import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { elementComparator } from '../../shared/util/common-utils';
-import { StorageService } from '../../storage/services/storage.service';
+import { ElementViewModelFacadeService } from '../../services';
 
 @Component({
   selector: 'app-process-overview',
@@ -47,7 +47,7 @@ export class ProcessOverviewComponent implements OnDestroy {
     private readonly processService: ProcessFacadeService,
     private readonly elementService: ElementFacadeService,
     private readonly stepService: StepFacadeService,
-    private readonly storageService: StorageService,
+    private readonly elementViewModelService: ElementViewModelFacadeService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog
@@ -122,15 +122,13 @@ export class ProcessOverviewComponent implements OnDestroy {
   }
 
   public navigateToCreateElement(): void {
-    this.router.navigate([`./step/${this.steps[0].id}/element`], {
+    this.router.navigate([`./element`], {
       relativeTo: this.activatedRoute,
     });
   }
 
   public navigateTo(element: Element): void {
-    const route = element.currentStepId
-      ? `./step/${this.currentStepId}/element/${element.id}`
-      : `./element/${element.id}`;
+    const route = `./element/${element.id}`;
     this.router.navigate([route], {
       relativeTo: this.activatedRoute,
     });
@@ -148,7 +146,7 @@ export class ProcessOverviewComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         filter(confirmed => !!confirmed),
-        concatMap(() => this.storageService.deleteElement$(element)),
+        concatMap(() => this.elementViewModelService.deleteElement$(element)),
         takeUntil(this._destroy$)
       )
       .subscribe();

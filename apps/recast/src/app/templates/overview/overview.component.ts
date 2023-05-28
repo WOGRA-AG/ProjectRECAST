@@ -1,13 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
 import { concatMap, filter, Observable, Subject, takeUntil } from 'rxjs';
-import { ElementFacadeService } from 'src/app/services/element-facade.service';
-import { ProcessFacadeService } from '../../services/process-facade.service';
+import {
+  ElementFacadeService,
+  ElementViewModelFacadeService,
+  ProcessFacadeService,
+} from 'src/app/services';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
 import { Process, Step, Element } from '../../../../build/openapi/recast';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
-import { StorageService } from '../../storage/services/storage.service';
 
 @Component({
   selector: 'app-overview',
@@ -44,7 +46,7 @@ export class OverviewComponent implements OnDestroy {
     public readonly elementService: ElementFacadeService,
     public dialog: MatDialog,
     public router: Router,
-    private readonly storageService: StorageService
+    private readonly elementViewModelService: ElementViewModelFacadeService
   ) {
     this.tableData$ = processService.processes$;
   }
@@ -69,9 +71,6 @@ export class OverviewComponent implements OnDestroy {
       return;
     }
     switch (this.currentIndex) {
-      // Get storage backend from profile
-      // move delete routes to storage service
-      // implement delete in storage adapters
       case 0:
         this.dialog
           .open(ConfirmDialogComponent, {
@@ -84,7 +83,7 @@ export class OverviewComponent implements OnDestroy {
           .pipe(
             filter(confirmed => !!confirmed),
             concatMap(() =>
-              this.storageService.deleteProcess$(element as Process)
+              this.elementViewModelService.deleteProcess$(element as Process)
             ),
             takeUntil(this._destroy$)
           )
@@ -102,7 +101,7 @@ export class OverviewComponent implements OnDestroy {
           .pipe(
             filter(confirmed => !!confirmed),
             concatMap(() =>
-              this.storageService.deleteElement$(element as Element)
+              this.elementViewModelService.deleteElement$(element as Element)
             ),
             takeUntil(this._destroy$)
           )
@@ -135,19 +134,17 @@ export class OverviewComponent implements OnDestroy {
     }
   }
 
-  public navigateTo(element: Process | Element | Step): void {
-    if (!element) {
+  public navigateTo(rowItem: Process | Element | Step): void {
+    if (!rowItem) {
       return;
     }
     switch (this.currentIndex) {
       case 0:
-        this.router.navigateByUrl('overview/process/' + element.id);
+        this.router.navigateByUrl('overview/process/' + rowItem.id);
         break;
       case 1:
-        const elem: Element = element as Element;
-        const route = elem.currentStepId
-          ? `overview/process/${elem.processId}/step/${elem.currentStepId}/element/${elem.id}`
-          : `overview/process/${elem.processId}/element/${elem.id}`;
+        const elem: Element = rowItem as Element;
+        const route = `overview/process/${elem.processId}/element/${elem.id}`;
         this.router.navigateByUrl(route);
         break;
       default:

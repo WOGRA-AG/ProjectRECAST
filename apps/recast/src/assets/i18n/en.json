@@ -16,6 +16,7 @@
   "label.email": "Email",
   "label.id": "Id",
   "label.shep_api_key": "Shepard Api Key",
+  "label.shep_url": "Shepard Url",
   "label.elements": "Elements",
   "label.processes": "Processes",
   "label.title": "Title",

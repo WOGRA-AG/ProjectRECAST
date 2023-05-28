@@ -32,6 +32,14 @@
       errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
   </div>
   <div>
+    <app-input-field
+      i18n-label="@@label.shep_url"
+      i18n-errMsg="@@err.min_char"
+      formControlName="shepardUrl"
+      label="Shepard Url"
+      errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
+  </div>
+  <div>
     <app-select-field
       [formControlName]="'storageBackend'"
       label="Storage Backend"

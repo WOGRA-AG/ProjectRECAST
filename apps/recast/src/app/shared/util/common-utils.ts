@@ -7,7 +7,11 @@ import {
   map,
 } from 'rxjs';
 import { Document, parseAllDocuments } from 'yaml';
-import { Process, StepProperty } from '../../../../build/openapi/recast';
+import {
+  Process,
+  Profile,
+  StepProperty,
+} from '../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 
 export const groupBy = <
@@ -91,6 +95,9 @@ export const fileToStr = async (file: File): Promise<string> => {
   return `${fileName}__${base64}`;
 };
 
+export const fileToStr$ = (file: File): Observable<string> =>
+  from(fileToStr(file));
+
 export const strToFile = async (
   dbString: string
 ): Promise<File | undefined> => {
@@ -101,3 +108,6 @@ export const strToFile = async (
   const fileName = dbString.substring(0, splitIndex);
   return base64ToFile(dbString.substring(splitIndex + 2), fileName);
 };
+
+export const isShepardUser = (profile: Profile): boolean =>
+  !!profile && !!profile.shepardApiKey;

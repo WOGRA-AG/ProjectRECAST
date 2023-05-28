@@ -8,15 +8,32 @@ import {
 } from '../../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
-import { catchError, filter, from, map, Observable, of, take } from 'rxjs';
-import { ElementPropertyService } from '../../../services/element-property.service';
 import {
-  fileToStr,
+  filter,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  take,
+  toArray,
+} from 'rxjs';
+import {
+  ElementPropertyService,
+  ElementFacadeService,
+  ProcessFacadeService,
+  StepPropertyService,
+} from '../../../services';
+import {
+  fileToStr$,
   isReference,
   strToFile,
 } from '../../../shared/util/common-utils';
-import { ElementFacadeService } from '../../../services/element-facade.service';
-import { ProcessFacadeService } from '../../../services/process-facade.service';
+import {
+  ElementViewModel,
+  ElementViewProperty,
+  ValueType,
+} from '../../../model/element-view-model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +41,7 @@ import { ProcessFacadeService } from '../../../services/process-facade.service';
 export class SupabasePostgresAdapter implements StorageAdapterInterface {
   constructor(
     private elementPropertyService: ElementPropertyService,
+    private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
     private processService: ProcessFacadeService
   ) {}
@@ -32,66 +50,62 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
   }
 
   public loadValue$(
-    elementProperty: ElementProperty,
-    type: string
-  ): Observable<string | File> {
-    const val = elementProperty.value;
+    elementViewProperty: ElementViewProperty
+  ): Observable<ValueType> {
+    const val = '' + elementViewProperty.value;
+    const type = elementViewProperty.type;
     if (val && type === TypeEnum.File) {
-      return from(strToFile(val)).pipe(filter(Boolean));
+      return from(strToFile(val)).pipe(filter(Boolean), take(1));
     }
     if (isReference(type) && val) {
-      return this.elementService
-        .elementById$(+val)
-        .pipe(map(e => '' + e?.id ?? ''));
+      return this.elementService.elementById$(+val);
+    }
+    if (val && type === TypeEnum.Boolean) {
+      return of(val === 'true');
     }
     return of(val ?? '');
   }
 
-  public async saveValue(
-    element: Element,
-    property: StepProperty,
-    value: any,
-    type: TypeEnum
-  ): Promise<void> {
-    if (type === TypeEnum.File && value) {
-      value = await fileToStr(value);
-    }
-    this.elementPropertyService
-      .saveElementProp$({
-        value,
-        stepPropertyId: property.id,
+  public saveValues$(
+    elementViewModel: ElementViewModel
+  ): Observable<ElementViewModel> {
+    return from(elementViewModel.properties).pipe(
+      mergeMap(elemViewProp => this.saveValue$(elemViewProp)),
+      map((val, index) => ({
+        ...elementViewModel.properties[index],
+        value: val,
         storageBackend: this.getType(),
-        elementId: element.id,
-      })
-      .pipe(
-        catchError(err => {
-          console.error(err);
-          return of(undefined);
-        }),
-        take(1)
-      )
-      .subscribe();
-  }
-
-  public deleteElement$(element: Element): Observable<void> {
-    return this.elementService.deleteElement$(element.id!).pipe(
-      map(err => {
-        if (err) {
-          console.error(err);
-        }
-        return;
-      })
+      })),
+      toArray(),
+      map(elementViewProperties => ({
+        ...elementViewModel,
+        properties: elementViewProperties,
+      }))
     );
   }
 
-  public deleteProcess$(process: Process): Observable<void> {
-    return this.processService.deleteProcess$(process.id).pipe(
-      map(err => {
-        if (err) {
-          console.error(err);
-        }
-        return;
-      })
-    );
+  public deleteElement$(_: Element): Observable<void> {
+    return of(undefined);
+  }
+
+  public deleteProcess$(_: Process): Observable<void> {
+    return of(undefined);
+  }
+
+  private saveValue$(
+    elementViewProperty: ElementViewProperty
+  ): Observable<string | undefined> {
+    const value = elementViewProperty.value;
+    const type = elementViewProperty.type;
+    if (!value && type !== TypeEnum.Boolean) {
+      return of(undefined);
+    }
+    if (type === TypeEnum.Boolean && typeof value === 'undefined') {
+      return of(value);
+    }
+    if (type === TypeEnum.File && value instanceof File) {
+      return fileToStr$(value);
+    }
+    return of('' + value);
   }
 }
