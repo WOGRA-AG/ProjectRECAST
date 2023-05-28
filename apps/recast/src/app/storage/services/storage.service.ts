@@ -10,6 +10,7 @@ import {
   BehaviorSubject,
   catchError,
   concatAll,
+  concatMap,
   filter,
   from,
   map,
@@ -85,7 +86,7 @@ export class StorageService {
   ): Observable<ElementViewModel> {
     return this._storageBackend$.pipe(
       filter(Boolean),
-      mergeMap(backend => {
+      concatMap(backend => {
         const storageAdapter = this.storageAdapters.find(
           adapter => adapter.getType() === backend
         );

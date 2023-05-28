@@ -137,7 +137,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
                 };
               }
             }
-            if (!p.value) {
+            if (p.value === undefined) {
               return p;
             }
             return {
@@ -179,16 +179,19 @@ export class ShepardAdapter implements StorageAdapterInterface {
       concatMap(elemViewProp =>
         this._saveValue$(elemViewProp, elementId, processId).pipe(take(1))
       ),
-      concatMap((val, index) =>
-        of({
+      concatMap((val, index) => {
+        if (val === undefined) {
+          return of(elementViewProperties[index]);
+        }
+        return of({
           ...elementViewProperties[index],
           value: {
             type: elementViewProperties[index].type,
             value: val,
           },
           storageBackend: this.getType(),
-        })
-      ),
+        });
+      }),
       toArray()
     );
   }
@@ -219,7 +222,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
         ),
         this.shepardService.getDataObjectByElementId$(+value)
       ).pipe(
-        mergeMap(([dataObject, refDataObject]) => {
+        concatMap(([dataObject, refDataObject]) => {
           if (!dataObject || !refDataObject) {
             throw new Error('Invalid data');
           }

@@ -114,7 +114,8 @@ export class ElementDetailComponent implements OnDestroy {
       this.elementViewService
         .updateValuesFromElementViewModel$(newModel)
         .pipe(
-          take(1),
+          take(newModel.properties.length),
+          takeUntil(this._destroy$),
           catchError(err => {
             console.error(err);
             return of(undefined);
@@ -136,7 +137,7 @@ export class ElementDetailComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         tap(() => (this.loading = false)),
-        take(1),
+        take(newModel.properties.length),
         filter(confirmed => !!confirmed),
         mergeMap(() =>
           this.elementViewService.updateValuesFromElementViewModel$(newModel)

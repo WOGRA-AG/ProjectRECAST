@@ -96,20 +96,22 @@
         i18n="@@actions.back">
         Back
       </app-button-unfilled>
-      <app-submit-button
-        *ngIf="!isLastStep"
-        [disabled]="loading"
-        class="button"
-        i18n="@@action.next_step">
-        Take to the next step
-      </app-submit-button>
-      <app-submit-button
-        *ngIf="isLastStep"
-        [disabled]="loading"
-        class="button"
-        i18n="@@action.finished">
-        Finished
-      </app-submit-button>
+      <ng-container *ngIf="!!elementViewModel?.currentStep">
+        <app-submit-button
+          *ngIf="!isLastStep"
+          [disabled]="loading"
+          class="button"
+          i18n="@@action.next_step">
+          Take to the next step
+        </app-submit-button>
+        <app-submit-button
+          *ngIf="isLastStep"
+          [disabled]="loading"
+          class="button"
+          i18n="@@action.finished">
+          Finished
+        </app-submit-button>
+      </ng-container>
     </div>
   </form>
 </div>

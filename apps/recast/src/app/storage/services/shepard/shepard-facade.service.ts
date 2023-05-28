@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
   DataObject,
-  StructuredDataContainer,
   StructuredDataPayload,
   DataObjectReference,
   PermissionsPermissionTypeEnum,
@@ -20,10 +19,6 @@ import {
   of,
   tap,
   zip,
-  mergeMap,
-  mergeAll,
-  toArray,
-  take,
 } from 'rxjs';
 import { FileService } from './file.service';
 import { StructuredDataService } from './structured-data.service';
@@ -140,34 +135,17 @@ export class ShepardFacadeService {
     );
   }
 
-  public deleteFile$ = (fileId: string): Observable<void> =>
-    this.fileService.getRecastFileContainer$().pipe(
-      filter(Boolean),
-      concatMap(fc => this.fileService.deleteFileByOid$(fc.id!, fileId))
-    );
-
   public getAllDataObjects$(): Observable<DataObject[]> {
-    return this.collectionService.collections$.pipe(
-      take(1),
-      filter(Boolean),
-      switchMap(collections => collections),
-      mergeMap(collection =>
-        this.dataObjectService.getDataObjectsByCollectionId$(collection.id!)
-      ),
-      mergeAll(),
-      toArray()
-    );
+    return this.dataObjectService.dataObjects$;
   }
 
   public getDataObjectById$(dataObjectId: number): Observable<DataObject> {
-    return this.getAllDataObjects$().pipe(
-      filter(Boolean),
-      map(dataObjects => {
-        const obj = dataObjects.find(d => d.id === dataObjectId);
-        if (!obj) {
+    return this.dataObjectService.dataObjectById$(dataObjectId).pipe(
+      map(dataObject => {
+        if (!dataObject) {
           throw Error('Could not find data object');
         }
-        return obj;
+        return dataObject;
       })
     );
   }
@@ -183,18 +161,6 @@ export class ShepardFacadeService {
         const elementId = dataObject.attributes['element_id'];
         return +elementId;
       })
-    );
-  }
-
-  public getDataObjectByIdAndProcessId$(
-    dataObjectId: number,
-    processId: number
-  ): Observable<DataObject> {
-    return this.getCollectionByProcessId$(processId).pipe(
-      filter(Boolean),
-      switchMap(collection =>
-        this.dataObjectService.getDataObjectById$(collection.id!, dataObjectId)
-      )
     );
   }
 
@@ -239,21 +205,6 @@ export class ShepardFacadeService {
     );
   }
 
-  public deleteDataObjectById$(
-    processId: number,
-    dataObjectId: number
-  ): Observable<void> {
-    return this.getCollectionByProcessId$(processId).pipe(
-      filter(Boolean),
-      switchMap(collection =>
-        this.dataObjectService.deleteDataObjectById$(
-          collection.id!,
-          dataObjectId
-        )
-      )
-    );
-  }
-
   public deleteDataObjectByElementId$(
     processId: number,
     elementId: number
@@ -284,35 +235,36 @@ export class ShepardFacadeService {
       },
       payload,
     };
-    return this.getDataObjectByElementIdAndProcessId$(
-      elementId,
-      processId
-    ).pipe(
+    return this.getDataObjectByElementId$(elementId).pipe(
+      switchMap(dataObject => {
+        if (!dataObject) {
+          const elementName = this.elementService.elementById(elementId)?.name!;
+          return this.createDataObject$(processId, elementId, elementName);
+        }
+        return of(dataObject);
+      }),
       filter(Boolean),
-      switchMap(dataObject =>
+      concatMap(dataObject =>
         this.removeStructuredDataFromDataObject$(
           dataObject.id!,
           name,
           processId
         )
       ),
-      switchMap(() =>
+      concatMap(() =>
         this.structuredDataService.getRecastStructuredDataContainer$()
       ),
       filter(Boolean),
-      switchMap(container =>
+      concatMap(container =>
         this.structuredDataService.createStructuredData$(
           container.id!,
           structuredDataPayload
         )
       ),
-      switchMap(structuredData =>
-        zip(
-          this.getDataObjectByElementIdAndProcessId$(elementId, processId),
-          of(structuredData)
-        )
+      concatMap(structuredData =>
+        zip(this.getDataObjectByElementId$(elementId), of(structuredData))
       ),
-      switchMap(([dataObject, structuredData]) => {
+      concatMap(([dataObject, structuredData]) => {
         if (!dataObject) {
           return zip(of(undefined), of(structuredData));
         }
@@ -327,24 +279,6 @@ export class ShepardFacadeService {
         );
       }),
       map(([_, structuredData]) => structuredData)
-    );
-  }
-
-  public upsertStructuredData$(
-    name: string,
-    propertyName: string,
-    value: string
-  ): Observable<StructuredData> {
-    return this.structuredDataService.getRecastStructuredDataContainer$().pipe(
-      filter(Boolean),
-      switchMap(container =>
-        this.structuredDataService.upsertStructuredData$(
-          container.id!,
-          name,
-          propertyName,
-          value
-        )
-      )
     );
   }
 
@@ -466,7 +400,7 @@ export class ShepardFacadeService {
     let collectionId: number;
     return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
-      switchMap(collection => {
+      concatMap(collection => {
         collectionId = collection.id!;
         return this.referenceService.getStructuredDataReferenceByName$(
           collectionId,
@@ -474,7 +408,7 @@ export class ShepardFacadeService {
           refName
         );
       }),
-      switchMap(structuredDataRef =>
+      concatMap(structuredDataRef =>
         this.referenceService.deleteStructuredDataReference$(
           collectionId,
           dataObjectId,
@@ -482,38 +416,6 @@ export class ShepardFacadeService {
         )
       ),
       catchError(() => of(undefined))
-    );
-  }
-
-  public getStructuredDataFromDataObject$(
-    dataObjId: number,
-    refName: string,
-    processId: number
-  ): Observable<StructuredDataPayload> {
-    const req: Observable<StructuredDataContainer> =
-      this.structuredDataService.getRecastStructuredDataContainer$();
-    return req.pipe(
-      filter(Boolean),
-      switchMap(() => this.getCollectionByProcessId$(processId)),
-      switchMap(collection => {
-        if (!collection?.id) {
-          throw new Error('Collection not found');
-        }
-        return this.referenceService.getStructuredDataReferenceByName$(
-          collection.id,
-          dataObjId,
-          refName
-        );
-      }),
-      map(structDataRef => {
-        if (!structDataRef?.structuredDataOids?.length) {
-          throw new Error('Structured Data Reference not found');
-        }
-        return structDataRef.structuredDataOids[0];
-      }),
-      switchMap(structuredDataOid =>
-        this.structuredDataService.getStructuredDataPayload$(structuredDataOid)
-      )
     );
   }
 
