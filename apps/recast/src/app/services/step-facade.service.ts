@@ -17,7 +17,6 @@ import {
   from,
   map,
   merge,
-  mergeAll,
   Observable,
   of,
   skip,
@@ -90,12 +89,15 @@ export class StepFacadeService {
     );
   }
 
-  public stepById$(id: number): Observable<Step> {
+  public stepById$(id: number): Observable<Step | undefined> {
     return this._steps$.pipe(
-      mergeAll(),
-      filter(step => step.id === id),
+      map(steps => steps.find(s => s.id === id)),
       distinctUntilChanged(elementComparator)
     );
+  }
+
+  public stepById(id: number): Step | undefined {
+    return this._steps$.getValue().find(s => s.id === id);
   }
 
   public stepsByProcessId$(id: number): Observable<Step[]> {
@@ -113,6 +115,24 @@ export class StepFacadeService {
       filter(({ error }) => !!error),
       map(({ error }) => error!)
     );
+  }
+
+  public nextStep(currentStep: Step): Step | undefined {
+    const steps = this._steps$.getValue();
+    const index = steps.findIndex(s => s.id === currentStep.id);
+    if (index === -1) {
+      return undefined;
+    }
+    return index < steps.length ? steps[index + 1] : undefined;
+  }
+
+  public previousStep(currentStep: Step): Step | undefined {
+    const steps = this._steps$.getValue();
+    const index = steps.findIndex(s => s.id === currentStep.id);
+    if (index === -1) {
+      return undefined;
+    }
+    return index > 0 ? steps[index - 1] : undefined;
   }
 
   private upsertStep$({ id, name }: Step, processId: number): Observable<Step> {

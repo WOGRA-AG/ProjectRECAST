@@ -142,6 +142,8 @@ components:
           type: string
         shepardApiKey:
           type: string
+        shepardUrl:
+          type: string
         storageBackend:
           type: string
           enum:

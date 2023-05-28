@@ -28,6 +28,7 @@ import { SupabaseService, Tables } from './supabase.service';
 import { ElementPropertyService } from './element-property.service';
 import { elementComparator, groupBy$ } from '../shared/util/common-utils';
 import { ProcessFacadeService } from './process-facade.service';
+import { StepFacadeService } from './step-facade.service';
 
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
@@ -44,7 +45,8 @@ export class ElementFacadeService {
   constructor(
     private readonly supabase: SupabaseService,
     private readonly elementPropertyService: ElementPropertyService,
-    private readonly processService: ProcessFacadeService
+    private readonly processService: ProcessFacadeService,
+    private readonly stepService: StepFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       switchMap(() => this.loadElements$()),
@@ -60,8 +62,8 @@ export class ElementFacadeService {
     );
     merge(this.elementChanges$(), sessionChanges$, elemPropChanges$)
       .pipe(distinctUntilChanged(elementComparator))
-      .subscribe(properties => {
-        this._elements$.next(properties);
+      .subscribe(elements => {
+        this._elements$.next(elements);
       });
   }
 
@@ -90,6 +92,19 @@ export class ElementFacadeService {
       map(elemProps => {
         elem.elementProperties = elemProps;
         return elem;
+      })
+    );
+  }
+
+  public createElement$(processId: number, name: string): Observable<Element> {
+    return this.stepService.stepsByProcessId$(processId).pipe(
+      concatMap(steps => {
+        const stepId = steps.length > 0 ? steps[0].id : null;
+        return this.saveElement$({
+          processId,
+          name,
+          currentStepId: stepId,
+        });
       })
     );
   }
@@ -142,6 +157,20 @@ export class ElementFacadeService {
 
   public elementById(id: number): Element | undefined {
     return this.elements.find(e => e.id === id);
+  }
+
+  public updateCurrentStepInState$(
+    elementId: number,
+    stepId: number | null
+  ): Observable<Element | undefined> {
+    const element = JSON.parse(JSON.stringify(this.elementById(elementId)));
+    if (!element) {
+      return of(undefined);
+    }
+    element.currentStepId = stepId;
+    const newState = this.deleteElement(this._elements$.getValue(), elementId);
+    this._elements$.next(newState.concat(element));
+    return of(element);
   }
 
   private upsertElement$({
@@ -253,7 +282,7 @@ export class ElementFacadeService {
       );
     }
     return groupBy$(props, 'elementId').pipe(
-      filter(({ key }) => !!key),
+      filter(({ key }) => key === element.id),
       map(({ key, values }) => {
         element = this.addPropertiesToElement(element, key!, values);
         return state.map(value => (value.id === element.id ? element : value));

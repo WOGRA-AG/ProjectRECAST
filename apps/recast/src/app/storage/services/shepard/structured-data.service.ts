@@ -17,7 +17,10 @@ import {
 } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
-import { elementComparator } from '../../../shared/util/common-utils';
+import {
+  elementComparator,
+  isShepardUser,
+} from '../../../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -30,14 +33,16 @@ export class StructuredDataService {
     ? 'recast'
     : 'recast-dev';
   constructor(private readonly userService: UserFacadeService) {
-    this.userService.currentProfile$.subscribe(profile => {
-      const config: Configuration = new Configuration({
-        basePath: environment.shepardUrl,
-        apiKey: profile.shepardApiKey,
+    this.userService.currentProfile$
+      .pipe(filter(isShepardUser))
+      .subscribe(profile => {
+        const config: Configuration = new Configuration({
+          basePath: profile.shepardUrl,
+          apiKey: profile.shepardApiKey,
+        });
+        this._structuredDataApi = new StructureddataApi(config);
+        this.initStructuredDataContainers$().subscribe();
       });
-      this._structuredDataApi = new StructureddataApi(config);
-      this.initStructuredDataContainers$().subscribe();
-    });
   }
 
   get structuredDataContainers$(): Observable<StructuredDataContainer[]> {
@@ -65,6 +70,18 @@ export class StructuredDataService {
     );
   }
 
+  public createStructuredData$(
+    structureddataContainerId: number,
+    payload: StructuredDataPayload
+  ): Observable<StructuredData> {
+    return from(
+      this._structuredDataApi!.createStructuredData({
+        structureddataContainerId,
+        structuredDataPayload: payload,
+      })
+    );
+  }
+
   public upsertStructuredData$(
     structuredDataContainerId: number,
     structuredDataName: string,
@@ -76,14 +93,14 @@ export class StructuredDataService {
       map(sd => sd.find(e => e.name === structuredDataName)),
       switchMap(sd => {
         if (!sd) {
-          return this.createStructuredData$(
+          return this._createStructuredData$(
             structureddataContainerId,
             propertyName,
             structuredDataName,
             value
           );
         }
-        return this.updateStructuredData$(
+        return this._updateStructuredData$(
           structureddataContainerId,
           propertyName,
           sd,
@@ -108,7 +125,7 @@ export class StructuredDataService {
       filter(Boolean)
     );
   }
-  private updateStructuredData$(
+  private _updateStructuredData$(
     structureddataContainerId: number,
     propertyName: string,
     strucData: StructuredData,
@@ -121,7 +138,7 @@ export class StructuredDataService {
       })
     ).pipe(
       switchMap(strucDataPay =>
-        this.deleteStructuredData$(strucData, structureddataContainerId).pipe(
+        this._deleteStructuredData$(strucData, structureddataContainerId).pipe(
           map(() => strucDataPay)
         )
       ),
@@ -144,7 +161,7 @@ export class StructuredDataService {
     );
   }
 
-  private createStructuredData$(
+  private _createStructuredData$(
     structureddataContainerId: number,
     propertyName: string,
     elementName: string,
@@ -163,7 +180,7 @@ export class StructuredDataService {
     );
   }
 
-  private deleteStructuredData$(
+  private _deleteStructuredData$(
     strucData: StructuredData,
     structureddataContainerId: number
   ): Observable<void> {

@@ -6,7 +6,7 @@
   "actions.save": "Save",
   "action.scan_element": "Scan Element",
   "action.create_element": "Create Element",
-  "action.next_step": "Take to the next step",
+  "action.next_step": "Next",
   "action.finished": "Finished",
   "action.cancel": "Cancel",
   "action.confirm": "Confirm",
@@ -16,6 +16,7 @@
   "label.email": "Email",
   "label.id": "Id",
   "label.shep_api_key": "Shepard Api Key",
+  "label.shep_url": "Shepard Url",
   "label.elements": "Elements",
   "label.processes": "Processes",
   "label.title": "Title",
@@ -27,6 +28,7 @@
 
   "placeholder.upload_yaml": "Upload Process-YAML",
   "placeholder.select_element": "Select element",
+  "placeholder.filter_elements": "Filter elements",
 
   "info.no_data_text": "No parts available yet",
 
