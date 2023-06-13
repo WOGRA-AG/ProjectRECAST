@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  supabaseUrl: 'https://evvbxwrwpxsjxrkevfxd.supabase.com',
+  supabaseUrl: 'https://evvbxwrwpxsjxrkevfxd.supabase.co',
   supabaseKey:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn' +
     'JlZiI6ImV2dmJ4d3J3cHhzanhya2V2ZnhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY2NDc' +
