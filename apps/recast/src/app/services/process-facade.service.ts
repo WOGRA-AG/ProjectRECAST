@@ -111,6 +111,10 @@ export class ProcessFacadeService {
     );
   }
 
+  public processById(id: number): Process | undefined {
+    return this._processes$.getValue().find(proc => proc.id === id);
+  }
+
   public processByName$(name: string): Observable<Process | undefined> {
     return this._processes$.pipe(
       map(processes =>

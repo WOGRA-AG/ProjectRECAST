@@ -1,9 +1,10 @@
 <div class="content-wrapper">
   <app-page-header [breadcrumbs]="breadcrumbs">
-    {{ element?.name! }}
+    {{ elementViewModel?.element?.name ?? '' }}
   </app-page-header>
 
   <app-stepper
+    *ngIf="!!elementViewModel?.currentStep"
     [steps]="stepTitles"
     (stepChanged)="stepChanged($event)"
     [currentIndex]="currentIndex"
@@ -15,37 +16,65 @@
     [formGroup]="propertiesForm"
     (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
-      <div class="input-wrapper" *ngFor="let prop of stepProperties">
-        <ng-container [ngSwitch]="prop.type?.toLowerCase()">
+      <div class="input-wrapper" *ngFor="let prop of currentProperties">
+        <ng-container
+          [ngSwitch]="prop.type"
+          *ngIf="propertiesForm.controls['' + prop.stepPropId]">
           <app-input-field
-            *ngSwitchCase="'text'"
+            *ngSwitchCase="TypeEnum.Text"
+            type="text"
             class="input"
-            [label]="prop.name!"
-            [formControlName]="prop.id!"
-            icon="bar_chart">
+            [hint]="prop.hint"
+            [label]="prop.label"
+            [formControlName]="prop.stepPropId"
+            icon="text_fields">
           </app-input-field>
           <app-input-field
-            *ngSwitchCase="'number'"
+            *ngSwitchCase="TypeEnum.Number"
             class="input"
             type="number"
-            [label]="prop.name!"
-            [formControlName]="prop.id!">
+            [hint]="prop.hint"
+            [label]="prop.label"
+            [formControlName]="prop.stepPropId"
+            icon="bar_chart">
           </app-input-field>
           <app-file-input-field
-            *ngSwitchCase="'file'"
-            [id]="prop.id!"
-            [label]="prop.name!"></app-file-input-field>
+            class="input"
+            *ngSwitchCase="TypeEnum.File"
+            [formControlName]="prop.stepPropId"
+            [label]="prop.label"></app-file-input-field>
+          <mat-checkbox
+            class="input"
+            *ngSwitchCase="TypeEnum.Boolean"
+            [formControlName]="prop.stepPropId"
+            [labelPosition]="'after'"
+            color="primary">
+            {{ prop.label }}</mat-checkbox
+          >
+          <app-date-input-field
+            *ngSwitchCase="TypeEnum.Date"
+            class="input"
+            [hint]="prop.hint"
+            [label]="prop.label"
+            [formControlName]="prop.stepPropId" />
+          <app-color-input-field
+            *ngSwitchCase="TypeEnum.Color"
+            class="input"
+            [label]="prop.label"
+            [hint]="prop.hint"
+            [formControlName]="prop.stepPropId" />
           <div *ngSwitchDefault>
-            <app-select-field [formControlName]="prop.id!" [label]="prop.name!">
-              <mat-option
-                disabled
-                [value]="''"
-                i18n="@@placeholder.select_element"
-                >Select element</mat-option
-              >
+            <app-select-field
+              i18n-hint="@@placeholder.select_element"
+              i18n-filterLabel="@@placeholder.filter_elements"
+              [formControlName]="prop.stepPropId"
+              [label]="prop.label"
+              filterIcon="filter_list"
+              filterLabel="Filter elements"
+              hint="Select element">
               <mat-option
                 *ngFor="let e of elementsByReference(prop.type) | async"
-                [value]="'' + e.id">
+                [value]="e.id">
                 {{ e.name }}
               </mat-option>
             </app-select-field>
@@ -54,25 +83,35 @@
       </div>
     </div>
     <div class="actions">
+      <mat-progress-spinner
+        [diameter]="40"
+        color="primary"
+        *ngIf="loading"
+        mode="indeterminate">
+      </mat-progress-spinner>
       <app-button-unfilled
         type="button"
         [bordered]="true"
-        (click)="navigateBack()"
+        (click)="navigateBack$()"
         i18n="@@actions.back">
         Back
       </app-button-unfilled>
-      <app-submit-button
-        *ngIf="!isLastStep"
-        class="button"
-        i18n="@@action.next_step">
-        Take to the next step
-      </app-submit-button>
-      <app-submit-button
-        *ngIf="isLastStep"
-        class="button"
-        i18n="@@action.finished">
-        Finished
-      </app-submit-button>
+      <ng-container *ngIf="!!elementViewModel?.currentStep">
+        <app-submit-button
+          *ngIf="!isLastStep"
+          [disabled]="loading"
+          class="button"
+          i18n="@@action.next_step">
+          Take to the next step
+        </app-submit-button>
+        <app-submit-button
+          *ngIf="isLastStep"
+          [disabled]="loading"
+          class="button"
+          i18n="@@action.finished">
+          Finished
+        </app-submit-button>
+      </ng-container>
     </div>
   </form>
 </div>

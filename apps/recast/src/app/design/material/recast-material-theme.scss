@@ -1,9 +1,30 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 @use './components' as components;
 @use './essentials/typography' as typography;
 @use './essentials/color.scss' as colors;
 
-$recast-light-theme: mat.define-light-theme(
+@include mat.core();
+
+@function define-light-theme($config, $foreground, $background) {
+  $theme: mat.define-light-theme($config);
+  $color: mat.get-color-config($theme);
+  $color: map.merge(
+    $color,
+    (
+      foreground: $foreground,
+      background: $background,
+    )
+  );
+  @return map.merge(
+    $theme,
+    (
+      color: $color,
+    )
+  );
+}
+
+$recast-light-theme: define-light-theme(
   (
     color: (
       primary: colors.$recast-light-primary,
@@ -11,7 +32,10 @@ $recast-light-theme: mat.define-light-theme(
       warn: colors.$recast-light-warn,
     ),
     typography: typography.$custom-typography,
-  )
+    density: 0,
+  ),
+  colors.$recast-light-foreground,
+  colors.$recast-light-background
 );
 
 $recast-light-variants: (
@@ -20,7 +44,6 @@ $recast-light-variants: (
   info: colors.$recast-light-info,
 );
 
-@include mat.core();
 @include mat.all-component-typographies(typography.$custom-typography);
 
 .recast-light-theme {

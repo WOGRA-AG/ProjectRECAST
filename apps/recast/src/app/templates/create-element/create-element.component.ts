@@ -9,7 +9,6 @@ import {
   of,
   Subject,
   takeUntil,
-  tap,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
@@ -22,7 +21,6 @@ import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 })
 export class CreateElementComponent implements OnDestroy {
   public processId: number | undefined;
-  public stepId: number | undefined;
   public breadcrumbs: Breadcrumb[] = [];
 
   propertiesForm = this.formBuilder.group({});
@@ -42,8 +40,7 @@ export class CreateElementComponent implements OnDestroy {
 
     route.paramMap
       .pipe(
-        filter(param => !!param.get('processId') && !!param.get('stepId')),
-        tap(param => (this.stepId = +param.get('stepId')!)),
+        filter(param => !!param.get('processId')),
         map(param => +param.get('processId')!),
         concatMap(id => this.processService.processById$(id)),
         takeUntil(this._destroy$)
@@ -64,12 +61,14 @@ export class CreateElementComponent implements OnDestroy {
   }
 
   public saveElement(): void {
+    if (!this.processId || !this.propertiesForm.valid) {
+      return;
+    }
     this.elementService
-      .saveElement$({
-        processId: this.processId,
-        currentStepId: this.stepId,
-        name: this.propertiesForm.get('name')?.value,
-      })
+      .createElement$(
+        this.processId,
+        this.propertiesForm.get('name')?.value ?? ''
+      )
       .pipe(
         catchError(err => {
           console.error(err);

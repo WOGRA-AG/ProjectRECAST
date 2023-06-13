@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 @import 'src/assets/WograDesignSystem_Tokens.json';
 
 $md-recast-colors-primary: (
@@ -98,6 +99,42 @@ $md-recast-colors-warn: (
     A400: #000000,
     A700: #000000,
   ),
+);
+
+$recast-light-foreground: (
+  base: black,
+  divider: rgba(black, 0.12),
+  dividers: rgba(black, 0.12),
+  disabled: rgba(white, 0.5),
+  disabled-button: rgba(black, 0.12),
+  disabled-text: rgba(white, 0.5),
+  elevation: black,
+  hint-text: rgba(white, 0.5),
+  secondary-text: rgba(black, 0.54),
+  icon: rgba(black, 0.54),
+  icons: rgba(black, 0.54),
+  text: rgba(black, 0.87),
+  slider-min: rgba(black, 0.87),
+  slider-off: rgba(black, 0.26),
+  slider-off-active: rgba(black, 0.38),
+);
+
+$recast-light-background: (
+  status-bar: map.get(mat.$grey-palette, 300),
+  app-bar: map.get(mat.$grey-palette, 100),
+  background: map.get(mat.$grey-palette, 50),
+  hover: rgba(black, 0.04),
+  card: white,
+  dialog: white,
+  disabled-button: rgba(black, 0.12),
+  raised-button: white,
+  focused-button: rgba(black, 0.12),
+  selected-button: map.get(mat.$grey-palette, 300),
+  selected-disabled-button: map.get(mat.$grey-palette, 400),
+  disabled-button-toggle: map.get(mat.$grey-palette, 200),
+  unselected-chip: map.get(mat.$grey-palette, 300),
+  disabled-list-option: map.get(mat.$grey-palette, 200),
+  tooltip: map.get(mat.$grey-palette, 700),
 );
 
 $recast-light-primary: mat.define-palette($md-recast-colors-primary);

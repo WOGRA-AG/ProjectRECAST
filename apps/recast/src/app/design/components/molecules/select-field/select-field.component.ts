@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
-import { map, Observable, startWith } from 'rxjs';
+import { map, Observable, startWith, take } from 'rxjs';
 import { MatOption } from '@angular/material/core';
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
@@ -25,11 +25,16 @@ export class SelectFieldComponent implements ControlValueAccessor {
   @Input() errMsg = '';
   @Input() appearance: MatFormFieldAppearance = 'outline';
   @Input() icon = '';
+  @Input() hint = '';
+  @Input() filterLabel = 'Filter';
+  @Input() filterIcon = 'search';
 
-  public onTouch: any;
+  protected isOpen = false;
+  protected onTouch: any;
+  protected filterValue = '';
   private _value = '';
   private _onChange: any;
-  constructor(@Optional() @Self() public ngControl: NgControl) {
+  constructor(@Optional() @Self() protected ngControl: NgControl) {
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
     }
@@ -44,7 +49,6 @@ export class SelectFieldComponent implements ControlValueAccessor {
       return;
     }
     this._value = val;
-    this.ngControl.control?.setValue(val);
     if (this._onChange) {
       this._onChange(val);
     }
@@ -72,15 +76,41 @@ export class SelectFieldComponent implements ControlValueAccessor {
     this.value = val;
   }
 
-  public change(event: MatSelectChange): void {
+  protected change(event: MatSelectChange): void {
     this._onChange(event.value);
     this.onTouch();
+    this.value = event.value;
+    this.resetFilter();
   }
 
-  public transformedOptions$(): Observable<MatOption[]> {
+  protected filteredOptions$(): Observable<MatOption[]> {
     return this.queryOptions?.changes.pipe(
       startWith(this.queryOptions),
-      map((changes: MatOption[]) => changes)
+      map((options: MatOption[]) =>
+        options.filter((option: MatOption) =>
+          option.viewValue
+            .toLowerCase()
+            .includes(this.filterValue.toLowerCase())
+        )
+      )
     );
+  }
+
+  protected resetFilter(): void {
+    this.filterValue = '';
+    this.isOpen = false;
+  }
+
+  protected onFilterSubmit(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.filteredOptions$()
+      .pipe(take(1))
+      .subscribe(options => {
+        if (options.length === 1) {
+          this.value = options[0].value;
+          this._onChange(options[0].value);
+        }
+      });
   }
 }

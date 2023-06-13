@@ -7,7 +7,12 @@ import {
   map,
 } from 'rxjs';
 import { Document, parseAllDocuments } from 'yaml';
-import { Process, StepProperty } from '../../../../build/openapi/recast';
+import {
+  Process,
+  Profile,
+  StepProperty,
+} from '../../../../build/openapi/recast';
+import TypeEnum = StepProperty.TypeEnum;
 
 export const groupBy = <
   T extends Include<any, string | number | symbol>,
@@ -59,9 +64,50 @@ export const yamlToProcess$ = (file: File): Observable<Process[]> =>
 export const elementComparator = <T>(a: T, b: T): boolean =>
   JSON.stringify(a) === JSON.stringify(b);
 
-export const isReference = (stepProp: StepProperty): boolean =>
-  !(
-    stepProp?.type === 'text' ||
-    stepProp.type === 'number' ||
-    stepProp.type === 'file'
-  );
+export const isReference = (type: string): boolean =>
+  !Object.values(TypeEnum).toString().includes(type);
+// && in Process Names
+
+export const fileToBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (): void => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = (error): void => reject(error);
+  });
+
+export const base64ToFile = (base64String: string, fileName: string): File => {
+  const byteCharacters = atob(base64String.split(',')[1]);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const fileType = base64String.split(',')[0].split(':')[1].split(';')[0];
+  return new File([byteArray], fileName, { type: fileType });
+};
+
+export const fileToStr = async (file: File): Promise<string> => {
+  const fileName = file.name;
+  const base64 = await fileToBase64(file);
+  return `${fileName}__${base64}`;
+};
+
+export const fileToStr$ = (file: File): Observable<string> =>
+  from(fileToStr(file));
+
+export const strToFile = async (
+  dbString: string
+): Promise<File | undefined> => {
+  const splitIndex = dbString.indexOf('__');
+  if (splitIndex === -1) {
+    return undefined;
+  }
+  const fileName = dbString.substring(0, splitIndex);
+  return base64ToFile(dbString.substring(splitIndex + 2), fileName);
+};
+
+export const isShepardUser = (profile: Profile): boolean =>
+  !!profile && !!profile.shepardApiKey;

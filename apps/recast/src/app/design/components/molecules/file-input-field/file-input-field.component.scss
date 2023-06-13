@@ -1,4 +1,12 @@
 .container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+
+  .file-name {
+    cursor: pointer;
+  }
+
+  .input {
+    display: none;
+  }
 }

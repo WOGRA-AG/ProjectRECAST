@@ -1,7 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { concatMap, filter, Observable, Subject, takeUntil } from 'rxjs';
-import { ElementFacadeService } from 'src/app/services/element-facade.service';
-import { ProcessFacadeService } from '../../services/process-facade.service';
+import {
+  ElementFacadeService,
+  ElementViewModelFacadeService,
+  ProcessFacadeService,
+} from 'src/app/services';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
@@ -20,6 +23,12 @@ export class OverviewComponent implements OnDestroy {
   ];
   public dataColumns: TableColumn[] = [
     {
+      key: 'id',
+      label: $localize`:@@label.id:ID`,
+      type: 'text',
+      required: true,
+    },
+    {
       key: 'name',
       label: $localize`:@@label.title:Title`,
       type: 'text',
@@ -36,7 +45,8 @@ export class OverviewComponent implements OnDestroy {
     public readonly processService: ProcessFacadeService,
     public readonly elementService: ElementFacadeService,
     public dialog: MatDialog,
-    public router: Router
+    public router: Router,
+    private readonly elementViewModelService: ElementViewModelFacadeService
   ) {
     this.tableData$ = processService.processes$;
   }
@@ -72,7 +82,9 @@ export class OverviewComponent implements OnDestroy {
           .afterClosed()
           .pipe(
             filter(confirmed => !!confirmed),
-            concatMap(() => this.processService.deleteProcess$(element.id!)),
+            concatMap(() =>
+              this.elementViewModelService.deleteProcess$(element as Process)
+            ),
             takeUntil(this._destroy$)
           )
           .subscribe();
@@ -88,7 +100,9 @@ export class OverviewComponent implements OnDestroy {
           .afterClosed()
           .pipe(
             filter(confirmed => !!confirmed),
-            concatMap(() => this.elementService.deleteElement$(element.id!)),
+            concatMap(() =>
+              this.elementViewModelService.deleteElement$(element as Element)
+            ),
             takeUntil(this._destroy$)
           )
           .subscribe();
@@ -120,19 +134,17 @@ export class OverviewComponent implements OnDestroy {
     }
   }
 
-  public navigateTo(element: Process | Element | Step): void {
-    if (!element) {
+  public navigateTo(rowItem: Process | Element | Step): void {
+    if (!rowItem) {
       return;
     }
     switch (this.currentIndex) {
       case 0:
-        this.router.navigateByUrl('overview/process/' + element.id);
+        this.router.navigateByUrl('overview/process/' + rowItem.id);
         break;
       case 1:
-        const elem: Element = element as Element;
-        const route = elem.currentStepId
-          ? `overview/process/${elem.processId}/step/${elem.currentStepId}/element/${elem.id}`
-          : `overview/process/${elem.processId}/element/${elem.id}`;
+        const elem: Element = rowItem as Element;
+        const route = `overview/process/${elem.processId}/element/${elem.id}`;
         this.router.navigateByUrl(route);
         break;
       default:

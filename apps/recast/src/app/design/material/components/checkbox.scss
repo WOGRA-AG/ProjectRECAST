@@ -1,0 +1,31 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin color($theme) {
+  $primary-palette: map.get($theme, 'primary');
+  $primary-contrast-color: mat.get-contrast-color-from-palette(
+    $primary-palette,
+    500
+  );
+  $foreground-palette: map.get($theme, 'foreground');
+  $text-disabled: mat.get-color-from-palette(
+    $foreground-palette,
+    'disabled-text'
+  );
+  //TODO: Contrast color does not work properly with mdc as of Angular Material 15.2. So this is a temporary workaround and should be removed as soon as possible
+  .mat-mdc-checkbox
+    .mdc-checkbox
+    .mdc-checkbox__native-control:enabled
+    ~ .mdc-checkbox__background
+    .mdc-checkbox__checkmark {
+    color: $primary-contrast-color;
+  }
+
+  .mat-mdc-checkbox.mat-mdc-checkbox-disabled label {
+    color: $text-disabled;
+  }
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include color($theme);
+}

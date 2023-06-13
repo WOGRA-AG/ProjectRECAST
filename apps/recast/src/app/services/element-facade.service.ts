@@ -9,15 +9,15 @@ import {
   from,
   map,
   merge,
-  mergeAll,
   mergeMap,
   Observable,
   of,
   skip,
   Subject,
+  switchMap,
   toArray,
 } from 'rxjs';
-import { ElementProperty, Element } from '../../../build/openapi/recast';
+import { Element, ElementProperty } from '../../../build/openapi/recast';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
@@ -28,6 +28,8 @@ import { SupabaseService, Tables } from './supabase.service';
 import { ElementPropertyService } from './element-property.service';
 import { elementComparator, groupBy$ } from '../shared/util/common-utils';
 import { ProcessFacadeService } from './process-facade.service';
+import { StepFacadeService } from './step-facade.service';
+
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -43,10 +45,11 @@ export class ElementFacadeService {
   constructor(
     private readonly supabase: SupabaseService,
     private readonly elementPropertyService: ElementPropertyService,
-    private readonly processService: ProcessFacadeService
+    private readonly processService: ProcessFacadeService,
+    private readonly stepService: StepFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
-      concatMap(() => this.loadElements$()),
+      switchMap(() => this.loadElements$()),
       catchError(() => of([]))
     );
     const elemPropChanges$ = elementPropertyService.elementProperties$.pipe(
@@ -57,11 +60,11 @@ export class ElementFacadeService {
         this.addPropertiesToElements(this._elements$.getValue(), key!, values)
       )
     );
-    merge(this.elementChanges$(), sessionChanges$, elemPropChanges$).subscribe(
-      properties => {
-        this._elements$.next(properties);
-      }
-    );
+    merge(this.elementChanges$(), sessionChanges$, elemPropChanges$)
+      .pipe(distinctUntilChanged(elementComparator))
+      .subscribe(elements => {
+        this._elements$.next(elements);
+      });
   }
 
   get elements$(): Observable<Element[]> {
@@ -78,9 +81,10 @@ export class ElementFacadeService {
         const props = elem.elementProperties;
         elem = newElem;
         return (
-          props?.map(val =>
-            this.elementPropertyService.saveElementProp$(val, newElem.id)
-          ) || of([])
+          props?.map(val => {
+            val.elementId = elem.id;
+            return this.elementPropertyService.saveElementProp$(val);
+          }) || of([])
         );
       }),
       concatAll(),
@@ -88,6 +92,19 @@ export class ElementFacadeService {
       map(elemProps => {
         elem.elementProperties = elemProps;
         return elem;
+      })
+    );
+  }
+
+  public createElement$(processId: number, name: string): Observable<Element> {
+    return this.stepService.stepsByProcessId$(processId).pipe(
+      concatMap(steps => {
+        const stepId = steps.length > 0 ? steps[0].id : null;
+        return this.saveElement$({
+          processId,
+          name,
+          currentStepId: stepId,
+        });
       })
     );
   }
@@ -105,8 +122,9 @@ export class ElementFacadeService {
 
   public elementById$(id: number): Observable<Element> {
     return this._elements$.pipe(
-      mergeAll(),
-      filter(elements => elements.id === id),
+      map(elements => elements.find(e => e.id === id)),
+      filter(Boolean),
+      filter(e => !!e.elementProperties),
       distinctUntilChanged(elementComparator)
     );
   }
@@ -138,8 +156,21 @@ export class ElementFacadeService {
   }
 
   public elementById(id: number): Element | undefined {
-    const element = this.elements.find(e => e.id === id);
-    return element;
+    return this.elements.find(e => e.id === id);
+  }
+
+  public updateCurrentStepInState$(
+    elementId: number,
+    stepId: number | null
+  ): Observable<Element | undefined> {
+    const element = JSON.parse(JSON.stringify(this.elementById(elementId)));
+    if (!element) {
+      return of(undefined);
+    }
+    element.currentStepId = stepId;
+    const newState = this.deleteElement(this._elements$.getValue(), elementId);
+    this._elements$.next(newState.concat(element));
+    return of(element);
   }
 
   private upsertElement$({
@@ -187,9 +218,9 @@ export class ElementFacadeService {
                 state,
                 camelCase(payload.new),
                 props
-              ).subscribe(elements => {
-                changes$.next(elements);
-              });
+              )
+                .pipe(distinctUntilChanged(elementComparator))
+                .subscribe(elements => changes$.next(elements));
               break;
             case 'DELETE':
               const element: Element = payload.old;
@@ -234,6 +265,7 @@ export class ElementFacadeService {
   }
 
   private insertElement(state: Element[], element: Element): Element[] {
+    element.elementProperties = [];
     return state.concat(element);
   }
 
@@ -242,8 +274,15 @@ export class ElementFacadeService {
     element: Element,
     props: ElementProperty[]
   ): Observable<Element[]> {
+    const filteredProps = props.filter(prop => prop.elementId === element.id);
+    if (!filteredProps.length) {
+      element = this.addPropertiesToElement(element, element.id!, []);
+      return of(
+        state.map(value => (value.id === element.id ? element : value))
+      );
+    }
     return groupBy$(props, 'elementId').pipe(
-      filter(({ key }) => !!key),
+      filter(({ key }) => key === element.id),
       map(({ key, values }) => {
         element = this.addPropertiesToElement(element, key!, values);
         return state.map(value => (value.id === element.id ? element : value));

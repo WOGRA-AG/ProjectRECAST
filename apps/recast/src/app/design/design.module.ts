@@ -15,7 +15,7 @@ import { SearchFieldComponent } from './components/molecules/search-field/search
 import { IconButtonComponent } from './components/molecules/icon-button/icon-button.component';
 import { SingleFileUploadComponent } from './components/organisms/single-file-upload/single-file-upload.component';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
-import { SingleFileInputComponent } from './components/molecules/single-file-input/single-file-input.component';
+import { DragAndDropFileInputComponent } from './components/molecules/drag-and-drop-file-input/drag-and-drop-file-input.component';
 import { BreadcrumbComponent } from './components/molecules/breadcrumb/breadcrumb.component';
 import { AppRoutingModule } from '../app-routing.module';
 import { ButtonFilledComponent } from './components/molecules/button-filled/button-filled.component';
@@ -24,6 +24,9 @@ import { StepperComponent } from './components/molecules/stepper/stepper.compone
 import { ConfirmDialogComponent } from './components/organisms/confirm-dialog/confirm-dialog.component';
 import { SelectFieldComponent } from './components/molecules/select-field/select-field.component';
 import { FileInputFieldComponent } from './components/molecules/file-input-field/file-input-field.component';
+import { DateInputFieldComponent } from './components/molecules/date-input-field/date-input-field.component';
+import { ColorInputFieldComponent } from './components/molecules/color-input-field/color-input-field.component';
+import { AutocompleteInputFieldComponent } from './components/molecules/autocomplete-input-field/autocomplete-input-field.component';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -40,21 +43,24 @@ const COMPONENTS = [
   IconButtonComponent,
   SingleFileUploadComponent,
   DragAndDropDirective,
-  SingleFileInputComponent,
+  DragAndDropFileInputComponent,
   BreadcrumbComponent,
   StepperComponent,
   ConfirmDialogComponent,
+  SelectFieldComponent,
+  FileInputFieldComponent,
+  DateInputFieldComponent,
+  ColorInputFieldComponent,
 ];
 
 @NgModule({
-  declarations: [...COMPONENTS, SelectFieldComponent, FileInputFieldComponent],
+  declarations: [...COMPONENTS, AutocompleteInputFieldComponent],
   exports: [
     ...COMPONENTS,
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    SelectFieldComponent,
-    FileInputFieldComponent,
+    AutocompleteInputFieldComponent,
   ],
   imports: [
     CommonModule,

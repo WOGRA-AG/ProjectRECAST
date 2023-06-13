@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  PostgrestError,
+  PostgrestSingleResponse,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient,
@@ -49,22 +49,18 @@ export class ElementPropertyService {
     return this._elementProperties$.getValue();
   }
 
-  public saveElementProp$(
-    prop: ElementProperty,
-    elementId: number | undefined
-  ): Observable<ElementProperty> {
-    return this.upsertElementProp$(prop, elementId);
+  public saveElementProp$(prop: ElementProperty): Observable<ElementProperty> {
+    return this.upsertElementProp$(prop);
   }
 
-  public deleteElementProperty$(id: number): Observable<PostgrestError> {
+  public deleteElementProperty$(
+    id: number
+  ): Observable<PostgrestSingleResponse<any>> {
     const del = this._supabaseClient
       .from(Tables.elementProperties)
       .delete()
       .eq('id', id);
-    return from(del).pipe(
-      filter(({ error }) => !!error),
-      map(({ error }) => error!)
-    );
+    return from(del);
   }
 
   public elementPropertiesByElementId$(
@@ -75,14 +71,31 @@ export class ElementPropertyService {
     );
   }
 
+  public elementPropertyByStepPropertyId(
+    stepPropId: number
+  ): ElementProperty | undefined {
+    return this.elementProperties.find(p => p.stepPropertyId === stepPropId);
+  }
+
+  public elementPropertyByStepPropertyId$(
+    elementId: number,
+    stepPropId: number
+  ): Observable<ElementProperty | undefined> {
+    return this.elementProperties$.pipe(
+      map(props =>
+        props.find(
+          p => p.stepPropertyId === stepPropId && p.elementId === elementId
+        )
+      )
+    );
+  }
+
   private upsertElementProp$(
-    { id, value, stepPropertyId }: ElementProperty,
-    elementId: number | undefined
+    elementProperty: ElementProperty
   ): Observable<ElementProperty> {
-    const upsertProp = { id, value, stepPropertyId, elementId };
     const upsert = this._supabaseClient
       .from(Tables.elementProperties)
-      .upsert(snakeCase(upsertProp), {
+      .upsert(snakeCase(elementProperty), {
         onConflict: 'step_property_id, element_id',
       })
       .select();

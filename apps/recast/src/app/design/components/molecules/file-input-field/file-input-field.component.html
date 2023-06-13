@@ -1,4 +1,40 @@
-<div class="container">
-  <label for="{{ id }}">{{ label }}</label>
-  <input [id]="id" class="input" type="file" [formControl]="control" />
+<div
+  class="container"
+  role="group"
+  (click)="!formControl.disabled && fileInput.click()">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ label }}</mat-label>
+    <input
+      matInput
+      type="text"
+      [readonly]="true"
+      [value]="value?.name ?? ''"
+      [disabled]="formControl.disabled"
+      [ngClass]="{ 'file-name': !formControl.disabled }" />
+    <app-button-filled
+      *ngIf="!formControl.disabled && !value"
+      i18n="@@action.upload"
+      matSuffix
+      type="button"
+      [disabled]="formControl.disabled"
+      [size]="size"
+      [color]="color">
+      Upload
+    </app-button-filled>
+    <app-button-unfilled
+      *ngIf="!formControl.disabled && !!value"
+      i18n="@@action.upload"
+      matSuffix
+      type="button"
+      [size]="size"
+      [color]="color">
+      Upload
+    </app-button-unfilled>
+  </mat-form-field>
+  <input
+    #fileInput
+    class="input"
+    type="file"
+    (change)="changeFile($event)"
+    (blur)="onTouch()" />
 </div>

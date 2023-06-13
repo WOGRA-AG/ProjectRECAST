@@ -6,14 +6,17 @@
   "actions.save": "Speichern",
   "action.scan_element": "Bauteil scannen",
   "action.create_element": "Bauteil erstellen",
-  "action.next_step": "Zum nächsten Schritt bringen",
+  "action.next_step": "Weiter",
   "action.finished": "Fertig",
   "action.cancel": "Abbrechen",
   "action.confirm": "Bestätigen",
+  "action.upload": "Upload",
 
   "label.username": "Username",
   "label.email": "Email",
   "label.id": "Id",
+  "label.shep_api_key": "Shepard Api Key",
+  "label.shep_url": "Shepard Url",
   "label.elements": "Bauteile",
   "label.processes": "Prozesse",
   "label.title": "Titel",
@@ -25,6 +28,7 @@
 
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
   "placeholder.select_element": "Bauteil wählen",
+  "placeholder.filter_elements": "Bauteile filtern",
 
   "info.no_data_text": "Noch keine Bauteile vorhanden",
 

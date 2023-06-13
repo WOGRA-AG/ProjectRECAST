@@ -1,0 +1,26 @@
+<mat-form-field [appearance]="appearance">
+  <mat-label *ngIf="label">{{ label }}</mat-label>
+  <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
+  <input
+    matInput
+    type="text"
+    [formControl]="formControl"
+    (click)="colorInput.click()"
+    [value]="value"
+    (blur)="onTouch()"
+    (change)="change($event)" />
+  <mat-icon matSuffix [ngStyle]="{ color: value }" (click)="colorInput.click()"
+    >square</mat-icon
+  >
+  <input
+    #colorInput
+    class="hidden"
+    matIconSuffix
+    matInput
+    type="color"
+    [formControl]="formControl"
+    (change)="change($event)"
+    (blur)="onTouch()"
+    [value]="value" />
+  <mat-error *ngIf="errMsg">{{ errMsg }}</mat-error>
+</mat-form-field>
