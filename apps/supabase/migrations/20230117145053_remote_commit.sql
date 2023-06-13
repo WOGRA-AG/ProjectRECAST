@@ -89,7 +89,6 @@ begin
 end;$$;
 
 
-ALTER FUNCTION "public"."handle_new_user"() OWNER TO "supabase_admin";
 
 SET default_tablespace = '';
 
@@ -108,7 +107,6 @@ CREATE TABLE "public"."element_properties" (
 );
 
 
-ALTER TABLE "public"."element_properties" OWNER TO "supabase_admin";
 
 --
 -- Name: ElementProperties_id_seq; Type: SEQUENCE; Schema: public; Owner: supabase_admin
@@ -137,7 +135,6 @@ CREATE TABLE "public"."elements" (
 );
 
 
-ALTER TABLE "public"."elements" OWNER TO "supabase_admin";
 
 --
 -- Name: Elements_id_seq; Type: SEQUENCE; Schema: public; Owner: supabase_admin
@@ -165,7 +162,6 @@ CREATE TABLE "public"."processes" (
 );
 
 
-ALTER TABLE "public"."processes" OWNER TO "supabase_admin";
 
 --
 -- Name: Process_id_seq; Type: SEQUENCE; Schema: public; Owner: supabase_admin
@@ -196,7 +192,6 @@ CREATE TABLE "public"."step_properties" (
 );
 
 
-ALTER TABLE "public"."step_properties" OWNER TO "supabase_admin";
 
 --
 -- Name: StepProperty_id_seq; Type: SEQUENCE; Schema: public; Owner: supabase_admin
@@ -224,7 +219,6 @@ CREATE TABLE "public"."steps" (
 );
 
 
-ALTER TABLE "public"."steps" OWNER TO "supabase_admin";
 
 --
 -- Name: Step_id_seq; Type: SEQUENCE; Schema: public; Owner: supabase_admin
@@ -256,8 +250,6 @@ CREATE TABLE "public"."profiles" (
     CONSTRAINT "username_length" CHECK (("char_length"("username") >= 3))
 );
 
-
-ALTER TABLE "public"."profiles" OWNER TO "supabase_admin";
 
 --
 -- Name: element_properties ElementProperties_pkey; Type: CONSTRAINT; Schema: public; Owner: supabase_admin
