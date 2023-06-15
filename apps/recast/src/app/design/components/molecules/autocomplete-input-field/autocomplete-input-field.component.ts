@@ -43,7 +43,7 @@ export class AutocompleteInputFieldComponent
   private _value = '';
   private _onChange: any;
   constructor(@Optional() @Self() public ngControl: NgControl) {
-    if (!!this.ngControl) {
+    if (this.ngControl) {
       this.ngControl.valueAccessor = this;
       this.ngControl.control?.addValidators(this._validatorIsInOptions);
     }

@@ -139,16 +139,19 @@ export class OverviewComponent implements OnDestroy {
       return;
     }
     switch (this.currentIndex) {
-      case 0:
+      case 0: {
         this.router.navigateByUrl('overview/process/' + rowItem.id);
         break;
-      case 1:
+      }
+      case 1: {
         const elem: Element = rowItem as Element;
         const route = `overview/process/${elem.processId}/element/${elem.id}`;
         this.router.navigateByUrl(route);
         break;
-      default:
+      }
+      default: {
         break;
+      }
     }
   }
 }

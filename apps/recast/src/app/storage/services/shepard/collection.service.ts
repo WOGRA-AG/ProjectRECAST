@@ -113,8 +113,8 @@ export class CollectionService {
       map(collections =>
         collections.find(
           c =>
-            c.attributes?.hasOwnProperty(attribute) &&
-            c.attributes[attribute] === value
+            !!Object.getOwnPropertyDescriptor(c, attribute) &&
+            c.attributes![attribute] === value
         )
       )
     );

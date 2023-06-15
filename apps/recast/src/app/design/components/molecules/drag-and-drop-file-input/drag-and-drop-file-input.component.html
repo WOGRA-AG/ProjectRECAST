@@ -6,8 +6,10 @@
   <div
     class="upload-file mat-body-2"
     appDragAndDrop
+    [tabindex]="0"
     (filesDropped)="emitDroppedFile($event)"
-    (click)="fileInput.click()">
+    (click)="fileInput.click()"
+    (keydown)="fileInput.click()">
     <input
       id="file-input"
       type="file"
