@@ -40,6 +40,7 @@
     "@tensorflow/tfjs": "^4.7.0",
     "@tensorflow/tfjs-backend-cpu": "^4.7.0",
     "@tensorflow/tfjs-backend-webgl": "^4.7.0",
+    "ctc-beam-search": "^0.1.0",
     "moment": "^2.29.4",
     "node-sass-json-importer": "^4.3.0",
     "rxjs": "~7.8.0",

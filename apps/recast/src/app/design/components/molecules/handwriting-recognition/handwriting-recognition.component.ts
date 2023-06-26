@@ -22,6 +22,6 @@ export class HandwritingRecognitionComponent {
     const file = fileList[0];
     const img = new Image();
     img.src = URL.createObjectURL(file);
-    await this.handwritingRecognitionService.predict(img);
+    await this.handwritingRecognitionService.predImage(img);
   }
 }
