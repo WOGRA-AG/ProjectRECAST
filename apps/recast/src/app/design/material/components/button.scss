@@ -45,6 +45,12 @@
   .mat-mdc-outlined-button:not(.mdc-button:disabled) {
     border-color: currentColor;
   }
+
+  .mat-mdc-button,
+  .mat-mdc-icon-button,
+  .mat-unthemed {
+    color: var(--md-sys-color-secondary);
+  }
 }
 
 @mixin layout() {

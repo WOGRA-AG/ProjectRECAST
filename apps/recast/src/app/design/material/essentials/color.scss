@@ -1,51 +1,174 @@
 @use '@angular/material' as mat;
 @use 'sass:map';
-@import 'src/assets/WograDesignSystem_Tokens.json';
 
 $md-recast-colors-primary: (
-  50: map-get(map-get($wds-light-colors, primary-50), value),
-  100: map-get(map-get($wds-light-colors, primary-100), value),
-  200: map-get(map-get($wds-light-colors, primary-200), value),
-  300: map-get(map-get($wds-light-colors, primary-300), value),
-  400: map-get(map-get($wds-light-colors, primary-400), value),
-  500: map-get(map-get($wds-light-colors, primary-500), value),
-  600: map-get(map-get($wds-light-colors, primary-600), value),
-  700: map-get(map-get($wds-light-colors, primary-700), value),
-  800: map-get(map-get($wds-light-colors, primary-800), value),
-  900: map-get(map-get($wds-light-colors, primary-900), value),
-  A100: #f4f9fd,
-  A200: #c1e5ff,
-  A400: #8ed0ff,
-  A700: #74c5ff,
-  contrast: (
-    50: #000000,
-    100: #000000,
-    200: #000000,
-    300: #000000,
-    400: #000000,
-    500: #ffffff,
-    600: #ffffff,
-    700: #ffffff,
-    800: #ffffff,
-    900: #ffffff,
-    A100: #000000,
-    A200: #000000,
-    A400: #000000,
-    A700: #000000,
-  ),
+  50: var(--md-sys-color-primary-container),
+  // --md-sys-color-primary-container-light
+  100: var(--md-sys-color-primary-container),
+  // --md-sys-color-primary-container-light
+  200: var(--md-sys-color-primary-container),
+  // --md-sys-color-primary-container-light
+  300: var(--md-sys-color-primary-container),
+  // --md-sys-color-primary-container-light
+  400: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  500: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  600: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  700: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  800: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  900: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  A100: var(--md-sys-color-primary-container),
+  // --md-sys-color-primary-container-light
+  A200: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  A400: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  A700: var(--md-sys-color-primary),
+  // --md-sys-color-primary-light
+  contrast:
+    (
+      50: var(--md-sys-color-on-primary-container),
+      // --md-sys-color-on-primary-container-light
+      100: var(--md-sys-color-on-primary-container),
+      // --md-sys-color-on-primary-container-light
+      200: var(--md-sys-color-on-primary-container),
+      // --md-sys-color-on-primary-container-light
+      300: var(--md-sys-color-on-primary-container),
+      // --md-sys-color-on-primary-container-light
+      400: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+      500: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+      600: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+      700: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+      800: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+      900: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+      A100: var(--md-sys-color-on-primary-container),
+      // --md-sys-color-on-primary-container-light
+      A200: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+      A400: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+      A700: var(--md-sys-color-on-primary),
+      // --md-sys-color-on-primary-light
+    ),
 );
 
 $md-recast-colors-accent: (
-  50: map-get(map-get($wds-light-colors, secondary-50), value),
-  100: map-get(map-get($wds-light-colors, secondary-100), value),
-  200: map-get(map-get($wds-light-colors, secondary-200), value),
-  300: map-get(map-get($wds-light-colors, secondary-300), value),
-  400: map-get(map-get($wds-light-colors, secondary-400), value),
-  500: map-get(map-get($wds-light-colors, secondary-500), value),
-  600: map-get(map-get($wds-light-colors, secondary-600), value),
-  700: map-get(map-get($wds-light-colors, secondary-700), value),
-  800: map-get(map-get($wds-light-colors, secondary-800), value),
-  900: map-get(map-get($wds-light-colors, secondary-900), value),
+  50: var(--md-sys-color-secondary-container),
+  // --md-sys-color-secondary-container-light
+  100: var(--md-sys-color-secondary-container),
+  // --md-sys-color-secondary-container-light
+  200: var(--md-sys-color-secondary-container),
+  // --md-sys-color-secondary-container-light
+  300: var(--md-sys-color-secondary-container),
+  // --md-sys-color-secondary-container-light
+  400: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  500: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  600: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  700: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  800: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  900: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  A100: var(--md-sys-color-secondary-container),
+  // --md-sys-color-secondary-container-light
+  A200: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  A400: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  A700: var(--md-sys-color-secondary),
+  // --md-sys-color-secondary-light
+  contrast:
+    (
+      50: var(--md-sys-color-on-secondary-container),
+      // --md-sys-color-on-secondary-container-light
+      100: var(--md-sys-color-on-secondary-container),
+      // --md-sys-color-on-secondary-container-light
+      200: var(--md-sys-color-on-secondary-container),
+      // --md-sys-color-on-secondary-container-light
+      300: var(--md-sys-color-on-secondary-container),
+      // --md-sys-color-on-secondary-container-light
+      400: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+      500: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+      600: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+      700: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+      800: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+      900: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+      A100: var(--md-sys-color-on-secondary-container),
+      // --md-sys-color-on-secondary-container-light
+      A200: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+      A400: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+      A700: var(--md-sys-color-on-secondary),
+      // --md-sys-color-on-secondary-light
+    ),
+);
+
+$md-recast-colors-warn: (
+  50: var(--md-sys-color-error-container),
+  100: var(--md-sys-color-error-container),
+  200: var(--md-sys-color-error-container),
+  300: var(--md-sys-color-error-container),
+  400: var(--md-sys-color-error),
+  500: var(--md-sys-color-error),
+  600: var(--md-sys-color-error),
+  700: var(--md-sys-color-error),
+  800: var(--md-sys-color-error),
+  900: var(--md-sys-color-error),
+  A100: var(--md-sys-color-error-container),
+  A200: var(--md-sys-color-error),
+  A400: var(--md-sys-color-error),
+  A700: var(--md-sys-color-error),
+  contrast: (
+    50: var(--md-sys-color-on-error-container),
+    100: var(--md-sys-color-on-error-container),
+    200: var(--md-sys-color-on-error-container),
+    300: var(--md-sys-color-on-error-container),
+    400: var(--md-sys-color-on-error),
+    500: var(--md-sys-color-on-error),
+    600: var(--md-sys-color-on-error),
+    700: var(--md-sys-color-on-error),
+    800: var(--md-sys-color-on-error),
+    900: var(--md-sys-color-on-error),
+    A100: var(--md-sys-color-on-error-container),
+    A200: var(--md-sys-color-on-error),
+    A400: var(--md-sys-color-on-error),
+    A700: var(--md-sys-color-on-error),
+  ),
+);
+
+$md-recast-colors-success: (
+  50: #c8fff4,
+  100: #70efde,
+  200: #03dac5,
+  300: #00c4b4,
+  400: #00b3a6,
+  500: #01a299,
+  600: #019592,
+  700: #018786,
+  800: #017374,
+  900: #005457,
   A100: #ebfffb,
   A200: #b8fff2,
   A400: #85ffe9,
@@ -68,145 +191,75 @@ $md-recast-colors-accent: (
   ),
 );
 
-$md-recast-colors-warn: (
-  50: map-get(map-get($wds-light-colors, third-50), value),
-  100: map-get(map-get($wds-light-colors, third-100), value),
-  200: map-get(map-get($wds-light-colors, third-200), value),
-  300: map-get(map-get($wds-light-colors, third-300), value),
-  400: map-get(map-get($wds-light-colors, third-400), value),
-  500: map-get(map-get($wds-light-colors, third-500), value),
-  600: map-get(map-get($wds-light-colors, third-600), value),
-  700: map-get(map-get($wds-light-colors, third-700), value),
-  800: map-get(map-get($wds-light-colors, third-800), value),
-  900: map-get(map-get($wds-light-colors, third-900), value),
-  A100: #fffefe,
-  A200: #ffd0cb,
-  A400: #ffa298,
-  A700: #ff8b7f,
-  contrast: (
-    50: #000000,
-    100: #000000,
-    200: #000000,
-    300: #000000,
-    400: #000000,
-    500: #ffffff,
-    600: #ffffff,
-    700: #ffffff,
-    800: #ffffff,
-    900: #ffffff,
-    A100: #000000,
-    A200: #000000,
-    A400: #000000,
-    A700: #000000,
-  ),
-);
-
 $recast-light-foreground: (
-  base: black,
-  divider: rgba(black, 0.12),
-  dividers: rgba(black, 0.12),
-  disabled: rgba(white, 0.5),
-  disabled-button: rgba(black, 0.12),
-  disabled-text: rgba(white, 0.5),
-  elevation: black,
-  hint-text: rgba(white, 0.5),
-  secondary-text: rgba(black, 0.54),
-  icon: rgba(black, 0.54),
-  icons: rgba(black, 0.54),
-  text: rgba(black, 0.87),
-  slider-min: rgba(black, 0.87),
-  slider-off: rgba(black, 0.26),
-  slider-off-active: rgba(black, 0.38),
+  base: var(--md-sys-color-on-background),
+  // Base font color
+  divider: var(--md-sys-color-outline),
+  // Color for line dividers
+  dividers: var(--md-sys-color-outline),
+  // An alternative name for the color of line dividers
+  disabled: rgba(var(--md-sys-color-on-background), 0.5),
+  // Color for disabled elements
+  disabled-button: rgba(var(--md-sys-color-outline), 0.12),
+  // Color for disabled buttons
+  disabled-text: rgba(var(--md-sys-color-on-background), 0.5),
+  // Text color for disabled elements
+  elevation: var(--md-sys-color-shadow),
+  // Color for shadows (used for "elevation")
+  hint-text: rgba(var(--md-sys-color-on-background), 0.5),
+  // Color for hint texts
+  secondary-text: rgba(var(--md-sys-color-on-background), 0.54),
+  // Color for secondary text
+  icon: rgba(var(--md-sys-color-on-background), 0.54),
+  // Color for icons
+  icons: rgba(var(--md-sys-color-on-background), 0.54),
+  // An alternative name for the color of icons
+  text: var(--md-sys-color-on-background),
+  // Main text color
+  slider-min: var(--md-sys-color-primary),
+  // Color for the part of a slider to the left of the handle
+  slider-off: rgba(var(--md-sys-color-outline), 0.26),
+  // Color for the part of a slider to the right of the handle when the slider is not active
+  slider-off-active: rgba(var(--md-sys-color-primary), 0.38),
+  // Color for the part of a slider to the right of the handle when the slider is active
 );
 
 $recast-light-background: (
-  status-bar: map.get(mat.$grey-palette, 300),
-  app-bar: map.get(mat.$grey-palette, 100),
+  status-bar: var(--md-sys-color-primary-container),
+  // Background color of the status bar
+  app-bar: var(--md-sys-color-primary),
+  // Background color of the app bar
   background: map.get(mat.$grey-palette, 50),
-  hover: rgba(black, 0.04),
-  card: white,
-  dialog: white,
-  disabled-button: rgba(black, 0.12),
-  raised-button: white,
-  focused-button: rgba(black, 0.12),
-  selected-button: map.get(mat.$grey-palette, 300),
-  selected-disabled-button: map.get(mat.$grey-palette, 400),
-  disabled-button-toggle: map.get(mat.$grey-palette, 200),
-  unselected-chip: map.get(mat.$grey-palette, 300),
-  disabled-list-option: map.get(mat.$grey-palette, 200),
-  tooltip: map.get(mat.$grey-palette, 700),
+  // Background color of the application
+  hover: rgba(var(--md-sys-color-outline), 0.04),
+  // Background color for hover states
+  card: var(--md-sys-color-inverse-surface),
+  // Background color for cards
+  dialog: var(--md-sys-color-inverse-surface),
+  // Background color for dialogs
+  disabled-button: rgba(var(--md-sys-color-outline), 0.12),
+  // Background color for disabled buttons
+  raised-button: rgba(var(--md-sys-color-background), 3),
+  // Background color for raised buttons
+  focused-button: rgba(var(--md-sys-color-outline), 0.12),
+  // Background color for focused buttons
+  selected-button: var(--md-sys-color-primary-container),
+  // Background color for selected buttons
+  selected-disabled-button: var(--md-sys-color-secondary-container),
+  // Background color for selected disabled buttons
+  disabled-button-toggle: var(--md-sys-color-secondary-container),
+  // Background color for disabled button toggles
+  unselected-chip: var(--md-sys-color-primary-container),
+  // Background color for unselected chips
+  disabled-list-option: var(--md-sys-color-secondary-container),
+  // Background color for disabled list options
+  tooltip: var(--md-sys-color-secondary),
+  // Background color for tooltips
 );
 
 $recast-light-primary: mat.define-palette($md-recast-colors-primary);
 $recast-light-accent: mat.define-palette($md-recast-colors-accent);
-$recast-light-warn: mat.define-palette(mat.$red-palette);
-$recast-light-tertiary: mat.define-palette($md-recast-colors-warn);
-$recast-light-success: mat.define-palette(mat.$green-palette);
+$recast-light-warn: mat.define-palette($md-recast-colors-warn);
+$recast-light-tertiary: mat.define-palette(mat.$gray-palette);
+$recast-light-success: mat.define-palette($md-recast-colors-success);
 $recast-light-info: mat.define-palette(mat.$blue-palette);
-
-$primary-color: mat.get-color-from-palette($recast-light-primary, 500);
-$primary-color-100: mat.get-color-from-palette($recast-light-primary, 100);
-$primary-color-900: mat.get-color-from-palette($recast-light-primary, 900);
-$primary-variant: mat.get-color-from-palette($recast-light-primary, 700);
-$accent-color: mat.get-color-from-palette($recast-light-accent, 500);
-$warn-color: mat.get-color-from-palette($recast-light-warn, default);
-$background: #f4f9fd;
-$surface: #ffffff;
-$error: #b00020;
-$on-primary: #ffffff;
-$on-secondary: #000000;
-$on-background: #000000;
-$on-surface: #000000;
-$on-error: #ffffff;
-$on-primary-high: rgba($on-primary, 1);
-$on-primary-medium: rgba($on-primary, 0.74);
-$on-primary-disabled: rgba($on-primary, 0.38);
-$on-surface-high: rgba($on-surface, 0.87);
-$on-surface-medium: rgba($on-surface, 0.6);
-$on-surface-disabled: rgba($on-surface, 0.38);
-$border-color: rgba($on-surface, 0.12);
-$overlay: rgba($primary-color-900, 0.16);
-
-.primary {
-  color: $primary-color;
-}
-
-.accent {
-  color: $accent-color;
-}
-
-.warn {
-  color: $warn-color;
-}
-
-.bg-primary {
-  background-color: $background;
-}
-
-.bg-warn {
-  background-color: $warn-color;
-}
-
-.bg-accent {
-  background-color: $accent-color;
-}
-
-.bg-surface {
-  background-color: $surface;
-}
-
-.border-color {
-  border-color: rgb(0, 0, 0, 0.12);
-}
-
-.on-surface-disabled {
-  color: $on-surface-disabled;
-}
-
-.on-surface-medium {
-  color: $on-surface-medium;
-}
-
-.on-surface-high {
-  color: $on-surface-high;
-}
