@@ -315,4 +315,31 @@
   --md-sys-typescale-title-small-font-size: 14px;
   --md-sys-typescale-title-small-line-height: 20px;
   --md-sys-typescale-title-small-letter-spacing: 0.1px;
+  /* button - small */
+  --md-sys-typescale-button-small-font-family-name: 'Avenir Black';
+  --md-sys-typescale-button-small-font-family-style: Medium;
+  --md-sys-typescale-button-small-font-weight: 800;
+  --md-sys-typescale-button-small-font-size: 14px;
+  --md-sys-typescale-button-small-line-height: 20px;
+  --md-sys-typescale-button-small-letter-spacing: 1.25px;
+  --md-sys-typescale-button-small-paragraph-spacing: 0;
+  --md-sys-typescale-button-small-text-decoration: none;
+  /* button - medium */
+  --md-sys-typescale-button-medium-font-family-name: 'Avenir Black';
+  --md-sys-typescale-button-medium-font-family-style: Medium;
+  --md-sys-typescale-button-medium-font-weight: 800;
+  --md-sys-typescale-button-medium-font-size: 18px;
+  --md-sys-typescale-button-medium-line-height: 24px;
+  --md-sys-typescale-button-medium-letter-spacing: 1.25px;
+  --md-sys-typescale-button-medium-paragraph-spacing: 0;
+  --md-sys-typescale-button-medium-text-decoration: none;
+  /* button - large */
+  --md-sys-typescale-button-large-font-family-name: 'Avenir Black';
+  --md-sys-typescale-button-large-font-family-style: Medium;
+  --md-sys-typescale-button-large-font-weight: 800;
+  --md-sys-typescale-button-large-font-size: 21px;
+  --md-sys-typescale-button-large-line-height: 24px;
+  --md-sys-typescale-button-large-letter-spacing: 1.96px;
+  --md-sys-typescale-button-large-paragraph-spacing: 0;
+  --md-sys-typescale-button-large-text-decoration: none;
 }

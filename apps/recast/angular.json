@@ -28,7 +28,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/recast",
             "index": "src/index.html",
@@ -41,10 +41,7 @@
               "src/app/design/material/recast-material-theme.scss",
               "src/styles.scss"
             ],
-            "scripts": [],
-            "customWebpackConfig": {
-              "path": "config/webpack.config.js"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -80,16 +77,13 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
               "browserTarget": "recast:build:production"
             },
             "development": {
               "browserTarget": "recast:build:development"
-            },
-            "customWebpackConfig": {
-              "path": "config/webpack.config.js"
             }
           },
           "defaultConfiguration": "development"
@@ -103,7 +97,7 @@
           }
         },
         "test": {
-          "builder": "@angular-builders/custom-webpack:karma",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
@@ -115,10 +109,7 @@
               "src/app/design/material/recast-material-theme.scss",
               "src/styles.scss"
             ],
-            "scripts": [],
-            "customWebpackConfig": {
-              "path": "config/webpack.config.js"
-            }
+            "scripts": []
           }
         },
         "lint": {

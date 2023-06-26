@@ -148,3 +148,75 @@
   text-transform: var(--md-sys-typescale-title-small-text-transform);
   text-decoration: var(--md-sys-typescale-title-small-text-decoration);
 }
+
+:root {
+  /* button large */
+  --md-button-large-font-family-name: var(
+    --md-sys-typescale-button-large-font-family-name
+  );
+  --md-button-large-font-family-style: var(
+    --md-sys-typescale-button-large-font-family-style
+  );
+  --md-button-large-font-weight: var(
+    --md-sys-typescale-button-large-font-weight
+  );
+  --md-button-large-font-size: var(--md-sys-typescale-button-large-font-size);
+  --md-button-large-line-height: var(
+    --md-sys-typescale-button-large-line-height
+  );
+  --md-button-large-letter-spacing: var(
+    --md-sys-typescale-button-large-letter-spacing
+  );
+  --md-button-large-paragraph-spacing: var(
+    --md-sys-typescale-button-large-paragraph-spacing
+  );
+  --md-button-large-text-decoration: var(
+    --md-sys-typescale-button-large-text-decoration
+  );
+  /* button medium */
+  --md-button-medium-font-family-name: var(
+    --md-sys-typescale-button-medium-font-family-name
+  );
+  --md-button-medium-font-family-style: var(
+    --md-sys-typescale-button-medium-font-family-style
+  );
+  --md-button-medium-font-weight: var(
+    --md-sys-typescale-button-medium-font-weight
+  );
+  --md-button-medium-font-size: var(--md-sys-typescale-button-medium-font-size);
+  --md-button-medium-line-height: var(
+    --md-sys-typescale-button-medium-line-height
+  );
+  --md-button-medium-letter-spacing: var(
+    --md-sys-typescale-button-medium-letter-spacing
+  );
+  --md-button-medium-paragraph-spacing: var(
+    --md-sys-typescale-button-medium-paragraph-spacing
+  );
+  --md-button-medium-text-decoration: var(
+    --md-sys-typescale-button-medium-text-decoration
+  );
+  /* button small */
+  --md-button-small-font-family-name: var(
+    --md-sys-typescale-button-small-font-family-name
+  );
+  --md-button-small-font-family-style: var(
+    --md-sys-typescale-button-small-font-family-style
+  );
+  --md-button-small-font-weight: var(
+    --md-sys-typescale-button-small-font-weight
+  );
+  --md-button-small-font-size: var(--md-sys-typescale-button-small-font-size);
+  --md-button-small-line-height: var(
+    --md-sys-typescale-button-small-line-height
+  );
+  --md-button-small-letter-spacing: var(
+    --md-sys-typescale-button-small-letter-spacing
+  );
+  --md-button-small-paragraph-spacing: var(
+    --md-sys-typescale-button-small-paragraph-spacing
+  );
+  --md-button-small-text-decoration: var(
+    --md-sys-typescale-button-small-text-decoration
+  );
+}
