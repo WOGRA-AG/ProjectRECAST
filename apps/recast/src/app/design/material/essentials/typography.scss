@@ -230,6 +230,9 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
     &.logo {
       font-size: map-get($button-large, font-size);
     }
+    &.huge {
+      font-size: 48px;
+    }
   }
 
   .mat-mdc-tab {
