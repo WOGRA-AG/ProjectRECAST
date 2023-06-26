@@ -103,7 +103,7 @@ export class StepPropertyService {
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
       map(({ data, error }) => {
-        if (!!error) {
+        if (error) {
           throw error;
         }
         return camelCase(data[0]);
@@ -125,20 +125,24 @@ export class StepPropertyService {
         payload => {
           const state = this._stepProperties$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+            case 'INSERT': {
               changes$.next(this.insertProperty(state, camelCase(payload.new)));
               break;
-            case 'UPDATE':
+            }
+            case 'UPDATE': {
               changes$.next(this.updateProperty(state, camelCase(payload.new)));
               break;
-            case 'DELETE':
+            }
+            case 'DELETE': {
               const prop: StepProperty = payload.old;
               if (prop.id) {
                 changes$.next(this.deleteProperty(state, prop.id));
               }
               break;
-            default:
+            }
+            default: {
               break;
+            }
           }
         }
       )

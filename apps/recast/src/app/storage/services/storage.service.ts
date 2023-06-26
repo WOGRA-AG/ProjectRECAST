@@ -107,7 +107,7 @@ export class StorageService {
     }
     return this._storageBackend$.pipe(
       mergeMap(defaultBackend => {
-        const observables = [];
+        const observables: Observable<void>[] = [];
         const defaultAdapter = this.storageAdapters.find(
           adapter => adapter.getType() === defaultBackend
         );
@@ -117,7 +117,10 @@ export class StorageService {
           }
           observables.push(defaultAdapter.deleteElement$(element));
         } else {
-          for (const storageBackend of elementViewModel?.storageBackends) {
+          if (!elementViewModel?.storageBackends.length) {
+            return observables;
+          }
+          for (const storageBackend of elementViewModel.storageBackends) {
             const storageAdapter = this.storageAdapters.find(
               adapter => adapter.getType() === storageBackend
             );

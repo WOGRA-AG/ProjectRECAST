@@ -102,7 +102,7 @@ export class ElementPropertyService {
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
       map(({ data, error }) => {
-        if (!!error) {
+        if (error) {
           throw error;
         }
         return camelCase(data[0]);
@@ -126,24 +126,28 @@ export class ElementPropertyService {
         payload => {
           const state = this._elementProperties$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+            case 'INSERT': {
               changes$.next(
                 this.insertElementProperty(state, camelCase(payload.new))
               );
               break;
-            case 'UPDATE':
+            }
+            case 'UPDATE': {
               changes$.next(
                 this.updateElementProperty(state, camelCase(payload.new))
               );
               break;
-            case 'DELETE':
+            }
+            case 'DELETE': {
               const elemProp: ElementProperty = payload.old;
               if (elemProp.id) {
                 changes$.next(this.deleteElementProperty(state, elemProp.id));
               }
               break;
-            default:
+            }
+            default: {
               break;
+            }
           }
         }
       )

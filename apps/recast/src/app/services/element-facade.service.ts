@@ -187,7 +187,7 @@ export class ElementFacadeService {
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
       map(({ data, error }) => {
-        if (!!error) {
+        if (error) {
           throw error;
         }
         return camelCase(data[0]);
@@ -209,10 +209,11 @@ export class ElementFacadeService {
         payload => {
           const state = this._elements$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+            case 'INSERT': {
               changes$.next(this.insertElement(state, camelCase(payload.new)));
               break;
-            case 'UPDATE':
+            }
+            case 'UPDATE': {
               const props = this.elementPropertyService.elementProperties;
               this.updateElementWithProperties$(
                 state,
@@ -222,14 +223,17 @@ export class ElementFacadeService {
                 .pipe(distinctUntilChanged(elementComparator))
                 .subscribe(elements => changes$.next(elements));
               break;
-            case 'DELETE':
+            }
+            case 'DELETE': {
               const element: Element = payload.old;
               if (element.id) {
                 changes$.next(this.deleteElement(state, element.id));
               }
               break;
-            default:
+            }
+            default: {
               break;
+            }
           }
         }
       )

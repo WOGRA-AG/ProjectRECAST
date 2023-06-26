@@ -40,7 +40,12 @@
             (click)="element.isEdit = !element.isEdit">
           </app-icon-button>
         </ng-container>
-        <div *ngSwitchDefault class="text" (click)="rowClicked.emit(element)">
+        <div
+          *ngSwitchDefault
+          class="text"
+          (click)="rowClicked.emit(element)"
+          (keydown)="rowClicked.emit(element)"
+          [tabindex]="0">
           {{ element[column.key] }}
         </div>
       </div>

@@ -27,6 +27,7 @@ import { FileInputFieldComponent } from './components/molecules/file-input-field
 import { DateInputFieldComponent } from './components/molecules/date-input-field/date-input-field.component';
 import { ColorInputFieldComponent } from './components/molecules/color-input-field/color-input-field.component';
 import { AutocompleteInputFieldComponent } from './components/molecules/autocomplete-input-field/autocomplete-input-field.component';
+import { HandwritingRecognitionComponent } from './components/molecules/handwriting-recognition/handwriting-recognition.component';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -54,13 +55,18 @@ const COMPONENTS = [
 ];
 
 @NgModule({
-  declarations: [...COMPONENTS, AutocompleteInputFieldComponent],
+  declarations: [
+    ...COMPONENTS,
+    AutocompleteInputFieldComponent,
+    HandwritingRecognitionComponent,
+  ],
   exports: [
     ...COMPONENTS,
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
     AutocompleteInputFieldComponent,
+    HandwritingRecognitionComponent,
   ],
   imports: [
     CommonModule,
