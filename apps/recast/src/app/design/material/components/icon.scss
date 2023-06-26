@@ -7,9 +7,14 @@
     vertical-align: middle;
 
     &.logo {
-      width: 56px;
-      height: 47px;
-      font-size: 47px;
+      width: 105px;
+      height: 86px;
+      font-size: 86px;
+    }
+    &.large {
+      width: 48px;
+      height: 48px;
+      font-size: 48px;
     }
   }
 }
