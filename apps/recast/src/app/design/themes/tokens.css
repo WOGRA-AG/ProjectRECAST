@@ -126,7 +126,7 @@
   --md-sys-color-background-light: #ffffff; /* Background color of the app or site */
   --md-sys-color-on-background-light: #666666; /* Color for text and icons on background */
 
-  --md-sys-color-surface-light: #f2fbff; /* General surface color for UI elements such as cards, sheets, menus */
+  --md-sys-color-surface-light: #ffffff; /* General surface color for UI elements such as cards, sheets, menus */
   --md-sys-color-on-surface-light: #666666; /* Color for text and icons on surface color */
 
   --md-sys-color-surface-variant-light: #ffffff; /* Variant surface color for distinguishing UI elements */
