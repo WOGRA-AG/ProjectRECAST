@@ -125,6 +125,39 @@ $md-recast-colors-accent: (
     ),
 );
 
+$md-recast-colors-tertiary: (
+  50: var(--md-sys-color-tertiary-container),
+  100: var(--md-sys-color-tertiary-container),
+  200: var(--md-sys-color-tertiary-container),
+  300: var(--md-sys-color-tertiary-container),
+  400: var(--md-sys-color-tertiary),
+  500: var(--md-sys-color-tertiary),
+  600: var(--md-sys-color-tertiary),
+  700: var(--md-sys-color-tertiary),
+  800: var(--md-sys-color-tertiary),
+  900: var(--md-sys-color-tertiary),
+  A100: var(--md-sys-color-tertiary-container),
+  A200: var(--md-sys-color-tertiary),
+  A400: var(--md-sys-color-tertiary),
+  A700: var(--md-sys-color-tertiary),
+  contrast: (
+    50: var(--md-sys-color-on-tertiary-container),
+    100: var(--md-sys-color-on-tertiary-container),
+    200: var(--md-sys-color-on-tertiary-container),
+    300: var(--md-sys-color-on-tertiary-container),
+    400: var(--md-sys-color-on-tertiary),
+    500: var(--md-sys-color-on-tertiary),
+    600: var(--md-sys-color-on-tertiary),
+    700: var(--md-sys-color-on-tertiary),
+    800: var(--md-sys-color-on-tertiary),
+    900: var(--md-sys-color-on-tertiary),
+    A100: var(--md-sys-color-on-tertiary-container),
+    A200: var(--md-sys-color-on-tertiary),
+    A400: var(--md-sys-color-on-tertiary),
+    A700: var(--md-sys-color-on-tertiary),
+  ),
+);
+
 $md-recast-colors-warn: (
   50: var(--md-sys-color-error-container),
   100: var(--md-sys-color-error-container),
@@ -260,6 +293,6 @@ $recast-light-background: (
 $recast-light-primary: mat.define-palette($md-recast-colors-primary);
 $recast-light-accent: mat.define-palette($md-recast-colors-accent);
 $recast-light-warn: mat.define-palette($md-recast-colors-warn);
-$recast-light-tertiary: mat.define-palette(mat.$gray-palette);
+$recast-light-tertiary: mat.define-palette($md-recast-colors-tertiary);
 $recast-light-success: mat.define-palette($md-recast-colors-success);
 $recast-light-info: mat.define-palette(mat.$blue-palette);
