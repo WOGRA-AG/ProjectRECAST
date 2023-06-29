@@ -165,7 +165,10 @@ export class ElementDetailComponent implements OnDestroy {
   private initFormGroup$(elementViewModel: ElementViewModel): Observable<void> {
     for (const prop of elementViewModel.properties ?? []) {
       let val: ValueType = prop.value ?? prop.defaultValue;
-      if (isReference(prop.type) && val?.hasOwnProperty('name')) {
+      if (
+        isReference(prop.type) &&
+        !!Object.getOwnPropertyDescriptor(val, 'name')
+      ) {
         val = val as Element;
         val = val.name!;
       }
@@ -255,7 +258,7 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   private updateControl(name: string, value: any, type: TypeEnum): void {
-    if (isReference(type) && value.hasOwnProperty('name')) {
+    if (isReference(type) && !!Object.getOwnPropertyDescriptor(value, 'name')) {
       value = value as Element;
       value = value.id!;
     }

@@ -144,7 +144,7 @@ export class StepFacadeService {
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
       map(({ data, error }) => {
-        if (!!error) {
+        if (error) {
           throw error;
         }
         return camelCase(data[0]);
@@ -166,10 +166,11 @@ export class StepFacadeService {
         payload => {
           const state = this._steps$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+            case 'INSERT': {
               changes$.next(this.insertStep(state, camelCase(payload.new)));
               break;
-            case 'UPDATE':
+            }
+            case 'UPDATE': {
               const props = this.stepPropertyService.stepProperties;
               this.updateStepWithProperties$(
                 state,
@@ -179,14 +180,17 @@ export class StepFacadeService {
                 changes$.next(steps);
               });
               break;
-            case 'DELETE':
+            }
+            case 'DELETE': {
               const step: Step = payload.old;
               if (step.id) {
                 changes$.next(this.deleteStep(state, step.id));
               }
               break;
-            default:
+            }
+            default: {
               break;
+            }
           }
         }
       )

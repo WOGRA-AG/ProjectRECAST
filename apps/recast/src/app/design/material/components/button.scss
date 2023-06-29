@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
-@import '../essentials/button-layout.scss';
 @import 'src/app/design/material/essentials/media-queries';
 
 @mixin color($theme) {
@@ -45,6 +44,12 @@
   .mat-mdc-outlined-button:not(.mdc-button:disabled) {
     border-color: currentColor;
   }
+
+  .mat-mdc-button,
+  .mat-mdc-icon-button,
+  .mat-unthemed {
+    color: var(--md-sys-color-secondary);
+  }
 }
 
 @mixin layout() {
@@ -52,120 +57,82 @@
   .mat-mdc-raised-button,
   .mat-mdc-outlined-button {
     height: auto;
-    border-radius: $btn-small-border-radius;
-    border-width: $btn-small-border-widht;
-    padding-top: $btn-small-padding-top;
-    padding-bottom: $btn-small-padding-bottom;
-    padding-left: $btn-small-padding-left;
-    padding-right: $btn-small-padding-right;
+    border-radius: 5px;
+    border-width: 2px;
+    padding: 8px 24px;
 
     &.bordered {
-      padding-top: calc($btn-small-padding-top - $btn-small-border-widht);
-      padding-bottom: calc($btn-small-padding-bottom - $btn-small-border-widht);
+      padding-top: calc(8px - 2px);
+      padding-bottom: calc(8px - 2px);
     }
 
     @media #{$medium-and-up} {
       height: auto;
-      border-radius: $btn-medium-border-radius;
-      border-width: $btn-medium-border-widht;
-      padding-top: $btn-medium-padding-top;
-      padding-bottom: $btn-medium-padding-bottom;
-      padding-left: $btn-medium-padding-left;
-      padding-right: $btn-medium-padding-right;
+      border-radius: 5px;
+      border-width: 2px;
+      padding: 12px 24px;
 
       &.bordered {
-        padding-top: calc($btn-medium-padding-top - $btn-medium-border-widht);
-        padding-bottom: calc(
-          $btn-medium-padding-bottom - $btn-medium-border-widht
-        );
+        padding-top: calc(12px - 2px);
+        padding-bottom: calc(12px - 2px);
       }
     }
 
     &.small {
       height: auto;
-      border-radius: $btn-small-border-radius;
-      border-width: $btn-small-border-widht;
-      padding-top: $btn-small-padding-top;
-      padding-bottom: $btn-small-padding-bottom;
-      padding-left: $btn-small-padding-left;
-      padding-right: $btn-small-padding-right;
+      border-radius: 5px;
+      border-width: 2px;
+      padding: 8px 24px;
 
       &.bordered {
-        padding-top: calc($btn-small-padding-top - $btn-small-border-widht);
-        padding-bottom: calc(
-          $btn-small-padding-bottom - $btn-small-border-widht
-        );
+        padding-top: calc(8px - 2px);
+        padding-bottom: calc(8px - 2px);
       }
     }
 
     &.medium {
       height: auto;
-      border-radius: $btn-medium-border-radius;
-      border-width: $btn-medium-border-widht;
-      padding-top: $btn-medium-padding-top;
-      padding-bottom: $btn-medium-padding-bottom;
-      padding-left: $btn-medium-padding-left;
-      padding-right: $btn-medium-padding-right;
+      border-radius: 5px;
+      border-width: 2px;
+      padding: 12px 24px;
 
       &.bordered {
-        padding-top: calc($btn-medium-padding-top - $btn-medium-border-widht);
-        padding-bottom: calc(
-          $btn-medium-padding-bottom - $btn-medium-border-widht
-        );
+        padding-top: calc(12px - 2px);
+        padding-bottom: calc(12px - 2px);
       }
     }
 
     &.large {
       height: auto;
-      border-radius: $btn-large-border-radius;
-      border-width: $btn-large-border-widht;
-      padding-top: $btn-large-padding-top;
-      padding-bottom: $btn-large-padding-bottom;
-      padding-left: $btn-large-padding-left;
-      padding-right: $btn-large-padding-right;
+      border-radius: 5px;
+      border-width: 2.5px;
+      padding: 16px 32px;
 
       &.bordered {
-        padding-top: calc($btn-large-padding-top - $btn-large-border-widht);
-        padding-bottom: calc(
-          $btn-large-padding-bottom - $btn-large-border-widht
-        );
+        padding-top: calc(16px - 2.5px);
+        padding-bottom: calc(16px - 2.5px);
       }
     }
 
     &.text {
       border: none;
       height: auto;
-      padding-top: $btn-text-small-padding-top;
-      padding-bottom: $btn-text-small-padding-bottom;
-      padding-left: $btn-text-small-padding-left;
-      padding-right: $btn-text-small-padding-right;
+      padding: 8px;
 
       @media #{$medium-and-up} {
-        padding-top: $btn-text-medium-padding-top;
-        padding-bottom: $btn-text-medium-padding-bottom;
-        padding-left: $btn-text-medium-padding-left;
-        padding-right: $btn-text-medium-padding-right;
+        padding: 12px 8px;
       }
 
       &.small {
-        padding-top: $btn-text-small-padding-top;
-        padding-bottom: $btn-text-small-padding-bottom;
-        padding-left: $btn-text-small-padding-left;
-        padding-right: $btn-text-small-padding-right;
+        padding: 8px;
       }
 
       &.medium {
-        padding-top: $btn-text-medium-padding-top;
-        padding-bottom: $btn-text-medium-padding-bottom;
-        padding-left: $btn-text-medium-padding-left;
-        padding-right: $btn-text-medium-padding-right;
+        padding: 12px 8px;
       }
 
       &.large {
-        padding-top: $btn-text-large-padding-top;
-        padding-bottom: $btn-text-large-padding-bottom;
-        padding-left: $btn-text-large-padding-left;
-        padding-right: $btn-text-large-padding-right;
+        padding: 16px 8px;
       }
     }
 

@@ -34,9 +34,7 @@ export class IconComponent {
     );
     this.matIconRegistry.addSvgIcon(
       'rcst_logo',
-      sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/logo/OS4ML_Logo_Small.svg'
-      )
+      sanitizer.bypassSecurityTrustResourceUrl('assets/logo/recast_logo.svg')
     );
   }
 }

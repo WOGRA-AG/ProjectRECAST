@@ -128,7 +128,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
           .map(p => {
             if (p.type === TypeEnum.File || isReference(p.type)) {
               const val = p.value;
-              if (val?.hasOwnProperty('value')) {
+              if (Object.getOwnPropertyDescriptor(val, 'value')) {
                 const parsedValue = val as ShepardValue;
                 return {
                   ...p,

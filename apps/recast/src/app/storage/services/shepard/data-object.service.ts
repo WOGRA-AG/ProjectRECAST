@@ -132,8 +132,8 @@ export class DataObjectService {
       map(dataObjects =>
         dataObjects.find(
           d =>
-            d.attributes?.hasOwnProperty(attribute) &&
-            d.attributes[attribute] === value
+            !!Object.getOwnPropertyDescriptor(d.attributes, attribute) &&
+            d.attributes![attribute] === value
         )
       )
     );

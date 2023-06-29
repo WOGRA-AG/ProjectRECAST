@@ -1,13 +1,13 @@
 <div class="breadcrumbs">
   <div *ngFor="let bc of breadcrumbs; let last = last">
     <div *ngIf="!last" class="link-wrapper">
-      <div class="mat-body-2 link accent" [routerLink]="bc.link">
+      <h4 class="link on-surface-text no-margin" [routerLink]="bc.link">
         {{ bc.label }}
-      </div>
+      </h4>
       <app-icon class="icon" svgIcon="rcst_arrow" size="mini"></app-icon>
     </div>
-    <div *ngIf="last" class="mat-body-1 primary">
+    <h3 *ngIf="last" class="primary-text no-margin">
       {{ bc.label }}
-    </div>
+    </h3>
   </div>
 </div>

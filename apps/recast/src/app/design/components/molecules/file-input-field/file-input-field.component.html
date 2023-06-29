@@ -1,7 +1,8 @@
 <div
   class="container"
   role="group"
-  (click)="!formControl.disabled && fileInput.click()">
+  (click)="!formControl.disabled && fileInput.click()"
+  (keydown)="!formControl.disabled && fileInput.click()">
   <mat-form-field appearance="outline">
     <mat-label>{{ label }}</mat-label>
     <input
