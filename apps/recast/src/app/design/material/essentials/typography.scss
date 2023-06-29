@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-@import 'src/assets/WograDesignSystem_Tokens.json';
 @import 'src/app/design/material/essentials/media-queries';
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url(https://fonts.googleapis.com/css?family=Roboto:100,100italic,300,300italic,400,400italic,500,500italic,700,700italic,900,900italic&subset=latin,latin-ext,cyrillic,cyrillic-ext,greek-ext,greek,vietnamese);
@@ -20,226 +19,122 @@
 
 $custom-typography: mat.define-typography-config(
   $font-family: 'Avenir Roman',
-  $headline-4: mat.define-typography-level(60px, 60px, 700),
-  $headline-3: mat.define-typography-level(44px, 44px, 700),
-  $headline-2: mat.define-typography-level(33px, 33px, 700),
-  $headline-1: mat.define-typography-level(30px, 30px, 700),
-  $headline-5: mat.define-typography-level(60px, 60px, 700),
-  $headline-6: mat.define-typography-level(44px, 72px, 700),
-  $subtitle-1: mat.define-typography-level(33px, 33px, 700),
-  $body-1: mat.define-typography-level(16px, 28px, 400),
-  $body-2: mat.define-typography-level(16px, 24px, 400),
-  $subtitle-2: mat.define-typography-level(14px, 20px, 400),
-  $caption: mat.define-typography-level(12px, 14px, 400),
-  $button: mat.define-typography-level(14px, 16px, 500),
+  $headline-1:
+    mat.define-typography-level(60px, 112px, 800, 'Avenir Black', 0px),
+  $headline-2:
+    mat.define-typography-level(44px, 72px, 800, 'Avenir Black', 2.5px),
+  $headline-3: mat.define-typography-level(33px, 48px, 800, 'Avenir Black', 0),
+  $headline-4: mat.define-typography-level(30px, 43px, 800, 'Avenir Black', 0),
+  $headline-5:
+    mat.define-typography-level(24px, 33px, 800, 'Avenir Black', 0.18px),
+  $headline-6:
+    mat.define-typography-level(20px, 24px, 800, 'Avenir Black', 0.15px),
+  $subtitle-1:
+    mat.define-typography-level(18px, 24px, 800, 'Avenir Black', 0.15px),
+  $subtitle-2:
+    mat.define-typography-level(14px, 21px, 800, 'Avenir Black', 0.1px),
+  $body-1: mat.define-typography-level(16px, 24px, 350, null, 0.5px),
+  $body-2: mat.define-typography-level(14px, 20px, 350, null, 0.25px),
+  $caption:
+    mat.define-typography-level(12px, 16px, 400, 'Roboto, monospace', 0.4px),
+  $button: mat.define-typography-level(14px, 20px, 800, 'Avenir Black', 1.25px),
+  $overline:
+    mat.define-typography-level(10px, 16px, 500, 'Roboto, monospace', 1.5px),
 );
 
-$heading-1: map-get(map-get($wds-light-typography, heading-1), value);
-$heading-2: map-get(map-get($wds-light-typography, heading-2), value);
-$heading-3: map-get(map-get($wds-light-typography, heading-3), value);
-$heading-4: map-get(map-get($wds-light-typography, heading-4), value);
-$heading-5: map-get(map-get($wds-light-typography, heading-5), value);
-$heading-6: map-get(map-get($wds-light-typography, heading-6), value);
-$subtitle-1: map-get(map-get($wds-light-typography, subtitle-1), value);
-$subtitle-2: map-get(map-get($wds-light-typography, subtitle-2), value);
-$body-1: map-get(map-get($wds-light-typography, body-1), value);
-$body-2: map-get(map-get($wds-light-typography, body-2), value);
-$button-small: map-get(map-get($wds-light-typography, button-small), value);
-$button-medium: map-get(map-get($wds-light-typography, button-medium), value);
-$button-large: map-get(map-get($wds-light-typography, button-large), value);
-
 @mixin additional-typography-settings {
-  .mat-h1,
-  h1 {
-    font-family: map-get($heading-1, font-family);
-    font-weight: map-get($heading-1, font-weight);
-    line-height: map-get($heading-1, line-height);
-    font-size: map-get($heading-1, font-size);
-    letter-spacing: map-get($heading-1, letter-spacing);
-    text-decoration: map-get($heading-1, text-decoration);
-  }
-
-  .mat-h2,
-  h2 {
-    font-family: map-get($heading-2, font-family);
-    font-weight: map-get($heading-2, font-weight);
-    line-height: map-get($heading-2, line-height);
-    font-size: map-get($heading-2, font-size);
-    letter-spacing: map-get($heading-2, letter-spacing);
-    text-decoration: map-get($heading-2, text-decoration);
-  }
-
-  .mat-h3,
-  h3 {
-    font-family: map-get($heading-3, font-family);
-    font-weight: map-get($heading-3, font-weight);
-    line-height: map-get($heading-3, line-height);
-    font-size: map-get($heading-3, font-size);
-    letter-spacing: map-get($heading-3, letter-spacing);
-    text-decoration: map-get($heading-3, text-decoration);
-  }
-
-  .mat-h4,
-  h4 {
-    font-family: map-get($heading-4, font-family);
-    font-weight: map-get($heading-4, font-weight);
-    line-height: map-get($heading-4, line-height);
-    font-size: map-get($heading-4, font-size);
-    letter-spacing: map-get($heading-4, letter-spacing);
-    text-decoration: map-get($heading-4, text-decoration);
-    text-align: left;
-  }
-
-  .mat-h5,
-  h5 {
-    font-family: map-get($heading-5, font-family);
-    font-weight: map-get($heading-5, font-weight);
-    line-height: map-get($heading-5, line-height);
-    font-size: map-get($heading-5, font-size);
-    letter-spacing: map-get($heading-5, letter-spacing);
-    text-decoration: map-get($heading-5, text-decoration);
-  }
-
-  .mat-h6,
-  h6 {
-    font-family: map-get($heading-6, font-family);
-    font-weight: map-get($heading-6, font-weight);
-    line-height: map-get($heading-6, line-height);
-    font-size: map-get($heading-6, font-size);
-    letter-spacing: map-get($heading-6, letter-spacing);
-    text-decoration: map-get($heading-6, text-decoration);
-  }
-
-  .mat-body-1 {
-    font-family: map-get($subtitle-1, font-family);
-    font-weight: map-get($subtitle-1, font-weight);
-    line-height: map-get($subtitle-1, line-height);
-    font-size: map-get($subtitle-1, font-size);
-    letter-spacing: map-get($subtitle-1, letter-spacing);
-    text-decoration: map-get($subtitle-1, text-decoration);
-  }
-
-  .mat-subtitle-1 {
-    font-family: map-get($subtitle-2, font-family);
-    font-weight: map-get($subtitle-2, font-weight);
-    line-height: map-get($subtitle-2, line-height);
-    font-size: map-get($subtitle-2, font-size);
-    letter-spacing: map-get($subtitle-2, letter-spacing);
-    text-decoration: map-get($subtitle-2, text-decoration);
-  }
-
-  .mat-body-2 {
-    font-size: map-get($body-1, font-size);
-    font-family: map-get($body-1, font-family);
-    font-weight: map-get($body-1, font-weight);
-    line-height: map-get($body-1, line-height);
-    letter-spacing: map-get($body-1, letter-spacing);
-    text-decoration: map-get($body-1, text-decoration);
-  }
-
   .mat-subtitle-2 {
-    font-size: map-get($body-2, font-size);
-
-    @media #{$medium-and-up} {
-      font-size: map-get($button-medium, font-size);
-    }
-
-    @media #{$large-and-up} {
-      font-size: map-get($button-large, font-size);
-    }
-    font-family: map-get($body-2, font-family);
-    font-weight: map-get($body-2, font-weight);
-    line-height: map-get($body-2, line-height);
-    letter-spacing: map-get($body-2, letter-spacing);
-    text-decoration: map-get($body-2, text-decoration);
+    line-height: var(--md-button-large-line-height);
+    letter-spacing: var(--md-button-large-letter-spacing);
+    text-decoration: var(--md-button-large-text-decoration);
   }
 
   .mat-mdc-unelevated-button,
   .mat-mdc-outlined-button {
-    font-family: map-get($button-small, font-family);
-    font-weight: map-get($button-small, font-weight);
-    line-height: map-get($button-small, line-height);
-    font-size: map-get($button-small, font-size);
-    letter-spacing: map-get($button-small, letter-spacing);
-    text-decoration: map-get($button-small, text-decoration);
+    font-weight: var(--md-button-small-font-weight);
+    line-height: var(--md-button-small-line-height);
+    font-size: var(--md-button-small-font-size);
+    letter-spacing: var(--md-button-small-letter-spacing);
+    text-decoration: var(--md-button-small-text-decoration);
     text-align: left;
 
     @media #{$medium-and-up} {
-      font-family: map-get($button-medium, font-family);
-      font-weight: map-get($button-medium, font-weight);
-      line-height: map-get($button-medium, line-height);
-      font-size: map-get($button-medium, font-size);
-      letter-spacing: map-get($button-medium, letter-spacing);
-      text-decoration: map-get($button-medium, text-decoration);
+      font-weight: var(--md-button-medium-font-weight);
+      line-height: var(--md-button-medium-line-height);
+      font-size: var(--md-button-medium-font-size);
+      letter-spacing: var(--md-button-medium-letter-spacing);
+      text-decoration: var(--md-button-medium-text-decoration);
     }
 
     &.small {
-      font-family: map-get($button-small, font-family);
-      font-weight: map-get($button-small, font-weight);
-      line-height: map-get($button-small, line-height);
-      font-size: map-get($button-small, font-size);
-      letter-spacing: map-get($button-small, letter-spacing);
-      text-decoration: map-get($button-small, text-decoration);
+      font-weight: var(--md-button-small-font-weight);
+      line-height: var(--md-button-small-line-height);
+      font-size: var(--md-button-small-font-size);
+      letter-spacing: var(--md-button-small-letter-spacing);
+      text-decoration: var(--md-button-small-text-decoration);
     }
 
     &.medium {
-      font-family: map-get($button-medium, font-family);
-      font-weight: map-get($button-medium, font-weight);
-      line-height: map-get($button-medium, line-height);
-      font-size: map-get($button-medium, font-size);
-      letter-spacing: map-get($button-medium, letter-spacing);
-      text-decoration: map-get($button-medium, text-decoration);
+      font-weight: var(--md-button-medium-font-weight);
+      line-height: var(--md-button-medium-line-height);
+      font-size: var(--md-button-medium-font-size);
+      letter-spacing: var(--md-button-medium-letter-spacing);
+      text-decoration: var(--md-button-medium-text-decoration);
     }
 
     &.large {
-      font-family: map-get($button-large, font-family);
-      font-weight: map-get($button-large, font-weight);
-      line-height: map-get($button-large, line-height);
-      font-size: map-get($button-large, font-size);
-      letter-spacing: map-get($button-large, letter-spacing);
-      text-decoration: map-get($button-large, text-decoration);
+      font-weight: var(--md-button-large-font-weight);
+      line-height: var(--md-button-large-line-height);
+      font-size: var(--md-button-large-font-size);
+      letter-spacing: var(--md-button-large-letter-spacing);
+      text-decoration: var(--md-button-large-text-decoration);
     }
   }
 
   .mat-icon {
-    font-size: map-get($button-small, font-size);
+    font-size: var(--md-button-small-font-size);
 
     @media #{$medium-and-up} {
-      font-size: map-get($button-medium, font-size);
+      font-size: var(--md-button-medium-font-size);
     }
 
     @media #{$large-and-up} {
-      font-size: map-get($button-large, font-size);
+      font-size: var(--md-button-large-font-size);
     }
 
     &.mini {
-      font-size: calc(map-get($button-small, font-size) / 2);
+      font-size: calc(var(--md-button-small-font-size) / 2);
     }
 
     &.small {
-      font-size: map-get($button-small, font-size);
+      font-size: var(--md-button-small-font-size);
     }
 
     &.medium {
-      font-size: map-get($button-medium, font-size);
+      font-size: var(--md-button-medium-font-size);
     }
 
     &.large {
-      font-size: map-get($button-large, font-size);
+      font-size: var(--md-button-large-font-size);
     }
     &.logo {
-      font-size: map-get($button-large, font-size);
+      font-size: var(--md-button-large-font-size);
+    }
+    &.huge {
+      font-size: 48px;
     }
   }
 
   .mat-mdc-tab {
-    font-family: map-get($button-medium, font-family);
-    font-weight: map-get($button-medium, font-weight);
-    line-height: map-get($button-medium, line-height);
-    font-size: map-get($button-medium, font-size);
-    letter-spacing: map-get($button-medium, letter-spacing);
-    text-decoration: map-get($button-medium, text-decoration);
+    font-weight: var(--md-button-medium-font-weight);
+    line-height: var(--md-button-medium-line-height);
+    font-size: var(--md-button-medium-font-size);
+    letter-spacing: var(--md-button-medium-letter-spacing);
+    text-decoration: var(--md-button-medium-text-decoration);
   }
+
+  $subtitle-1: map-get($custom-typography, subtitle-1);
+  $body-2: map-get($custom-typography, body-2);
 
   .mat-step-label {
     font-family: map-get($subtitle-1, font-family);
@@ -267,20 +162,15 @@ $button-large: map-get(map-get($wds-light-typography, button-large), value);
   }
 
   .mat-caption {
-    font-size: 12px;
     font-style: normal;
-    font-weight: 400;
-    line-height: 16px;
-    letter-spacing: 0.4px;
     text-align: left;
   }
 
+  b.mat-caption {
+    font-weight: 800;
+  }
+
   .mat-overline {
-    font-size: 10px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 16px;
-    letter-spacing: 1.5px;
     text-align: left;
     text-transform: uppercase;
   }
