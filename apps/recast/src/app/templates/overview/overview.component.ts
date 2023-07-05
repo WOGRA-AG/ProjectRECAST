@@ -1,5 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
-import { concatMap, filter, Observable, Subject, takeUntil } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { concatMap, filter, Observable, Subject, take, takeUntil } from 'rxjs';
 import {
   ElementFacadeService,
   ElementViewModelFacadeService,
@@ -10,13 +10,14 @@ import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
 import { Process, Step, Element } from '../../../../build/openapi/recast';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
+import { ApplicationStateService } from '../../services/application-state.service';
 
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
 })
-export class OverviewComponent implements OnDestroy {
+export class OverviewComponent implements OnDestroy, OnInit {
   public tabs: string[] = [
     $localize`:@@label.processes:Prozesse`,
     $localize`:@@label.elements:Bauteile`,
@@ -46,6 +47,7 @@ export class OverviewComponent implements OnDestroy {
     public readonly elementService: ElementFacadeService,
     public dialog: MatDialog,
     public router: Router,
+    private readonly stateService: ApplicationStateService,
     private readonly elementViewModelService: ElementViewModelFacadeService
   ) {
     this.tableData$ = processService.processes$;
@@ -56,6 +58,18 @@ export class OverviewComponent implements OnDestroy {
     this._destroy$.complete();
   }
 
+  public ngOnInit(): void {
+    this.stateService
+      .state$()
+      .pipe(
+        take(1),
+        filter(state => !!state)
+      )
+      .subscribe(state => {
+        this.changeContent(state.overview.index);
+      });
+  }
+
   public changeContent(index: number): void {
     this.currentIndex = index;
     if (index === 0) {
@@ -64,6 +78,7 @@ export class OverviewComponent implements OnDestroy {
     if (index === 1) {
       this.tableData$ = this.elementService.elements$;
     }
+    this.stateService.updateOverviewIndex(index);
   }
 
   public deleteTableRow(element: Process | Element | Step): void {
