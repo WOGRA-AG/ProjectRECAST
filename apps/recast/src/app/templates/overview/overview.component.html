@@ -5,6 +5,7 @@
     <app-tab-group
       class="tabs"
       [labels]="tabs"
+      [index]="currentIndex"
       (indexChanged)="changeContent($event)"></app-tab-group>
     <app-table
       class="table"

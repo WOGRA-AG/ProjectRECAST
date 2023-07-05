@@ -161,4 +161,10 @@ export class ProcessOverviewComponent implements OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe();
   }
+
+  public navigateByElementId(elementId: string): void {
+    this.router.navigate(['element', elementId], {
+      relativeTo: this.activatedRoute,
+    });
+  }
 }
