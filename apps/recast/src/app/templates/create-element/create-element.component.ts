@@ -74,10 +74,16 @@ export class CreateElementComponent implements OnDestroy {
           console.error(err);
           return of(undefined);
         }),
+        map(element => element?.id),
         takeUntil(this._destroy$)
       )
-      .subscribe(() =>
-        this.router.navigate([`/overview/process/${this.processId}`])
-      );
+      .subscribe(elementId => {
+        if (!elementId) {
+          return;
+        }
+        this.router.navigate([
+          `/overview/process/${this.processId}/element/${elementId}`,
+        ]);
+      });
   }
 }
