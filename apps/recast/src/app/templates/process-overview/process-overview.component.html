@@ -11,7 +11,7 @@
   </app-stepper>
 
   <div class="grid-wrapper">
-    <h5 class="title primary" i18n="@@label.elements">Bauteile</h5>
+    <h1 class="title primary-text" i18n="@@label.elements">Bauteile</h1>
     <app-table
       class="table"
       [columnsSchema]="dataColumns"
@@ -23,13 +23,12 @@
       (rowClicked)="navigateTo($event)">
     </app-table>
     <div class="buttons">
-      <app-button-unfilled
-        [bordered]="true"
+      <app-handwriting-recognition
         svgIcon="rcst_scan"
-        class="button"
-        i18n="@@action.scan_element">
+        i18n="@@action.scan_element"
+        (recognized)="navigateByElementId($event)">
         Bauteil scannen
-      </app-button-unfilled>
+      </app-handwriting-recognition>
       <app-button-filled
         class="button"
         i18n="@@action.create_element"

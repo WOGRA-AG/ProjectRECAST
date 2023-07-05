@@ -59,7 +59,7 @@ export class ProcessOverviewComponent implements OnDestroy {
         takeUntil(this._destroy$)
       )
       .subscribe(process => {
-        this.title = process?.name!;
+        this.title = process?.name ?? '';
         this.breadcrumbs = [
           { label: $localize`:@@header.overview:Overview`, link: '/overview' },
           { label: this.title },
@@ -105,7 +105,7 @@ export class ProcessOverviewComponent implements OnDestroy {
   public changeContent(index: number): void {
     this.currentIndex = index;
     this.currentStepId =
-      index === this.steps.length ? null : this.steps[this.currentIndex]?.id!;
+      index === this.steps.length ? null : this.steps[this.currentIndex]?.id;
     this.processId$
       .pipe(
         concatMap(
@@ -160,5 +160,11 @@ export class ProcessOverviewComponent implements OnDestroy {
       .saveElement$(element as Element)
       .pipe(takeUntil(this._destroy$))
       .subscribe();
+  }
+
+  public navigateByElementId(elementId: string): void {
+    this.router.navigate(['element', elementId], {
+      relativeTo: this.activatedRoute,
+    });
   }
 }

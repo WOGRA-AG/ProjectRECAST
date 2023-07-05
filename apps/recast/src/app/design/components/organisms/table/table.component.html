@@ -20,11 +20,11 @@
           *matHeaderCellDef
           mat-sort-header
           arrowPosition="before">
-          <div class="mat-subtitle-1 primary">{{ column.label }}</div>
+          <div class="mat-subtitle-2 primary-text">{{ column.label }}</div>
         </th>
       </ng-container>
     </ng-container>
-    <td class="mat-subtitle-2" mat-cell *matCellDef="let element">
+    <td mat-cell *matCellDef="let element">
       <div [ngSwitch]="column.type" *ngIf="!element.isEdit" class="cell">
         <ng-container *ngSwitchCase="'isDelete'">
           <app-icon-button
@@ -40,7 +40,12 @@
             (click)="element.isEdit = !element.isEdit">
           </app-icon-button>
         </ng-container>
-        <div *ngSwitchDefault class="text" (click)="rowClicked.emit(element)">
+        <div
+          *ngSwitchDefault
+          class="text"
+          (click)="rowClicked.emit(element)"
+          (keydown)="rowClicked.emit(element)"
+          [tabindex]="0">
           {{ element[column.key] }}
         </div>
       </div>

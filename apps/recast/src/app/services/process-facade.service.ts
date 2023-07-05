@@ -132,7 +132,7 @@ export class ProcessFacadeService {
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
       map(({ data, error }) => {
-        if (!!error) {
+        if (error) {
           throw error;
         }
         return camelCase(data[0]);
@@ -154,10 +154,11 @@ export class ProcessFacadeService {
         payload => {
           const state = this._processes$.getValue();
           switch (payload.eventType) {
-            case 'INSERT':
+            case 'INSERT': {
               changes$.next(this.insertProcess(state, camelCase(payload.new)));
               break;
-            case 'UPDATE':
+            }
+            case 'UPDATE': {
               const steps = this.stepFacade.steps;
               this.updateProcessWithSteps$(
                 state,
@@ -165,14 +166,17 @@ export class ProcessFacadeService {
                 steps
               ).subscribe(processes => changes$.next(processes));
               break;
-            case 'DELETE':
+            }
+            case 'DELETE': {
               const step: Step = payload.old;
               if (step.id) {
                 changes$.next(this.deleteProcess(state, step.id));
               }
               break;
-            default:
+            }
+            default: {
               break;
+            }
           }
         }
       )
