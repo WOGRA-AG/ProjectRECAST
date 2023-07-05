@@ -25,7 +25,8 @@
     <div class="buttons">
       <app-handwriting-recognition
         svgIcon="rcst_scan"
-        i18n="@@action.scan_element">
+        i18n="@@action.scan_element"
+        (recognized)="navigateByElementId($event)">
         Bauteil scannen
       </app-handwriting-recognition>
       <app-button-filled

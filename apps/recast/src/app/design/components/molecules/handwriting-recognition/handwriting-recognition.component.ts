@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { HandwritingRecognitionService } from 'src/app/services/handwriting-recognition.service';
 
 @Component({
@@ -8,6 +8,7 @@ import { HandwritingRecognitionService } from 'src/app/services/handwriting-reco
 })
 export class HandwritingRecognitionComponent {
   @Input() svgIcon = '';
+  @Output() recognized: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private readonly handwritingRecognitionService: HandwritingRecognitionService
@@ -20,8 +21,14 @@ export class HandwritingRecognitionComponent {
       return;
     }
     const file = fileList[0];
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
-    await this.handwritingRecognitionService.predImage(img);
+    const reader = new FileReader();
+    reader.onloadend = (): void => {
+      const base64data = reader.result?.toString();
+      if (!base64data) return;
+      this.handwritingRecognitionService.predictImage(base64data).then(id => {
+        this.recognized.emit(id);
+      });
+    };
+    reader.readAsDataURL(file);
   }
 }
