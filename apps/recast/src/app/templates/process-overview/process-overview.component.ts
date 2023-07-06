@@ -32,8 +32,14 @@ export class ProcessOverviewComponent implements OnDestroy {
   public breadcrumbs: Breadcrumb[] = [];
   public steps: Step[] = [];
   public dataColumns: TableColumn[] = [
-    { key: 'id', label: 'ID', type: 'text', required: true },
-    { key: 'name', label: 'Title', type: 'text', required: true },
+    { key: 'id', label: 'ID', type: 'text', required: true, editable: false },
+    {
+      key: 'name',
+      label: 'Title',
+      type: 'text',
+      required: true,
+      editable: true,
+    },
     { key: 'isEdit', label: '', type: 'isEdit' },
     { key: 'isDelete', label: '', type: 'isDelete' },
   ];
