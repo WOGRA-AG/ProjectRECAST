@@ -34,6 +34,7 @@ export class TableComponent<T>
   dataSource: MatTableDataSource<T> = new MatTableDataSource<T>();
   columns: string[] = this.columnsSchema.map(col => col.key);
   private readonly _destroy$: Subject<void> = new Subject<void>();
+  private _data: T[] = [];
 
   public ngOnInit(): void {
     this.columns = this.columnsSchema.map(col => col.key);
@@ -41,6 +42,7 @@ export class TableComponent<T>
 
   public ngOnChanges(): void {
     this.data.pipe(takeUntil(this._destroy$)).subscribe(value => {
+      this._data = JSON.parse(JSON.stringify(value));
       this.dataSource.data = value;
     });
   }
@@ -62,11 +64,17 @@ export class TableComponent<T>
     delete (element as any).isEdit;
     this.saveClicked.emit(element);
   }
+
+  public cancelEdit(element: any): void {
+    element.isEdit = !element.isEdit;
+    this.dataSource.data = JSON.parse(JSON.stringify(this._data));
+  }
 }
 
 export interface TableColumn {
   key: string;
   type: 'isEdit' | 'isDelete' | 'text' | 'number';
   label: string;
+  editable?: boolean;
   required?: boolean;
 }
