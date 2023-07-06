@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HandwritingRecognitionService {
-  modelUrl =
-    'https://trocr-large-printed-predictor-default.models.os4ml.wogra.com/v1/models/handwriting-model:predict';
+  modelUrl = environment.ocrInferenceUrl;
 
   constructor(private readonly http: HttpClient) {}
 
