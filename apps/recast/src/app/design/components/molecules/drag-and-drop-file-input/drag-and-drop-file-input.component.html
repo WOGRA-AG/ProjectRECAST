@@ -18,7 +18,7 @@
       (blur)="onTouch()"
       [formControl]="formControl"
       #fileInput />
-    <div class="label mat-h6">
+    <div class="label mat-h2">
       <p *ngIf="value?.name; else placeholderTemplate">{{ value?.name }}</p>
       <ng-template #placeholderTemplate>
         <mat-icon matPrefix>upload</mat-icon>
