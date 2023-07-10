@@ -1,25 +1,20 @@
-describe('Processes', () => {
-  const waitForUpdate: number = 5000;
-  const waitForDelete: number = 500;
-  beforeEach('login', () => {
-    cy.viewport(1280, 720);
-    cy.visit('/');
-    cy.get('.mdc-button').click();
-    cy.get(':nth-child(1) > .pure-material-textfield-outlined > span').click();
-    cy.get('#username').clear();
-    cy.get('#username').type(Cypress.env('TEST_USER'));
-    cy.get(':nth-child(2) > .pure-material-textfield-outlined > span').click();
-    cy.get('#password').clear();
-    cy.get('#password').type(Cypress.env('TEST_PASSWORD'));
-    cy.get('#kc-login > span').click();
-    cy.wait(waitForUpdate);
-  });
+import { login, logout } from '../utils/e2e.login';
+import { shortTimeout, mediumTimeout, longTimeout } from '../support/timeouts';
 
-  // afterEach('logout', () => {
-  //   cy.visit('https://login.os4ml.wogra.com/logout');
-  //   cy.get('#kc-logout').click();
-  //   cy.get('#kc-page-title').contains('You are logged out');
-  // });
+beforeEach('login', () => {
+  login();
+});
+
+after('logout', () => {
+  logout();
+});
+beforeEach(() => {
+  cy.visit('/overview');
+});
+
+describe('Processes', () => {
+  const waitForUpdate: number = mediumTimeout;
+  const waitForDelete: number = shortTimeout;
 
   it('add process from yaml and delete it', () => {
     cy.visit('/overview');
