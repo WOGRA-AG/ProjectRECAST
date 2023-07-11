@@ -25,6 +25,10 @@
 
   "err.min_char": "Mindestens {$INTERPOLATION} Buchstaben",
   "err.file.empty": "Die angegebene Datei scheint kein valides YAML Format zu besitzen",
+  "err.process.invalid": "Prozess konnte nicht aus Definition gelesen werden",
+  "err.step.invalid": "Step konnte nicht aus Definition gelesen werden",
+  "err.stepProp.invalid": "StepProperty konnte nicht aus Definition gelesen werden",
+  "err.dismiss": "OK",
 
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
   "placeholder.select_element": "Bauteil wählen",
