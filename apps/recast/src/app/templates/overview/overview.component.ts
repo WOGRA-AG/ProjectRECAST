@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
 import { Process, Step, Element } from '../../../../build/openapi/recast';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
+import { ViewStateService } from '../../services/view-state.service';
 import { ApplicationStateService } from '../../services/application-state.service';
 
 @Component({
@@ -49,10 +50,12 @@ export class OverviewComponent implements OnDestroy, OnInit {
     public readonly elementService: ElementFacadeService,
     public dialog: MatDialog,
     public router: Router,
-    private readonly stateService: ApplicationStateService,
-    private readonly elementViewModelService: ElementViewModelFacadeService
+    private readonly stateService: ViewStateService,
+    private readonly elementViewModelService: ElementViewModelFacadeService,
+    private readonly applicationStateService: ApplicationStateService
   ) {
     this.tableData$ = processService.processes$;
+    this.applicationStateService.updateApplicationState();
   }
 
   public ngOnDestroy(): void {

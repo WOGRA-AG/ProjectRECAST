@@ -22,6 +22,7 @@ import {
   of,
   skip,
   Subject,
+  take,
   toArray,
 } from 'rxjs';
 import { Process, Step } from '../../../build/openapi/recast';
@@ -123,6 +124,16 @@ export class ProcessFacadeService {
       distinctUntilChanged(elementComparator)
     );
   }
+
+  public updateProcesses$(): Observable<void> {
+    return this.loadProcesses$().pipe(
+      take(1),
+      map(processes => {
+        this._processes$.next(processes);
+      })
+    );
+  }
+
   private upsertProcess$({ id, name }: Process): Observable<Process> {
     const upsertStep = { id, name };
     const upsert = this._supabaseClient

@@ -21,6 +21,7 @@ import {
   of,
   skip,
   Subject,
+  take,
   toArray,
 } from 'rxjs';
 import { StepPropertyService } from './step-property.service';
@@ -133,6 +134,15 @@ export class StepFacadeService {
       return undefined;
     }
     return index > 0 ? steps[index - 1] : undefined;
+  }
+
+  public updateSteps$(): Observable<void> {
+    return this.loadSteps$().pipe(
+      take(1),
+      map(steps => {
+        this._steps$.next(steps);
+      })
+    );
   }
 
   private upsertStep$({ id, name }: Step, processId: number): Observable<Step> {
