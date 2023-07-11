@@ -17,6 +17,9 @@
     "lint:check": "ng lint && prettier --check .",
     "e2e": "npx cypress run",
     "e2e:local": "cross-env CYPRESS_dev=true npx cypress run",
+    "e2e:chrome": "npm run e2e -- --browser chrome",
+    "e2e:firefox": "npm run e2e -- --browser firefox",
+    "e2e:edge": "npm run e2e -- --browser edge",
     "prepare": "cd ../.. && husky install ./apps/recast/.husky",
     "i18n": "ng extract-i18n",
     "config-prettier": "eslint-config-prettier src/main.ts"
