@@ -112,7 +112,7 @@ ui-chrome-tests:
     # install dependencies
     - npm ci --cache .npm_cache
     # run Cypress tests in parallel
-    - npm run e2e:firefox
+    - npm run e2e:edge
   artifacts:
     when: always
     paths:
