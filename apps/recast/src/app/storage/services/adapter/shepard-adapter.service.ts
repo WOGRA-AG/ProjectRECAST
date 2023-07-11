@@ -36,6 +36,7 @@ import {
   ShepardValue,
   ValueType,
 } from '../../../model/element-view-model';
+import { AlertService } from '../../../services/alert.service';
 
 @Injectable({
   providedIn: 'root',
@@ -47,7 +48,8 @@ export class ShepardAdapter implements StorageAdapterInterface {
     private readonly stepPropertyService: StepPropertyService,
     private readonly stepService: StepFacadeService,
     private readonly elementService: ElementFacadeService,
-    private readonly processService: ProcessFacadeService
+    private readonly processService: ProcessFacadeService,
+    private readonly alert: AlertService
   ) {}
   public getType(): StorageBackendEnum {
     return StorageBackendEnum.Shepard;
@@ -163,7 +165,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
       catchError(() => of(undefined)),
       map(err => {
         if (err) {
-          console.error(err);
+          this.alert.reportError(err.message);
         }
         return;
       })

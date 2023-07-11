@@ -10,6 +10,7 @@ import { Document, parseAllDocuments } from 'yaml';
 import {
   Process,
   Profile,
+  Step,
   StepProperty,
 } from '../../../../build/openapi/recast';
 import TypeEnum = StepProperty.TypeEnum;
@@ -57,9 +58,56 @@ export const yamlToProcess$ = (file: File): Observable<Process[]> =>
       if (!documents.length) {
         throw Error($localize`:@@err.file.empty:No valid Yaml found in File`);
       }
-      return documents.map(doc => doc.toJSON() as Process);
+      return documents.map(doc => {
+        return parseYamlToProcess(doc.toJSON());
+      });
     })
   );
+
+const parseYamlToProcess = (spec: any): Process => {
+  const process = spec as Process;
+  if (!isObjectofProcess(spec)) {
+    throw Error($localize`:@@err.process.invalid:Invalid Process`);
+  }
+  process.steps?.forEach(step => {
+    if (!isObjectofStep(step)) {
+      throw Error($localize`:@@err.step.invalid:Invalid Step`);
+    }
+    step.stepProperties?.forEach(stepProperty => {
+      if (!isObjectofStepProperty(stepProperty)) {
+        throw Error($localize`:@@err.stepProp.invalid:Invalid StepProperty`);
+      }
+    });
+  });
+  return process;
+};
+const isObjectofProcess = (obj: any): obj is Process => {
+  return (
+    typeof obj === 'object' && obj !== null && 'name' in obj && 'steps' in obj
+  );
+};
+
+const isObjectofStep = (obj: any): obj is Step => {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'name' in obj &&
+    'stepProperties' in obj
+  );
+};
+
+const isObjectofStepProperty = (obj: any): obj is StepProperty => {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'name' in obj &&
+    // 'defaultValue' in obj &&
+    // 'description' in obj &&
+    'type' in obj &&
+    (Object.values(TypeEnum).toString().includes(obj.type) ||
+      isReference(obj.type))
+  );
+};
 
 export const elementComparator = <T>(a: T, b: T): boolean =>
   JSON.stringify(a) === JSON.stringify(b);

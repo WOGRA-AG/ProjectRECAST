@@ -15,6 +15,7 @@
       (saveClicked)="editTableRow($event)"
       (rowClicked)="navigateTo($event)"></app-table>
     <app-create-button
+      *ngIf="currentIndex === 0"
       class="button"
       routerLink="/overview/process"
       i18n="@@actions.create">

@@ -15,6 +15,7 @@ import {
   skip,
   Subject,
   switchMap,
+  take,
   toArray,
 } from 'rxjs';
 import { Element, ElementProperty } from '../../../build/openapi/recast';
@@ -171,6 +172,15 @@ export class ElementFacadeService {
     const newState = this.deleteElement(this._elements$.getValue(), elementId);
     this._elements$.next(newState.concat(element));
     return of(element);
+  }
+
+  public updateElements$(): Observable<void> {
+    return this.loadElements$().pipe(
+      take(1),
+      map(elements => {
+        this._elements$.next(elements);
+      })
+    );
   }
 
   private upsertElement$({

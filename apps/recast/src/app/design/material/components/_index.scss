@@ -1,7 +1,5 @@
 @use './button.scss' as button;
-@use './sidenav.scss' as sidenav;
 @use './toolbar.scss' as toolbar;
-@use './navlist.scss' as navlist;
 @use './expansion-module.scss' as expansionModule;
 @use './dialog.scss' as dialog;
 @use './list.scss' as list;
@@ -17,13 +15,12 @@
 @use './file_input.scss' as file_input;
 @use './checkbox.scss' as checkbox;
 @use './color_input.scss' as color_input;
+@use './snackbar.scss' as snackbar;
 
 @mixin theme($theme, $typography-config, $variants) {
   @include button.theme($theme, $typography-config, $variants);
   @include button_variants.color($theme, $variants);
-  @include sidenav.theme($theme, $typography-config, $variants);
   @include toolbar.theme($theme, $typography-config, $variants);
-  @include navlist.theme($theme, $typography-config, $variants);
   @include stepper.theme($theme, $typography-config, $variants);
   @include expansionModule.theme($theme, $typography-config, $variants);
   @include dialog.theme($theme, $typography-config, $variants);
@@ -38,4 +35,5 @@
   @include file_input.theme($theme, $typography-config, $variants);
   @include checkbox.theme($theme, $typography-config, $variants);
   @include color_input.theme($theme, $typography-config, $variants);
+  @include snackbar.theme($theme, $typography-config, $variants);
 }

@@ -13,6 +13,7 @@ import {
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-create-element',
@@ -31,7 +32,8 @@ export class CreateElementComponent implements OnDestroy {
     private router: Router,
     private formBuilder: FormBuilder,
     private readonly processService: ProcessFacadeService,
-    private readonly elementService: ElementFacadeService
+    private readonly elementService: ElementFacadeService,
+    private readonly alert: AlertService
   ) {
     this.propertiesForm.addControl(
       'name',
@@ -70,8 +72,8 @@ export class CreateElementComponent implements OnDestroy {
         this.propertiesForm.get('name')?.value ?? ''
       )
       .pipe(
-        catchError(err => {
-          console.error(err);
+        catchError((err: Error) => {
+          this.alert.reportError(err.message);
           return of(undefined);
         }),
         map(element => element?.id),

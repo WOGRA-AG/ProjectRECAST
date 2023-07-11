@@ -30,6 +30,7 @@ import {
   ValueType,
 } from '../../model/element-view-model';
 import { ElementFacadeService, ProcessFacadeService } from '../../services';
+import { AlertService } from '../../services/alert.service';
 
 @Injectable({
   providedIn: 'root',
@@ -42,7 +43,8 @@ export class StorageService {
     private readonly storageAdapters: StorageAdapterInterface[],
     private readonly userService: UserFacadeService,
     private readonly elementService: ElementFacadeService,
-    private readonly processService: ProcessFacadeService
+    private readonly processService: ProcessFacadeService,
+    private readonly alert: AlertService
   ) {
     this.userService.currentProfile$.subscribe(profile => {
       const storageBackend =
@@ -137,7 +139,7 @@ export class StorageService {
       mergeMap(() => this.elementService.deleteElement$(element.id!)),
       map(err => {
         if (err) {
-          console.error(err);
+          this.alert.reportError(err.message);
         }
         return;
       })
@@ -180,7 +182,7 @@ export class StorageService {
       mergeMap(() => this.processService.deleteProcess$(process.id!)),
       map(err => {
         if (err) {
-          console.error(err);
+          this.alert.reportError(err.message);
         }
         return;
       })

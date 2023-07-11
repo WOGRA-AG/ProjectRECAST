@@ -33,6 +33,7 @@ import {
   ValueType,
 } from '../../model/element-view-model';
 import { isReference } from '../../shared/util/common-utils';
+import { AlertService } from '../../services/alert.service';
 
 // TODO: refactor this class
 @Component({
@@ -65,7 +66,8 @@ export class ElementDetailComponent implements OnDestroy {
     private elementViewService: ElementViewModelFacadeService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private alert: AlertService
   ) {
     this._elementViewModel$
       .pipe(
@@ -116,8 +118,8 @@ export class ElementDetailComponent implements OnDestroy {
         .pipe(
           take(newModel.properties.length),
           takeUntil(this._destroy$),
-          catchError(err => {
-            console.error(err);
+          catchError((err: Error) => {
+            this.alert.reportError(err.message);
             return of(undefined);
           })
         )
@@ -228,8 +230,8 @@ export class ElementDetailComponent implements OnDestroy {
     return this.elementId$().pipe(
       switchMap(id => this.elementViewService.elementViewModelByElementId$(id)),
       filter(Boolean),
-      catchError(err => {
-        console.error(err);
+      catchError((err: Error) => {
+        this.alert.reportError(err.message);
         return of(undefined);
       }),
       filter(Boolean)
