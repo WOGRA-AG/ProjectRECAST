@@ -9,17 +9,28 @@
       (indexChanged)="changeContent($event)"></app-tab-group>
     <app-table
       class="table"
+      [selectable]="true"
+      [multipleSelect]="true"
       [columnsSchema]="dataColumns"
+      [(selection)]="selectedRows"
       [data]="tableData$"
       (deleteClicked)="deleteTableRow($event)"
       (saveClicked)="editTableRow($event)"
       (rowClicked)="navigateTo($event)"></app-table>
-    <app-create-button
-      *ngIf="currentIndex === 0"
-      class="button"
-      routerLink="/overview/process"
-      i18n="@@actions.create">
-      Create
-    </app-create-button>
+    <div class="actions">
+      <app-icon-button
+        *ngIf="!!selectedRows.length"
+        color="warn"
+        class="delete-button"
+        svgIcon="rcst_delete"
+        (click)="deleteSelectedRows()"></app-icon-button>
+      <app-create-button
+        *ngIf="currentIndex === 0"
+        class="button"
+        routerLink="/overview/process"
+        i18n="@@actions.create">
+        Create
+      </app-create-button>
+    </div>
   </div>
 </div>

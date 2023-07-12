@@ -24,20 +24,23 @@ export class TableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
   @Input() columnsSchema: TableColumn[] = [];
   @Input() data: Observable<T[]> = new Observable<T[]>();
   @Input() noDataText = '';
-  @Input() selectable = true;
+  @Input() selectable = false;
   @Input() multipleSelect = true;
+  @Input() selection: T[] = [];
 
   @Output() deleteClicked: EventEmitter<T> = new EventEmitter<T>();
   @Output() saveClicked: EventEmitter<T> = new EventEmitter<T>();
   @Output() rowClicked: EventEmitter<T> = new EventEmitter<T>();
-  @Output() selected: EventEmitter<T[]> = new EventEmitter<T[]>();
+  @Output() selectionChange: EventEmitter<T[]> = new EventEmitter<T[]>();
 
+  selectionModel = new SelectionModel<T>(true, this.selection);
   dataSource: MatTableDataSource<T> = new MatTableDataSource<T>();
-  selection = new SelectionModel<T>(true, []);
   private readonly _destroy$: Subject<void> = new Subject<void>();
   private _data: T[] = [];
 
   public ngOnChanges(): void {
+    this.selectionModel.clear();
+    this.selectionModel.select(...this.selection);
     this.data.pipe(takeUntil(this._destroy$)).subscribe(value => {
       this._data = JSON.parse(JSON.stringify(value));
       this.dataSource.data = value;
@@ -68,11 +71,11 @@ export class TableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   public selectHandler(row: T): void {
-    if (!this.multipleSelect && !this.selection.isSelected(row)) {
-      this.selection.clear();
+    if (!this.multipleSelect && !this.selectionModel.isSelected(row)) {
+      this.selectionModel.clear();
     }
-    this.selection.toggle(row);
-    this.selected.emit(this.selection.selected);
+    this.selectionModel.toggle(row);
+    this.selectionChange.emit(this.selectionModel.selected);
   }
 
   protected displayedColumns(): string[] {

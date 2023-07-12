@@ -12,7 +12,7 @@
         color="primary"
         (click)="$event.stopPropagation()"
         (change)="selectHandler(row)"
-        [checked]="selection.isSelected(row)">
+        [checked]="selectionModel.isSelected(row)">
       </mat-checkbox>
     </td>
   </ng-container>
