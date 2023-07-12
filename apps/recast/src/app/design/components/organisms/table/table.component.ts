@@ -5,40 +5,37 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, takeUntil } from 'rxjs';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
 })
-export class TableComponent<T>
-  implements OnChanges, AfterViewInit, OnInit, OnDestroy
-{
+export class TableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort | null = null;
 
   @Input() columnsSchema: TableColumn[] = [];
   @Input() data: Observable<T[]> = new Observable<T[]>();
   @Input() noDataText = '';
+  @Input() selectable = true;
+  @Input() multipleSelect = true;
 
   @Output() deleteClicked: EventEmitter<T> = new EventEmitter<T>();
   @Output() saveClicked: EventEmitter<T> = new EventEmitter<T>();
   @Output() rowClicked: EventEmitter<T> = new EventEmitter<T>();
+  @Output() selected: EventEmitter<T[]> = new EventEmitter<T[]>();
 
   dataSource: MatTableDataSource<T> = new MatTableDataSource<T>();
-  columns: string[] = this.columnsSchema.map(col => col.key);
+  selection = new SelectionModel<T>(true, []);
   private readonly _destroy$: Subject<void> = new Subject<void>();
   private _data: T[] = [];
-
-  public ngOnInit(): void {
-    this.columns = this.columnsSchema.map(col => col.key);
-  }
 
   public ngOnChanges(): void {
     this.data.pipe(takeUntil(this._destroy$)).subscribe(value => {
@@ -68,6 +65,20 @@ export class TableComponent<T>
   public cancelEdit(element: any): void {
     element.isEdit = !element.isEdit;
     this.dataSource.data = JSON.parse(JSON.stringify(this._data));
+  }
+
+  public selectHandler(row: T): void {
+    if (!this.multipleSelect && !this.selection.isSelected(row)) {
+      this.selection.clear();
+    }
+    this.selection.toggle(row);
+    this.selected.emit(this.selection.selected);
+  }
+
+  protected displayedColumns(): string[] {
+    return this.selectable
+      ? ['select', ...this.columnsSchema.map(col => col.key)]
+      : this.columnsSchema.map(col => col.key);
   }
 }
 
