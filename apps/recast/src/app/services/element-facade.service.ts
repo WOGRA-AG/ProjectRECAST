@@ -16,6 +16,7 @@ import {
   Subject,
   switchMap,
   take,
+  tap,
   toArray,
 } from 'rxjs';
 import { Element, ElementProperty } from '../../../build/openapi/recast';
@@ -117,6 +118,7 @@ export class ElementFacadeService {
       .eq('id', id);
     return from(del).pipe(
       filter(({ error }) => !!error),
+      tap(() => this._elements$.next(this.deleteElement(this.elements, id))),
       map(({ error }) => error!)
     );
   }

@@ -21,6 +21,12 @@ table {
     width: 10%;
   }
 
+  .mat-column-select {
+    min-width: 65px;
+    width: 7%;
+    max-width: 100px;
+  }
+
   .text {
     cursor: pointer;
     height: inherit;

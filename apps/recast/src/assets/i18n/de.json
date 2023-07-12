@@ -43,5 +43,6 @@
 
   "dialog.delete_process": "Prozess und alle dazugehörigen Daten löschen?",
   "dialog.delete_element": "Bauteil und alle dazugehörigen Daten löschen?",
-  "dialog.submit_element": "Element speichern und sperren?"
+  "dialog.submit_element": "Element speichern und sperren?",
+  "dialog.delete_selected_rows": "Ausgewählte Elemente löschen?"
 }

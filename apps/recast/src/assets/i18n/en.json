@@ -43,5 +43,6 @@
 
   "dialog.delete_process": "Delete process and all corresponding data?",
   "dialog.delete_element": "Delete Element and all corresponding data?",
-  "dialog.submit_element": "Save and lock element?"
+  "dialog.submit_element": "Save and lock element?",
+  "dialog.delete_selected_rows": "Delete Selected Rows?"
 }

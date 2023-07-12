@@ -1,5 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { concatMap, filter, Observable, Subject, take, takeUntil } from 'rxjs';
+import {
+  filter,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  Subject,
+  take,
+  takeUntil,
+} from 'rxjs';
 import {
   ElementFacadeService,
   ElementViewModelFacadeService,
@@ -23,6 +32,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
     $localize`:@@label.processes:Prozesse`,
     $localize`:@@label.elements:Bauteile`,
   ];
+  public selectedRows: any[] = [];
   public dataColumns: TableColumn[] = [
     {
       key: 'id',
@@ -76,6 +86,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
   }
 
   public changeContent(index: number): void {
+    this.selectedRows = [];
     this.currentIndex = index;
     if (index === 0) {
       this.tableData$ = this.processService.processes$;
@@ -87,49 +98,24 @@ export class OverviewComponent implements OnDestroy, OnInit {
   }
 
   public deleteTableRow(element: Process | Element | Step): void {
-    if (!element.id) {
-      return;
-    }
-    switch (this.currentIndex) {
-      case 0:
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            data: {
-              title: $localize`:@@dialog.delete_process:Delete Process?`,
-            },
-            autoFocus: false,
-          })
-          .afterClosed()
-          .pipe(
-            filter(confirmed => !!confirmed),
-            concatMap(() =>
-              this.elementViewModelService.deleteProcess$(element as Process)
-            ),
-            takeUntil(this._destroy$)
-          )
-          .subscribe();
-        break;
-      case 1:
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            data: {
-              title: $localize`:@@dialog.delete_element:Delete Element?`,
-            },
-            autoFocus: false,
-          })
-          .afterClosed()
-          .pipe(
-            filter(confirmed => !!confirmed),
-            concatMap(() =>
-              this.elementViewModelService.deleteElement$(element as Element)
-            ),
-            takeUntil(this._destroy$)
-          )
-          .subscribe();
-        break;
-      default:
-        break;
-    }
+    const title =
+      this.currentIndex === 0
+        ? $localize`:@@dialog.delete_process:Delete Process?`
+        : $localize`:@@dialog.delete_element:Delete Element?`;
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title,
+        },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .pipe(
+        filter(confirmed => !!confirmed),
+        map(() => this.deleteRow(element)),
+        take(1)
+      )
+      .subscribe();
   }
 
   public editTableRow(element: Process | Element | Step): void {
@@ -154,6 +140,29 @@ export class OverviewComponent implements OnDestroy, OnInit {
     }
   }
 
+  public deleteSelectedRows(): void {
+    if (!this.selectedRows.length) {
+      return;
+    }
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: $localize`:@@dialog.delete_selected_rows:Delete Selected Rows?`,
+        },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .pipe(
+        filter(confirmed => !!confirmed),
+        mergeMap(() => from(this.selectedRows)),
+        map((element: Process | Element | Step) => {
+          this.deleteRow(element);
+        }),
+        take(this.selectedRows.length)
+      )
+      .subscribe(() => (this.selectedRows = []));
+  }
+
   public navigateTo(rowItem: Process | Element | Step): void {
     if (!rowItem) {
       return;
@@ -172,6 +181,32 @@ export class OverviewComponent implements OnDestroy, OnInit {
       default: {
         break;
       }
+    }
+  }
+
+  protected comparator<T extends Process | Element>(o1: T, o2: T): boolean {
+    return o1.id === o2.id;
+  }
+
+  private deleteRow(element: Process | Element | Step): void {
+    if (!element.id) {
+      return;
+    }
+    switch (this.currentIndex) {
+      case 0:
+        this.elementViewModelService
+          .deleteProcess$(element as Process)
+          .pipe(take(1))
+          .subscribe();
+        break;
+      case 1:
+        this.elementViewModelService
+          .deleteElement$(element as Element)
+          .pipe(take(1))
+          .subscribe();
+        break;
+      default:
+        break;
     }
   }
 }
