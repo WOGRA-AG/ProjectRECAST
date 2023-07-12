@@ -22,7 +22,9 @@ table {
   }
 
   .mat-column-select {
-    width: 100px;
+    min-width: 65px;
+    width: 7%;
+    max-width: 100px;
   }
 
   .text {

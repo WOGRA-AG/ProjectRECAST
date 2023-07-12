@@ -13,6 +13,7 @@
       [multipleSelect]="true"
       [columnsSchema]="dataColumns"
       [(selection)]="selectedRows"
+      [compareWith]="comparator"
       [data]="tableData$"
       (deleteClicked)="deleteTableRow($event)"
       (saveClicked)="editTableRow($event)"

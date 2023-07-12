@@ -184,6 +184,10 @@ export class OverviewComponent implements OnDestroy, OnInit {
     }
   }
 
+  protected comparator<T extends Process | Element>(o1: T, o2: T): boolean {
+    return o1.id === o2.id;
+  }
+
   private deleteRow(element: Process | Element | Step): void {
     if (!element.id) {
       return;
