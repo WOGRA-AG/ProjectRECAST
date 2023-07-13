@@ -117,7 +117,6 @@ export class ElementDetailComponent implements OnDestroy {
         .updateValuesFromElementViewModel$(newModel)
         .pipe(
           take(newModel.properties.length),
-          takeUntil(this._destroy$),
           catchError((err: Error) => {
             this.alert.reportError(err.message);
             return of(undefined);
@@ -206,7 +205,10 @@ export class ElementDetailComponent implements OnDestroy {
     if (!this.elementViewModel) {
       return;
     }
-    const nextStep = this.stepService.nextStep(this._currentStep!);
+    const nextStep =
+      this._steps.length >= this.currentIndex + 1
+        ? this._steps[this.currentIndex + 1]
+        : undefined;
     const element = {
       ...this.elementViewModel.element,
       elementProperties: [],

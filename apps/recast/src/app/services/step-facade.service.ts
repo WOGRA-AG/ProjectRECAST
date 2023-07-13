@@ -118,15 +118,6 @@ export class StepFacadeService {
     );
   }
 
-  public nextStep(currentStep: Step): Step | undefined {
-    const steps = this._steps$.getValue();
-    const index = steps.findIndex(s => s.id === currentStep.id);
-    if (index === -1) {
-      return undefined;
-    }
-    return index < steps.length ? steps[index + 1] : undefined;
-  }
-
   public previousStep(currentStep: Step): Step | undefined {
     const steps = this._steps$.getValue();
     const index = steps.findIndex(s => s.id === currentStep.id);
