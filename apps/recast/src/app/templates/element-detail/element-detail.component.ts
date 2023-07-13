@@ -138,14 +138,16 @@ export class ElementDetailComponent implements OnDestroy {
       })
       .afterClosed()
       .pipe(
-        tap(() => (this.loading = false)),
         take(newModel.properties.length),
         filter(confirmed => !!confirmed),
         mergeMap(() =>
           this.elementViewService.updateValuesFromElementViewModel$(newModel)
         )
       )
-      .subscribe(() => this.navigateForward());
+      .subscribe(() => {
+        this.loading = false;
+        this.navigateForward();
+      });
   }
 
   public stepChanged(event: number): void {
@@ -163,6 +165,11 @@ export class ElementDetailComponent implements OnDestroy {
     }
     return this.elementService.elementsByProcessName$(reference);
   }
+
+  protected compareByStepPropId = (
+    a: ElementViewProperty,
+    b: ElementViewProperty
+  ): number => a.stepPropId - b.stepPropId;
 
   private initFormGroup$(elementViewModel: ElementViewModel): Observable<void> {
     for (const prop of elementViewModel.properties ?? []) {

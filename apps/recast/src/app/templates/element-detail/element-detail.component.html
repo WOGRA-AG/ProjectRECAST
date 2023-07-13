@@ -16,7 +16,9 @@
     [formGroup]="propertiesForm"
     (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
-      <div class="input-wrapper" *ngFor="let prop of currentProperties">
+      <div
+        class="input-wrapper"
+        *ngFor="let prop of currentProperties.sort(compareByStepPropId)">
         <ng-container
           [ngSwitch]="prop.type"
           *ngIf="propertiesForm.controls['' + prop.stepPropId]">
