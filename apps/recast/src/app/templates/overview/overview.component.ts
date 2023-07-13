@@ -2,10 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   filter,
   from,
-  map,
   mergeMap,
   Observable,
   Subject,
+  switchMap,
   take,
   takeUntil,
 } from 'rxjs';
@@ -112,7 +112,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .afterClosed()
       .pipe(
         filter(confirmed => !!confirmed),
-        map(() => this.deleteRow(element)),
+        switchMap(() => this.deleteRow$(element)),
         take(1)
       )
       .subscribe();
@@ -155,12 +155,14 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .pipe(
         filter(confirmed => !!confirmed),
         mergeMap(() => from(this.selectedRows)),
-        map((element: Process | Element | Step) => {
-          this.deleteRow(element);
-        }),
+        switchMap((element: Process | Element | Step) =>
+          this.deleteRow$(element)
+        ),
         take(this.selectedRows.length)
       )
-      .subscribe(() => (this.selectedRows = []));
+      .subscribe(() => {
+        this.selectedRows = [];
+      });
   }
 
   public navigateTo(rowItem: Process | Element | Step): void {
@@ -188,25 +190,10 @@ export class OverviewComponent implements OnDestroy, OnInit {
     return o1.id === o2.id;
   }
 
-  private deleteRow(element: Process | Element | Step): void {
-    if (!element.id) {
-      return;
+  private deleteRow$(element: Process | Element | Step): Observable<void> {
+    if (this.currentIndex === 0) {
+      return this.elementViewModelService.deleteProcess$(element as Process);
     }
-    switch (this.currentIndex) {
-      case 0:
-        this.elementViewModelService
-          .deleteProcess$(element as Process)
-          .pipe(take(1))
-          .subscribe();
-        break;
-      case 1:
-        this.elementViewModelService
-          .deleteElement$(element as Element)
-          .pipe(take(1))
-          .subscribe();
-        break;
-      default:
-        break;
-    }
+    return this.elementViewModelService.deleteElement$(element);
   }
 }
