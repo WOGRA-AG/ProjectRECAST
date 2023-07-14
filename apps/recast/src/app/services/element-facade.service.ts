@@ -14,7 +14,6 @@ import {
   of,
   skip,
   Subject,
-  switchMap,
   take,
   tap,
   toArray,
@@ -51,7 +50,7 @@ export class ElementFacadeService {
     private readonly stepService: StepFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
-      switchMap(() => this.loadElements$()),
+      concatMap(() => this.loadElements$()),
       catchError(() => of([]))
     );
     const elemPropChanges$ = elementPropertyService.elementProperties$.pipe(
@@ -166,7 +165,7 @@ export class ElementFacadeService {
     elementId: number,
     stepId: number | null
   ): Observable<Element | undefined> {
-    const element = JSON.parse(JSON.stringify(this.elementById(elementId)));
+    const element = { ...this.elementById(elementId) };
     if (!element) {
       return of(undefined);
     }

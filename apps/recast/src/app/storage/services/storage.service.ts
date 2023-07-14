@@ -18,7 +18,6 @@ import {
   mergeMap,
   Observable,
   of,
-  switchMap,
   take,
   toArray,
   zip,
@@ -154,7 +153,7 @@ export class StorageService {
       return of(undefined);
     }
     return zip(this._storageBackend$, of(backends)).pipe(
-      switchMap(([defaultBackend, processBackends]) => {
+      concatMap(([defaultBackend, processBackends]) => {
         const observables = [];
         const defaultAdapter = this.storageAdapters.find(
           adapter => adapter.getType() === defaultBackend
@@ -195,7 +194,7 @@ export class StorageService {
     return this._storageBackend$.pipe(
       filter(Boolean),
       map(backend => elementProperty.storageBackend ?? backend),
-      switchMap(backend => {
+      concatMap(backend => {
         const storageAdapter = this.storageAdapters.find(
           adapter => adapter.getType() === backend
         );

@@ -92,6 +92,7 @@
         mode="indeterminate">
       </mat-progress-spinner>
       <app-button-unfilled
+        *ngIf="!!elementViewModel"
         type="button"
         [bordered]="true"
         (click)="navigateBack$()"
@@ -116,4 +117,7 @@
       </ng-container>
     </div>
   </form>
+  <mat-spinner
+    *ngIf="!elementViewModel?.properties"
+    class="page-load-spinner"></mat-spinner>
 </div>

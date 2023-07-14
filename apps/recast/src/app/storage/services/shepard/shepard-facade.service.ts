@@ -14,11 +14,11 @@ import {
   concatMap,
   filter,
   map,
-  switchMap,
   Observable,
   of,
   tap,
   zip,
+  take,
 } from 'rxjs';
 import { FileService } from './file.service';
 import { StructuredDataService } from './structured-data.service';
@@ -55,7 +55,8 @@ export class ShepardFacadeService {
     processId: number
   ): Observable<Collection> {
     return this.getCollectionByProcessId$(processId).pipe(
-      switchMap(collection => {
+      take(1),
+      concatMap(collection => {
         if (collection) {
           return of(collection);
         }
@@ -75,7 +76,8 @@ export class ShepardFacadeService {
     processId: number
   ): Observable<Collection> {
     return this.getCollectionByProcessId$(processId).pipe(
-      switchMap(collection => {
+      take(1),
+      concatMap(collection => {
         if (collection) {
           return of(collection);
         } else {
@@ -91,13 +93,17 @@ export class ShepardFacadeService {
 
   public deleteCollectionByProcessId$(processId: number): Observable<void> {
     return this.getCollectionByProcessId$(processId).pipe(
-      switchMap(collection => {
+      concatMap(collection => {
         if (!collection) {
           return of(undefined);
         }
         return this.collectionService.deleteCollection$(collection.id!);
       })
     );
+  }
+
+  public deleteAllCollectionsByName$(name: string): Observable<void> {
+    return this.collectionService.deleteAllCollectionsByName$(name);
   }
 
   public getFileById$(fileId: string): Observable<File> {
@@ -170,14 +176,14 @@ export class ShepardFacadeService {
   ): Observable<DataObject> {
     return this.getOrCreateCollectionByProcessId$(processId).pipe(
       filter(Boolean),
-      switchMap(collection =>
+      concatMap(collection =>
         this.dataObjectService.getDataObjectByAttribute$(
           collection.id!,
           'element_id',
           '' + elementId
         )
       ),
-      switchMap(dataObject => {
+      concatMap(dataObject => {
         if (dataObject) {
           return of(dataObject);
         }
@@ -195,7 +201,7 @@ export class ShepardFacadeService {
     const attributes = { element_id: '' + elementId };
     return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
-      switchMap(collection =>
+      concatMap(collection =>
         this.dataObjectService.createDataObject$(
           collection.id!,
           attributes,
@@ -210,7 +216,7 @@ export class ShepardFacadeService {
     elementId: number
   ): Observable<void> {
     return this.getCollectionByProcessId$(processId).pipe(
-      switchMap(collection => {
+      concatMap(collection => {
         if (!collection) {
           return of(undefined);
         }
@@ -236,7 +242,7 @@ export class ShepardFacadeService {
       payload,
     };
     return this.getDataObjectByElementId$(elementId).pipe(
-      switchMap(dataObject => {
+      concatMap(dataObject => {
         if (!dataObject) {
           const elementName = this.elementService.elementById(elementId)?.name!;
           return this.createDataObject$(processId, elementId, elementName);
@@ -261,9 +267,12 @@ export class ShepardFacadeService {
           structuredDataPayload
         )
       ),
-      concatMap(structuredData =>
-        zip(this.getDataObjectByElementId$(elementId), of(structuredData))
-      ),
+      concatMap(structuredData => {
+        return zip(
+          this.getDataObjectByElementId$(elementId),
+          of(structuredData)
+        );
+      }),
       concatMap(([dataObject, structuredData]) => {
         if (!dataObject) {
           return zip(of(undefined), of(structuredData));
@@ -291,7 +300,7 @@ export class ShepardFacadeService {
     return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       combineLatestWith(this.fileService.getRecastFileContainer$()),
-      switchMap(([collection, fileContainer]) =>
+      concatMap(([collection, fileContainer]) =>
         this.referenceService.createFileReference$(
           collection.id!,
           dataObjectId,
@@ -312,7 +321,7 @@ export class ShepardFacadeService {
     let collectionId: number;
     return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
-      switchMap(collection => {
+      concatMap(collection => {
         collectionId = collection.id!;
         return this.referenceService.getAllFileReferences$(
           collectionId,
@@ -322,7 +331,7 @@ export class ShepardFacadeService {
       map(fileRefs =>
         fileRefs.find(fileRef => fileRef.fileOids.includes(fileOid))
       ),
-      switchMap(fileRef =>
+      concatMap(fileRef =>
         this.referenceService.deleteFileReference$(
           collectionId,
           dataObjectId,
@@ -342,14 +351,14 @@ export class ShepardFacadeService {
     return this.getCollectionByProcessId$(processId).pipe(
       filter(Boolean),
       tap(collection => (collectionId = collection.id!)),
-      switchMap(() =>
+      concatMap(() =>
         this.referenceService.getDataObjectReferenceByName$(
           collectionId,
           dataObjectId,
           refName
         )
       ),
-      switchMap(ref => {
+      concatMap(ref => {
         if (ref) {
           return this.referenceService.deleteDataObjectReference$(
             collectionId,
@@ -380,7 +389,7 @@ export class ShepardFacadeService {
       combineLatestWith(
         this.structuredDataService.getRecastStructuredDataContainer$()
       ),
-      switchMap(([collection, sdc]) =>
+      concatMap(([collection, sdc]) =>
         this.referenceService.createStructuredDataReference$(
           collection.id!,
           dataObjectId,
