@@ -10,6 +10,7 @@ import {
   mergeMap,
   Observable,
   Subject,
+  take,
   takeUntil,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
@@ -136,7 +137,7 @@ export class ProcessOverviewComponent implements OnDestroy {
       .pipe(
         filter(confirmed => !!confirmed),
         concatMap(() => this.elementViewModelService.deleteElement$(element)),
-        takeUntil(this._destroy$)
+        take(1)
       )
       .subscribe();
   }

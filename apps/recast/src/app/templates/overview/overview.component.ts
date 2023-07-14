@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+  concatMap,
   filter,
   from,
   mergeMap,
   Observable,
   Subject,
-  switchMap,
   take,
   takeUntil,
 } from 'rxjs';
@@ -112,7 +112,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .afterClosed()
       .pipe(
         filter(confirmed => !!confirmed),
-        switchMap(() => this.deleteRow$(element)),
+        concatMap(() => this.deleteRow$(element)),
         take(1)
       )
       .subscribe();
@@ -155,7 +155,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .pipe(
         filter(confirmed => !!confirmed),
         mergeMap(() => from(this.selectedRows)),
-        switchMap((element: Process | Element | Step) =>
+        concatMap((element: Process | Element | Step) =>
           this.deleteRow$(element)
         ),
         take(this.selectedRows.length)

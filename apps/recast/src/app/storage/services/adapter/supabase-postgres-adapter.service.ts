@@ -58,7 +58,9 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
       return from(strToFile(val)).pipe(filter(Boolean), take(1));
     }
     if (isReference(type) && val) {
-      return this.elementService.elementById$(+val);
+      return this.elementService
+        .elementById$(+val)
+        .pipe(map(element => element.id ?? 0));
     }
     if (val && type === TypeEnum.Boolean) {
       return of(val === 'true');

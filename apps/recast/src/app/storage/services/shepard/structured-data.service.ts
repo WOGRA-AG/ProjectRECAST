@@ -8,12 +8,12 @@ import {
 } from '@dlr-shepard/shepard-client';
 import {
   BehaviorSubject,
+  concatMap,
   distinctUntilChanged,
   filter,
   from,
   map,
   Observable,
-  switchMap,
 } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { UserFacadeService } from '../../../user/services/user-facade.service';
@@ -61,7 +61,7 @@ export class StructuredDataService {
     structuredDataOid: string
   ): Observable<StructuredDataPayload> {
     return this.getRecastStructuredDataContainer$().pipe(
-      switchMap(container =>
+      concatMap(container =>
         this._structuredDataApi!.getStructuredData({
           structureddataContainerId: container.id!,
           oid: structuredDataOid,
@@ -91,7 +91,7 @@ export class StructuredDataService {
     const structureddataContainerId: number = structuredDataContainerId;
     return this.getStructuredData$(structureddataContainerId).pipe(
       map(sd => sd.find(e => e.name === structuredDataName)),
-      switchMap(sd => {
+      concatMap(sd => {
         if (!sd) {
           return this._createStructuredData$(
             structureddataContainerId,
@@ -137,12 +137,12 @@ export class StructuredDataService {
         oid: strucData.oid!,
       })
     ).pipe(
-      switchMap(strucDataPay =>
+      concatMap(strucDataPay =>
         this._deleteStructuredData$(strucData, structureddataContainerId).pipe(
           map(() => strucDataPay)
         )
       ),
-      switchMap((sdp: StructuredDataPayload) => {
+      concatMap((sdp: StructuredDataPayload) => {
         let payload = sdp.payload ? JSON.parse(sdp.payload) : {};
         payload[propertyName] = value;
         delete payload._id;

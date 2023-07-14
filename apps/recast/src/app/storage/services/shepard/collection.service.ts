@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
+  concatMap,
   distinctUntilChanged,
   filter,
   from,
   map,
+  mergeMap,
   Observable,
-  switchMap,
+  take,
   tap,
 } from 'rxjs';
 import {
@@ -77,7 +79,7 @@ export class CollectionService {
     return from(req).pipe(
       filter(col => !!col.id),
       tap(col => (collection = col)),
-      switchMap(col =>
+      concatMap(col =>
         from(
           this._collectionApi!.getCollectionPermissions({
             collectionId: col.id!,
@@ -88,7 +90,7 @@ export class CollectionService {
         perm.permissionType = permission;
         return perm;
       }),
-      switchMap(perm =>
+      concatMap(perm =>
         from(
           this._collectionApi!.editCollectionPermissions({
             collectionId: collection.id!,
@@ -113,10 +115,19 @@ export class CollectionService {
       map(collections =>
         collections.find(
           c =>
-            !!Object.getOwnPropertyDescriptor(c, attribute) &&
+            Object.prototype.hasOwnProperty.call(c.attributes, attribute) &&
             c.attributes![attribute] === value
         )
       )
+    );
+  }
+
+  public deleteAllCollectionsByName$(name: string): Observable<void> {
+    return this._collections.pipe(
+      take(1),
+      map(collections => collections.filter(c => c.name === name)),
+      concatMap(collections => from(collections)),
+      mergeMap(collection => this.deleteCollection$(collection.id!))
     );
   }
 

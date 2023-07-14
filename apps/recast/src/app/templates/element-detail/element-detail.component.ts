@@ -10,11 +10,10 @@ import {
   Subject,
   takeUntil,
   Observable,
-  tap,
-  switchMap,
   take,
-  mergeMap,
   from,
+  distinctUntilChanged,
+  concatMap,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import {
@@ -32,7 +31,7 @@ import {
   ElementViewProperty,
   ValueType,
 } from '../../model/element-view-model';
-import { isReference } from '../../shared/util/common-utils';
+import { elementComparator, isReference } from '../../shared/util/common-utils';
 import { AlertService } from '../../services/alert.service';
 
 // TODO: refactor this class
@@ -72,15 +71,15 @@ export class ElementDetailComponent implements OnDestroy {
     this._elementViewModel$
       .pipe(
         takeUntil(this._destroy$),
-        tap(elementViewModel => {
+        concatMap(elementViewModel => {
           this.elementViewModel = elementViewModel;
           this.initBreadcrumbs(elementViewModel.process);
           this.initializeComponentProperties(
             elementViewModel.currentStep,
             elementViewModel.sortedSteps
           );
-        }),
-        switchMap(elementViewModel => this.initFormGroup$(elementViewModel))
+          return this.initFormGroup$(elementViewModel);
+        })
       )
       .subscribe();
   }
@@ -102,7 +101,7 @@ export class ElementDetailComponent implements OnDestroy {
 
   public navigateBack$(): Observable<void> {
     return from(
-      this.router.navigate(['../../../..'], { relativeTo: this.route })
+      this.router.navigate(['../..'], { relativeTo: this.route })
     ).pipe(map(() => undefined));
   }
 
@@ -116,7 +115,6 @@ export class ElementDetailComponent implements OnDestroy {
       this.elementViewService
         .updateValuesFromElementViewModel$(newModel)
         .pipe(
-          take(newModel.properties.length),
           takeUntil(this._destroy$),
           catchError((err: Error) => {
             this.alert.reportError(err.message);
@@ -138,10 +136,18 @@ export class ElementDetailComponent implements OnDestroy {
       })
       .afterClosed()
       .pipe(
-        take(newModel.properties.length),
+        take(1),
         filter(confirmed => !!confirmed),
-        mergeMap(() =>
-          this.elementViewService.updateValuesFromElementViewModel$(newModel)
+        concatMap(() =>
+          this.elementViewService
+            .updateValuesFromElementViewModel$(newModel)
+            .pipe(
+              takeUntil(this._destroy$),
+              catchError((err: Error) => {
+                this.alert.reportError(err.message);
+                return of(undefined);
+              })
+            )
         )
       )
       .subscribe(() => {
@@ -150,11 +156,11 @@ export class ElementDetailComponent implements OnDestroy {
       });
   }
 
-  public stepChanged(event: number): void {
-    if (event >= this._steps.indexOf(this._currentStep!)) {
+  public stepChanged(index: number): void {
+    if (index >= this._steps.indexOf(this._currentStep!)) {
       return;
     }
-    this.navigateStep$(this._steps[event]);
+    this.navigateStep$(this._steps[index]).pipe(take(1)).subscribe();
   }
 
   public elementsByReference(
@@ -206,7 +212,9 @@ export class ElementDetailComponent implements OnDestroy {
     if (!this.elementViewModel) {
       return;
     }
-    const nextStep = this.stepService.nextStep(this._currentStep!);
+    const nextStep = !this.isLastStep
+      ? this._steps[this.currentIndex + 1]
+      : undefined;
     const element = {
       ...this.elementViewModel.element,
       elementProperties: [],
@@ -216,9 +224,9 @@ export class ElementDetailComponent implements OnDestroy {
       .saveElement$(element)
       .pipe(
         take(1),
-        switchMap(() => {
+        concatMap(() => {
           if (!this.isLastStep) {
-            return this.navigateStep$(nextStep!);
+            return of(undefined);
           }
           return this.navigateBack$();
         })
@@ -235,13 +243,13 @@ export class ElementDetailComponent implements OnDestroy {
 
   private elementViewModel$(): Observable<ElementViewModel> {
     return this.elementId$().pipe(
-      switchMap(id => this.elementViewService.elementViewModelByElementId$(id)),
-      filter(Boolean),
+      concatMap(id => this.elementViewService.elementViewModelByElementId$(id)),
       catchError((err: Error) => {
         this.alert.reportError(err.message);
         return of(undefined);
       }),
-      filter(Boolean)
+      filter(Boolean),
+      distinctUntilChanged(elementComparator)
     );
   }
 
