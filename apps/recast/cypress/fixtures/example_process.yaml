@@ -1,14 +1,14 @@
 name: Ballonfabrik
 steps:
-  - name: Angucken
+  - name: Look
     stepProperties:
-      - name: Farbe
-        defaultValue: Rot
-        description: Die Farbe des Ballons
+      - name: Color
+        defaultValue: Red
+        description: The color of the balloon
         type: text
-  - name: Aufpusten
+  - name: Inflate
     stepProperties:
-      - name: Volumen
+      - name: Volume
         defaultValue: 2
-        description: Das Volumen des Ballons in Litern
+        description: The volume of the inflated balloon in liters
         type: number

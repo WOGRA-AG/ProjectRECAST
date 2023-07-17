@@ -16,7 +16,9 @@
     [formGroup]="propertiesForm"
     (ngSubmit)="f.valid && onSubmitClicked()">
     <div class="grid-wrapper">
-      <div class="input-wrapper" *ngFor="let prop of currentProperties">
+      <div
+        class="input-wrapper"
+        *ngFor="let prop of currentProperties.sort(compareByStepPropId)">
         <ng-container
           [ngSwitch]="prop.type"
           *ngIf="propertiesForm.controls['' + prop.stepPropId]">
@@ -90,6 +92,7 @@
         mode="indeterminate">
       </mat-progress-spinner>
       <app-button-unfilled
+        *ngIf="!!elementViewModel"
         type="button"
         [bordered]="true"
         (click)="navigateBack$()"
@@ -114,4 +117,7 @@
       </ng-container>
     </div>
   </form>
+  <mat-spinner
+    *ngIf="!elementViewModel?.properties"
+    class="page-load-spinner"></mat-spinner>
 </div>

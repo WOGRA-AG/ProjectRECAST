@@ -14,7 +14,8 @@ import {
   of,
   skip,
   Subject,
-  switchMap,
+  take,
+  tap,
   toArray,
 } from 'rxjs';
 import { Element, ElementProperty } from '../../../build/openapi/recast';
@@ -49,7 +50,7 @@ export class ElementFacadeService {
     private readonly stepService: StepFacadeService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
-      switchMap(() => this.loadElements$()),
+      concatMap(() => this.loadElements$()),
       catchError(() => of([]))
     );
     const elemPropChanges$ = elementPropertyService.elementProperties$.pipe(
@@ -116,6 +117,7 @@ export class ElementFacadeService {
       .eq('id', id);
     return from(del).pipe(
       filter(({ error }) => !!error),
+      tap(() => this._elements$.next(this.deleteElement(this.elements, id))),
       map(({ error }) => error!)
     );
   }
@@ -163,7 +165,7 @@ export class ElementFacadeService {
     elementId: number,
     stepId: number | null
   ): Observable<Element | undefined> {
-    const element = JSON.parse(JSON.stringify(this.elementById(elementId)));
+    const element = { ...this.elementById(elementId) };
     if (!element) {
       return of(undefined);
     }
@@ -171,6 +173,15 @@ export class ElementFacadeService {
     const newState = this.deleteElement(this._elements$.getValue(), elementId);
     this._elements$.next(newState.concat(element));
     return of(element);
+  }
+
+  public updateElements$(): Observable<void> {
+    return this.loadElements$().pipe(
+      take(1),
+      map(elements => {
+        this._elements$.next(elements);
+      })
+    );
   }
 
   private upsertElement$({

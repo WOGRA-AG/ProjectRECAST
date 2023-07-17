@@ -10,6 +10,7 @@ import {
   mergeMap,
   Observable,
   Subject,
+  take,
   takeUntil,
 } from 'rxjs';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
@@ -31,9 +32,16 @@ export class ProcessOverviewComponent implements OnDestroy {
   public currentStepId: number | null | undefined;
   public breadcrumbs: Breadcrumb[] = [];
   public steps: Step[] = [];
+  public stepTitles: string[] = [];
   public dataColumns: TableColumn[] = [
-    { key: 'id', label: 'ID', type: 'text', required: true },
-    { key: 'name', label: 'Title', type: 'text', required: true },
+    { key: 'id', label: 'ID', type: 'text', required: true, editable: false },
+    {
+      key: 'name',
+      label: 'Title',
+      type: 'text',
+      required: true,
+      editable: true,
+    },
     { key: 'isEdit', label: '', type: 'isEdit' },
     { key: 'isDelete', label: '', type: 'isDelete' },
   ];
@@ -52,7 +60,7 @@ export class ProcessOverviewComponent implements OnDestroy {
     private router: Router,
     private dialog: MatDialog
   ) {
-    this.processId$
+    this.processId$()
       .pipe(
         concatMap(id => this.processService.processById$(id)),
         filter(process => !!process),
@@ -65,17 +73,10 @@ export class ProcessOverviewComponent implements OnDestroy {
           { label: this.title },
         ];
       });
-  }
-
-  get stepTitles$(): Observable<string[]> {
-    return this.processId$.pipe(
-      mergeMap(id => this.stepService.stepsByProcessId$(id)),
-      filter(steps => !!steps.length),
-      distinctUntilChanged(elementComparator),
-      map(steps => {
-        this.steps = steps;
-        const stepTitles = steps.map(step => step.name!);
-        stepTitles.push($localize`:@@label.done:Abgeschlossen`);
+    this.stepTitles$()
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(titles => {
+        this.stepTitles = titles;
         if (this.steps[this.currentIndex]) {
           this.currentStepId = this.steps[this.currentIndex].id!;
           this.tableData$ = this.elementService.elementsByProcessIdAndStepId$(
@@ -83,18 +84,7 @@ export class ProcessOverviewComponent implements OnDestroy {
             this.currentStepId
           );
         }
-        return stepTitles;
-      }),
-      takeUntil(this._destroy$)
-    );
-  }
-
-  get processId$(): Observable<number> {
-    return this.activatedRoute.paramMap.pipe(
-      filter(param => !!param.get('processId')),
-      map(param => +param.get('processId')!),
-      takeUntil(this._destroy$)
-    );
+      });
   }
 
   public ngOnDestroy(): void {
@@ -106,7 +96,7 @@ export class ProcessOverviewComponent implements OnDestroy {
     this.currentIndex = index;
     this.currentStepId =
       index === this.steps.length ? null : this.steps[this.currentIndex]?.id;
-    this.processId$
+    this.processId$()
       .pipe(
         concatMap(
           id =>
@@ -147,7 +137,7 @@ export class ProcessOverviewComponent implements OnDestroy {
       .pipe(
         filter(confirmed => !!confirmed),
         concatMap(() => this.elementViewModelService.deleteElement$(element)),
-        takeUntil(this._destroy$)
+        take(1)
       )
       .subscribe();
   }
@@ -166,5 +156,30 @@ export class ProcessOverviewComponent implements OnDestroy {
     this.router.navigate(['element', elementId], {
       relativeTo: this.activatedRoute,
     });
+  }
+
+  protected stepTitles$(): Observable<string[]> {
+    return this.processId$().pipe(
+      mergeMap(id => this.stepService.stepsByProcessId$(id)),
+      filter(steps => !!steps.length),
+      distinctUntilChanged(elementComparator),
+      map(steps => {
+        this.steps = steps;
+        const stepTitles = steps.map(step => step.name!);
+        stepTitles.push($localize`:@@label.done:Abgeschlossen`);
+        return stepTitles;
+      }),
+      distinctUntilChanged(elementComparator),
+      takeUntil(this._destroy$)
+    );
+  }
+
+  private processId$(): Observable<number> {
+    return this.activatedRoute.paramMap.pipe(
+      distinctUntilChanged(),
+      filter(param => !!param.get('processId')),
+      map(param => +param.get('processId')!),
+      takeUntil(this._destroy$)
+    );
   }
 }

@@ -1,9 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { yamlToProcess$ } from '../../shared/util/common-utils';
-import { ProcessFacadeService } from '../../services/process-facade.service';
+import { ProcessFacadeService } from '../../services';
 import { catchError, concatMap, filter, of, Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-upload-new-process',
@@ -20,8 +21,9 @@ export class UploadNewProcessComponent implements OnDestroy {
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
   constructor(
-    private processFacade: ProcessFacadeService,
-    private router: Router
+    private readonly processFacade: ProcessFacadeService,
+    private readonly router: Router,
+    private readonly alert: AlertService
   ) {}
 
   public ngOnDestroy(): void {
@@ -37,8 +39,8 @@ export class UploadNewProcessComponent implements OnDestroy {
       .pipe(
         filter(procs => !!procs.length),
         concatMap(procs => this.processFacade.saveProcesses$(procs)),
-        catchError(err => {
-          console.error(err);
+        catchError((err: Error) => {
+          this.alert.reportError(err.message);
           return of(undefined);
         }),
         takeUntil(this._destroy$)

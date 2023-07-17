@@ -25,6 +25,10 @@
 
   "err.min_char": "Minimum of {$INTERPOLATION} characters",
   "err.file.empty": "No valid Yaml found in File",
+  "err.process.invalid": "Could not parse valid Process from definition",
+  "err.step.invalid": "Could not parse valid Step from definition",
+  "err.stepProp.invalid": "Could not parse valid StepProperty from definition",
+  "err.dismiss": "OK",
 
   "placeholder.upload_yaml": "Upload Process-YAML",
   "placeholder.select_element": "Select element",
@@ -39,5 +43,6 @@
 
   "dialog.delete_process": "Delete process and all corresponding data?",
   "dialog.delete_element": "Delete Element and all corresponding data?",
-  "dialog.submit_element": "Save and lock element?"
+  "dialog.submit_element": "Save and lock element?",
+  "dialog.delete_selected_rows": "Delete Selected Rows?"
 }
