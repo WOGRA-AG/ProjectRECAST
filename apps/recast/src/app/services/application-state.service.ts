@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  BundleService,
   ElementFacadeService,
   ProcessFacadeService,
   StepFacadeService,
@@ -13,7 +14,8 @@ export class ApplicationStateService {
   constructor(
     private readonly elementService: ElementFacadeService,
     private readonly processService: ProcessFacadeService,
-    private readonly stepService: StepFacadeService
+    private readonly stepService: StepFacadeService,
+    private readonly bundleService: BundleService
   ) {}
 
   public updateApplicationState(): void {
@@ -22,7 +24,8 @@ export class ApplicationStateService {
       .pipe(
         mergeWith(
           this.elementService.updateElements$(),
-          this.stepService.updateSteps$()
+          this.stepService.updateSteps$(),
+          this.bundleService.updateBundles$()
         ),
         take(1)
       )

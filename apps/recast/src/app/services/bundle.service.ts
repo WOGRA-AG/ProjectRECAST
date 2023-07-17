@@ -132,6 +132,15 @@ export class BundleService {
     );
   }
 
+  public updateBundles$(): Observable<void> {
+    return this.loadBundles$().pipe(
+      take(1),
+      map(bundles => {
+        this._bundles$.next(bundles);
+      })
+    );
+  }
+
   private loadBundles$(): Observable<Bundle[]> {
     const select = this._supabaseClient.from(Tables.bundles).select(`*`);
     return from(select).pipe(
