@@ -13,6 +13,7 @@ import {
   Step,
   StepProperty,
 } from '../../../../build/openapi/recast';
+import { camelCase, snakeCase, mapKeys } from 'lodash';
 import TypeEnum = StepProperty.TypeEnum;
 
 export const groupBy = <
@@ -159,3 +160,21 @@ export const strToFile = async (
 
 export const isShepardUser = (profile: Profile): boolean =>
   !!profile && !!profile.shepardApiKey;
+
+export const camelCaseKeys = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(camelCaseKeys);
+  } else if (obj !== null && typeof obj === 'object') {
+    return mapKeys(obj, (value, key) => camelCase(key));
+  }
+  return obj;
+};
+
+export const snakeCaseKeys = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(snakeCaseKeys);
+  } else if (obj !== null && typeof obj === 'object') {
+    return mapKeys(obj, (value, key) => snakeCase(key));
+  }
+  return obj;
+};

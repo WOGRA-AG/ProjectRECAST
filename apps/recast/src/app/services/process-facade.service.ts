@@ -229,8 +229,8 @@ export class ProcessFacadeService {
     return state.filter(step => step.id !== id);
   }
 
-  private insertProcess(state: Process[], step: Process): Process[] {
-    return state.concat(step);
+  private insertProcess(state: Process[], process: Process): Process[] {
+    return state.concat(process);
   }
 
   private updateProcessWithSteps$(
