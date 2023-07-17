@@ -14,7 +14,7 @@ import {
   map,
   Observable,
   of,
-  switchMap,
+  concatMap,
   take,
   tap,
 } from 'rxjs';
@@ -40,11 +40,11 @@ export class DataObjectService {
     this.userService.currentProfile$
       .pipe(
         filter(isShepardUser),
-        switchMap(profile =>
+        concatMap(profile =>
           this._initApi(profile.shepardUrl!, profile.shepardApiKey!)
         ),
         map(api => (this._dataObjectApi = api)),
-        switchMap(() => this._getDataObjects())
+        concatMap(() => this._getDataObjects())
       )
       .subscribe(dataObjects => {
         this._dataObjects.next(dataObjects);
@@ -65,7 +65,7 @@ export class DataObjectService {
     dataObjectId: number
   ): Observable<DataObject | undefined> {
     return this.dataObjects$.pipe(
-      filter(Boolean),
+      filter(arr => arr.length > 0),
       map(dataObjects => dataObjects.find(d => d.id === dataObjectId)),
       distinctUntilChanged(elementComparator)
     );
@@ -110,7 +110,7 @@ export class DataObjectService {
   ): Observable<void> {
     return this.getDataObjectByAttribute$(collectionId, attribute, value).pipe(
       map(dataObject => dataObject),
-      switchMap(dataObject => {
+      concatMap(dataObject => {
         if (!dataObject) {
           return of(undefined);
         }
@@ -132,7 +132,7 @@ export class DataObjectService {
       map(dataObjects =>
         dataObjects.find(
           d =>
-            !!Object.getOwnPropertyDescriptor(d.attributes, attribute) &&
+            Object.prototype.hasOwnProperty.call(d.attributes, attribute) &&
             d.attributes![attribute] === value
         )
       )
@@ -152,7 +152,7 @@ export class DataObjectService {
   private _getDataObjects(): Observable<DataObject[]> {
     return this.collectionService.collections$.pipe(
       filter(Boolean),
-      switchMap(collections => {
+      concatMap(collections => {
         const observables = collections.map(collection =>
           this.getDataObjectsByCollectionId$(collection.id!)
         );

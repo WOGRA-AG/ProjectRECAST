@@ -10,13 +10,15 @@ import {
   Observable,
   of,
   filter,
-  switchMap,
   distinctUntilChanged,
   combineLatestWith,
   mergeMap,
   from,
   toArray,
   take,
+  timeout,
+  catchError,
+  concatMap,
 } from 'rxjs';
 import { ElementFacadeService } from './element-facade.service';
 import { ProcessFacadeService } from './process-facade.service';
@@ -70,13 +72,13 @@ export class ElementViewModelFacadeService {
             elementViewModel.element.id === elementId
         )
       ),
+      distinctUntilChanged(elementComparator),
       mergeMap(model => {
         if (!model) {
           return of(undefined);
         }
         return this.storageService.loadValues$(model);
-      }),
-      distinctUntilChanged(elementComparator)
+      })
     );
   }
 
@@ -136,7 +138,7 @@ export class ElementViewModelFacadeService {
       return of(undefined);
     }
     return this.storageBackendsByProcessId$(process.id).pipe(
-      switchMap(backends =>
+      concatMap(backends =>
         this.storageService.deleteProcess$(process, backends)
       )
     );
@@ -147,11 +149,25 @@ export class ElementViewModelFacadeService {
       return of(undefined);
     }
     return this.elementViewModelByElementId$(element.id).pipe(
-      switchMap(elementViewModel => {
+      timeout(5000),
+      catchError(() => {
+        return this.elementService.deleteElement$(element.id!).pipe(
+          map(err => {
+            if (err) {
+              throw err;
+            }
+            return undefined;
+          })
+        );
+      }),
+      concatMap(elementViewModel => {
         if (!elementViewModel) {
           return of(undefined);
         }
-        return this.storageService.deleteElement$(element, elementViewModel);
+        return this.storageService.deleteElement$(
+          element,
+          elementViewModel as ElementViewModel
+        );
       })
     );
   }
@@ -174,7 +190,7 @@ export class ElementViewModelFacadeService {
         this._stepPropertiesByProcessId$(element.processId!)
       ),
       filter(([process, _1, _2, _3]) => !!process),
-      switchMap(([process, step, steps, stepProperties]) =>
+      concatMap(([process, step, steps, stepProperties]) =>
         this._elementViewModelFromElementAndProcessAndStepAndStepPropertiesAndElementProperties$(
           element,
           process,

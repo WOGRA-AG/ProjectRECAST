@@ -1,5 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { concatMap, filter, Observable, Subject, take, takeUntil } from 'rxjs';
+import {
+  concatMap,
+  filter,
+  from,
+  mergeMap,
+  Observable,
+  Subject,
+  take,
+  takeUntil,
+} from 'rxjs';
 import {
   ElementFacadeService,
   ElementViewModelFacadeService,
@@ -10,6 +19,7 @@ import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
 import { Process, Step, Element } from '../../../../build/openapi/recast';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
+import { ViewStateService } from '../../services/view-state.service';
 import { ApplicationStateService } from '../../services/application-state.service';
 
 @Component({
@@ -22,18 +32,21 @@ export class OverviewComponent implements OnDestroy, OnInit {
     $localize`:@@label.processes:Prozesse`,
     $localize`:@@label.elements:Bauteile`,
   ];
+  public selectedRows: any[] = [];
   public dataColumns: TableColumn[] = [
     {
       key: 'id',
       label: $localize`:@@label.id:ID`,
       type: 'text',
       required: true,
+      editable: false,
     },
     {
       key: 'name',
       label: $localize`:@@label.title:Title`,
       type: 'text',
       required: true,
+      editable: true,
     },
     { key: 'isEdit', label: '', type: 'isEdit' },
     { key: 'isDelete', label: '', type: 'isDelete' },
@@ -47,10 +60,12 @@ export class OverviewComponent implements OnDestroy, OnInit {
     public readonly elementService: ElementFacadeService,
     public dialog: MatDialog,
     public router: Router,
-    private readonly stateService: ApplicationStateService,
-    private readonly elementViewModelService: ElementViewModelFacadeService
+    private readonly stateService: ViewStateService,
+    private readonly elementViewModelService: ElementViewModelFacadeService,
+    private readonly applicationStateService: ApplicationStateService
   ) {
     this.tableData$ = processService.processes$;
+    this.applicationStateService.updateApplicationState();
   }
 
   public ngOnDestroy(): void {
@@ -71,6 +86,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
   }
 
   public changeContent(index: number): void {
+    this.selectedRows = [];
     this.currentIndex = index;
     if (index === 0) {
       this.tableData$ = this.processService.processes$;
@@ -82,49 +98,24 @@ export class OverviewComponent implements OnDestroy, OnInit {
   }
 
   public deleteTableRow(element: Process | Element | Step): void {
-    if (!element.id) {
-      return;
-    }
-    switch (this.currentIndex) {
-      case 0:
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            data: {
-              title: $localize`:@@dialog.delete_process:Delete Process?`,
-            },
-            autoFocus: false,
-          })
-          .afterClosed()
-          .pipe(
-            filter(confirmed => !!confirmed),
-            concatMap(() =>
-              this.elementViewModelService.deleteProcess$(element as Process)
-            ),
-            takeUntil(this._destroy$)
-          )
-          .subscribe();
-        break;
-      case 1:
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            data: {
-              title: $localize`:@@dialog.delete_element:Delete Element?`,
-            },
-            autoFocus: false,
-          })
-          .afterClosed()
-          .pipe(
-            filter(confirmed => !!confirmed),
-            concatMap(() =>
-              this.elementViewModelService.deleteElement$(element as Element)
-            ),
-            takeUntil(this._destroy$)
-          )
-          .subscribe();
-        break;
-      default:
-        break;
-    }
+    const title =
+      this.currentIndex === 0
+        ? $localize`:@@dialog.delete_process:Delete Process?`
+        : $localize`:@@dialog.delete_element:Delete Element?`;
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title,
+        },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .pipe(
+        filter(confirmed => !!confirmed),
+        concatMap(() => this.deleteRow$(element)),
+        take(1)
+      )
+      .subscribe();
   }
 
   public editTableRow(element: Process | Element | Step): void {
@@ -149,6 +140,31 @@ export class OverviewComponent implements OnDestroy, OnInit {
     }
   }
 
+  public deleteSelectedRows(): void {
+    if (!this.selectedRows.length) {
+      return;
+    }
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: $localize`:@@dialog.delete_selected_rows:Delete Selected Rows?`,
+        },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .pipe(
+        filter(confirmed => !!confirmed),
+        mergeMap(() => from(this.selectedRows)),
+        concatMap((element: Process | Element | Step) =>
+          this.deleteRow$(element)
+        ),
+        take(this.selectedRows.length)
+      )
+      .subscribe(() => {
+        this.selectedRows = [];
+      });
+  }
+
   public navigateTo(rowItem: Process | Element | Step): void {
     if (!rowItem) {
       return;
@@ -168,5 +184,16 @@ export class OverviewComponent implements OnDestroy, OnInit {
         break;
       }
     }
+  }
+
+  protected comparator<T extends Process | Element>(o1: T, o2: T): boolean {
+    return o1.id === o2.id;
+  }
+
+  private deleteRow$(element: Process | Element | Step): Observable<void> {
+    if (this.currentIndex === 0) {
+      return this.elementViewModelService.deleteProcess$(element as Process);
+    }
+    return this.elementViewModelService.deleteElement$(element);
   }
 }

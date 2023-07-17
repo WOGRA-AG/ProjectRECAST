@@ -4,6 +4,20 @@
 </div>
 
 <table mat-table [dataSource]="dataSource" matSort matSortDisableClear>
+  <!-- checkbox column -->
+  <ng-container matColumnDef="select" *ngIf="selectable">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let row">
+      <mat-checkbox
+        color="primary"
+        (click)="$event.stopPropagation()"
+        (change)="selectHandler(row)"
+        [checked]="selectionModel.isSelected(row)">
+      </mat-checkbox>
+    </td>
+  </ng-container>
+
+  <!-- generic columns -->
   <ng-container
     matColumnDef="{{ column.key }}"
     *ngFor="let column of columnsSchema">
@@ -58,12 +72,13 @@
         </ng-container>
         <ng-container *ngSwitchCase="'isDelete'">
           <app-icon-button
-            svgIcon="rcst_delete"
+            matIcon="close"
             size="medium"
-            (click)="deleteClicked.emit(element)"></app-icon-button>
+            color="warn"
+            (click)="cancelEdit(element)"></app-icon-button>
         </ng-container>
         <ng-container *ngSwitchDefault>
-          <div>
+          <div *ngIf="column.editable">
             <app-input-field
               [(ngModel)]="element[column.key]"
               [label]="column.key"
@@ -75,10 +90,13 @@
                   : 'text'
               "></app-input-field>
           </div>
+          <div *ngIf="!column.editable" class="text" [tabindex]="0">
+            {{ element[column.key] }}
+          </div>
         </ng-container>
       </div>
     </td>
   </ng-container>
-  <tr mat-header-row *matHeaderRowDef="columns"></tr>
-  <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
 </table>

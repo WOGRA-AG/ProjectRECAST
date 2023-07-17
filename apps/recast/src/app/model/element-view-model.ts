@@ -30,4 +30,10 @@ export interface ElementViewProperty {
 
 export type ShepardValue = { type: string; value: any };
 
-export type ValueType = string | boolean | File | Element | ShepardValue;
+export type ValueType =
+  | string
+  | boolean
+  | number
+  | File
+  | Element
+  | ShepardValue;

@@ -27,7 +27,8 @@
     grid-area: table;
   }
 
-  .button {
+  .actions {
+    display: flex;
     grid-area: button;
     justify-self: center;
 

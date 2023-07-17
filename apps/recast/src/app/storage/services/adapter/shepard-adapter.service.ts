@@ -17,7 +17,6 @@ import {
   mergeMap,
   Observable,
   of,
-  switchMap,
   take,
   toArray,
   zip,
@@ -36,6 +35,7 @@ import {
   ShepardValue,
   ValueType,
 } from '../../../model/element-view-model';
+import { AlertService } from '../../../services/alert.service';
 
 @Injectable({
   providedIn: 'root',
@@ -47,7 +47,8 @@ export class ShepardAdapter implements StorageAdapterInterface {
     private readonly stepPropertyService: StepPropertyService,
     private readonly stepService: StepFacadeService,
     private readonly elementService: ElementFacadeService,
-    private readonly processService: ProcessFacadeService
+    private readonly processService: ProcessFacadeService,
+    private readonly alert: AlertService
   ) {}
   public getType(): StorageBackendEnum {
     return StorageBackendEnum.Shepard;
@@ -75,9 +76,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
             .pipe(catchError(() => of(new File([], ''))));
         }
         if (isReference(type) && value) {
-          return this.shepardService
-            .getElementIdFromDataObjectId$(+value)
-            .pipe(map(elementId => elementId));
+          return this.shepardService.getElementIdFromDataObjectId$(+value);
         }
         return of(type === TypeEnum.Boolean ? value === 'true' : value);
       })
@@ -128,7 +127,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
           .map(p => {
             if (p.type === TypeEnum.File || isReference(p.type)) {
               const val = p.value;
-              if (Object.getOwnPropertyDescriptor(val, 'value')) {
+              if (Object.prototype.hasOwnProperty.call(val, 'value')) {
                 const parsedValue = val as ShepardValue;
                 return {
                   ...p,
@@ -146,7 +145,15 @@ export class ShepardAdapter implements StorageAdapterInterface {
               storageBackend: this.getType(),
             };
           });
-        return elementViewModelCopy;
+        return { ...elementViewModelCopy };
+      }),
+      toArray(),
+      map(arr => {
+        const properties: ElementViewProperty[] = [];
+        for (const elementViewModel of arr) {
+          properties.push(...elementViewModel.properties);
+        }
+        return { ...arr[arr.length - 1], properties: properties };
       })
     );
   }
@@ -159,11 +166,11 @@ export class ShepardAdapter implements StorageAdapterInterface {
 
   public deleteProcess$(process: Process): Observable<void> {
     return this.shepardService.deleteCollectionByProcessId$(process.id!).pipe(
-      switchMap(() => this.processService.deleteProcess$(process.id!)),
+      concatMap(() => this.processService.deleteProcess$(process.id!)),
       catchError(() => of(undefined)),
       map(err => {
         if (err) {
-          console.error(err);
+          this.alert.reportError(err.message);
         }
         return;
       })
@@ -239,7 +246,9 @@ export class ShepardAdapter implements StorageAdapterInterface {
         map(([refDataObject, _]) => '' + refDataObject.id)
       );
     }
-    return of('' + value);
+    return this.shepardService
+      .getOrCreateCollectionByProcessId$(processId)
+      .pipe(map(() => '' + value));
   }
 
   private _saveFile$(
