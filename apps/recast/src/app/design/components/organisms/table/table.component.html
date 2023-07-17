@@ -56,11 +56,15 @@
         </ng-container>
         <div
           *ngSwitchDefault
-          class="text"
+          class="text-column"
           (click)="rowClicked.emit(element)"
           (keydown)="rowClicked.emit(element)"
           [tabindex]="0">
-          {{ element[column.key] }}
+          {{
+            column.transform
+              ? column.transform(element[column.key])
+              : element[column.key]
+          }}
         </div>
       </div>
       <div [ngSwitch]="column.type" *ngIf="element.isEdit">
@@ -80,7 +84,12 @@
         <ng-container *ngSwitchDefault>
           <div *ngIf="column.editable">
             <app-input-field
-              [(ngModel)]="element[column.key]"
+              (ngModelChange)="element[column.key] = $event"
+              [ngModel]="
+                column.transform
+                  ? column.transform(element[column.key])
+                  : element[column.key]
+              "
               [label]="column.key"
               [required]="!!column.required"
               appearance="outline"
@@ -90,8 +99,12 @@
                   : 'text'
               "></app-input-field>
           </div>
-          <div *ngIf="!column.editable" class="text" [tabindex]="0">
-            {{ element[column.key] }}
+          <div *ngIf="!column.editable" class="text-column" [tabindex]="0">
+            {{
+              column.transform
+                ? column.transform(element[column.key])
+                : element[column.key]
+            }}
           </div>
         </ng-container>
       </div>

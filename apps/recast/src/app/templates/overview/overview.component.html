@@ -26,10 +26,10 @@
         svgIcon="rcst_delete"
         (click)="deleteSelectedRows()"></app-icon-button>
       <app-create-button
-        *ngIf="currentIndex === 0"
+        *ngIf="currentIndex === 2"
         class="button"
-        routerLink="/overview/process"
-        i18n="@@actions.create">
+        routerLink="/overview/bundle"
+        i18n="@@action.create">
         Create
       </app-create-button>
     </div>

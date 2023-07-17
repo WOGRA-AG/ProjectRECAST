@@ -4,10 +4,12 @@ import { ProfileComponent } from './user/templates/profile/profile.component';
 import { PageNotFoundComponent } from './templates/page-not-found/page-not-found.component';
 import { authGuard } from './user/guards/auth.guard';
 import { OverviewComponent } from './templates/overview/overview.component';
-import { ProcessOverviewComponent } from './templates/process-overview/process-overview.component';
-import { UploadNewProcessComponent } from './templates/upload-new-process/upload-new-process.component';
+import { ProcessDetailComponent } from './templates/process-detail/process-detail.component';
+import { ProcessNewComponent } from './templates/process-new/process-new.component';
 import { CreateElementComponent } from './templates/create-element/create-element.component';
 import { ElementDetailComponent } from './templates/element-detail/element-detail.component';
+import { BundleNewComponent } from './templates/bundle-new/bundle-new.component';
+import { BundleDetailComponent } from './templates/bundle-detail/bundle-detail.component';
 
 const routes: Routes = [
   {
@@ -29,18 +31,31 @@ const routes: Routes = [
         component: OverviewComponent,
       },
       {
+        path: 'bundle',
+        children: [
+          {
+            path: '',
+            component: BundleNewComponent,
+          },
+          {
+            path: ':bundleId',
+            component: BundleDetailComponent,
+          },
+        ],
+      },
+      {
         path: 'process',
         children: [
           {
             path: '',
-            component: UploadNewProcessComponent,
+            component: ProcessNewComponent,
           },
           {
             path: ':processId',
             children: [
               {
                 path: '',
-                component: ProcessOverviewComponent,
+                component: ProcessDetailComponent,
               },
               {
                 path: 'element',

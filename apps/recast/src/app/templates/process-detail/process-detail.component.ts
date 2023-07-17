@@ -24,10 +24,10 @@ import { ElementViewModelFacadeService } from '../../services';
 
 @Component({
   selector: 'app-process-overview',
-  templateUrl: './process-overview.component.html',
-  styleUrls: ['./process-overview.component.scss'],
+  templateUrl: './process-detail.component.html',
+  styleUrls: ['./process-detail.component.scss'],
 })
-export class ProcessOverviewComponent implements OnDestroy {
+export class ProcessDetailComponent implements OnDestroy {
   public title = '';
   public currentStepId: number | null | undefined;
   public breadcrumbs: Breadcrumb[] = [];

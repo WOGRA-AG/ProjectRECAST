@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient,
@@ -94,14 +93,17 @@ export class ProcessFacadeService {
     return combineLatest(observables);
   }
 
-  public deleteProcess$(id: number): Observable<PostgrestError> {
+  public deleteProcess$(id: number): Observable<void> {
     const del = this._supabaseClient
       .from(Tables.processes)
       .delete()
       .eq('id', id);
     return from(del).pipe(
-      filter(({ error }) => !!error),
-      map(({ error }) => error!)
+      map(({ error }) => {
+        if (error) {
+          throw error;
+        }
+      })
     );
   }
 
@@ -134,11 +136,17 @@ export class ProcessFacadeService {
     );
   }
 
-  private upsertProcess$({ id, name }: Process): Observable<Process> {
-    const upsertStep = { id, name };
+  public processesByBundleId$(bundleId: number): Observable<Process[]> {
+    return this._processes$.pipe(
+      map(processes => processes.filter(proc => proc.bundleId === bundleId))
+    );
+  }
+
+  private upsertProcess$({ id, name, bundleId }: Process): Observable<Process> {
+    const upsertProcess = { id, name, bundleId };
     const upsert = this._supabaseClient
       .from(Tables.processes)
-      .upsert(snakeCase(upsertStep))
+      .upsert(snakeCase(upsertProcess))
       .select();
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),

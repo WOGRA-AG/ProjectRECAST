@@ -1,15 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { filter, from, mergeMap, Observable, of, Subject, take } from 'rxjs';
 import {
-  concatMap,
-  filter,
-  from,
-  mergeMap,
-  Observable,
-  Subject,
-  take,
-  takeUntil,
-} from 'rxjs';
-import {
+  BundleService,
   ElementFacadeService,
   ElementViewModelFacadeService,
   ProcessFacadeService,
@@ -17,53 +9,50 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TableColumn } from '../../design/components/organisms/table/table.component';
-import { Process, Step, Element } from '../../../../build/openapi/recast';
+import { Bundle, Element, Process } from '../../../../build/openapi/recast';
 import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { ViewStateService } from '../../services/view-state.service';
 import { ApplicationStateService } from '../../services/application-state.service';
+import {
+  BundleColumnDef,
+  ElementColumnDef,
+  ProcessColumnDef,
+} from '../../model/table-column-def';
 
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class OverviewComponent implements OnDestroy, OnInit {
   public tabs: string[] = [
     $localize`:@@label.processes:Prozesse`,
     $localize`:@@label.elements:Bauteile`,
+    $localize`:@@label.bundles:Bundles`,
   ];
-  public selectedRows: any[] = [];
-  public dataColumns: TableColumn[] = [
-    {
-      key: 'id',
-      label: $localize`:@@label.id:ID`,
-      type: 'text',
-      required: true,
-      editable: false,
-    },
-    {
-      key: 'name',
-      label: $localize`:@@label.title:Title`,
-      type: 'text',
-      required: true,
-      editable: true,
-    },
-    { key: 'isEdit', label: '', type: 'isEdit' },
-    { key: 'isDelete', label: '', type: 'isDelete' },
-  ];
+  public dataColumns: TableColumn[] = [];
+  public selectedRows: TableRow[] = [];
   public tableData$: Observable<any> = new Observable<any>();
-  public currentIndex = 0;
+  public currentIndex = OverviewIndex.Processes;
+  private readonly _bundleColumnDef = new BundleColumnDef();
+  private readonly _processColumnDef = new ProcessColumnDef(this.bundleService);
+  private readonly _elementColumnDef = new ElementColumnDef(
+    this.processService
+  );
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     public readonly processService: ProcessFacadeService,
     public readonly elementService: ElementFacadeService,
-    public dialog: MatDialog,
-    public router: Router,
+    private readonly bundleService: BundleService,
     private readonly stateService: ViewStateService,
     private readonly elementViewModelService: ElementViewModelFacadeService,
-    private readonly applicationStateService: ApplicationStateService
+    private readonly applicationStateService: ApplicationStateService,
+    public dialog: MatDialog,
+    public router: Router
   ) {
+    this.dataColumns = this._processColumnDef.getColumns();
     this.tableData$ = processService.processes$;
     this.applicationStateService.updateApplicationState();
   }
@@ -88,20 +77,28 @@ export class OverviewComponent implements OnDestroy, OnInit {
   public changeContent(index: number): void {
     this.selectedRows = [];
     this.currentIndex = index;
-    if (index === 0) {
+    if (index === OverviewIndex.Processes) {
+      this.dataColumns = this._processColumnDef.getColumns();
       this.tableData$ = this.processService.processes$;
     }
-    if (index === 1) {
+    if (index === OverviewIndex.Elements) {
+      this.dataColumns = this._elementColumnDef.getColumns();
       this.tableData$ = this.elementService.elements$;
+    }
+    if (index === OverviewIndex.Bundles) {
+      this.dataColumns = this._bundleColumnDef.getColumns();
+      this.tableData$ = this.bundleService.bundles$;
     }
     this.stateService.updateOverviewIndex(index);
   }
 
-  public deleteTableRow(element: Process | Element | Step): void {
+  public deleteTableRow(element: TableRow): void {
     const title =
-      this.currentIndex === 0
+      this.currentIndex === OverviewIndex.Processes
         ? $localize`:@@dialog.delete_process:Delete Process?`
-        : $localize`:@@dialog.delete_element:Delete Element?`;
+        : this.currentIndex === OverviewIndex.Elements
+        ? $localize`:@@dialog.delete_element:Delete Element?`
+        : $localize`:@@dialog.delete_bundle:Delete Bundle?`;
     this.dialog
       .open(ConfirmDialogComponent, {
         data: {
@@ -112,27 +109,33 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .afterClosed()
       .pipe(
         filter(confirmed => !!confirmed),
-        concatMap(() => this.deleteRow$(element)),
+        mergeMap(() => this.deleteRow$(element)),
         take(1)
       )
       .subscribe();
   }
 
-  public editTableRow(element: Process | Element | Step): void {
+  public editTableRow(element: TableRow): void {
     if (!element) {
       return;
     }
     switch (this.currentIndex) {
-      case 0:
+      case OverviewIndex.Processes:
         this.processService
           .saveProcess$(element as Process)
-          .pipe(takeUntil(this._destroy$))
+          .pipe(take(1))
           .subscribe();
         break;
-      case 1:
+      case OverviewIndex.Elements:
         this.elementService
           .saveElement$(element as Element)
-          .pipe(takeUntil(this._destroy$))
+          .pipe(take(1))
+          .subscribe();
+        break;
+      case OverviewIndex.Bundles:
+        this.bundleService
+          .upsertBundle(element as Bundle)
+          .pipe(take(1))
           .subscribe();
         break;
       default:
@@ -155,9 +158,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .pipe(
         filter(confirmed => !!confirmed),
         mergeMap(() => from(this.selectedRows)),
-        concatMap((element: Process | Element | Step) =>
-          this.deleteRow$(element)
-        ),
+        mergeMap(element => this.deleteRow$(element)),
         take(this.selectedRows.length)
       )
       .subscribe(() => {
@@ -165,18 +166,24 @@ export class OverviewComponent implements OnDestroy, OnInit {
       });
   }
 
-  public navigateTo(rowItem: Process | Element | Step): void {
+  public navigateTo(rowItem: TableRow): void {
     if (!rowItem) {
       return;
     }
     switch (this.currentIndex) {
-      case 0: {
+      case OverviewIndex.Processes: {
         this.router.navigateByUrl('overview/process/' + rowItem.id);
         break;
       }
-      case 1: {
-        const elem: Element = rowItem as Element;
+      case OverviewIndex.Elements: {
+        const elem: Element = <Element>rowItem;
         const route = `overview/process/${elem.processId}/element/${elem.id}`;
+        this.router.navigateByUrl(route);
+        break;
+      }
+      case OverviewIndex.Bundles: {
+        const bundle: Bundle = <Bundle>rowItem;
+        const route = `overview/bundle/${bundle.id}`;
         this.router.navigateByUrl(route);
         break;
       }
@@ -186,14 +193,35 @@ export class OverviewComponent implements OnDestroy, OnInit {
     }
   }
 
-  protected comparator<T extends Process | Element>(o1: T, o2: T): boolean {
+  protected comparator<T extends TableRow>(o1: T, o2: T): boolean {
     return o1.id === o2.id;
   }
 
-  private deleteRow$(element: Process | Element | Step): Observable<void> {
-    if (this.currentIndex === 0) {
-      return this.elementViewModelService.deleteProcess$(element as Process);
+  private deleteRow$(rowElement: TableRow): Observable<void> {
+    if (!rowElement) {
+      return of(undefined);
     }
-    return this.elementViewModelService.deleteElement$(element);
+
+    switch (this.currentIndex) {
+      case OverviewIndex.Processes: {
+        return this.elementViewModelService.deleteProcess$(<Process>rowElement);
+      }
+      case OverviewIndex.Elements: {
+        return this.elementViewModelService.deleteElement$(<Element>rowElement);
+      }
+      case OverviewIndex.Bundles: {
+        return this.bundleService.deleteBundle$(<Bundle>rowElement);
+      }
+      default: {
+        return of(undefined);
+      }
+    }
   }
+}
+
+type TableRow = Process | Element | Bundle;
+enum OverviewIndex {
+  Processes = 0,
+  Elements = 1,
+  Bundles = 2,
 }

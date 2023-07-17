@@ -4,6 +4,7 @@ import {
   BehaviorSubject,
   catchError,
   concatMap,
+  distinctUntilChanged,
   from,
   map,
   merge,
@@ -17,8 +18,13 @@ import {
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient,
 } from '@supabase/supabase-js';
-import { snakeCaseKeys, camelCaseKeys } from '../shared/util/common-utils';
-import { Bundle } from '../../../build/openapi/recast';
+import {
+  snakeCaseKeys,
+  camelCaseKeys,
+  elementComparator,
+} from '../shared/util/common-utils';
+import { Bundle, Process } from '../../../build/openapi/recast';
+import { ProcessFacadeService } from './process-facade.service';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +35,10 @@ export class BundleService {
   >([]);
   private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
 
-  constructor(private readonly supabase: SupabaseService) {
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly processService: ProcessFacadeService
+  ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadBundles$()),
       catchError(() => of([]))
@@ -45,6 +54,17 @@ export class BundleService {
 
   get bundles(): Bundle[] {
     return this._bundles$.getValue();
+  }
+
+  public bundleById$(id: number): Observable<Bundle | undefined> {
+    return this._bundles$.pipe(
+      map(bundles => bundles.find(b => b.id === id)),
+      distinctUntilChanged(elementComparator)
+    );
+  }
+
+  public bundleById(id: number): Bundle | undefined {
+    return this._bundles$.getValue().find(b => b.id === id);
   }
 
   public updateBundles(): void {
@@ -67,6 +87,48 @@ export class BundleService {
         }
         return camelCaseKeys(data[0] as Bundle);
       })
+    );
+  }
+
+  public deleteBundle$(bundle: Bundle): Observable<void> {
+    const delete$ = this._supabaseClient
+      .from(Tables.bundles)
+      .delete()
+      .match({ id: bundle.id });
+    return from(delete$).pipe(
+      map(({ error }) => {
+        if (error) {
+          throw error;
+        }
+      })
+    );
+  }
+
+  public saveProcessesAsBundle$(
+    bundleName: string,
+    processes: Process[]
+  ): Observable<Bundle> {
+    const bundle: Bundle = {
+      name: bundleName,
+    };
+    return this.upsertBundle(bundle).pipe(
+      map(newBundle => {
+        const bundleId = newBundle.id;
+        bundle.id = bundleId;
+        return processes.map(p => ({ ...p, bundleId }));
+      }),
+      concatMap((processes: Process[]) =>
+        this.processService.saveProcesses$(processes)
+      ),
+      catchError(error => {
+        return this.deleteBundle$(bundle).pipe(
+          take(1),
+          map(() => {
+            throw error;
+          })
+        );
+      }),
+      map(() => bundle)
     );
   }
 

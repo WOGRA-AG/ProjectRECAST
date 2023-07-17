@@ -1,5 +1,26 @@
 @import 'src/app/design/material/essentials/media-queries';
 
+.content-wrapper {
+  .table {
+    .mat-column-id {
+      width: 10%;
+      max-width: 100px;
+    }
+
+    .mat-column-select {
+      min-width: 65px;
+      width: 7%;
+      max-width: 100px;
+    }
+
+    .mat-column-name:not(:nth-last-child(3)) {
+      min-width: fit-content;
+      width: 15%;
+      max-width: 200px;
+    }
+  }
+}
+
 .grid-wrapper {
   margin-top: 1rem;
   display: grid;

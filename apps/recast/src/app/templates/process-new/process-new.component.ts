@@ -2,16 +2,16 @@ import { Component, OnDestroy } from '@angular/core';
 import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
 import { yamlToProcess$ } from '../../shared/util/common-utils';
 import { ProcessFacadeService } from '../../services';
-import { catchError, concatMap, filter, of, Subject, takeUntil } from 'rxjs';
+import { catchError, concatMap, filter, of, Subject, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-upload-new-process',
-  templateUrl: './upload-new-process.component.html',
-  styleUrls: ['./upload-new-process.component.scss'],
+  templateUrl: './process-new.component.html',
+  styleUrls: ['./process-new.component.scss'],
 })
-export class UploadNewProcessComponent implements OnDestroy {
+export class ProcessNewComponent implements OnDestroy {
   public breadcrumbs: Breadcrumb[] = [
     { label: $localize`:@@header.overview:Overview`, link: '/overview' },
     { label: $localize`:@@header.new_process:New Process` },
@@ -43,9 +43,14 @@ export class UploadNewProcessComponent implements OnDestroy {
           this.alert.reportError(err.message);
           return of(undefined);
         }),
-        takeUntil(this._destroy$)
+        take(1)
       )
-      .subscribe(() => this.router.navigate(['']));
+      .subscribe(processes => {
+        if (!processes) {
+          return;
+        }
+        this.cancel();
+      });
   }
 
   public cancel(): void {
