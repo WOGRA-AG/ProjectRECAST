@@ -1,55 +1,76 @@
 @import 'src/app/design/material/essentials/media-queries';
 
-.grid-wrapper {
-  display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: auto auto auto;
-  row-gap: 1.5rem;
-  grid-template-areas:
-    'title'
-    'table'
-    'buttons';
+.process-detail-wrapper {
+  .table {
+    .mat-column-id {
+      width: 10%;
+      max-width: 100px;
+    }
 
-  .title {
-    display: none;
-  }
+    .mat-column-select {
+      min-width: 65px;
+      width: 7%;
+      max-width: 100px;
+    }
 
-  @media #{$medium-and-up} {
-    margin-top: 3rem;
-    grid-template-columns: auto auto;
-    grid-template-rows: auto auto;
-    grid-template-areas:
-      'title buttons'
-      'table table';
-
-    .title {
-      display: inherit;
+    .mat-column-name:not(:nth-last-child(3)) {
+      min-width: fit-content;
+      width: 15%;
+      max-width: 200px;
     }
   }
 
-  .title {
-    grid-area: title;
-    align-self: flex-end;
-  }
+  .grid-wrapper {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto;
+    row-gap: 1.5rem;
+    grid-template-areas:
+      'title'
+      'table'
+      'buttons';
 
-  h1 {
-    margin-bottom: 0;
-  }
-
-  .table {
-    grid-area: table;
-  }
-
-  .buttons {
-    grid-area: buttons;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    margin: 0.5rem 0;
+    .title {
+      display: none;
+    }
 
     @media #{$medium-and-up} {
-      justify-content: flex-end;
+      margin-top: 3rem;
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        'title buttons'
+        'table table';
+
+      .title {
+        display: inherit;
+      }
+    }
+
+    .title {
+      grid-area: title;
+      align-self: flex-end;
+    }
+
+    h1 {
+      margin-bottom: 0;
+    }
+
+    .table {
+      grid-area: table;
+    }
+
+    .buttons {
+      grid-area: buttons;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin: 0.5rem 0;
+
+      @media #{$medium-and-up} {
+        justify-content: flex-end;
+      }
     }
   }
 }

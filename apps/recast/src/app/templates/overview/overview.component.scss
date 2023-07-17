@@ -1,6 +1,6 @@
 @import 'src/app/design/material/essentials/media-queries';
 
-.content-wrapper {
+.overview-wrapper {
   .table {
     .mat-column-id {
       width: 10%;
@@ -19,42 +19,42 @@
       max-width: 200px;
     }
   }
-}
 
-.grid-wrapper {
-  margin-top: 1rem;
-  display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: auto auto auto;
-  row-gap: 2rem;
-  grid-template-areas:
-    'tabs'
-    'table'
-    'button';
-
-  @media #{$medium-and-up} {
-    grid-template-columns: auto auto;
-    grid-template-rows: auto auto;
+  .grid-wrapper {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto;
+    row-gap: 2rem;
     grid-template-areas:
-      'tabs button'
-      'table table';
-  }
-
-  .tabs {
-    grid-area: tabs;
-  }
-
-  .table {
-    grid-area: table;
-  }
-
-  .actions {
-    display: flex;
-    grid-area: button;
-    justify-self: center;
+      'tabs'
+      'table'
+      'button';
 
     @media #{$medium-and-up} {
-      justify-self: end;
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        'tabs button'
+        'table table';
+    }
+
+    .tabs {
+      grid-area: tabs;
+    }
+
+    .table {
+      grid-area: table;
+    }
+
+    .actions {
+      display: flex;
+      grid-area: button;
+      justify-self: center;
+
+      @media #{$medium-and-up} {
+        justify-self: end;
+      }
     }
   }
 }

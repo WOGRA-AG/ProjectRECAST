@@ -1,7 +1,7 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Process, Step, Element } from 'build/openapi/recast';
+import { Element, Process, Step } from 'build/openapi/recast';
 import {
   concatMap,
   distinctUntilChanged,
@@ -26,6 +26,7 @@ import { ElementViewModelFacadeService } from '../../services';
   selector: 'app-process-overview',
   templateUrl: './process-detail.component.html',
   styleUrls: ['./process-detail.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class ProcessDetailComponent implements OnDestroy {
   public title = '';

@@ -169,7 +169,11 @@ export class ElementDetailComponent implements OnDestroy {
     if (!reference) {
       return of([]);
     }
-    return this.elementService.elementsByProcessName$(reference);
+    const bundleId = this.elementViewModel?.process?.bundleId ?? 0;
+    return this.elementService.elementsByBundleIdAndProcessName$(
+      bundleId,
+      reference
+    );
   }
 
   protected compareByStepPropId = (

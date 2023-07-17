@@ -27,7 +27,7 @@ export class ProcessColumnDef implements TableColumnDef {
       type: 'text',
       editable: false,
       transform: (value: number): string => {
-        return this.bundleService.bundleById(value)?.name ?? '' + value;
+        return this.bundleService.bundleById(value)?.name ?? '';
       },
     },
     { key: 'isEdit', label: '', type: 'isEdit' },
@@ -63,7 +63,7 @@ export class ElementColumnDef implements TableColumnDef {
       type: 'text',
       editable: false,
       transform: (value: number): string => {
-        return this.processService.processById(value)?.name ?? '' + value;
+        return this.processService.processById(value)?.name ?? '';
       },
     },
     { key: 'isEdit', label: '', type: 'isEdit' },
