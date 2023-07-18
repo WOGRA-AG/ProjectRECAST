@@ -167,12 +167,10 @@ export class ShepardAdapter implements StorageAdapterInterface {
   public deleteProcess$(process: Process): Observable<void> {
     return this.shepardService.deleteCollectionByProcessId$(process.id!).pipe(
       concatMap(() => this.processService.deleteProcess$(process.id!)),
-      catchError(() => of(undefined)),
-      map(err => {
-        if (err) {
-          this.alert.reportError(err.message);
-        }
-        return;
+      catchError(err => {
+        const msg = err.message ? err.message : err;
+        this.alert.reportError(msg);
+        return of(undefined);
       })
     );
   }

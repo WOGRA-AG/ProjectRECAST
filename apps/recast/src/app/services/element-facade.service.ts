@@ -184,6 +184,16 @@ export class ElementFacadeService {
     );
   }
 
+  public elementsByBundleIdAndProcessName$(
+    bundleId: number,
+    processName: string
+  ): Observable<Element[]> {
+    return this.processService.processesByBundleId$(bundleId).pipe(
+      map(processes => processes.find(p => p.name === processName)),
+      mergeMap(process => this.elementsByProcessId$(process?.id))
+    );
+  }
+
   private upsertElement$({
     id,
     name,

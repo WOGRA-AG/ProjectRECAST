@@ -105,6 +105,7 @@ ui-chrome-tests:
   image: cypress/browsers:node-18.16.0-chrome-114.0.5735.133-1-ff-114.0.2-edge-114.0.1823.51-1
   stage: e2e
   when: manual
+  retry: 2
   before_script:
     - apt-get update -y
   script:

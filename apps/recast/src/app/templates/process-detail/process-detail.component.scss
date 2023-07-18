@@ -1,6 +1,6 @@
 @import 'src/app/design/material/essentials/media-queries';
 
-.overview-wrapper {
+.process-detail-wrapper {
   .table {
     .mat-column-id {
       width: 10%;
@@ -21,39 +21,55 @@
   }
 
   .grid-wrapper {
-    margin-top: 1rem;
     display: grid;
     grid-template-columns: auto;
     grid-template-rows: auto auto auto;
-    row-gap: 2rem;
+    row-gap: 1.5rem;
     grid-template-areas:
-      'tabs'
+      'title'
       'table'
-      'button';
+      'buttons';
+
+    .title {
+      display: none;
+    }
 
     @media #{$medium-and-up} {
+      margin-top: 3rem;
       grid-template-columns: auto auto;
       grid-template-rows: auto auto;
       grid-template-areas:
-        'tabs button'
+        'title buttons'
         'table table';
+
+      .title {
+        display: inherit;
+      }
     }
 
-    .tabs {
-      grid-area: tabs;
+    .title {
+      grid-area: title;
+      align-self: flex-end;
+    }
+
+    h1 {
+      margin-bottom: 0;
     }
 
     .table {
       grid-area: table;
     }
 
-    .actions {
+    .buttons {
+      grid-area: buttons;
       display: flex;
-      grid-area: button;
-      justify-self: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin: 0.5rem 0;
 
       @media #{$medium-and-up} {
-        justify-self: end;
+        justify-content: flex-end;
       }
     }
   }

@@ -109,4 +109,5 @@ export interface TableColumn {
   label: string;
   editable?: boolean;
   required?: boolean;
+  transform?: (value: any) => any;
 }

@@ -177,13 +177,11 @@ export class StorageService {
         return from(observables);
       }),
       mergeAll(),
-      catchError(() => of(undefined)),
       mergeMap(() => this.processService.deleteProcess$(process.id!)),
-      map(err => {
-        if (err) {
-          this.alert.reportError(err.message);
-        }
-        return;
+      catchError(err => {
+        const msg = err.message ? err.message : err;
+        this.alert.reportError(msg);
+        return of(undefined);
       })
     );
   }

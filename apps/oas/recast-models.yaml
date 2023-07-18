@@ -29,6 +29,8 @@ components:
           type: string
         ownerId:
           $ref: '#/components/schemas/UuId'
+        bundleId:
+          $ref: '#/components/schemas/Id'
         steps:
           nullable: true
           type: array
@@ -150,3 +152,14 @@ components:
             - POSTGRES
             - S3
             - SHEPARD
+    Bundle:
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        ownerId:
+          $ref: '#/components/schemas/UuId'

@@ -17,17 +17,7 @@ table {
   width: 100%;
   z-index: 1;
 
-  .mat-column-id {
-    width: 10%;
-  }
-
-  .mat-column-select {
-    min-width: 65px;
-    width: 7%;
-    max-width: 100px;
-  }
-
-  .text {
+  .text-column {
     cursor: pointer;
     height: inherit;
     display: flex;
