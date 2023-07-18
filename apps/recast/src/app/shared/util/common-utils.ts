@@ -106,16 +106,20 @@ const isObjectofStepProperty = (obj: any): obj is StepProperty => {
     // 'description' in obj &&
     'type' in obj &&
     (Object.values(TypeEnum).toString().includes(obj.type) ||
-      isReference(obj.type))
+      !Object.values(TypeEnum).toString().includes(obj.type))
   );
 };
 
 export const elementComparator = <T>(a: T, b: T): boolean =>
   JSON.stringify(a) === JSON.stringify(b);
 
-export const isReference = (type: string): boolean =>
-  !Object.values(TypeEnum).toString().includes(type);
-// && in Process Names
+export const hasKeyValueCombination = (
+  obj: any,
+  key: string,
+  value: any
+): boolean => {
+  return Object.prototype.hasOwnProperty.call(obj, key) && obj[key] === value;
+};
 
 export const fileToBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {

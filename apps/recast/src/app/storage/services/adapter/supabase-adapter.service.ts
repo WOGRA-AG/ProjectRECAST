@@ -9,7 +9,7 @@ import {
 import TypeEnum = StepProperty.TypeEnum;
 import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import {
-  filter,
+  forkJoin,
   from,
   map,
   mergeMap,
@@ -25,25 +25,22 @@ import {
   StepPropertyService,
 } from '../../../services';
 import {
-  fileToStr$,
-  isReference,
-  strToFile,
-} from '../../../shared/util/common-utils';
-import {
   ElementViewModel,
   ElementViewProperty,
   ValueType,
 } from '../../../model/element-view-model';
+import { FileService } from '../supabase/file.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SupabasePostgresAdapter implements StorageAdapterInterface {
+export class SupabaseAdapter implements StorageAdapterInterface {
   constructor(
     private elementPropertyService: ElementPropertyService,
     private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
-    private processService: ProcessFacadeService
+    private processService: ProcessFacadeService,
+    private fileService: FileService
   ) {}
   public getType(): StorageBackendEnum {
     return StorageBackendEnum.Postgres;
@@ -52,27 +49,31 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
   public loadValue$(
     elementViewProperty: ElementViewProperty
   ): Observable<ValueType> {
-    const val = '' + elementViewProperty.value;
+    const value = '' + elementViewProperty.value;
     const type = elementViewProperty.type;
-    if (val && type === TypeEnum.File) {
-      return from(strToFile(val)).pipe(filter(Boolean), take(1));
+    if (value && type === TypeEnum.File) {
+      return this.fileService.getFile$(value).pipe(take(1));
     }
-    if (isReference(type) && val) {
+    if (this.processService.isReference(type) && value) {
       return this.elementService
-        .elementById$(+val)
+        .elementById$(+value)
         .pipe(map(element => element.id ?? 0));
     }
-    if (val && type === TypeEnum.Boolean) {
-      return of(val === 'true');
+    if (value && type === TypeEnum.Boolean) {
+      return of(value === 'true');
     }
-    return of(val ?? '');
+    return of(value ?? '');
   }
 
   public saveValues$(
     elementViewModel: ElementViewModel
   ): Observable<ElementViewModel> {
+    const processId = elementViewModel.process.id;
+    const elementId = elementViewModel.element.id ?? 0;
     return from(elementViewModel.properties).pipe(
-      mergeMap(elemViewProp => this.saveValue$(elemViewProp)),
+      mergeMap(elemViewProp =>
+        this.saveValue$(elemViewProp, processId, elementId)
+      ),
       map((val, index) => ({
         ...elementViewModel.properties[index],
         value: val,
@@ -86,8 +87,19 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
     );
   }
 
-  public deleteElement$(_: Element): Observable<void> {
-    return of(undefined);
+  public deleteElement$(element: Element): Observable<void> {
+    const observables: Observable<void>[] = [];
+    element.elementProperties?.map(prop => {
+      const stepPropId = this.stepPropertyService.stepPropertyById(
+        prop.stepPropertyId ?? 0
+      );
+      if (stepPropId?.type === TypeEnum.File && prop.value) {
+        observables.push(this.fileService.deleteFile$(prop.value));
+      }
+    });
+    return observables.length
+      ? forkJoin(observables).pipe(map(() => undefined))
+      : of(undefined);
   }
 
   public deleteProcess$(_: Process): Observable<void> {
@@ -95,10 +107,13 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
   }
 
   private saveValue$(
-    elementViewProperty: ElementViewProperty
+    elementViewProperty: ElementViewProperty,
+    processId: number,
+    elementId: number
   ): Observable<string | undefined> {
     const value = elementViewProperty.value;
     const type = elementViewProperty.type;
+    const stepPropId = elementViewProperty.stepPropId;
     if (!value && type !== TypeEnum.Boolean) {
       return of(undefined);
     }
@@ -106,7 +121,8 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
       return of(value);
     }
     if (type === TypeEnum.File && value instanceof File) {
-      return fileToStr$(value);
+      const path = `${processId}/${elementId}/${stepPropId}/${value.name}`;
+      return this.fileService.saveFile$(path, value).pipe(take(1));
     }
     return of('' + value);
   }

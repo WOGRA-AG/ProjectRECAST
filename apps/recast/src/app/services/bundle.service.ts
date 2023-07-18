@@ -8,6 +8,7 @@ import {
   from,
   map,
   merge,
+  mergeMap,
   Observable,
   of,
   Subject,
@@ -117,7 +118,7 @@ export class BundleService {
         bundle.id = bundleId;
         return processes.map(p => ({ ...p, bundleId }));
       }),
-      concatMap((processes: Process[]) =>
+      mergeMap((processes: Process[]) =>
         this.processService.saveProcesses$(processes)
       ),
       catchError(error => {
@@ -139,6 +140,19 @@ export class BundleService {
         this._bundles$.next(bundles);
       })
     );
+  }
+
+  public processesByBundleId$(id: number): Observable<Process[]> {
+    return this.processService.processesByBundleId$(id);
+  }
+
+  public processInBundleByName(
+    bundleId: number,
+    name: string
+  ): Process | undefined {
+    return this.processService.processes
+      .filter(p => p.bundleId === bundleId && p.name === name)
+      .pop();
   }
 
   private loadBundles$(): Observable<Bundle[]> {

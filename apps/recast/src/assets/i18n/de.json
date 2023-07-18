@@ -32,6 +32,7 @@
   "err.step.invalid": "Step konnte nicht aus Definition gelesen werden",
   "err.stepProp.invalid": "StepProperty konnte nicht aus Definition gelesen werden",
   "err.dismiss": "OK",
+  "err.resource_not_found": "Angeforderte Resource nicht gefunden",
 
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
   "placeholder.yaml_info": "Alle Infos zu dem erwarteten Format gibt es in unseren <a href='https://google.com'>docs</a>",

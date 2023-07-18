@@ -1,4 +1,4 @@
-<div class="content-wrapper">
+<div class="bundle-new-wrapper">
   <app-page-header
     class="header"
     i18n="@@header.new_bundle"
@@ -27,6 +27,7 @@
         i18n="@@action.create">
         Create
       </app-submit-button>
+      <mat-spinner diameter="40" *ngIf="loading"></mat-spinner>
     </ng-container>
   </app-single-file-upload>
 </div>

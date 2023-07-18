@@ -16,6 +16,7 @@
 @use './checkbox.scss' as checkbox;
 @use './color_input.scss' as color_input;
 @use './snackbar.scss' as snackbar;
+@use './dag.scss' as dag;
 
 @mixin theme($theme, $typography-config, $variants) {
   @include button.theme($theme, $typography-config, $variants);
@@ -36,4 +37,5 @@
   @include checkbox.theme($theme, $typography-config, $variants);
   @include color_input.theme($theme, $typography-config, $variants);
   @include snackbar.theme($theme, $typography-config, $variants);
+  @include dag.theme($theme, $typography-config, $variants);
 }

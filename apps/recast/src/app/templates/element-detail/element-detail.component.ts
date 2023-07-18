@@ -31,7 +31,7 @@ import {
   ElementViewProperty,
   ValueType,
 } from '../../model/element-view-model';
-import { elementComparator, isReference } from '../../shared/util/common-utils';
+import { elementComparator } from '../../shared/util/common-utils';
 import { AlertService } from '../../services/alert.service';
 
 // TODO: refactor this class
@@ -121,9 +121,12 @@ export class ElementDetailComponent implements OnDestroy {
             return of(undefined);
           })
         )
-        .subscribe(() => {
-          this.navigateForward();
+        .subscribe(element => {
           this.loading = false;
+          if (!element) {
+            return;
+          }
+          this.navigateForward();
         });
       return;
     }
@@ -150,8 +153,11 @@ export class ElementDetailComponent implements OnDestroy {
             )
         )
       )
-      .subscribe(() => {
+      .subscribe(element => {
         this.loading = false;
+        if (!element) {
+          return;
+        }
         this.navigateForward();
       });
   }
@@ -185,7 +191,7 @@ export class ElementDetailComponent implements OnDestroy {
     for (const prop of elementViewModel.properties ?? []) {
       let val: ValueType = prop.value ?? prop.defaultValue;
       if (
-        isReference(prop.type) &&
+        this.processService.isReference(prop.type) &&
         !!Object.getOwnPropertyDescriptor(val, 'name')
       ) {
         val = val as Element;
@@ -279,7 +285,10 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   private updateControl(name: string, value: any, type: TypeEnum): void {
-    if (isReference(type) && !!Object.getOwnPropertyDescriptor(value, 'name')) {
+    if (
+      this.processService.isReference(type) &&
+      !!Object.getOwnPropertyDescriptor(value, 'name')
+    ) {
       value = value as Element;
       value = value.id!;
     }

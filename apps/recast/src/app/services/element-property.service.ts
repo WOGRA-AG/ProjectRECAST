@@ -156,7 +156,9 @@ export class ElementPropertyService {
   }
 
   private loadProperties$(): Observable<ElementProperty[]> {
-    const select = this._supabaseClient.from(Tables.elementProperties).select();
+    const select = this._supabaseClient
+      .from(Tables.elementProperties)
+      .select(`*`, { head: false, count: 'planned' });
     return from(select).pipe(
       map(({ data, error }) => {
         if (error) {
