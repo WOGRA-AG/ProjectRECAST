@@ -121,9 +121,12 @@ export class ElementDetailComponent implements OnDestroy {
             return of(undefined);
           })
         )
-        .subscribe(() => {
-          this.navigateForward();
+        .subscribe(element => {
           this.loading = false;
+          if (!element) {
+            return;
+          }
+          this.navigateForward();
         });
       return;
     }
@@ -150,8 +153,11 @@ export class ElementDetailComponent implements OnDestroy {
             )
         )
       )
-      .subscribe(() => {
+      .subscribe(element => {
         this.loading = false;
+        if (!element) {
+          return;
+        }
         this.navigateForward();
       });
   }
