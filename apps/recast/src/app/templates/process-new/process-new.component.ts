@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { AlertService } from '../../services/alert.service';
 
 @Component({
-  selector: 'app-upload-new-process',
+  selector: 'app-process-new',
   templateUrl: './process-new.component.html',
   styleUrls: ['./process-new.component.scss'],
 })

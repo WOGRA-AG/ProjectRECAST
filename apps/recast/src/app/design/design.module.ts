@@ -28,6 +28,8 @@ import { DateInputFieldComponent } from './components/molecules/date-input-field
 import { ColorInputFieldComponent } from './components/molecules/color-input-field/color-input-field.component';
 import { AutocompleteInputFieldComponent } from './components/molecules/autocomplete-input-field/autocomplete-input-field.component';
 import { HandwritingRecognitionComponent } from './components/molecules/handwriting-recognition/handwriting-recognition.component';
+import { DagComponent } from './components/organisms/dag/dag.component';
+import { NgxGraphModule } from '@swimlane/ngx-graph';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -59,6 +61,7 @@ const COMPONENTS = [
     ...COMPONENTS,
     AutocompleteInputFieldComponent,
     HandwritingRecognitionComponent,
+    DagComponent,
   ],
   exports: [
     ...COMPONENTS,
@@ -67,6 +70,7 @@ const COMPONENTS = [
     ReactiveFormsModule,
     AutocompleteInputFieldComponent,
     HandwritingRecognitionComponent,
+    DagComponent,
   ],
   imports: [
     CommonModule,
@@ -75,6 +79,7 @@ const COMPONENTS = [
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
+    NgxGraphModule,
   ],
 })
 export class DesignModule {}

@@ -44,6 +44,7 @@
   "header.overview": "Overview",
   "header.create_element": "Create Element",
   "header.view_element": "View Element",
+  "err.resource_not_found": "Resource not found",
 
   "dialog.delete_process": "Delete process and all corresponding data?",
   "dialog.delete_element": "Delete element and all corresponding data?",

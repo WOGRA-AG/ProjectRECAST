@@ -263,10 +263,16 @@ export class ElementFacadeService {
   }
 
   private loadElements$(): Observable<Element[]> {
-    const select = this._supabaseClient.from(Tables.elements).select(`
+    const select = this._supabaseClient.from(Tables.elements).select(
+      `
         *,
         element_properties: ${Tables.elementProperties} (*)
-      `);
+      `,
+      {
+        head: false,
+        count: 'planned',
+      }
+    );
     return from(select).pipe(
       map(({ data, error }) => {
         if (error) {

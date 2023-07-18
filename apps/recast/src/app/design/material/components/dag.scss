@@ -1,0 +1,14 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin typography($config) {
+  app-dag {
+    .graph .panning-rect {
+      cursor: auto;
+    }
+  }
+}
+
+@mixin theme($theme, $typography-config, $variants) {
+  @include typography($typography-config);
+}

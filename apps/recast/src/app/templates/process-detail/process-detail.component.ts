@@ -23,7 +23,7 @@ import { elementComparator } from '../../shared/util/common-utils';
 import { ElementViewModelFacadeService } from '../../services';
 
 @Component({
-  selector: 'app-process-overview',
+  selector: 'app-process-detail',
   templateUrl: './process-detail.component.html',
   styleUrls: ['./process-detail.component.scss'],
   encapsulation: ViewEncapsulation.None,

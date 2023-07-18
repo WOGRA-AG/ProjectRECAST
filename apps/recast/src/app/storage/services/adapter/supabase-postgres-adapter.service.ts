@@ -24,11 +24,7 @@ import {
   ProcessFacadeService,
   StepPropertyService,
 } from '../../../services';
-import {
-  fileToStr$,
-  isReference,
-  strToFile,
-} from '../../../shared/util/common-utils';
+import { fileToStr$, strToFile } from '../../../shared/util/common-utils';
 import {
   ElementViewModel,
   ElementViewProperty,
@@ -57,7 +53,7 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
     if (val && type === TypeEnum.File) {
       return from(strToFile(val)).pipe(filter(Boolean), take(1));
     }
-    if (isReference(type) && val) {
+    if (this.processService.isReference(type) && val) {
       return this.elementService
         .elementById$(+val)
         .pipe(map(element => element.id ?? 0));
@@ -106,6 +102,7 @@ export class SupabasePostgresAdapter implements StorageAdapterInterface {
       return of(value);
     }
     if (type === TypeEnum.File && value instanceof File) {
+      // save file in supabase s3 and return the id
       return fileToStr$(value);
     }
     return of('' + value);

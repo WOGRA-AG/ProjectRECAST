@@ -9,7 +9,6 @@ import { StepFacadeService } from './step-facade.service';
 import {
   BehaviorSubject,
   catchError,
-  combineLatest,
   concatAll,
   concatMap,
   distinctUntilChanged,
@@ -17,6 +16,7 @@ import {
   from,
   map,
   merge,
+  mergeMap,
   Observable,
   of,
   skip,
@@ -24,8 +24,9 @@ import {
   take,
   toArray,
 } from 'rxjs';
-import { Process, Step } from '../../../build/openapi/recast';
+import { Process, Step, StepProperty } from '../../../build/openapi/recast';
 import { elementComparator, groupBy$ } from '../shared/util/common-utils';
+import TypeEnum = StepProperty.TypeEnum;
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -87,10 +88,11 @@ export class ProcessFacadeService {
   }
 
   public saveProcesses$(procs: Process[]): Observable<Process[]> {
-    const observables: Observable<Process>[] = procs.map(proc =>
-      this.saveProcess$(proc)
+    return from(procs).pipe(
+      mergeMap(proc => this.saveProcess$(proc)),
+      take(procs.length),
+      toArray()
     );
-    return combineLatest(observables);
   }
 
   public deleteProcess$(id: number): Observable<void> {
@@ -127,6 +129,12 @@ export class ProcessFacadeService {
     );
   }
 
+  public processByName(name: string): Process | undefined {
+    return this.processes.find(
+      proc => proc.name?.toLowerCase() === name.toLowerCase()
+    );
+  }
+
   public updateProcesses$(): Observable<void> {
     return this.loadProcesses$().pipe(
       take(1),
@@ -139,6 +147,17 @@ export class ProcessFacadeService {
   public processesByBundleId$(bundleId: number): Observable<Process[]> {
     return this._processes$.pipe(
       map(processes => processes.filter(proc => proc.bundleId === bundleId))
+    );
+  }
+
+  public processNames(): string[] {
+    return this.processes.map(proc => proc.name ?? '');
+  }
+
+  public isReference(name: string): boolean {
+    return (
+      !Object.values(TypeEnum).toString().includes(name) &&
+      this.processNames().includes(name)
     );
   }
 
