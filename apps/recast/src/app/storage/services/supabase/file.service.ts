@@ -60,7 +60,7 @@ export class FileService {
       mergeMap(bucket =>
         this._supabaseClient.storage
           .from(bucket.name)
-          .upload(path, file, { upsert: false })
+          .upload(path, file, { upsert: true })
       ),
       filter(({ data, error }) => !!data || !!error),
       map(({ data, error }) => {
