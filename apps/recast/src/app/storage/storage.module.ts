@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShepardAdapter } from './services/adapter/shepard-adapter.service';
-import { SupabasePostgresAdapter } from './services/adapter/supabase-postgres-adapter.service';
+import { SupabaseAdapter } from './services/adapter/supabase-adapter.service';
 
 @NgModule({
   declarations: [],
@@ -14,7 +14,7 @@ import { SupabasePostgresAdapter } from './services/adapter/supabase-postgres-ad
     },
     {
       provide: 'StorageAdapterInterface',
-      useClass: SupabasePostgresAdapter,
+      useClass: SupabaseAdapter,
       multi: true,
     },
   ],

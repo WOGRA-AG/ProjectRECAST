@@ -184,6 +184,16 @@ export class ElementFacadeService {
     );
   }
 
+  public elementsByBundleIdAndProcessName$(
+    bundleId: number,
+    processName: string
+  ): Observable<Element[]> {
+    return this.processService.processesByBundleId$(bundleId).pipe(
+      map(processes => processes.find(p => p.name === processName)),
+      mergeMap(process => this.elementsByProcessId$(process?.id))
+    );
+  }
+
   private upsertElement$({
     id,
     name,
@@ -253,10 +263,16 @@ export class ElementFacadeService {
   }
 
   private loadElements$(): Observable<Element[]> {
-    const select = this._supabaseClient.from(Tables.elements).select(`
+    const select = this._supabaseClient.from(Tables.elements).select(
+      `
         *,
         element_properties: ${Tables.elementProperties} (*)
-      `);
+      `,
+      {
+        head: false,
+        count: 'planned',
+      }
+    );
     return from(select).pipe(
       map(({ data, error }) => {
         if (error) {

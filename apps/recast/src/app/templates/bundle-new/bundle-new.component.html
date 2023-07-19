@@ -1,9 +1,9 @@
-<div class="content-wrapper">
+<div class="bundle-new-wrapper">
   <app-page-header
     class="header"
-    i18n="@@header.new_process"
+    i18n="@@header.new_bundle"
     [breadcrumbs]="breadcrumbs">
-    New Process
+    New Bundle
   </app-page-header>
 
   <app-single-file-upload
@@ -18,15 +18,16 @@
         type="reset"
         size="medium"
         [bordered]="true"
-        i18n="@@actions.back">
+        i18n="@@action.back">
         Back
       </app-button-unfilled>
       <app-submit-button
         size="medium"
         [disabled]="!isValid"
-        i18n="@@actions.create">
+        i18n="@@action.create">
         Create
       </app-submit-button>
+      <mat-spinner diameter="40" *ngIf="loading"></mat-spinner>
     </ng-container>
   </app-single-file-upload>
 </div>

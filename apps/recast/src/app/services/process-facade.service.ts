@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   SupabaseClient,
@@ -10,7 +9,6 @@ import { StepFacadeService } from './step-facade.service';
 import {
   BehaviorSubject,
   catchError,
-  combineLatest,
   concatAll,
   concatMap,
   distinctUntilChanged,
@@ -18,6 +16,7 @@ import {
   from,
   map,
   merge,
+  mergeMap,
   Observable,
   of,
   skip,
@@ -25,8 +24,9 @@ import {
   take,
   toArray,
 } from 'rxjs';
-import { Process, Step } from '../../../build/openapi/recast';
+import { Process, Step, StepProperty } from '../../../build/openapi/recast';
 import { elementComparator, groupBy$ } from '../shared/util/common-utils';
+import TypeEnum = StepProperty.TypeEnum;
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -88,20 +88,24 @@ export class ProcessFacadeService {
   }
 
   public saveProcesses$(procs: Process[]): Observable<Process[]> {
-    const observables: Observable<Process>[] = procs.map(proc =>
-      this.saveProcess$(proc)
+    return from(procs).pipe(
+      mergeMap(proc => this.saveProcess$(proc)),
+      take(procs.length),
+      toArray()
     );
-    return combineLatest(observables);
   }
 
-  public deleteProcess$(id: number): Observable<PostgrestError> {
+  public deleteProcess$(id: number): Observable<void> {
     const del = this._supabaseClient
       .from(Tables.processes)
       .delete()
       .eq('id', id);
     return from(del).pipe(
-      filter(({ error }) => !!error),
-      map(({ error }) => error!)
+      map(({ error }) => {
+        if (error) {
+          throw error;
+        }
+      })
     );
   }
 
@@ -125,6 +129,12 @@ export class ProcessFacadeService {
     );
   }
 
+  public processByName(name: string): Process | undefined {
+    return this.processes.find(
+      proc => proc.name?.toLowerCase() === name.toLowerCase()
+    );
+  }
+
   public updateProcesses$(): Observable<void> {
     return this.loadProcesses$().pipe(
       take(1),
@@ -134,11 +144,28 @@ export class ProcessFacadeService {
     );
   }
 
-  private upsertProcess$({ id, name }: Process): Observable<Process> {
-    const upsertStep = { id, name };
+  public processesByBundleId$(bundleId: number): Observable<Process[]> {
+    return this._processes$.pipe(
+      map(processes => processes.filter(proc => proc.bundleId === bundleId))
+    );
+  }
+
+  public processNames(): string[] {
+    return this.processes.map(proc => proc.name ?? '');
+  }
+
+  public isReference(name: string): boolean {
+    return (
+      !Object.values(TypeEnum).toString().includes(name) &&
+      this.processNames().includes(name)
+    );
+  }
+
+  private upsertProcess$({ id, name, bundleId }: Process): Observable<Process> {
+    const upsertProcess = { id, name, bundleId };
     const upsert = this._supabaseClient
       .from(Tables.processes)
-      .upsert(snakeCase(upsertStep))
+      .upsert(snakeCase(upsertProcess))
       .select();
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
@@ -229,8 +256,8 @@ export class ProcessFacadeService {
     return state.filter(step => step.id !== id);
   }
 
-  private insertProcess(state: Process[], step: Process): Process[] {
-    return state.concat(step);
+  private insertProcess(state: Process[], process: Process): Process[] {
+    return state.concat(process);
   }
 
   private updateProcessWithSteps$(

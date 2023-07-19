@@ -1,7 +1,7 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Process, Step, Element } from 'build/openapi/recast';
+import { Element, Process, Step } from 'build/openapi/recast';
 import {
   concatMap,
   distinctUntilChanged,
@@ -23,11 +23,12 @@ import { elementComparator } from '../../shared/util/common-utils';
 import { ElementViewModelFacadeService } from '../../services';
 
 @Component({
-  selector: 'app-process-overview',
-  templateUrl: './process-overview.component.html',
-  styleUrls: ['./process-overview.component.scss'],
+  selector: 'app-process-detail',
+  templateUrl: './process-detail.component.html',
+  styleUrls: ['./process-detail.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
-export class ProcessOverviewComponent implements OnDestroy {
+export class ProcessDetailComponent implements OnDestroy {
   public title = '';
   public currentStepId: number | null | undefined;
   public breadcrumbs: Breadcrumb[] = [];

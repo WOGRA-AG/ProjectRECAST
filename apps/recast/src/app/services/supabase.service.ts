@@ -89,6 +89,7 @@ export class SupabaseService {
 }
 
 export enum Tables {
+  bundles = 'bundles',
   processes = 'processes',
   steps = 'steps',
   stepProperties = 'step_properties',

@@ -1,9 +1,9 @@
 {
-  "actions.sign_out": "Sign Out",
-  "actions.update": "Update",
-  "actions.back": "Back",
-  "actions.create": "Create",
-  "actions.save": "Save",
+  "action.sign_out": "Sign Out",
+  "action.update": "Update",
+  "action.back": "Back",
+  "action.create": "Create",
+  "action.save": "Save",
   "action.scan_element": "Scan Element",
   "action.create_element": "Create Element",
   "action.next_step": "Next",
@@ -19,9 +19,12 @@
   "label.shep_url": "Shepard Url",
   "label.elements": "Elements",
   "label.processes": "Processes",
+  "label.process": "Process",
   "label.title": "Title",
   "label.search": "Search",
   "label.done": "Done",
+  "label.bundles": "Bundles",
+  "label.bundle": "Bundle",
 
   "err.min_char": "Minimum of {$INTERPOLATION} characters",
   "err.file.empty": "No valid Yaml found in File",
@@ -37,12 +40,15 @@
   "info.no_data_text": "No parts available yet",
 
   "header.new_process": "New Process",
+  "header.new_bundle": "New Bundle",
   "header.overview": "Overview",
   "header.create_element": "Create Element",
   "header.view_element": "View Element",
+  "err.resource_not_found": "Resource not found",
 
   "dialog.delete_process": "Delete process and all corresponding data?",
-  "dialog.delete_element": "Delete Element and all corresponding data?",
+  "dialog.delete_element": "Delete element and all corresponding data?",
+  "dialog.delete_bundle": "Delete bundle and all corresponding processes?",
   "dialog.submit_element": "Save and lock element?",
   "dialog.delete_selected_rows": "Delete Selected Rows?"
 }

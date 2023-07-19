@@ -1,0 +1,27 @@
+<div class="bundle-detail-wrapper">
+  <app-page-header [breadcrumbs]="breadcrumbs" class="title">
+    {{ title }}
+  </app-page-header>
+  <div id="dag" class="dag">
+    <app-dag
+      *ngIf="!!links.length && !!nodes.length"
+      layout="dagre"
+      (nodeClicked)="onNodeSelect($event)"
+      [draggingEnabled]="false"
+      [panningEnabled]="false"
+      [autoCenter]="true"
+      [autoZoom]="true"
+      [links]="links"
+      [nodes]="nodes">
+    </app-dag>
+  </div>
+
+  <div class="buttons">
+    <app-button-unfilled
+      class="button"
+      i18n="@@action.back"
+      (click)="navigateBack()">
+      Zurück
+    </app-button-unfilled>
+  </div>
+</div>

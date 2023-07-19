@@ -28,7 +28,7 @@ import {
   ElementFacadeService,
   ProcessFacadeService,
 } from '../../../services';
-import { groupBy$, isReference } from '../../../shared/util/common-utils';
+import { groupBy$ } from '../../../shared/util/common-utils';
 import {
   ElementViewModel,
   ElementViewProperty,
@@ -75,7 +75,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
             .getFileById$(value)
             .pipe(catchError(() => of(new File([], ''))));
         }
-        if (isReference(type) && value) {
+        if (this.processService.isReference(type) && value) {
           return this.shepardService.getElementIdFromDataObjectId$(+value);
         }
         return of(type === TypeEnum.Boolean ? value === 'true' : value);
@@ -125,7 +125,10 @@ export class ShepardAdapter implements StorageAdapterInterface {
         elementViewModelCopy.properties = elementViewModel.properties
           .filter(p => p.stepId === stepId)
           .map(p => {
-            if (p.type === TypeEnum.File || isReference(p.type)) {
+            if (
+              p.type === TypeEnum.File ||
+              this.processService.isReference(p.type)
+            ) {
               const val = p.value;
               if (Object.prototype.hasOwnProperty.call(val, 'value')) {
                 const parsedValue = val as ShepardValue;
@@ -167,12 +170,10 @@ export class ShepardAdapter implements StorageAdapterInterface {
   public deleteProcess$(process: Process): Observable<void> {
     return this.shepardService.deleteCollectionByProcessId$(process.id!).pipe(
       concatMap(() => this.processService.deleteProcess$(process.id!)),
-      catchError(() => of(undefined)),
-      map(err => {
-        if (err) {
-          this.alert.reportError(err.message);
-        }
-        return;
+      catchError(err => {
+        const msg = err.message ? err.message : err;
+        this.alert.reportError(msg);
+        return of(undefined);
       })
     );
   }
@@ -221,7 +222,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
         elementViewProperty.label
       );
     }
-    if (isReference(type)) {
+    if (this.processService.isReference(type)) {
       return zip(
         this.shepardService.getDataObjectByElementIdAndProcessId$(
           elementId,

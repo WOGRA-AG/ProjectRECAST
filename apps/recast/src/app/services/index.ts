@@ -5,3 +5,4 @@ export { ProcessFacadeService } from './process-facade.service';
 export { StepFacadeService } from './step-facade.service';
 export { StepPropertyService } from './step-property.service';
 export { SupabaseService } from './supabase.service';
+export { BundleService } from './bundle.service';

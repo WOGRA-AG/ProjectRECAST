@@ -13,11 +13,12 @@ beforeEach(() => {
 });
 
 describe('Processes', () => {
-  const waitForUpdate: number = mediumTimeout;
+  const waitForUpdate: number = longTimeout;
   const waitForDelete: number = shortTimeout;
 
   it('add process from yaml and delete it', () => {
     cy.visit('/overview');
+    cy.get('#mat-tab-label-0-2').click();
     cy.get('.mat-focus-indicator')
       .its('length')
       .then(len => {

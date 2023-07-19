@@ -13,6 +13,7 @@ import {
   Step,
   StepProperty,
 } from '../../../../build/openapi/recast';
+import { camelCase, snakeCase, mapKeys } from 'lodash';
 import TypeEnum = StepProperty.TypeEnum;
 
 export const groupBy = <
@@ -105,16 +106,20 @@ const isObjectofStepProperty = (obj: any): obj is StepProperty => {
     // 'description' in obj &&
     'type' in obj &&
     (Object.values(TypeEnum).toString().includes(obj.type) ||
-      isReference(obj.type))
+      !Object.values(TypeEnum).toString().includes(obj.type))
   );
 };
 
 export const elementComparator = <T>(a: T, b: T): boolean =>
   JSON.stringify(a) === JSON.stringify(b);
 
-export const isReference = (type: string): boolean =>
-  !Object.values(TypeEnum).toString().includes(type);
-// && in Process Names
+export const hasKeyValueCombination = (
+  obj: any,
+  key: string,
+  value: any
+): boolean => {
+  return Object.prototype.hasOwnProperty.call(obj, key) && obj[key] === value;
+};
 
 export const fileToBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -159,3 +164,21 @@ export const strToFile = async (
 
 export const isShepardUser = (profile: Profile): boolean =>
   !!profile && !!profile.shepardApiKey;
+
+export const camelCaseKeys = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(camelCaseKeys);
+  } else if (obj !== null && typeof obj === 'object') {
+    return mapKeys(obj, (value, key) => camelCase(key));
+  }
+  return obj;
+};
+
+export const snakeCaseKeys = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(snakeCaseKeys);
+  } else if (obj !== null && typeof obj === 'object') {
+    return mapKeys(obj, (value, key) => snakeCase(key));
+  }
+  return obj;
+};

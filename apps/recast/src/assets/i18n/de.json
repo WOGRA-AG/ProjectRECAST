@@ -1,9 +1,9 @@
 {
-  "actions.sign_out": "Ausloggen",
-  "actions.update": "Update",
-  "actions.back": "Zurück",
-  "actions.create": "Erstellen",
-  "actions.save": "Speichern",
+  "action.sign_out": "Ausloggen",
+  "action.update": "Update",
+  "action.back": "Zurück",
+  "action.create": "Erstellen",
+  "action.save": "Speichern",
   "action.scan_element": "Bauteil scannen",
   "action.create_element": "Bauteil erstellen",
   "action.next_step": "Weiter",
@@ -19,9 +19,12 @@
   "label.shep_url": "Shepard Url",
   "label.elements": "Bauteile",
   "label.processes": "Prozesse",
+  "label.process": "Prozess",
   "label.title": "Titel",
   "label.search": "Suche",
   "label.done": "Abgeschlossen",
+  "label.bundles": "Bundles",
+  "label.bundle": "Bundle",
 
   "err.min_char": "Mindestens {$INTERPOLATION} Buchstaben",
   "err.file.empty": "Die angegebene Datei scheint kein valides YAML Format zu besitzen",
@@ -29,20 +32,24 @@
   "err.step.invalid": "Step konnte nicht aus Definition gelesen werden",
   "err.stepProp.invalid": "StepProperty konnte nicht aus Definition gelesen werden",
   "err.dismiss": "OK",
+  "err.resource_not_found": "Angeforderte Resource nicht gefunden",
 
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
+  "placeholder.yaml_info": "Alle Infos zu dem erwarteten Format gibt es in unseren <a href='https://google.com'>docs</a>",
   "placeholder.select_element": "Bauteil wählen",
   "placeholder.filter_elements": "Bauteile filtern",
 
   "info.no_data_text": "Noch keine Bauteile vorhanden",
 
   "header.new_process": "Prozess Erstellen",
+  "header.new_bundle": "Bundle Erstellen",
   "header.overview": "Übersicht",
   "header.create_element": "Bauteil erstellen",
   "header.view_element": "Bauteil ansehen",
 
-  "dialog.delete_process": "Prozess und alle dazugehörigen Daten löschen?",
-  "dialog.delete_element": "Bauteil und alle dazugehörigen Daten löschen?",
+  "dialog.delete_process": "Prozess und alle zugehörigen Daten löschen?",
+  "dialog.delete_element": "Bauteil und alle zugehörigen Daten löschen?",
+  "dialog.delete_bundle": "Bundle und alle zugehörigen Prozesse löschen?",
   "dialog.submit_element": "Element speichern und sperren?",
   "dialog.delete_selected_rows": "Ausgewählte Elemente löschen?"
 }
