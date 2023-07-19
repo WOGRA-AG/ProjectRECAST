@@ -13,10 +13,21 @@
       max-width: 100px;
     }
 
-    .mat-column-name:not(:nth-last-child(3)) {
-      min-width: fit-content;
-      width: 15%;
-      max-width: 200px;
+    .mat-column-bundleId,
+    .mat-column-processId {
+      display: none;
+    }
+
+    @media #{$medium-and-up} {
+      .mat-column-bundleId,
+      .mat-column-processId {
+        display: table-cell;
+      }
+      .mat-column-name:not(:nth-last-child(3)) {
+        min-width: fit-content;
+        width: 15%;
+        max-width: 200px;
+      }
     }
   }
 
