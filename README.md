@@ -44,7 +44,8 @@ npx supabase db push
 ```
 
 ### Frontend
-The frontend of this project is located in the `apps/recast` folder. Before starting it, you need to update the `apps/recast/src/environments/environments.ts` file with your personal [Supabase] `DatabaseUrl` and your `<AnonAPIKey>`.
+The frontend of this project is located in the `apps/recast` folder. 
+Before starting it, you need to update the `apps/recast/src/environments/environments.ts` file with your personal [Supabase] `DatabaseUrl` and your `<AnonAPIKey>`.
 
 To start the frontend, run the following command:
 
@@ -66,4 +67,4 @@ See [LICENSE-APACHE](LICENSE-APACHE), [LICENSE-MIT](LICENSE-MIT), and [COPYRIGHT
 [WOGRA AG]: https://www.wogra.com/
 [Supabase docs]: https://supabase.com/docs
 [supabase-cli]: https://supabase.com/docs/guides/cli
-[Documentation]: https://docs.recast.wogra.com
+[Documentation]: https://wogra-ag.github.io/recast-docs
