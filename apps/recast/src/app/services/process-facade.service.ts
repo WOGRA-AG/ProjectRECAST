@@ -24,9 +24,8 @@ import {
   take,
   toArray,
 } from 'rxjs';
-import { Process, Step, StepProperty } from '../../../build/openapi/recast';
+import { Process, Step, ValueType } from '../../../build/openapi/recast';
 import { elementComparator, groupBy$ } from '../shared/util/common-utils';
-import TypeEnum = StepProperty.TypeEnum;
 const snakeCase = require('snakecase-keys');
 const camelCase = require('camelcase-keys');
 
@@ -156,7 +155,7 @@ export class ProcessFacadeService {
 
   public isReference(name: string): boolean {
     return (
-      !Object.values(TypeEnum).toString().includes(name) &&
+      !Object.values(ValueType).toString().includes(name) &&
       this.processNames().includes(name)
     );
   }

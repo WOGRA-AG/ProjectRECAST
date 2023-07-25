@@ -8,6 +8,24 @@ paths: {}
 
 components:
   schemas:
+    ValueType:
+      type: string
+      enum:
+        - text
+        - number
+        - file
+        - image
+        - timeseries
+        - boolean
+        - date
+        - color
+
+    StorageBackend:
+      type: string
+      enum:
+        - SUPABASE
+        - SHEPARD
+
     Id:
       type: integer
       format: int64
@@ -71,14 +89,7 @@ components:
         description:
           type: string
         type:
-          type: string
-          enum:
-            - text
-            - number
-            - file
-            - boolean
-            - date
-            - color
+          $ref: '#/components/schemas/ValueType'
 
     Element:
       properties:
@@ -112,11 +123,7 @@ components:
         stepPropertyId:
           $ref: '#/components/schemas/Id'
         storageBackend:
-          type: string
-          enum:
-            - POSTGRES
-            - S3
-            - SHEPARD
+          $ref: '#/components/schemas/StorageBackend'
         value:
           $ref: '#/components/schemas/UuId'
 
@@ -147,11 +154,7 @@ components:
         shepardUrl:
           type: string
         storageBackend:
-          type: string
-          enum:
-            - POSTGRES
-            - S3
-            - SHEPARD
+          $ref: '#/components/schemas/StorageBackend'
     Bundle:
       properties:
         id:

@@ -8,7 +8,7 @@
     "prebuild": "npm run generate:api",
     "ng": "ng",
     "start": "ng serve",
-    "start-dev": "ng serve --host 0.0.0.0",
+    "start-dev": "npm run start -- --host 0.0.0.0",
     "build": "ng build",
     "build-dev": "npm run prebuild && ng build --configuration development",
     "watch": "ng build --watch --configuration development",

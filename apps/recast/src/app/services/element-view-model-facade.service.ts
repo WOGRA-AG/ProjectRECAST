@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   ElementViewModel,
   ElementViewProperty,
-  ValueType,
+  ViewModelValueType,
 } from '../model/element-view-model';
 import {
   BehaviorSubject,
@@ -28,6 +28,8 @@ import {
   Step,
   StepProperty,
   ElementProperty,
+  ValueType,
+  StorageBackend,
 } from '../../../build/openapi/recast';
 import { StepFacadeService } from './step-facade.service';
 import { elementComparator } from '../shared/util/common-utils';
@@ -35,8 +37,6 @@ import {
   addObjectToState,
   removeObjectFromState,
 } from '../shared/util/state-management';
-import TypeEnum = StepProperty.TypeEnum;
-import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import { StorageService } from '../storage/services/storage.service';
 
 @Injectable({
@@ -107,7 +107,7 @@ export class ElementViewModelFacadeService {
 
   public storageBackendsByProcessId$(
     processId: number
-  ): Observable<StorageBackendEnum[]> {
+  ): Observable<StorageBackend[]> {
     return this.elementService.elementsByProcessId$(processId).pipe(
       take(1),
       mergeMap(elements => from(elements)),
@@ -217,7 +217,7 @@ export class ElementViewModelFacadeService {
         element.elementProperties ?? [],
         stepProperties
       );
-    const storageBackendsList: StorageBackendEnum[] = elementViewProperties
+    const storageBackendsList: StorageBackend[] = elementViewProperties
       .filter((evp: ElementViewProperty) => !!evp.storageBackend)
       .map((evp: ElementViewProperty) => evp.storageBackend!);
     const uniqueStorageBackends = [...new Set(storageBackendsList)];
@@ -288,10 +288,10 @@ export class ElementViewModelFacadeService {
 
   private _formatDefaultValue(
     defaultValue: string | null | undefined,
-    type: TypeEnum
-  ): ValueType {
-    let value: ValueType = defaultValue ?? '';
-    if (type === TypeEnum.Boolean) {
+    type: ValueType
+  ): ViewModelValueType {
+    let value: ViewModelValueType = defaultValue ?? '';
+    if (type === ValueType.Boolean) {
       value = defaultValue === 'true';
     }
     return value;

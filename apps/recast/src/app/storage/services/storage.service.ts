@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import {
   Element,
-  ElementProperty,
   Process,
+  StorageBackend,
 } from '../../../../build/openapi/recast';
-import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import { StorageAdapterInterface } from './adapter/storage-adapter-interface';
 import {
   BehaviorSubject,
@@ -26,7 +25,7 @@ import { UserFacadeService } from '../../user/services/user-facade.service';
 import {
   ElementViewModel,
   ElementViewProperty,
-  ValueType,
+  ViewModelValueType,
 } from '../../model/element-view-model';
 import { ElementFacadeService, ProcessFacadeService } from '../../services';
 import { AlertService } from '../../services/alert.service';
@@ -35,8 +34,8 @@ import { AlertService } from '../../services/alert.service';
   providedIn: 'root',
 })
 export class StorageService {
-  private _storageBackend$: BehaviorSubject<StorageBackendEnum | undefined> =
-    new BehaviorSubject<StorageBackendEnum | undefined>(undefined);
+  private _storageBackend$: BehaviorSubject<StorageBackend | undefined> =
+    new BehaviorSubject<StorageBackend | undefined>(undefined);
   constructor(
     @Inject('StorageAdapterInterface')
     private readonly storageAdapters: StorageAdapterInterface[],
@@ -46,8 +45,7 @@ export class StorageService {
     private readonly alert: AlertService
   ) {
     this.userService.currentProfile$.subscribe(profile => {
-      const storageBackend =
-        profile.storageBackend ?? StorageBackendEnum.Postgres;
+      const storageBackend = profile.storageBackend ?? StorageBackend.Supabase;
       this._storageBackend$.next(storageBackend);
     });
   }
@@ -147,7 +145,7 @@ export class StorageService {
 
   public deleteProcess$(
     process: Process,
-    backends: StorageBackendEnum[]
+    backends: StorageBackend[]
   ): Observable<void> {
     if (!process.id) {
       return of(undefined);
@@ -188,7 +186,7 @@ export class StorageService {
 
   private _loadValue$(
     elementProperty: ElementViewProperty
-  ): Observable<ValueType> {
+  ): Observable<ViewModelValueType> {
     return this._storageBackend$.pipe(
       filter(Boolean),
       map(backend => elementProperty.storageBackend ?? backend),
