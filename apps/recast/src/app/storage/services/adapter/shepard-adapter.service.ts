@@ -2,12 +2,10 @@ import { Injectable } from '@angular/core';
 import { StorageAdapterInterface } from './storage-adapter-interface';
 import {
   Element,
-  ElementProperty,
   Process,
-  StepProperty,
+  ValueType,
+  StorageBackend,
 } from 'src/../build/openapi/recast';
-import TypeEnum = StepProperty.TypeEnum;
-import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import { ShepardFacadeService } from '../shepard/shepard-facade.service';
 import {
   catchError,
@@ -33,7 +31,7 @@ import {
   ElementViewModel,
   ElementViewProperty,
   ShepardValue,
-  ValueType,
+  ViewModelValueType,
 } from '../../../model/element-view-model';
 import { AlertService } from '../../../services/alert.service';
 
@@ -50,13 +48,13 @@ export class ShepardAdapter implements StorageAdapterInterface {
     private readonly processService: ProcessFacadeService,
     private readonly alert: AlertService
   ) {}
-  public getType(): StorageBackendEnum {
-    return StorageBackendEnum.Shepard;
+  public getType(): StorageBackend {
+    return StorageBackend.Shepard;
   }
 
   public loadValue$(
     elementViewProperty: ElementViewProperty
-  ): Observable<ValueType> {
+  ): Observable<ViewModelValueType> {
     const val = '' + elementViewProperty.value;
     const type = elementViewProperty.type;
     return this.shepardService.getStructuredDataById$(val).pipe(
@@ -70,7 +68,10 @@ export class ShepardAdapter implements StorageAdapterInterface {
           return of('');
         }
         const value = parsedValue.value;
-        if (value && type === TypeEnum.File) {
+        if (
+          value &&
+          [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(type)
+        ) {
           return this.shepardService
             .getFileById$(value)
             .pipe(catchError(() => of(new File([], ''))));
@@ -78,7 +79,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
         if (this.processService.isReference(type) && value) {
           return this.shepardService.getElementIdFromDataObjectId$(+value);
         }
-        return of(type === TypeEnum.Boolean ? value === 'true' : value);
+        return of(type === ValueType.Boolean ? value === 'true' : value);
       })
     );
   }
@@ -126,7 +127,9 @@ export class ShepardAdapter implements StorageAdapterInterface {
           .filter(p => p.stepId === stepId)
           .map(p => {
             if (
-              p.type === TypeEnum.File ||
+              [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(
+                p.type
+              ) ||
               this.processService.isReference(p.type)
             ) {
               const val = p.value;
@@ -214,7 +217,10 @@ export class ShepardAdapter implements StorageAdapterInterface {
     if (typeof value === 'undefined' || !type) {
       return of(undefined);
     }
-    if (type === TypeEnum.File && value instanceof File) {
+    if (
+      [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(type) &&
+      value instanceof File
+    ) {
       return this._saveFile$(
         elementId,
         processId,
