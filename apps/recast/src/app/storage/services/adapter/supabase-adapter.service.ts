@@ -2,12 +2,10 @@ import { Injectable } from '@angular/core';
 import { StorageAdapterInterface } from './storage-adapter-interface';
 import {
   Element,
-  ElementProperty,
   Process,
-  StepProperty,
+  StorageBackend,
+  ValueType,
 } from '../../../../../build/openapi/recast';
-import TypeEnum = StepProperty.TypeEnum;
-import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import {
   forkJoin,
   from,
@@ -27,7 +25,7 @@ import {
 import {
   ElementViewModel,
   ElementViewProperty,
-  ValueType,
+  ViewModelValueType,
 } from '../../../model/element-view-model';
 import { FileService } from '../supabase/file.service';
 
@@ -42,16 +40,19 @@ export class SupabaseAdapter implements StorageAdapterInterface {
     private processService: ProcessFacadeService,
     private fileService: FileService
   ) {}
-  public getType(): StorageBackendEnum {
-    return StorageBackendEnum.Postgres;
+  public getType(): StorageBackend {
+    return StorageBackend.Supabase;
   }
 
   public loadValue$(
     elementViewProperty: ElementViewProperty
-  ): Observable<ValueType> {
+  ): Observable<ViewModelValueType> {
     const value = '' + elementViewProperty.value;
     const type = elementViewProperty.type;
-    if (value && type === TypeEnum.File) {
+    if (
+      value &&
+      [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(type)
+    ) {
       return this.fileService.getFile$(value).pipe(take(1));
     }
     if (this.processService.isReference(type) && value) {
@@ -59,7 +60,7 @@ export class SupabaseAdapter implements StorageAdapterInterface {
         .elementById$(+value)
         .pipe(map(element => element.id ?? 0));
     }
-    if (value && type === TypeEnum.Boolean) {
+    if (value && type === ValueType.Boolean) {
       return of(value === 'true');
     }
     return of(value ?? '');
@@ -93,7 +94,7 @@ export class SupabaseAdapter implements StorageAdapterInterface {
       const stepPropId = this.stepPropertyService.stepPropertyById(
         prop.stepPropertyId ?? 0
       );
-      if (stepPropId?.type === TypeEnum.File && prop.value) {
+      if (stepPropId?.type === ValueType.File && prop.value) {
         observables.push(this.fileService.deleteFile$(prop.value));
       }
     });
@@ -114,13 +115,16 @@ export class SupabaseAdapter implements StorageAdapterInterface {
     const value = elementViewProperty.value;
     const type = elementViewProperty.type;
     const stepPropId = elementViewProperty.stepPropId;
-    if (!value && type !== TypeEnum.Boolean) {
+    if (!value && type !== ValueType.Boolean) {
       return of(undefined);
     }
-    if (type === TypeEnum.Boolean && typeof value === 'undefined') {
+    if (type === ValueType.Boolean && typeof value === 'undefined') {
       return of(value);
     }
-    if (type === TypeEnum.File && value instanceof File) {
+    if (
+      [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(type) &&
+      value instanceof File
+    ) {
       const path = `${processId}/${elementId}/${stepPropId}/${value.name}`;
       return this.fileService.saveFile$(path, value).pipe(take(1));
     }

@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Element, Step, StepProperty, Process } from 'build/openapi/recast';
+import { Element, Step, ValueType, Process } from 'build/openapi/recast';
 import {
   catchError,
   filter,
@@ -25,11 +25,10 @@ import {
 } from 'src/app/services';
 import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import TypeEnum = StepProperty.TypeEnum;
 import {
   ElementViewModel,
   ElementViewProperty,
-  ValueType,
+  ViewModelValueType,
 } from '../../model/element-view-model';
 import { elementComparator } from '../../shared/util/common-utils';
 import { AlertService } from '../../services/alert.service';
@@ -47,7 +46,7 @@ export class ElementDetailComponent implements OnDestroy {
   public propertiesForm: FormGroup = this.formBuilder.group({});
   public loading = false;
   public elementViewModel: ElementViewModel | undefined;
-  protected readonly TypeEnum = TypeEnum;
+  protected readonly ValueTypeEnum = ValueType;
   protected currentProperties: ElementViewProperty[] = [];
   private _currentIndex = 0;
   private _currentStep: Step | undefined;
@@ -182,6 +181,10 @@ export class ElementDetailComponent implements OnDestroy {
     );
   }
 
+  protected isReference(type: string): boolean {
+    return this.processService.isReference(type);
+  }
+
   protected compareByStepPropId = (
     a: ElementViewProperty,
     b: ElementViewProperty
@@ -189,7 +192,7 @@ export class ElementDetailComponent implements OnDestroy {
 
   private initFormGroup$(elementViewModel: ElementViewModel): Observable<void> {
     for (const prop of elementViewModel.properties ?? []) {
-      let val: ValueType = prop.value ?? prop.defaultValue;
+      let val: ViewModelValueType = prop.value ?? prop.defaultValue;
       if (
         this.processService.isReference(prop.type) &&
         !!Object.getOwnPropertyDescriptor(val, 'name')
@@ -284,7 +287,7 @@ export class ElementDetailComponent implements OnDestroy {
     ];
   }
 
-  private updateControl(name: string, value: any, type: TypeEnum): void {
+  private updateControl(name: string, value: any, type: ValueType): void {
     if (
       this.processService.isReference(type) &&
       !!Object.getOwnPropertyDescriptor(value, 'name')
