@@ -4,7 +4,7 @@
   </app-page-header>
   <div id="dag" class="dag">
     <app-dag
-      *ngIf="!!links.length && !!nodes.length"
+      *ngIf="!!nodes.length"
       layout="dagre"
       (nodeClicked)="onNodeSelect($event)"
       [draggingEnabled]="false"
