@@ -32,6 +32,7 @@
   "err.step.invalid": "Could not parse valid Step from definition",
   "err.stepProp.invalid": "Could not parse valid StepProperty from definition",
   "err.dismiss": "OK",
+  "err.invalid_prop_type": "Invalid Property Type",
 
   "placeholder.upload_yaml": "Upload Process-YAML",
   "placeholder.select_element": "Select element",

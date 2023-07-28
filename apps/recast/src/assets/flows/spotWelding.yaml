@@ -1,0 +1,25 @@
+name: Welding
+steps:
+  - name: TwinCat
+    stepProperties:
+      - name: TwinCatFile
+        type: dataset
+  - name: Thermography
+    stepProperties:
+      - name: Image
+        type: image
+---
+name: TensileTest
+steps:
+  - name: SampleSelection
+    stepProperties:
+      - name: Sample
+        type: Welding
+  - name: TensileTest
+    stepProperties:
+      - name: Force[N]
+        type: number
+      - name: LSS[Mpa]
+        type: number
+      - name: area[mm2]
+        type: number

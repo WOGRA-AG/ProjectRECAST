@@ -19,8 +19,6 @@ import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/bread
 import {
   ElementFacadeService,
   ProcessFacadeService,
-  StepFacadeService,
-  StepPropertyService,
   ElementViewModelFacadeService,
 } from 'src/app/services';
 import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
@@ -43,7 +41,9 @@ export class ElementDetailComponent implements OnDestroy {
   public breadcrumbs: Breadcrumb[] = [];
   public stepTitles: string[] = [];
   public isLastStep = false;
-  public propertiesForm: FormGroup = this.formBuilder.group({});
+  public propertiesForm: FormGroup = this.formBuilder.group({
+    invalid: new FormControl({ value: '', disabled: true }),
+  });
   public loading = false;
   public elementViewModel: ElementViewModel | undefined;
   protected readonly ValueTypeEnum = ValueType;
@@ -58,8 +58,6 @@ export class ElementDetailComponent implements OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private processService: ProcessFacadeService,
-    private stepService: StepFacadeService,
-    private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
     private elementViewService: ElementViewModelFacadeService,
     private formBuilder: FormBuilder,
