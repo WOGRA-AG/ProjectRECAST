@@ -55,6 +55,11 @@
             *ngSwitchCase="ValueTypeEnum.Timeseries"
             [formControlName]="prop.stepPropId"
             [label]="prop.label"></app-file-input-field>
+          <app-file-input-field
+            class="input"
+            *ngSwitchCase="ValueTypeEnum.Dataset"
+            [formControlName]="prop.stepPropId"
+            [label]="prop.label"></app-file-input-field>
           <mat-checkbox
             class="input"
             *ngSwitchCase="ValueTypeEnum.Boolean"
@@ -92,14 +97,13 @@
                 </mat-option>
               </app-select-field>
             </div>
-            <div *ngIf="!isReference">
-              <app-input-field
-                class="input"
-                [label]="prop.label"
-                disabled
-                value="Invalid property type">
-              </app-input-field>
-            </div>
+            <app-input-field
+              *ngIf="!isReference(prop.type)"
+              class="input"
+              i18n-label="@@err.invalid_prop_type"
+              label="Invalid property type"
+              [formControlName]="'invalid'">
+            </app-input-field>
           </ng-container>
         </ng-container>
       </div>

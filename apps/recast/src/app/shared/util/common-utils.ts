@@ -16,6 +16,14 @@ import {
 } from '../../../../build/openapi/recast';
 import { camelCase, snakeCase, mapKeys } from 'lodash';
 
+export const isFileType = (type: ValueType): boolean =>
+  [
+    ValueType.File,
+    ValueType.Timeseries,
+    ValueType.Image,
+    ValueType.Dataset,
+  ].includes(type);
+
 export const groupBy = <
   T extends Include<any, string | number | symbol>,
   G extends keyof T

@@ -19,14 +19,8 @@ import {
   toArray,
   zip,
 } from 'rxjs';
-import {
-  ElementPropertyService,
-  StepFacadeService,
-  StepPropertyService,
-  ElementFacadeService,
-  ProcessFacadeService,
-} from '../../../services';
-import { groupBy$ } from '../../../shared/util/common-utils';
+import { StepFacadeService, ProcessFacadeService } from '../../../services';
+import { groupBy$, isFileType } from '../../../shared/util/common-utils';
 import {
   ElementViewModel,
   ElementViewProperty,
@@ -41,10 +35,7 @@ import { AlertService } from '../../../services/alert.service';
 export class ShepardAdapter implements StorageAdapterInterface {
   constructor(
     private readonly shepardService: ShepardFacadeService,
-    private readonly elementPropertyService: ElementPropertyService,
-    private readonly stepPropertyService: StepPropertyService,
     private readonly stepService: StepFacadeService,
-    private readonly elementService: ElementFacadeService,
     private readonly processService: ProcessFacadeService,
     private readonly alert: AlertService
   ) {}
@@ -68,10 +59,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
           return of('');
         }
         const value = parsedValue.value;
-        if (
-          value &&
-          [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(type)
-        ) {
+        if (value && isFileType(type)) {
           return this.shepardService
             .getFileById$(value)
             .pipe(catchError(() => of(new File([], ''))));
@@ -126,12 +114,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
         elementViewModelCopy.properties = elementViewModel.properties
           .filter(p => p.stepId === stepId)
           .map(p => {
-            if (
-              [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(
-                p.type
-              ) ||
-              this.processService.isReference(p.type)
-            ) {
+            if (isFileType(p.type) || this.processService.isReference(p.type)) {
               const val = p.value;
               if (Object.prototype.hasOwnProperty.call(val, 'value')) {
                 const parsedValue = val as ShepardValue;
@@ -217,10 +200,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
     if (typeof value === 'undefined' || !type) {
       return of(undefined);
     }
-    if (
-      [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(type) &&
-      value instanceof File
-    ) {
+    if (isFileType(type) && value instanceof File) {
       return this._saveFile$(
         elementId,
         processId,
