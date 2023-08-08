@@ -1,25 +1,28 @@
 import { Injectable } from '@angular/core';
 import { ProcessFacadeService } from './process-facade.service';
 import { ElementFacadeService } from './element-facade.service';
-import { map, Observable } from 'rxjs';
+import { concatMap, from, map, Observable } from 'rxjs';
 import {
   Element,
   ElementProperty,
   ValueType,
 } from '../../../build/openapi/recast';
 import { StepPropertyService } from './step-property.service';
+import * as JSZip from 'jszip';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SerializationService {
+  jszip = new JSZip();
+  datasetFileName = 'dataset.csv';
   constructor(
     private readonly processService: ProcessFacadeService,
     private readonly stepPropertyService: StepPropertyService,
     private readonly elementService: ElementFacadeService
   ) {}
 
-  // train-dataset aus bundle bis spezifischem Step:
+  // export bis spezifischem Step:
   //  - alle Elemente laden, die diesen Step abgeschlossen haben
   //  - je Element alle elementProperties bis Step laden
   //  - über elementProperties iterieren:
@@ -31,8 +34,7 @@ export class SerializationService {
   //    - if reference -> Referenziertes Bauteil laden und mit dessen elementProperties von vorne beginnen
   // csv und gespeicherte images als zip verpacken und downloaden
   //
-  // test-dataset das selbe aber mit step-1 beginnen
-  public export(processId: number, stepId: number | null): Observable<string> {
+  public export(processId: number, stepId: number | null): Observable<Blob> {
     return this.elementService
       .elementsByProcessIdTillStep$(processId, stepId)
       .pipe(
@@ -43,38 +45,23 @@ export class SerializationService {
           }
           return this.datasetFromRows(rows);
         }),
-        map(dataset => {
-          return this.datasetToCsv(dataset);
+        concatMap(dataset => {
+          this.jszip.file(this.datasetFileName, this.datasetToCsv(dataset));
+          return from(this.jszip.generateAsync({ type: 'blob' }));
         })
       );
   }
 
   private datasetToCsv(dataset: Dataset, sep = ';'): string {
-    const header: string = dataset.columns
-      .map(col => col.name.toLowerCase())
-      .sort((a, b) => {
-        if (a < b) return -1;
-        if (a > b) return 1;
-        return 0;
-      })
-      .join(sep);
+    const header: string = dataset.columns.map(col => col.name).join(sep);
     const rows: string[] = dataset.rows.map(row =>
-      row
-        .sort((a, b) => {
-          if (a.column.name.toLowerCase() < b.column.name.toLowerCase())
-            return -1;
-          if (a.column.name.toLowerCase() > b.column.name.toLowerCase())
-            return 1;
-          return 0;
-        })
-        .map(r => r.value)
-        .join(sep)
+      row.map(r => r.value).join(sep)
     );
     return [header, ...rows].join('\n');
   }
 
   private datasetFromRows(rows: DatasetRow[]): Dataset {
-    return rows.reduce(
+    const dataset = rows.reduce(
       (acc, row): Dataset => {
         for (const value of row) {
           if (
@@ -90,46 +77,63 @@ export class SerializationService {
       },
       { columns: [], rows: [] } as Dataset
     );
+    dataset.columns.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+    dataset.rows.map(row => {
+      return row.sort((a, b) => {
+        if (a.column.name < b.column.name) return -1;
+        if (a.column.name > b.column.name) return 1;
+        return 0;
+      });
+    });
+    return dataset;
   }
 
   private processElementProperties(element: Element): DatasetRow {
-    const records: DatasetRow = [];
+    const row: DatasetRow = [];
     for (const elementProperty of element.elementProperties ?? []) {
-      records.push(this.processElementProperty(elementProperty));
+      row.push(...this.processElementProperty(elementProperty));
     }
-    return records;
+    return row;
   }
 
   private processElementProperty(
     elementProperty: ElementProperty
-  ): DatasetValue {
+  ): DatasetValue[] {
     const stepProperty = this.stepPropertyService.stepPropertyById(
       elementProperty.stepPropertyId ?? 0
     );
-    const colName: string = stepProperty.name ?? '';
+    const colName: string = stepProperty.name?.toLowerCase() ?? '';
     const propValue: string = elementProperty.value ?? '';
     const type: string = stepProperty.type ?? '';
-    let dataValue: DatasetValue;
+    const dataValues: DatasetValue[] = [];
     switch (stepProperty.type) {
       case ValueType.Dataset:
-        dataValue = this.processDataset(colName, type, propValue);
+        dataValues.push(this.processDataset(colName, type, propValue));
         break;
       case ValueType.Image:
-        dataValue = this.processImage(colName, type, propValue);
+        dataValues.push(this.processImage(colName, type, propValue));
         break;
       case ValueType.Timeseries:
-        dataValue = this.processTimeseries(colName, type, propValue);
+        dataValues.push(this.processTimeseries(colName, type, propValue));
         break;
       case ValueType.File:
-        dataValue = this.processFile(colName, type, propValue);
+        dataValues.push(this.processFile(colName, type, propValue));
         break;
       default:
-        if (this.processService.isReference(stepProperty.type ?? '')) {
-          dataValue = this.processReference(colName, type, propValue);
+        if (this.processService.isReference(type)) {
+          dataValues.push(...this.processReference(propValue));
+          break;
         }
-        dataValue = { column: { name: colName, type }, value: propValue ?? '' };
+        dataValues.push({
+          column: { name: colName, type },
+          value: propValue ?? '',
+        });
     }
-    return dataValue;
+    return dataValues;
   }
 
   private processImage(
@@ -176,15 +180,12 @@ export class SerializationService {
     };
   }
 
-  private processReference(
-    columnName: string,
-    columnType: string,
-    propertyValue: string
-  ): DatasetValue {
-    return {
-      column: { name: columnName, type: columnType },
-      value: propertyValue ?? '',
-    };
+  private processReference(propertyValue: string): DatasetValue[] {
+    const element = this.elementService.elementById(Number(propertyValue));
+    if (!element) {
+      return [];
+    }
+    return this.processElementProperties(element);
   }
 }
 

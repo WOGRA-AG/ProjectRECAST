@@ -188,10 +188,10 @@ export class ProcessDetailComponent implements OnDestroy {
         ),
         take(1)
       )
-      .subscribe(csv => {
+      .subscribe(blob => {
         const atag = document.createElement('a');
-        atag.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        atag.download = 'dataset.csv';
+        atag.href = URL.createObjectURL(blob);
+        atag.download = 'dataset.zip';
         document.body.appendChild(atag);
         atag.click();
         document.body.removeChild(atag);
