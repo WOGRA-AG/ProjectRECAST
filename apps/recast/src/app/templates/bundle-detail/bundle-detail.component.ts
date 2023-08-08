@@ -9,6 +9,7 @@ import {
   of,
   Subject,
   switchMap,
+  take,
   takeUntil,
   tap,
   zip,
@@ -17,6 +18,7 @@ import { BundleService, ProcessFacadeService } from '../../services';
 import { Bundle, Process } from '../../../../build/openapi/recast';
 import { Edge, Node } from '@swimlane/ngx-graph';
 import { elementComparator } from '../../shared/util/common-utils';
+import { SerializationService } from '../../services/serialization.service';
 
 @Component({
   selector: 'app-bundle-detail',
@@ -34,7 +36,8 @@ export class BundleDetailComponent implements OnDestroy {
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router,
     private readonly bundleService: BundleService,
-    private readonly processService: ProcessFacadeService
+    private readonly processService: ProcessFacadeService,
+    private readonly serializationService: SerializationService
   ) {
     this.bundle$()
       .pipe(
@@ -76,6 +79,20 @@ export class BundleDetailComponent implements OnDestroy {
 
   protected navigateBack(): void {
     this.router.navigate(['/overview']);
+  }
+
+  protected downloadDataset(): void {
+    this.serializationService
+      .export(280, 482)
+      .pipe(take(1))
+      .subscribe(csv => {
+        const atag = document.createElement('a');
+        atag.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+        atag.download = 'dataset.csv';
+        document.body.appendChild(atag);
+        atag.click();
+        document.body.removeChild(atag);
+      });
   }
 
   private prepareNodes$(processes: Process[]): Observable<Node[]> {
