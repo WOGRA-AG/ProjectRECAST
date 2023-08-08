@@ -49,10 +49,26 @@ export class SerializationService {
       );
   }
 
-  private datasetToCsv(dataset: Dataset, sep = ','): string {
-    const header: string = dataset.columns.map(col => col.name).join(sep);
+  private datasetToCsv(dataset: Dataset, sep = ';'): string {
+    const header: string = dataset.columns
+      .map(col => col.name.toLowerCase())
+      .sort((a, b) => {
+        if (a < b) return -1;
+        if (a > b) return 1;
+        return 0;
+      })
+      .join(sep);
     const rows: string[] = dataset.rows.map(row =>
-      row.map(r => r.value).join(sep)
+      row
+        .sort((a, b) => {
+          if (a.column.name.toLowerCase() < b.column.name.toLowerCase())
+            return -1;
+          if (a.column.name.toLowerCase() > b.column.name.toLowerCase())
+            return 1;
+          return 0;
+        })
+        .map(r => r.value)
+        .join(sep)
     );
     return [header, ...rows].join('\n');
   }

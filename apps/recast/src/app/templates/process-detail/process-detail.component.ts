@@ -10,6 +10,7 @@ import {
   mergeMap,
   Observable,
   Subject,
+  switchMap,
   take,
   takeUntil,
 } from 'rxjs';
@@ -21,6 +22,7 @@ import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
 import { elementComparator } from '../../shared/util/common-utils';
 import { ElementViewModelFacadeService } from '../../services';
+import { SerializationService } from '../../services/serialization.service';
 
 @Component({
   selector: 'app-process-detail',
@@ -30,7 +32,7 @@ import { ElementViewModelFacadeService } from '../../services';
 })
 export class ProcessDetailComponent implements OnDestroy {
   public title = '';
-  public currentStepId: number | null | undefined;
+  public currentStepId: number | null = 0;
   public breadcrumbs: Breadcrumb[] = [];
   public steps: Step[] = [];
   public stepTitles: string[] = [];
@@ -57,6 +59,7 @@ export class ProcessDetailComponent implements OnDestroy {
     private readonly elementService: ElementFacadeService,
     private readonly stepService: StepFacadeService,
     private readonly elementViewModelService: ElementViewModelFacadeService,
+    private readonly serializationService: SerializationService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog
@@ -96,7 +99,9 @@ export class ProcessDetailComponent implements OnDestroy {
   public changeContent(index: number): void {
     this.currentIndex = index;
     this.currentStepId =
-      index === this.steps.length ? null : this.steps[this.currentIndex]?.id;
+      index === this.steps.length
+        ? null
+        : this.steps[this.currentIndex].id ?? 0;
     this.processId$()
       .pipe(
         concatMap(
@@ -175,12 +180,29 @@ export class ProcessDetailComponent implements OnDestroy {
     );
   }
 
+  protected downloadDataset(): void {
+    this.processId$()
+      .pipe(
+        switchMap(id =>
+          this.serializationService.export(id, this.currentStepId)
+        ),
+        take(1)
+      )
+      .subscribe(csv => {
+        const atag = document.createElement('a');
+        atag.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+        atag.download = 'dataset.csv';
+        document.body.appendChild(atag);
+        atag.click();
+        document.body.removeChild(atag);
+      });
+  }
+
   private processId$(): Observable<number> {
     return this.activatedRoute.paramMap.pipe(
       distinctUntilChanged(),
       filter(param => !!param.get('processId')),
-      map(param => +param.get('processId')!),
-      takeUntil(this._destroy$)
+      map(param => +param.get('processId')!)
     );
   }
 }
