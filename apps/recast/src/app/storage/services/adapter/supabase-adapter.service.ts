@@ -43,6 +43,10 @@ export class SupabaseAdapter implements StorageAdapterInterface {
     return StorageBackend.Supabase;
   }
 
+  public getFile$(value: string): Observable<File> {
+    return this.fileService.getFile$(value).pipe(take(1));
+  }
+
   public loadValue$(
     elementViewProperty: ElementViewProperty
   ): Observable<ViewModelValueType> {

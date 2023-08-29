@@ -43,6 +43,16 @@ export class ShepardAdapter implements StorageAdapterInterface {
     return StorageBackend.Shepard;
   }
 
+  public getFile$(value: string): Observable<File> {
+    return this.shepardService.getFileById$(value).pipe(
+      catchError(err => {
+        const msg = err.message || err;
+        this.alert.reportError(msg);
+        return of(new File([], ''));
+      })
+    );
+  }
+
   public loadValue$(
     elementViewProperty: ElementViewProperty
   ): Observable<ViewModelValueType> {
@@ -157,7 +167,7 @@ export class ShepardAdapter implements StorageAdapterInterface {
     return this.shepardService.deleteCollectionByProcessId$(process.id!).pipe(
       concatMap(() => this.processService.deleteProcess$(process.id!)),
       catchError(err => {
-        const msg = err.message ? err.message : err;
+        const msg = err.message || err;
         this.alert.reportError(msg);
         return of(undefined);
       })

@@ -12,6 +12,7 @@ import {
 
 export interface StorageAdapterInterface {
   getType(): StorageBackend;
+  getFile$(value: string): Observable<File>;
   loadValue$(
     elementViewProperty: ElementViewProperty
   ): Observable<ViewModelValueType>;

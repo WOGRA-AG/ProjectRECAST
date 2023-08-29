@@ -55,11 +55,11 @@ export class ProcessDetailComponent implements OnDestroy {
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
   constructor(
+    private readonly serializationService: SerializationService,
     private readonly processService: ProcessFacadeService,
     private readonly elementService: ElementFacadeService,
     private readonly stepService: StepFacadeService,
     private readonly elementViewModelService: ElementViewModelFacadeService,
-    private readonly serializationService: SerializationService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog
@@ -184,7 +184,7 @@ export class ProcessDetailComponent implements OnDestroy {
     this.processId$()
       .pipe(
         switchMap(id =>
-          this.serializationService.export(id, this.currentStepId)
+          this.serializationService.export$(id, this.currentStepId)
         ),
         take(1)
       )

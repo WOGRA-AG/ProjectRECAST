@@ -1,52 +1,53 @@
 import { Injectable } from '@angular/core';
 import { ProcessFacadeService } from './process-facade.service';
 import { ElementFacadeService } from './element-facade.service';
-import { concatMap, from, map, Observable } from 'rxjs';
+import {
+  concatMap,
+  forkJoin,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  take,
+  toArray,
+} from 'rxjs';
 import {
   Element,
   ElementProperty,
+  StorageBackend,
   ValueType,
 } from '../../../build/openapi/recast';
 import { StepPropertyService } from './step-property.service';
 import * as JSZip from 'jszip';
+import { StorageService } from '../storage/services/storage.service';
+import { flatten } from 'lodash';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SerializationService {
   jszip = new JSZip();
-  datasetFileName = 'dataset.csv';
+  datasetAchiveName = 'dataset.csv';
   constructor(
     private readonly processService: ProcessFacadeService,
     private readonly stepPropertyService: StepPropertyService,
-    private readonly elementService: ElementFacadeService
+    private readonly elementService: ElementFacadeService,
+    private readonly storageService: StorageService
   ) {}
 
-  // export bis spezifischem Step:
-  //  - alle Elemente laden, die diesen Step abgeschlossen haben
-  //  - je Element alle elementProperties bis Step laden
-  //  - über elementProperties iterieren:
-  //    - elementPropName -> ColumnName
-  //    - elementPropValue -> RowValue
-  //    - if image -> file runterladen, tempfile anlegen, filename -> RowValue
-  //    - if timeseries -> file laden, lesen, inhalt -> rowValue
-  //    - if dataset -> csv laden, lesen, pro spalte im csv neue Column anlegen und wie timeseries speichern
-  //    - if reference -> Referenziertes Bauteil laden und mit dessen elementProperties von vorne beginnen
-  // csv und gespeicherte images als zip verpacken und downloaden
-  //
-  public export(processId: number, stepId: number | null): Observable<Blob> {
+  public export$(processId: number, stepId: number | null): Observable<Blob> {
     return this.elementService
       .elementsByProcessIdTillStep$(processId, stepId)
       .pipe(
-        map(elements => {
-          const rows: DatasetRow[] = [];
-          for (const element of elements) {
-            rows.push(this.processElementProperties(element));
-          }
-          return this.datasetFromRows(rows);
-        }),
+        take(1),
+        mergeMap(elements => from(elements)),
+        mergeMap(element => this._processElementProperties$(element)),
+        toArray(),
+        map((rows: DatasetRow[]) => this.datasetFromRows(rows)),
+        map(dataset => this.datasetToCsv(dataset)),
         concatMap(dataset => {
-          this.jszip.file(this.datasetFileName, this.datasetToCsv(dataset));
+          this.jszip.file(this.datasetAchiveName, dataset);
           return from(this.jszip.generateAsync({ type: 'blob' }));
         })
       );
@@ -77,119 +78,126 @@ export class SerializationService {
       },
       { columns: [], rows: [] } as Dataset
     );
-    dataset.columns.sort((a, b) => {
-      if (a.name < b.name) return -1;
-      if (a.name > b.name) return 1;
-      return 0;
-    });
-    dataset.rows.map(row => {
-      return row.sort((a, b) => {
-        if (a.column.name < b.column.name) return -1;
-        if (a.column.name > b.column.name) return 1;
-        return 0;
-      });
-    });
+    dataset.columns.sort((a, b) => a.name.localeCompare(b.name));
+    dataset.rows.map(row =>
+      row.sort((a, b) => a.column.name.localeCompare(b.column.name))
+    );
     return dataset;
   }
 
-  private processElementProperties(element: Element): DatasetRow {
-    const row: DatasetRow = [];
+  private _processElementProperties$(element: Element): Observable<DatasetRow> {
+    const row: Observable<DatasetRow>[] = [];
     for (const elementProperty of element.elementProperties ?? []) {
-      row.push(...this.processElementProperty(elementProperty));
+      row.push(this._processElementProperty$(elementProperty).pipe(take(1)));
     }
-    return row;
+    return forkJoin(row).pipe(map(flatten), take(1));
   }
 
-  private processElementProperty(
+  private _processElementProperty$(
     elementProperty: ElementProperty
-  ): DatasetValue[] {
+  ): Observable<DatasetValue[]> {
     const stepProperty = this.stepPropertyService.stepPropertyById(
       elementProperty.stepPropertyId ?? 0
     );
     const colName: string = stepProperty.name?.toLowerCase() ?? '';
     const propValue: string = elementProperty.value ?? '';
-    const type: string = stepProperty.type ?? '';
-    const dataValues: DatasetValue[] = [];
+    const type: ValueType = stepProperty.type ?? ValueType.Text;
+    const storageBackend = elementProperty.storageBackend;
+    let observable: Observable<DatasetValue>;
     switch (stepProperty.type) {
       case ValueType.Dataset:
-        dataValues.push(this.processDataset(colName, type, propValue));
+        observable = this._processDataset$(colName, type, propValue);
         break;
       case ValueType.Image:
-        dataValues.push(this.processImage(colName, type, propValue));
+        observable = this._processImage$(
+          colName,
+          type,
+          propValue,
+          storageBackend
+        );
         break;
       case ValueType.Timeseries:
-        dataValues.push(this.processTimeseries(colName, type, propValue));
+        observable = this._processTimeseries$(colName, type, propValue);
         break;
       case ValueType.File:
-        dataValues.push(this.processFile(colName, type, propValue));
+        observable = this._processFile$(colName, type, propValue);
         break;
       default:
         if (this.processService.isReference(type)) {
-          dataValues.push(...this.processReference(propValue));
-          break;
+          return this._processReference$(propValue);
         }
-        dataValues.push({
-          column: { name: colName, type },
-          value: propValue ?? '',
-        });
+        return of([
+          {
+            column: { name: colName, type },
+            value: propValue ?? '',
+          },
+        ]);
     }
-    return dataValues;
+    return observable.pipe(take(1), toArray());
   }
 
-  private processImage(
+  private _processImage$(
     columnName: string,
-    columnType: string,
+    columnType: ValueType,
+    propertyValue: string,
+    storageBackend?: StorageBackend
+  ): Observable<DatasetValue> {
+    return this.storageService.getFile$(propertyValue, storageBackend).pipe(
+      map(file => {
+        this.jszip.file(file.name, file as Blob, { binary: true });
+        return {
+          column: { name: columnName, type: columnType },
+          value: file.name,
+        };
+      })
+    );
+  }
+
+  private _processFile$(
+    columnName: string,
+    columnType: ValueType,
     propertyValue: string
-  ): DatasetValue {
-    return {
+  ): Observable<DatasetValue> {
+    return of({
       column: { name: columnName, type: columnType },
       value: propertyValue ?? '',
-    };
+    });
   }
 
-  private processFile(
+  private _processDataset$(
     columnName: string,
-    columnType: string,
+    columnType: ValueType,
     propertyValue: string
-  ): DatasetValue {
-    return {
+  ): Observable<DatasetValue> {
+    return of({
       column: { name: columnName, type: columnType },
       value: propertyValue ?? '',
-    };
+    });
   }
 
-  private processDataset(
+  private _processTimeseries$(
     columnName: string,
-    columnType: string,
+    columnType: ValueType,
     propertyValue: string
-  ): DatasetValue {
-    return {
+  ): Observable<DatasetValue> {
+    return of({
       column: { name: columnName, type: columnType },
       value: propertyValue ?? '',
-    };
+    });
   }
 
-  private processTimeseries(
-    columnName: string,
-    columnType: string,
+  private _processReference$(
     propertyValue: string
-  ): DatasetValue {
-    return {
-      column: { name: columnName, type: columnType },
-      value: propertyValue ?? '',
-    };
-  }
-
-  private processReference(propertyValue: string): DatasetValue[] {
+  ): Observable<DatasetValue[]> {
     const element = this.elementService.elementById(Number(propertyValue));
     if (!element) {
-      return [];
+      return of([]);
     }
-    return this.processElementProperties(element);
+    return this._processElementProperties$(element);
   }
 }
 
-type DatasetColumn = { name: string; type: string };
+type DatasetColumn = { name: string; type: ValueType };
 type DatasetValue = { column: DatasetColumn; value: string };
 type DatasetRow = DatasetValue[];
 type Dataset = { columns: DatasetColumn[]; rows: DatasetRow[] };
