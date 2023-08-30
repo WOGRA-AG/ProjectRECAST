@@ -51,6 +51,7 @@ export class ProcessDetailComponent implements OnDestroy {
   public tableData$: Observable<any> = new Observable<any>();
 
   public currentIndex = 0;
+  protected loading: boolean = false;
 
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
@@ -181,6 +182,7 @@ export class ProcessDetailComponent implements OnDestroy {
   }
 
   protected downloadDataset(): void {
+    this.loading = true;
     this.processId$()
       .pipe(
         switchMap(id =>
@@ -195,6 +197,7 @@ export class ProcessDetailComponent implements OnDestroy {
         document.body.appendChild(atag);
         atag.click();
         document.body.removeChild(atag);
+        this.loading = false;
       });
   }
 
