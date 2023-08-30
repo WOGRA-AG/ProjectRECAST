@@ -35,6 +35,14 @@
         (click)="navigateToCreateElement()">
         Bauteil erstellen
       </app-button-filled>
+      <app-button-filled
+        icon="download"
+        size="medium"
+        [disabled]="loading"
+        (click)="downloadDataset()">
+        Dataset
+      </app-button-filled>
+      <mat-spinner diameter="40" *ngIf="loading"></mat-spinner>
     </div>
   </div>
 </div>

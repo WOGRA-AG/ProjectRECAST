@@ -3,7 +3,10 @@
   role="group"
   (click)="!formControl.disabled && fileInput.click()"
   (keydown)="!formControl.disabled && fileInput.click()">
-  <mat-form-field appearance="outline">
+  <mat-form-field
+    appearance="outline"
+    appDragAndDrop
+    (filesDropped)="dropFile($event)">
     <mat-label>{{ label }}</mat-label>
     <input
       matInput

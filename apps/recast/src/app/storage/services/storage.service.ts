@@ -184,6 +184,25 @@ export class StorageService {
     );
   }
 
+  public getFile$(
+    value: string,
+    storageBackend?: StorageBackend
+  ): Observable<File> {
+    return this._storageBackend$.pipe(
+      filter(Boolean),
+      map(backend => storageBackend ?? backend),
+      concatMap(backend => {
+        const storageAdapter = this.storageAdapters.find(
+          adapter => adapter.getType() === backend
+        );
+        if (!storageAdapter) {
+          throw new Error(`No such Storage Backend: ${backend}`);
+        }
+        return storageAdapter.getFile$(value);
+      })
+    );
+  }
+
   private _loadValue$(
     elementProperty: ElementViewProperty
   ): Observable<ViewModelValueType> {
