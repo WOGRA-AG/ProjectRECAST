@@ -51,7 +51,7 @@ export class ProcessDetailComponent implements OnDestroy {
   public tableData$: Observable<any> = new Observable<any>();
 
   public currentIndex = 0;
-  protected loading: boolean = false;
+  protected loading = false;
 
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
