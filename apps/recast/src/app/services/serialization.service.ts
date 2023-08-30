@@ -21,7 +21,8 @@ import {
 import { StepPropertyService } from './step-property.service';
 import * as JSZip from 'jszip';
 import { StorageService } from '../storage/services/storage.service';
-import { flatten } from 'lodash';
+import { flatMap, flatten, reduce, map as lomap } from 'lodash';
+import { parse } from 'csv-parse/sync';
 
 @Injectable({
   providedIn: 'root',
@@ -44,8 +45,8 @@ export class SerializationService {
         mergeMap(elements => from(elements)),
         mergeMap(element => this._processElementProperties$(element)),
         toArray(),
-        map((rows: DatasetRow[]) => this.datasetFromRows(rows)),
-        map(dataset => this.datasetToCsv(dataset)),
+        map((rows: DatasetRow[]) => this._datasetFromRows(rows)),
+        map(dataset => this._datasetToCsv(dataset)),
         concatMap(dataset => {
           this.jszip.file(this.datasetAchiveName, dataset);
           return from(this.jszip.generateAsync({ type: 'blob' }));
@@ -53,7 +54,7 @@ export class SerializationService {
       );
   }
 
-  private datasetToCsv(dataset: Dataset, sep = ';'): string {
+  private _datasetToCsv(dataset: Dataset, sep = ';'): string {
     const header: string = dataset.columns.map(col => col.name).join(sep);
     const rows: string[] = dataset.rows.map(row =>
       row.map(r => r.value).join(sep)
@@ -61,7 +62,44 @@ export class SerializationService {
     return [header, ...rows].join('\n');
   }
 
-  private datasetFromRows(rows: DatasetRow[]): Dataset {
+  private _datasetValuesFromCsv(
+    csv: string,
+    sep: string | string[] | Buffer | undefined = ['\t', ';'],
+    columns = true
+  ): DatasetValue[] {
+    const parsedCsv = parse(csv, {
+      columns: columns,
+      skip_empty_lines: true,
+      delimiter: sep,
+    });
+    if (!columns) {
+      return [
+        {
+          column: { name: '', type: ValueType.Timeseries },
+          value: parsedCsv,
+        },
+      ];
+    }
+
+    const dummy: { [key: string]: string[] } = {};
+    const parsedCsvObj = reduce(
+      parsedCsv[0],
+      (result, value, key) => {
+        result[key] = lomap(parsedCsv, row => row[key]);
+        return result;
+      },
+      dummy
+    );
+
+    return flatMap(parsedCsvObj, (values, key) => {
+      return {
+        column: { name: key, type: ValueType.Timeseries },
+        value: values,
+      };
+    });
+  }
+
+  private _datasetFromRows(rows: DatasetRow[]): Dataset {
     const dataset = rows.reduce(
       (acc, row): Dataset => {
         for (const value of row) {
@@ -106,8 +144,7 @@ export class SerializationService {
     let observable: Observable<DatasetValue>;
     switch (stepProperty.type) {
       case ValueType.Dataset:
-        observable = this._processDataset$(colName, type, propValue);
-        break;
+        return this._processDataset$(colName, type, propValue, storageBackend);
       case ValueType.Image:
         observable = this._processImage$(
           colName,
@@ -117,10 +154,20 @@ export class SerializationService {
         );
         break;
       case ValueType.Timeseries:
-        observable = this._processTimeseries$(colName, type, propValue);
+        observable = this._processTimeseries$(
+          colName,
+          type,
+          propValue,
+          storageBackend
+        );
         break;
       case ValueType.File:
-        observable = this._processFile$(colName, type, propValue);
+        observable = this._processFile$(
+          colName,
+          type,
+          propValue,
+          storageBackend
+        );
         break;
       default:
         if (this.processService.isReference(type)) {
@@ -156,34 +203,50 @@ export class SerializationService {
   private _processFile$(
     columnName: string,
     columnType: ValueType,
-    propertyValue: string
+    propertyValue: string,
+    storageBackend?: StorageBackend
   ): Observable<DatasetValue> {
-    return of({
-      column: { name: columnName, type: columnType },
-      value: propertyValue ?? '',
-    });
+    return this.storageService.getFile$(propertyValue, storageBackend).pipe(
+      map(file => {
+        this.jszip.file(file.name, file as Blob, { binary: true });
+        return {
+          column: { name: columnName, type: columnType },
+          value: file.name,
+        };
+      })
+    );
   }
 
   private _processDataset$(
     columnName: string,
     columnType: ValueType,
-    propertyValue: string
-  ): Observable<DatasetValue> {
-    return of({
-      column: { name: columnName, type: columnType },
-      value: propertyValue ?? '',
-    });
+    propertyValue: string,
+    storageBackend?: StorageBackend
+  ): Observable<DatasetValue[]> {
+    return this.storageService.getFile$(propertyValue, storageBackend).pipe(
+      concatMap(file => file.text()),
+      map(text => {
+        return this._datasetValuesFromCsv(text);
+      })
+    );
   }
 
   private _processTimeseries$(
     columnName: string,
     columnType: ValueType,
-    propertyValue: string
+    propertyValue: string,
+    storageBackend?: StorageBackend
   ): Observable<DatasetValue> {
-    return of({
-      column: { name: columnName, type: columnType },
-      value: propertyValue ?? '',
-    });
+    return this.storageService.getFile$(propertyValue, storageBackend).pipe(
+      concatMap(file => file.text()),
+      map(text => {
+        const timeseries = this._datasetValuesFromCsv(text, ',', false);
+        return {
+          column: { name: columnName, type: columnType },
+          value: timeseries[0].value,
+        };
+      })
+    );
   }
 
   private _processReference$(
@@ -198,6 +261,6 @@ export class SerializationService {
 }
 
 type DatasetColumn = { name: string; type: ValueType };
-type DatasetValue = { column: DatasetColumn; value: string };
+type DatasetValue = { column: DatasetColumn; value: string | string[] };
 type DatasetRow = DatasetValue[];
 type Dataset = { columns: DatasetColumn[]; rows: DatasetRow[] };
