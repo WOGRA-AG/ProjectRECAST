@@ -7,17 +7,16 @@ import {
   ValueType,
 } from '../../../../../build/openapi/recast';
 import {
+  concatMap,
   forkJoin,
   from,
   map,
-  mergeMap,
   Observable,
   of,
   take,
   toArray,
 } from 'rxjs';
 import {
-  ElementPropertyService,
   ElementFacadeService,
   ProcessFacadeService,
   StepPropertyService,
@@ -28,13 +27,13 @@ import {
   ViewModelValueType,
 } from '../../../model/element-view-model';
 import { FileService } from '../supabase/file.service';
+import { isFileType } from '../../../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SupabaseAdapter implements StorageAdapterInterface {
   constructor(
-    private elementPropertyService: ElementPropertyService,
     private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
     private processService: ProcessFacadeService,
@@ -44,15 +43,16 @@ export class SupabaseAdapter implements StorageAdapterInterface {
     return StorageBackend.Supabase;
   }
 
+  public getFile$(value: string): Observable<File> {
+    return this.fileService.getFile$(value).pipe(take(1));
+  }
+
   public loadValue$(
     elementViewProperty: ElementViewProperty
   ): Observable<ViewModelValueType> {
     const value = '' + elementViewProperty.value;
     const type = elementViewProperty.type;
-    if (
-      value &&
-      [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(type)
-    ) {
+    if (value && isFileType(type)) {
       return this.fileService.getFile$(value).pipe(take(1));
     }
     if (this.processService.isReference(type) && value) {
@@ -72,7 +72,7 @@ export class SupabaseAdapter implements StorageAdapterInterface {
     const processId = elementViewModel.process.id;
     const elementId = elementViewModel.element.id ?? 0;
     return from(elementViewModel.properties).pipe(
-      mergeMap(elemViewProp =>
+      concatMap(elemViewProp =>
         this.saveValue$(elemViewProp, processId, elementId)
       ),
       map((val, index) => ({
@@ -91,10 +91,10 @@ export class SupabaseAdapter implements StorageAdapterInterface {
   public deleteElement$(element: Element): Observable<void> {
     const observables: Observable<void>[] = [];
     element.elementProperties?.map(prop => {
-      const stepPropId = this.stepPropertyService.stepPropertyById(
+      const stepProperty = this.stepPropertyService.stepPropertyById(
         prop.stepPropertyId ?? 0
       );
-      if (stepPropId?.type === ValueType.File && prop.value) {
+      if (isFileType(stepProperty?.type!) && prop.value) {
         observables.push(this.fileService.deleteFile$(prop.value));
       }
     });
@@ -121,10 +121,7 @@ export class SupabaseAdapter implements StorageAdapterInterface {
     if (type === ValueType.Boolean && typeof value === 'undefined') {
       return of(value);
     }
-    if (
-      [ValueType.File, ValueType.Timeseries, ValueType.Image].includes(type) &&
-      value instanceof File
-    ) {
+    if (isFileType(type) && value instanceof File) {
       const path = `${processId}/${elementId}/${stepPropId}/${value.name}`;
       return this.fileService.saveFile$(path, value).pipe(take(1));
     }

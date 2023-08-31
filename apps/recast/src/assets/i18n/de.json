@@ -26,6 +26,9 @@
   "label.bundles": "Bundles",
   "label.bundle": "Bundle",
 
+  "err.required": "Erforderlich",
+  "err.invalidTypeFile": "Die Eingabe muss eine Datei sein",
+  "err.invalidExtension": "Die Dateiendung passt nicht zu dem geforderten Format",
   "err.min_char": "Mindestens {$INTERPOLATION} Buchstaben",
   "err.file.empty": "Die angegebene Datei scheint kein valides YAML Format zu besitzen",
   "err.process.invalid": "Prozess konnte nicht aus Definition gelesen werden",
@@ -33,6 +36,7 @@
   "err.stepProp.invalid": "StepProperty konnte nicht aus Definition gelesen werden",
   "err.dismiss": "OK",
   "err.resource_not_found": "Angeforderte Resource nicht gefunden",
+  "err.invalid_prop_type": "Ungültiger Property Type",
 
   "placeholder.upload_yaml": "Prozess-YAML Hochladen",
   "placeholder.yaml_info": "Alle Infos zu dem erwarteten Format gibt es in unseren <a href='https://google.com'>docs</a>",

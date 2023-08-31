@@ -26,12 +26,16 @@
   "label.bundles": "Bundles",
   "label.bundle": "Bundle",
 
+  "err.required": "Required",
+  "err.invalidTypeFile": "Please select a valid file for input.",
+  "err.invalidExtension": "Invalid file extension",
   "err.min_char": "Minimum of {$INTERPOLATION} characters",
   "err.file.empty": "No valid Yaml found in File",
   "err.process.invalid": "Could not parse valid Process from definition",
   "err.step.invalid": "Could not parse valid Step from definition",
   "err.stepProp.invalid": "Could not parse valid StepProperty from definition",
   "err.dismiss": "OK",
+  "err.invalid_prop_type": "Invalid Property Type",
 
   "placeholder.upload_yaml": "Upload Process-YAML",
   "placeholder.select_element": "Select element",

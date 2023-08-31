@@ -61,7 +61,7 @@ export class FileInputFieldComponent
   public changeFile(event: Event): void {
     const element = event.currentTarget as HTMLInputElement;
     const fileList: FileList | null = element.files;
-    if (!fileList) {
+    if (!fileList?.length) {
       return;
     }
     this.value = fileList[0];
@@ -80,5 +80,13 @@ export class FileInputFieldComponent
 
   public ngOnDestroy(): void {
     this.stateChanges.complete();
+  }
+
+  protected dropFile(fileList: FileList): void {
+    if (!fileList.length) {
+      return;
+    }
+    this.value = fileList[0];
+    this.fileChanged.emit(this.value);
   }
 }

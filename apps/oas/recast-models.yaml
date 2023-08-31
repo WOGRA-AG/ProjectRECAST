@@ -19,6 +19,7 @@ components:
         - boolean
         - date
         - color
+        - dataset
 
     StorageBackend:
       type: string
@@ -73,6 +74,12 @@ components:
 
     StepProperty:
       type: object
+      required:
+        - id
+        - name
+        - stepId
+        - required
+        - type
       properties:
         id:
           $ref: '#/components/schemas/Id'
@@ -88,6 +95,8 @@ components:
           type: string
         description:
           type: string
+        required:
+          type: boolean
         type:
           $ref: '#/components/schemas/ValueType'
 
