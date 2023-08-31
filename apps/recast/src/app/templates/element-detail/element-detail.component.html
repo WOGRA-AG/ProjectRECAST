@@ -126,14 +126,14 @@
       <ng-container *ngIf="!!elementViewModel?.currentStep">
         <app-submit-button
           *ngIf="!isLastStep"
-          [disabled]="loading"
+          [disabled]="loading || !f.valid"
           class="button"
           i18n="@@action.next_step">
           Take to the next step
         </app-submit-button>
         <app-submit-button
           *ngIf="isLastStep"
-          [disabled]="loading"
+          [disabled]="loading || !f.valid"
           class="button"
           i18n="@@action.finished">
           Finished

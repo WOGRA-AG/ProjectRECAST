@@ -21,6 +21,7 @@ export interface ElementViewProperty {
   hint: string;
   stepPropId: number;
   stepId: number;
+  required: boolean;
   storageBackend?: StorageBackend;
   defaultValue: ViewModelValueType;
   value?: ViewModelValueType;

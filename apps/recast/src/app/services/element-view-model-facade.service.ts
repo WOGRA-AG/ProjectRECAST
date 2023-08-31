@@ -280,6 +280,7 @@ export class ElementViewModelFacadeService {
           stepProperty.defaultValue,
           stepProperty.type!
         ),
+        required: stepProperty.required,
         value: elementProperty?.value,
       });
     });

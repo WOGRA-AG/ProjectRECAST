@@ -1,5 +1,11 @@
 import { Component, OnDestroy } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Element, Step, ValueType, Process } from 'build/openapi/recast';
 import {
@@ -30,6 +36,10 @@ import {
 } from '../../model/element-view-model';
 import { elementComparator } from '../../shared/util/common-utils';
 import { AlertService } from '../../services/alert.service';
+import {
+  fileExtensionValidator,
+  imageFileExtensionValidator,
+} from '../../validators/file-extension-validator';
 
 // TODO: refactor this class
 @Component({
@@ -198,7 +208,7 @@ export class ElementDetailComponent implements OnDestroy {
         val = val as Element;
         val = val.name!;
       }
-      this.updateControl(`${prop.stepPropId}`, val, prop.type);
+      this.updateControl(`${prop.stepPropId}`, val, prop.type, prop.required);
     }
     return of(undefined);
   }
@@ -285,7 +295,12 @@ export class ElementDetailComponent implements OnDestroy {
     ];
   }
 
-  private updateControl(name: string, value: any, type: ValueType): void {
+  private updateControl(
+    name: string,
+    value: any,
+    type: ValueType,
+    req = false
+  ): void {
     if (
       this.processService.isReference(type) &&
       !!Object.getOwnPropertyDescriptor(value, 'name')
@@ -297,7 +312,10 @@ export class ElementDetailComponent implements OnDestroy {
     if (!control) {
       this.propertiesForm.addControl(
         name,
-        new FormControl({ value, disabled: !this._currentStep })
+        new FormControl(
+          { value, disabled: !this._currentStep },
+          this._getValidators(type, req)
+        )
       );
       return;
     }
@@ -313,5 +331,22 @@ export class ElementDetailComponent implements OnDestroy {
         return stepIndex <= this.currentIndex ? { ...prop, value } : prop;
       }),
     };
+  }
+
+  private _getValidators(type: ValueType, required = false): ValidatorFn[] {
+    const validators: ValidatorFn[] = required ? [Validators.required] : [];
+    if (type === ValueType.Image) {
+      validators.push(imageFileExtensionValidator);
+    }
+    if (type === ValueType.Dataset || type === ValueType.Timeseries) {
+      validators.push(fileExtensionValidator(['csv']));
+    }
+    if (type === ValueType.Color) {
+      validators.push(Validators.pattern(/^#[0-9A-F]{6}$/i));
+    }
+    if (type === ValueType.Number) {
+      validators.push(Validators.pattern(/^-?\d+$/));
+    }
+    return validators;
   }
 }

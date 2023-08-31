@@ -26,6 +26,9 @@
   "label.bundles": "Bundles",
   "label.bundle": "Bundle",
 
+  "err.required": "Required",
+  "err.invalidTypeFile": "Please select a valid file for input.",
+  "err.invalidExtension": "Invalid file extension",
   "err.min_char": "Minimum of {$INTERPOLATION} characters",
   "err.file.empty": "No valid Yaml found in File",
   "err.process.invalid": "Could not parse valid Process from definition",
