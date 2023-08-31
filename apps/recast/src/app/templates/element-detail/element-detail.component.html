@@ -23,7 +23,7 @@
           [ngSwitch]="prop.type"
           *ngIf="propertiesForm.controls['' + prop.stepPropId]">
           <app-input-field
-            *ngSwitchCase="TypeEnum.Text"
+            *ngSwitchCase="ValueTypeEnum.Text"
             type="text"
             class="input"
             [hint]="prop.hint"
@@ -32,7 +32,7 @@
             icon="text_fields">
           </app-input-field>
           <app-input-field
-            *ngSwitchCase="TypeEnum.Number"
+            *ngSwitchCase="ValueTypeEnum.Number"
             class="input"
             type="number"
             [hint]="prop.hint"
@@ -42,45 +42,69 @@
           </app-input-field>
           <app-file-input-field
             class="input"
-            *ngSwitchCase="TypeEnum.File"
+            *ngSwitchCase="ValueTypeEnum.File"
+            [formControlName]="prop.stepPropId"
+            [label]="prop.label"></app-file-input-field>
+          <app-file-input-field
+            class="input"
+            *ngSwitchCase="ValueTypeEnum.Image"
+            [formControlName]="prop.stepPropId"
+            [label]="prop.label"></app-file-input-field>
+          <app-file-input-field
+            class="input"
+            *ngSwitchCase="ValueTypeEnum.Timeseries"
+            [formControlName]="prop.stepPropId"
+            [label]="prop.label"></app-file-input-field>
+          <app-file-input-field
+            class="input"
+            *ngSwitchCase="ValueTypeEnum.Dataset"
             [formControlName]="prop.stepPropId"
             [label]="prop.label"></app-file-input-field>
           <mat-checkbox
             class="input"
-            *ngSwitchCase="TypeEnum.Boolean"
+            *ngSwitchCase="ValueTypeEnum.Boolean"
             [formControlName]="prop.stepPropId"
             [labelPosition]="'after'"
             color="primary">
             {{ prop.label }}</mat-checkbox
           >
           <app-date-input-field
-            *ngSwitchCase="TypeEnum.Date"
+            *ngSwitchCase="ValueTypeEnum.Date"
             class="input"
             [hint]="prop.hint"
             [label]="prop.label"
             [formControlName]="prop.stepPropId" />
           <app-color-input-field
-            *ngSwitchCase="TypeEnum.Color"
+            *ngSwitchCase="ValueTypeEnum.Color"
             class="input"
             [label]="prop.label"
             [hint]="prop.hint"
             [formControlName]="prop.stepPropId" />
-          <div *ngSwitchDefault>
-            <app-select-field
-              i18n-hint="@@placeholder.select_element"
-              i18n-filterLabel="@@placeholder.filter_elements"
-              [formControlName]="prop.stepPropId"
-              [label]="prop.label"
-              filterIcon="filter_list"
-              filterLabel="Filter elements"
-              hint="Select element">
-              <mat-option
-                *ngFor="let e of elementsByReference(prop.type) | async"
-                [value]="e.id">
-                {{ e.name }}
-              </mat-option>
-            </app-select-field>
-          </div>
+          <ng-container *ngSwitchDefault>
+            <div *ngIf="isReference(prop.type)">
+              <app-select-field
+                i18n-hint="@@placeholder.select_element"
+                i18n-filterLabel="@@placeholder.filter_elements"
+                [formControlName]="prop.stepPropId"
+                [label]="prop.label"
+                filterIcon="filter_list"
+                filterLabel="Filter elements"
+                hint="Select element">
+                <mat-option
+                  *ngFor="let e of elementsByReference(prop.type) | async"
+                  [value]="e.id">
+                  {{ e.name }}
+                </mat-option>
+              </app-select-field>
+            </div>
+            <app-input-field
+              *ngIf="!isReference(prop.type)"
+              class="input"
+              i18n-label="@@err.invalid_prop_type"
+              label="Invalid property type"
+              [formControlName]="'invalid'">
+            </app-input-field>
+          </ng-container>
         </ng-container>
       </div>
     </div>
@@ -102,14 +126,14 @@
       <ng-container *ngIf="!!elementViewModel?.currentStep">
         <app-submit-button
           *ngIf="!isLastStep"
-          [disabled]="loading"
+          [disabled]="loading || !f.valid"
           class="button"
           i18n="@@action.next_step">
           Take to the next step
         </app-submit-button>
         <app-submit-button
           *ngIf="isLastStep"
-          [disabled]="loading"
+          [disabled]="loading || !f.valid"
           class="button"
           i18n="@@action.finished">
           Finished

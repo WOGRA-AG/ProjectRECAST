@@ -12,9 +12,17 @@ import {
   Profile,
   Step,
   StepProperty,
+  ValueType,
 } from '../../../../build/openapi/recast';
 import { camelCase, snakeCase, mapKeys } from 'lodash';
-import TypeEnum = StepProperty.TypeEnum;
+
+export const isFileType = (type: ValueType): boolean =>
+  [
+    ValueType.File,
+    ValueType.Timeseries,
+    ValueType.Image,
+    ValueType.Dataset,
+  ].includes(type);
 
 export const groupBy = <
   T extends Include<any, string | number | symbol>,
@@ -105,8 +113,8 @@ const isObjectofStepProperty = (obj: any): obj is StepProperty => {
     // 'defaultValue' in obj &&
     // 'description' in obj &&
     'type' in obj &&
-    (Object.values(TypeEnum).toString().includes(obj.type) ||
-      !Object.values(TypeEnum).toString().includes(obj.type))
+    (Object.values(ValueType).toString().includes(obj.type) ||
+      !Object.values(ValueType).toString().includes(obj.type))
   );
 };
 

@@ -2,24 +2,21 @@ import { Injectable } from '@angular/core';
 import { StorageAdapterInterface } from './storage-adapter-interface';
 import {
   Element,
-  ElementProperty,
   Process,
-  StepProperty,
+  StorageBackend,
+  ValueType,
 } from '../../../../../build/openapi/recast';
-import TypeEnum = StepProperty.TypeEnum;
-import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 import {
+  concatMap,
   forkJoin,
   from,
   map,
-  mergeMap,
   Observable,
   of,
   take,
   toArray,
 } from 'rxjs';
 import {
-  ElementPropertyService,
   ElementFacadeService,
   ProcessFacadeService,
   StepPropertyService,
@@ -27,31 +24,35 @@ import {
 import {
   ElementViewModel,
   ElementViewProperty,
-  ValueType,
+  ViewModelValueType,
 } from '../../../model/element-view-model';
 import { FileService } from '../supabase/file.service';
+import { isFileType } from '../../../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SupabaseAdapter implements StorageAdapterInterface {
   constructor(
-    private elementPropertyService: ElementPropertyService,
     private stepPropertyService: StepPropertyService,
     private elementService: ElementFacadeService,
     private processService: ProcessFacadeService,
     private fileService: FileService
   ) {}
-  public getType(): StorageBackendEnum {
-    return StorageBackendEnum.Postgres;
+  public getType(): StorageBackend {
+    return StorageBackend.Supabase;
+  }
+
+  public getFile$(value: string): Observable<File> {
+    return this.fileService.getFile$(value).pipe(take(1));
   }
 
   public loadValue$(
     elementViewProperty: ElementViewProperty
-  ): Observable<ValueType> {
+  ): Observable<ViewModelValueType> {
     const value = '' + elementViewProperty.value;
     const type = elementViewProperty.type;
-    if (value && type === TypeEnum.File) {
+    if (value && isFileType(type)) {
       return this.fileService.getFile$(value).pipe(take(1));
     }
     if (this.processService.isReference(type) && value) {
@@ -59,7 +60,7 @@ export class SupabaseAdapter implements StorageAdapterInterface {
         .elementById$(+value)
         .pipe(map(element => element.id ?? 0));
     }
-    if (value && type === TypeEnum.Boolean) {
+    if (value && type === ValueType.Boolean) {
       return of(value === 'true');
     }
     return of(value ?? '');
@@ -71,7 +72,7 @@ export class SupabaseAdapter implements StorageAdapterInterface {
     const processId = elementViewModel.process.id;
     const elementId = elementViewModel.element.id ?? 0;
     return from(elementViewModel.properties).pipe(
-      mergeMap(elemViewProp =>
+      concatMap(elemViewProp =>
         this.saveValue$(elemViewProp, processId, elementId)
       ),
       map((val, index) => ({
@@ -90,10 +91,10 @@ export class SupabaseAdapter implements StorageAdapterInterface {
   public deleteElement$(element: Element): Observable<void> {
     const observables: Observable<void>[] = [];
     element.elementProperties?.map(prop => {
-      const stepPropId = this.stepPropertyService.stepPropertyById(
+      const stepProperty = this.stepPropertyService.stepPropertyById(
         prop.stepPropertyId ?? 0
       );
-      if (stepPropId?.type === TypeEnum.File && prop.value) {
+      if (isFileType(stepProperty?.type!) && prop.value) {
         observables.push(this.fileService.deleteFile$(prop.value));
       }
     });
@@ -114,13 +115,13 @@ export class SupabaseAdapter implements StorageAdapterInterface {
     const value = elementViewProperty.value;
     const type = elementViewProperty.type;
     const stepPropId = elementViewProperty.stepPropId;
-    if (!value && type !== TypeEnum.Boolean) {
+    if (!value && type !== ValueType.Boolean) {
       return of(undefined);
     }
-    if (type === TypeEnum.Boolean && typeof value === 'undefined') {
+    if (type === ValueType.Boolean && typeof value === 'undefined') {
       return of(value);
     }
-    if (type === TypeEnum.File && value instanceof File) {
+    if (isFileType(type) && value instanceof File) {
       const path = `${processId}/${elementId}/${stepPropId}/${value.name}`;
       return this.fileService.saveFile$(path, value).pipe(take(1));
     }

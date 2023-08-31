@@ -2,3 +2,4 @@
 .branches
 .temp
 dump/
+node_modules/

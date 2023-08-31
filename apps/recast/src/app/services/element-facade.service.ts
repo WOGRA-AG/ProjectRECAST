@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
+  combineLatestWith,
   concatAll,
   concatMap,
   distinctUntilChanged,
@@ -27,12 +28,15 @@ import {
 } from '@supabase/supabase-js';
 import { SupabaseService, Tables } from './supabase.service';
 import { ElementPropertyService } from './element-property.service';
-import { elementComparator, groupBy$ } from '../shared/util/common-utils';
+import {
+  elementComparator,
+  groupBy$,
+  snakeCaseKeys,
+  camelCaseKeys,
+} from '../shared/util/common-utils';
 import { ProcessFacadeService } from './process-facade.service';
 import { StepFacadeService } from './step-facade.service';
-
-const snakeCase = require('snakecase-keys');
-const camelCase = require('camelcase-keys');
+import { StepPropertyService } from './step-property.service';
 
 @Injectable({
   providedIn: 'root',
@@ -47,7 +51,8 @@ export class ElementFacadeService {
     private readonly supabase: SupabaseService,
     private readonly elementPropertyService: ElementPropertyService,
     private readonly processService: ProcessFacadeService,
-    private readonly stepService: StepFacadeService
+    private readonly stepService: StepFacadeService,
+    private readonly stepPropertyService: StepPropertyService
   ) {
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadElements$()),
@@ -144,6 +149,39 @@ export class ElementFacadeService {
     );
   }
 
+  public elementsByProcessIdTillStep$(
+    processId: number,
+    stepId: number | null
+  ): Observable<Element[]> {
+    return this.stepService.stepsByProcessId$(processId).pipe(
+      combineLatestWith(this.elementsByProcessId$(processId)),
+      map(([steps, elements]) => {
+        const stepIds = steps.map(s => s.id);
+        const currIdx = stepId ? stepIds.indexOf(stepId) : null;
+        return elements
+          .filter(
+            e =>
+              e.currentStepId == null ||
+              (e.currentStepId &&
+                currIdx &&
+                currIdx >= stepIds.indexOf(e.currentStepId))
+          )
+          .map(el => {
+            if (!currIdx) {
+              return el;
+            }
+            el.elementProperties = el.elementProperties?.filter(prop => {
+              const stepProp = this.stepPropertyService.stepPropertyById(
+                prop.stepPropertyId ?? 0
+              );
+              return stepProp && currIdx > stepIds.indexOf(stepProp.stepId);
+            });
+            return el;
+          });
+      })
+    );
+  }
+
   public elementsByProcessId$(id: number | undefined): Observable<Element[]> {
     return this.elements$.pipe(
       map(elements => elements.filter(element => element.processId === id))
@@ -203,7 +241,7 @@ export class ElementFacadeService {
     const upsertElem = { id, name, processId, currentStepId };
     const upsert = this._supabaseClient
       .from(Tables.elements)
-      .upsert(snakeCase(upsertElem))
+      .upsert(snakeCaseKeys(upsertElem))
       .select();
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
@@ -211,7 +249,7 @@ export class ElementFacadeService {
         if (error) {
           throw error;
         }
-        return camelCase(data[0]);
+        return camelCaseKeys(data[0]);
       })
     );
   }
@@ -231,14 +269,16 @@ export class ElementFacadeService {
           const state = this._elements$.getValue();
           switch (payload.eventType) {
             case 'INSERT': {
-              changes$.next(this.insertElement(state, camelCase(payload.new)));
+              changes$.next(
+                this.insertElement(state, camelCaseKeys(payload.new))
+              );
               break;
             }
             case 'UPDATE': {
               const props = this.elementPropertyService.elementProperties;
               this.updateElementWithProperties$(
                 state,
-                camelCase(payload.new),
+                camelCaseKeys(payload.new),
                 props
               )
                 .pipe(distinctUntilChanged(elementComparator))
@@ -285,8 +325,8 @@ export class ElementFacadeService {
 
   private elementsToCamelCase(state: Element[]): Element[] {
     return state.map(element => {
-      element = camelCase(element);
-      element.elementProperties = element.elementProperties?.map(camelCase);
+      element = camelCaseKeys(element);
+      element.elementProperties = element.elementProperties?.map(camelCaseKeys);
       return element;
     });
   }

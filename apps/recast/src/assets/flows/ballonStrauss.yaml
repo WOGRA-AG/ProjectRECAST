@@ -6,12 +6,14 @@ steps:
         defaultValue: #ff0000
         description: Die Farbe des Ballons
         type: color
+        required: true
   - name: Ballon aufblasen
     stepProperties:
       - name: Volumen
         defaultValue: 2
         description: Das Volumen des Ballons in Litern
         type: number
+        required: true
   - name: Prüfen
     stepProperties:
       - name: Datum

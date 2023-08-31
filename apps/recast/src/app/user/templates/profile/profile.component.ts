@@ -1,15 +1,9 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import {
-  ElementProperty,
-  Profile,
-  StepProperty,
-} from '../../../../../build/openapi/recast';
+import { Profile, StorageBackend } from '../../../../../build/openapi/recast';
 import { UserFacadeService } from '../../services/user-facade.service';
 import { catchError, filter, of, Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
-import TypeEnum = StepProperty.TypeEnum;
-import StorageBackendEnum = ElementProperty.StorageBackendEnum;
 
 @Component({
   selector: 'app-account',
@@ -31,15 +25,12 @@ export class ProfileComponent implements OnDestroy {
     avatarUrl: '',
     shepardApiKey: new FormControl('', [Validators.minLength(this._minlength)]),
     shepardUrl: new FormControl('', [Validators.minLength(this._minlength)]),
-    storageBackend: new FormControl(StorageBackendEnum.Postgres, [
+    storageBackend: new FormControl(StorageBackend.Supabase, [
       Validators.required,
     ]),
   });
 
-  protected readonly StepProperty = StepProperty;
-  protected readonly TypeEnum = TypeEnum;
-  protected readonly ElementProperty = ElementProperty;
-  protected readonly StorageBackendEnum = StorageBackendEnum;
+  protected readonly StorageBackendEnum = StorageBackend;
   private readonly _destroy$: Subject<void> = new Subject<void>();
 
   constructor(

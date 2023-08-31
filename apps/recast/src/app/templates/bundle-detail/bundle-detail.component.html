@@ -4,7 +4,7 @@
   </app-page-header>
   <div id="dag" class="dag">
     <app-dag
-      *ngIf="!!links.length && !!nodes.length"
+      *ngIf="!!nodes.length"
       layout="dagre"
       (nodeClicked)="onNodeSelect($event)"
       [draggingEnabled]="false"
@@ -19,6 +19,7 @@
   <div class="buttons">
     <app-button-unfilled
       class="button"
+      size="medium"
       i18n="@@action.back"
       (click)="navigateBack()">
       Zurück
