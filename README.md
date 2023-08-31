@@ -1,4 +1,4 @@
-![Recast Logo](https://raw.githubusercontent.com/WOGRA-AG/RECAST/main/apps/recast/src/assets/logo/recast_logo.svg)
+![Recast Logo](https://raw.githubusercontent.com/WOGRA-AG/ProjectRECAST/main/apps/recast/src/assets/logo/recast_logo.svg)
 # RECAST - An Open-Source Digital Twin Framework for Industrial Production Environments
 
 Welcome to RECAST, an open-source digital twin framework specifically designed for use in industrial production environments.
