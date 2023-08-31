@@ -92,10 +92,18 @@ export class StepPropertyService {
   }
 
   private upsertStepProp$(
-    { id, name, defaultValue, description, type }: StepProperty,
+    { id, name, defaultValue, description, type, required }: StepProperty,
     stepId: number | undefined
   ): Observable<StepProperty> {
-    const upsertProp = { id, name, stepId, defaultValue, description, type };
+    const upsertProp = {
+      id,
+      name,
+      stepId,
+      defaultValue,
+      description,
+      type,
+      required,
+    };
     const upsert = this._supabaseClient
       .from(Tables.stepProperties)
       .upsert(snakeCase(upsertProp))
@@ -134,9 +142,9 @@ export class StepPropertyService {
               break;
             }
             case 'DELETE': {
-              const prop: StepProperty = payload.old;
-              if (prop.id) {
-                changes$.next(this.deleteProperty(state, prop.id));
+              const prop: Partial<{ [p: string]: any }> = payload.old;
+              if (prop['id']) {
+                changes$.next(this.deleteProperty(state, prop['id']));
               }
               break;
             }

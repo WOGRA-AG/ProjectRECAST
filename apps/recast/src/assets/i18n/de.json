@@ -26,6 +26,9 @@
   "label.bundles": "Bundles",
   "label.bundle": "Bundle",
 
+  "err.required": "Erforderlich",
+  "err.invalidTypeFile": "Die Eingabe muss eine Datei sein",
+  "err.invalidExtension": "Die Dateiendung passt nicht zu dem geforderten Format",
   "err.min_char": "Mindestens {$INTERPOLATION} Buchstaben",
   "err.file.empty": "Die angegebene Datei scheint kein valides YAML Format zu besitzen",
   "err.process.invalid": "Prozess konnte nicht aus Definition gelesen werden",

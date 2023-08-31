@@ -11,10 +11,23 @@
     <input
       matInput
       type="text"
+      [formControl]="formControl"
       [readonly]="true"
       [value]="value?.name ?? ''"
-      [disabled]="formControl.disabled"
       [ngClass]="{ 'file-name': !formControl.disabled }" />
+    <mat-error *ngIf="formControl.hasError('required')" i18n="@@err.required"
+      >Required</mat-error
+    >
+    <mat-error
+      *ngIf="formControl.hasError('invalidFileType')"
+      i18n="@@err.invalidTypeFile"
+      >Please select a valid file for input.</mat-error
+    >
+    <mat-error
+      *ngIf="formControl.hasError('invalidExtension')"
+      i18n="@@err.invalidExtension"
+      >Invalid file extension</mat-error
+    >
     <app-button-filled
       *ngIf="!formControl.disabled && !value"
       i18n="@@action.upload"
@@ -22,7 +35,7 @@
       type="button"
       [disabled]="formControl.disabled"
       [size]="size"
-      [color]="color">
+      [color]="formControl.valid ? color : 'warn'">
       Upload
     </app-button-filled>
     <app-button-unfilled
@@ -31,7 +44,7 @@
       matSuffix
       type="button"
       [size]="size"
-      [color]="color">
+      [color]="formControl.valid ? color : 'warn'">
       Upload
     </app-button-unfilled>
   </mat-form-field>
