@@ -1,10 +1,12 @@
 import {
   Component,
+  EventEmitter,
   HostBinding,
   Input,
   OnChanges,
   OnDestroy,
   Optional,
+  Output,
   Self,
   SimpleChanges,
 } from '@angular/core';
@@ -24,6 +26,7 @@ export class FileInputFieldComponent
   @Input() label = '';
   @Input() size: 'small' | 'medium' | 'large' = 'small';
   @Input() color: ColorPalette = 'primary';
+  @Output() fileChanged: EventEmitter<File> = new EventEmitter<File>();
   @HostBinding()
   id = `app-file-input-${FileInputFieldComponent._nextId++}`;
   public onTouch: any;
@@ -85,5 +88,7 @@ export class FileInputFieldComponent
       return;
     }
     this.formControl.setValue(fileList[0]);
+    this.value = fileList[0];
+    this.fileChanged.emit(this.value);
   }
 }
