@@ -7,6 +7,14 @@
     .mdc-button {
       margin-right: 5px;
     }
+    ngx-mat-file-input {
+      .mat-mdc-input-element {
+        cursor: pointer;
+      }
+      .mat-mdc-form-field-suffix {
+        display: none;
+      }
+    }
   }
 }
 

@@ -1,19 +1,17 @@
 <div
   class="container"
   role="group"
-  (click)="!formControl.disabled && fileInput.click()"
-  (keydown)="!formControl.disabled && fileInput.click()">
+  (click)="!formControl.disabled && fileInput.openFilePicker()"
+  (keydown)="!formControl.disabled && fileInput.openFilePicker()">
   <mat-form-field
     appearance="outline"
     appDragAndDrop
     (filesDropped)="dropFile($event)">
     <mat-label>{{ label }}</mat-label>
-    <input
-      matInput
-      type="text"
+    <ngx-mat-file-input
+      #fileInput
       [formControl]="formControl"
-      [readonly]="true"
-      [value]="value?.name ?? ''"
+      [color]="themePalette"
       [ngClass]="{ 'file-name': !formControl.disabled }" />
     <mat-error *ngIf="formControl.hasError('required')" i18n="@@err.required"
       >Required</mat-error
@@ -35,7 +33,7 @@
       type="button"
       [disabled]="formControl.disabled"
       [size]="size"
-      [color]="formControl.valid ? color : 'warn'">
+      [color]="formControl.valid ? themePalette : 'warn'">
       Upload
     </app-button-filled>
     <app-button-unfilled
@@ -44,14 +42,8 @@
       matSuffix
       type="button"
       [size]="size"
-      [color]="formControl.valid ? color : 'warn'">
+      [color]="formControl.valid ? themePalette : 'warn'">
       Upload
     </app-button-unfilled>
   </mat-form-field>
-  <input
-    #fileInput
-    class="input"
-    type="file"
-    (change)="changeFile($event)"
-    (blur)="onTouch()" />
 </div>

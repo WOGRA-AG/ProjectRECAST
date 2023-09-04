@@ -30,6 +30,7 @@ import { AutocompleteInputFieldComponent } from './components/molecules/autocomp
 import { HandwritingRecognitionComponent } from './components/molecules/handwriting-recognition/handwriting-recognition.component';
 import { DagComponent } from './components/organisms/dag/dag.component';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
+import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 
 const COMPONENTS = [
   ButtonFilledComponent,
@@ -80,6 +81,7 @@ const COMPONENTS = [
     HttpClientModule,
     AppRoutingModule,
     NgxGraphModule,
+    NgxMatFileInputModule,
   ],
 })
 export class DesignModule {}

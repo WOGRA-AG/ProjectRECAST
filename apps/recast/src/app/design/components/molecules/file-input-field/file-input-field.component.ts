@@ -11,6 +11,7 @@ import {
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { ColorPalette } from '../../../types';
 import { Subject } from 'rxjs';
+import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'app-file-input-field',
@@ -28,6 +29,7 @@ export class FileInputFieldComponent
   id = `app-file-input-${FileInputFieldComponent._nextId++}`;
   public onTouch: any;
   public stateChanges: Subject<void> = new Subject<void>();
+  protected themePalette = this.color as ThemePalette;
   private _value: File | null = null;
   private _onChange: any;
   private static _nextId = 0;
