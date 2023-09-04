@@ -1,12 +1,12 @@
 import {
   Component,
-  EventEmitter,
   HostBinding,
   Input,
+  OnChanges,
   OnDestroy,
   Optional,
-  Output,
   Self,
+  SimpleChanges,
 } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { ColorPalette } from '../../../types';
@@ -19,12 +19,11 @@ import { ThemePalette } from '@angular/material/core';
   styleUrls: ['./file-input-field.component.scss'],
 })
 export class FileInputFieldComponent
-  implements ControlValueAccessor, OnDestroy
+  implements ControlValueAccessor, OnDestroy, OnChanges
 {
   @Input() label = '';
   @Input() size: 'small' | 'medium' | 'large' = 'small';
   @Input() color: ColorPalette = 'primary';
-  @Output() fileChanged: EventEmitter<File> = new EventEmitter<File>();
   @HostBinding()
   id = `app-file-input-${FileInputFieldComponent._nextId++}`;
   public onTouch: any;
@@ -60,15 +59,6 @@ export class FileInputFieldComponent
     }
     this.stateChanges.next();
   }
-  public changeFile(event: Event): void {
-    const element = event.currentTarget as HTMLInputElement;
-    const fileList: FileList | null = element.files;
-    if (!fileList?.length) {
-      return;
-    }
-    this.value = fileList[0];
-    this.fileChanged.emit(this.value);
-  }
 
   public writeValue(val: File | null): void {
     this.value = val;
@@ -84,11 +74,16 @@ export class FileInputFieldComponent
     this.stateChanges.complete();
   }
 
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes['color']) {
+      this.themePalette = this.color as ThemePalette;
+    }
+  }
+
   protected dropFile(fileList: FileList): void {
     if (!fileList.length) {
       return;
     }
-    this.value = fileList[0];
-    this.fileChanged.emit(this.value);
+    this.formControl.setValue(fileList[0]);
   }
 }
