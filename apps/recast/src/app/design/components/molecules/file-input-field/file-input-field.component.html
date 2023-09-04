@@ -11,6 +11,7 @@
     <ngx-mat-file-input
       #fileInput
       [formControl]="formControl"
+      (change)="fileChangedHandler($event)"
       [color]="themePalette"
       [ngClass]="{ 'file-name': !formControl.disabled }" />
     <mat-error *ngIf="formControl.hasError('required')" i18n="@@err.required"

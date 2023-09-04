@@ -87,8 +87,21 @@ export class FileInputFieldComponent
     if (!fileList.length) {
       return;
     }
-    this.formControl.setValue(fileList[0]);
-    this.value = fileList[0];
+    this.updateValue(fileList[0]);
+  }
+
+  protected fileChangedHandler(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (!target.files) {
+      return;
+    }
+    this.dropFile(target.files);
+    target.value = '';
+  }
+
+  protected updateValue(value: File): void {
+    this.formControl.setValue(value);
+    this.value = value;
     this.fileChanged.emit(this.value);
   }
 }
