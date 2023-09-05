@@ -147,9 +147,11 @@ export class ElementDetailComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         take(1),
-        filter(confirmed => !!confirmed),
-        concatMap(() =>
-          this.elementViewService
+        concatMap(confirmed => {
+          if (!confirmed) {
+            return of(undefined);
+          }
+          return this.elementViewService
             .updateValuesFromElementViewModel$(newModel)
             .pipe(
               takeUntil(this._destroy$),
@@ -157,8 +159,8 @@ export class ElementDetailComponent implements OnDestroy {
                 this.alert.reportError(err.message);
                 return of(undefined);
               })
-            )
-        )
+            );
+        })
       )
       .subscribe(element => {
         this.loading = false;
@@ -345,7 +347,7 @@ export class ElementDetailComponent implements OnDestroy {
       validators.push(Validators.pattern(/^#[0-9A-F]{6}$/i));
     }
     if (type === ValueType.Number) {
-      validators.push(Validators.pattern(/^-?\d+$/));
+      validators.push(Validators.pattern(/^-?\d*([,.])?\d*$/));
     }
     return validators;
   }
