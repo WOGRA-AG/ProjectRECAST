@@ -14,6 +14,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { elementComparator } from '../../../../shared/util/common-utils';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-table',
@@ -22,6 +23,7 @@ import { elementComparator } from '../../../../shared/util/common-utils';
 })
 export class TableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort | null = null;
+  @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
 
   @Input() columnsSchema: TableColumn[] = [];
   @Input() data: Observable<T[]> = new Observable<T[]>();
@@ -65,7 +67,12 @@ export class TableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   public ngAfterViewInit(): void {
+    this.sort?.sortChange.pipe(takeUntil(this._destroy$)).subscribe(() => {
+      if (!this.paginator) return;
+      this.paginator.pageIndex = 0;
+    });
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
   public ngOnDestroy(): void {
