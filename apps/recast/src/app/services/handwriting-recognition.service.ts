@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -11,15 +11,9 @@ export class HandwritingRecognitionService {
 
   constructor(private readonly http: HttpClient) {}
 
-  public async predictImage(base64image: string): Promise<string> {
-    const prediction = (await firstValueFrom(
-      this.http.post(this.modelUrl, {
-        data: base64image,
-      })
-    )) as { prediction: string };
-    if (!Object.prototype.hasOwnProperty.call(prediction, 'prediction')) {
-      throw new Error('Predictions not found');
-    }
-    return prediction['prediction'];
+  public predictImage(image: File): Observable<string> {
+    return this.http.post(this.modelUrl, image, {
+      headers: { 'Content-Type': 'image/jpeg' },
+    }) as Observable<string>;
   }
 }

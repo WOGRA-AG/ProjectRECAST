@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { HandwritingRecognitionService } from 'src/app/services/handwriting-recognition.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-handwriting-recognition',
@@ -21,14 +22,9 @@ export class HandwritingRecognitionComponent {
       return;
     }
     const file = fileList[0];
-    const reader = new FileReader();
-    reader.onloadend = (): void => {
-      const base64data = reader.result?.toString();
-      if (!base64data) return;
-      this.handwritingRecognitionService.predictImage(base64data).then(id => {
-        this.recognized.emit(id);
-      });
-    };
-    reader.readAsDataURL(file);
+    this.handwritingRecognitionService
+      .predictImage(file)
+      .pipe(take(1))
+      .subscribe(r => this.recognized.emit(r));
   }
 }

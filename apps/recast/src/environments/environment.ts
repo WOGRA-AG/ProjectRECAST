@@ -9,8 +9,7 @@ export const environment = {
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn' +
     'JlZiI6ImZicmhjeXhyZm5mb2pmdWlvZXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njc5ODkz' +
     'NzksImV4cCI6MTk4MzU2NTM3OX0.B11sNHYYnEskYELwPz6LkKnl2z2sK3th5E5K9lLHlNU',
-  ocrInferenceUrl:
-    'https://trocr-predictor-default.models.os4ml.wogra.com/v1/models/handwriting-model:predict',
+  ocrInferenceUrl: 'https://trocr-yatai.models.recast.wogra.com/generate',
 };
 
 /*
