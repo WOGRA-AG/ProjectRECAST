@@ -12,8 +12,6 @@ export class HandwritingRecognitionService {
   constructor(private readonly http: HttpClient) {}
 
   public predictImage(image: File): Observable<string> {
-    return this.http.post(this.modelUrl, image, {
-      headers: { 'Content-Type': 'image/jpeg' },
-    }) as Observable<string>;
+    return this.http.post(this.modelUrl, image) as Observable<string>;
   }
 }
