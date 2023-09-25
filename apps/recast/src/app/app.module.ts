@@ -11,6 +11,7 @@ import { OverviewComponent } from './templates/overview/overview.component';
 import { ProcessDetailComponent } from './templates/process-detail/process-detail.component';
 import { SharedModule } from './shared/shared.module';
 import { ProcessNewComponent } from './templates/process-new/process-new.component';
+import { HandwritingRecognitionComponent } from './templates/organisms/handwriting-recognition/handwriting-recognition.component';
 import { i18nModule } from './i18n/i18n.module';
 import { CreateElementComponent } from './templates/create-element/create-element.component';
 import { ElementDetailComponent } from './templates/element-detail/element-detail.component';
@@ -31,6 +32,7 @@ import { BundleNewComponent } from './templates/bundle-new/bundle-new.component'
     ElementDetailComponent,
     BundleDetailComponent,
     BundleNewComponent,
+    HandwritingRecognitionComponent,
   ],
   imports: [
     BrowserModule,

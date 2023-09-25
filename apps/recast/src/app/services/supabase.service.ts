@@ -88,6 +88,7 @@ export class SupabaseService {
   }
 }
 
+// TODO: move to oas?
 export enum Tables {
   bundles = 'bundles',
   processes = 'processes',

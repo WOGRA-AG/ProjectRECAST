@@ -27,7 +27,6 @@ import { FileInputFieldComponent } from './components/molecules/file-input-field
 import { DateInputFieldComponent } from './components/molecules/date-input-field/date-input-field.component';
 import { ColorInputFieldComponent } from './components/molecules/color-input-field/color-input-field.component';
 import { AutocompleteInputFieldComponent } from './components/molecules/autocomplete-input-field/autocomplete-input-field.component';
-import { HandwritingRecognitionComponent } from './components/molecules/handwriting-recognition/handwriting-recognition.component';
 import { DagComponent } from './components/organisms/dag/dag.component';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { NgxMatFileInputModule } from '@angular-material-components/file-input';
@@ -58,19 +57,13 @@ const COMPONENTS = [
 ];
 
 @NgModule({
-  declarations: [
-    ...COMPONENTS,
-    AutocompleteInputFieldComponent,
-    HandwritingRecognitionComponent,
-    DagComponent,
-  ],
+  declarations: [...COMPONENTS, AutocompleteInputFieldComponent, DagComponent],
   exports: [
     ...COMPONENTS,
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
     AutocompleteInputFieldComponent,
-    HandwritingRecognitionComponent,
     DagComponent,
   ],
   imports: [

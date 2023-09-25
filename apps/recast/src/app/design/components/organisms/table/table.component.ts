@@ -13,7 +13,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
-import { elementComparator } from '../../../../shared/util/common-utils';
 import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
@@ -31,7 +30,7 @@ export class TableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
   @Input() selectable = false;
   @Input() multipleSelect = true;
   @Input() selection: T[] = [];
-  @Input() compareWith: (o1: T, o2: T) => boolean = elementComparator;
+  @Input() compareWith: (o1: T, o2: T) => boolean = this.compare;
 
   @Output() deleteClicked: EventEmitter<T> = new EventEmitter<T>();
   @Output() saveClicked: EventEmitter<T> = new EventEmitter<T>();
@@ -107,6 +106,10 @@ export class TableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
     return this.selectable
       ? ['select', ...this.columnsSchema.map(col => col.key)]
       : this.columnsSchema.map(col => col.key);
+  }
+
+  private compare(o1: T, o2: T): boolean {
+    return JSON.stringify(o1) === JSON.stringify(o2);
   }
 }
 

@@ -218,8 +218,8 @@ export class SerializationService {
   }
 
   private _processDataset$(
-    columnName: string,
-    columnType: ValueType,
+    _1: string,
+    _2: ValueType,
     propertyValue: string,
     storageBackend?: StorageBackend
   ): Observable<DatasetValue[]> {
