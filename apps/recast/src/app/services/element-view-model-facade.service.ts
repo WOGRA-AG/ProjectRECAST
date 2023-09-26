@@ -282,6 +282,7 @@ export class ElementViewModelFacadeService {
         ),
         required: stepProperty.required,
         value: elementProperty?.value,
+        predictionTemplate: stepProperty.predictionTemplate,
       });
     });
     return elementViewProperties;

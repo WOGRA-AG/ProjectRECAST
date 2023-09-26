@@ -212,7 +212,9 @@ export class StepPropertyService {
   }
 
   private loadProperties$(): Observable<StepProperty[]> {
-    const select = this._supabaseClient.from(Tables.stepProperties).select();
+    const select = this._supabaseClient.from(Tables.stepProperties).select(`
+    *,
+    prediction_template: ${Tables.predictionTemplates} (*)`);
     return from(select).pipe(
       map(({ data, error }) => {
         if (error) {

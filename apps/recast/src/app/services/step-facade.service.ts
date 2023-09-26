@@ -204,7 +204,10 @@ export class StepFacadeService {
   private loadSteps$(): Observable<Step[]> {
     const select = this._supabaseClient.from(Tables.steps).select(`
         *,
-        step_properties: ${Tables.stepProperties} (*)
+        step_properties: ${Tables.stepProperties} (
+          *,
+          prediction_template: ${Tables.predictionTemplates} (*)
+        )
       `);
     return from(select).pipe(
       map(({ data, error }) => {
