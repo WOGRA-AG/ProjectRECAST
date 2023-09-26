@@ -198,9 +198,9 @@ components:
             $ref: '#/components/schemas/StepProperty'
         condition:
           properties:
-            compare:
+            comparator:
               $ref: '#/components/schemas/Comparisons'
-            value:
+            compValue:
               type: array
               items:
                 type: string

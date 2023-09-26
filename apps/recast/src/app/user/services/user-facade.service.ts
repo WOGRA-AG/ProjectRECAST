@@ -18,9 +18,11 @@ import {
   Subject,
 } from 'rxjs';
 import { Profile } from '../../../../build/openapi/recast';
-import { elementComparator } from '../../shared/util/common-utils';
-const snakeCase = require('snakecase-keys');
-const camelCase = require('camelcase-keys');
+import {
+  elementComparator,
+  snakeCaseKeys,
+  camelCaseKeys,
+} from '../../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -68,7 +70,7 @@ export class UserFacadeService {
     };
     const upsert = this._supabaseClient
       .from(Tables.profiles)
-      .upsert(snakeCase(update));
+      .upsert(snakeCaseKeys(update));
     return from(upsert).pipe(map(({ error }) => error!));
   }
 
@@ -101,7 +103,7 @@ export class UserFacadeService {
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: Tables.profiles },
         payload => {
-          changes$.next(camelCase(payload.new));
+          changes$.next(camelCaseKeys(payload.new));
         }
       )
       .subscribe();
@@ -118,7 +120,7 @@ export class UserFacadeService {
         if (error) {
           throw error;
         }
-        return camelCase(profile) as Profile;
+        return camelCaseKeys(profile) as Profile;
       })
     );
   }

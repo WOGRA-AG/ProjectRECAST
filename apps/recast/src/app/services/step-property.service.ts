@@ -22,9 +22,7 @@ import {
   Subject,
 } from 'rxjs';
 import { elementComparator } from '../shared/util/common-utils';
-
-const snakeCase = require('snakecase-keys');
-const camelCase = require('camelcase-keys');
+import { snakeCaseKeys, camelCaseKeys } from '../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -106,7 +104,7 @@ export class StepPropertyService {
     };
     const upsert = this._supabaseClient
       .from(Tables.stepProperties)
-      .upsert(snakeCase(upsertProp))
+      .upsert(snakeCaseKeys(upsertProp))
       .select();
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
@@ -114,7 +112,7 @@ export class StepPropertyService {
         if (error) {
           throw error;
         }
-        return camelCase(data[0]);
+        return camelCaseKeys(data[0]);
       })
     );
   }
@@ -134,11 +132,15 @@ export class StepPropertyService {
           const state = this._stepProperties$.getValue();
           switch (payload.eventType) {
             case 'INSERT': {
-              changes$.next(this.insertProperty(state, camelCase(payload.new)));
+              changes$.next(
+                this.insertProperty(state, camelCaseKeys(payload.new))
+              );
               break;
             }
             case 'UPDATE': {
-              changes$.next(this.updateProperty(state, camelCase(payload.new)));
+              changes$.next(
+                this.updateProperty(state, camelCaseKeys(payload.new))
+              );
               break;
             }
             case 'DELETE': {
@@ -165,7 +167,7 @@ export class StepPropertyService {
         if (error) {
           throw error;
         }
-        return data?.map(camelCase);
+        return data?.map(camelCaseKeys);
       })
     );
   }

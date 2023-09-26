@@ -25,10 +25,12 @@ import {
   toArray,
 } from 'rxjs';
 import { StepPropertyService } from './step-property.service';
-import { elementComparator, groupBy$ } from '../shared/util/common-utils';
-
-const snakeCase = require('snakecase-keys');
-const camelCase = require('camelcase-keys');
+import {
+  elementComparator,
+  groupBy$,
+  camelCaseKeys,
+  snakeCaseKeys,
+} from '../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -140,7 +142,7 @@ export class StepFacadeService {
     const upsertStep = { id, name, processId };
     const upsert = this._supabaseClient
       .from(Tables.steps)
-      .upsert(snakeCase(upsertStep))
+      .upsert(snakeCaseKeys(upsertStep))
       .select();
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
@@ -148,7 +150,7 @@ export class StepFacadeService {
         if (error) {
           throw error;
         }
-        return camelCase(data[0]);
+        return camelCaseKeys(data[0]);
       })
     );
   }
@@ -168,14 +170,14 @@ export class StepFacadeService {
           const state = this._steps$.getValue();
           switch (payload.eventType) {
             case 'INSERT': {
-              changes$.next(this.insertStep(state, camelCase(payload.new)));
+              changes$.next(this.insertStep(state, camelCaseKeys(payload.new)));
               break;
             }
             case 'UPDATE': {
               const props = this.stepPropertyService.stepProperties;
               this.updateStepWithProperties$(
                 state,
-                camelCase(payload.new),
+                camelCaseKeys(payload.new),
                 props
               ).subscribe(steps => {
                 changes$.next(steps);
@@ -216,8 +218,8 @@ export class StepFacadeService {
 
   private stepsToCamelCase(state: Step[]): Step[] {
     return state.map(step => {
-      step = camelCase(step);
-      step.stepProperties = step.stepProperties?.map(camelCase);
+      step = camelCaseKeys(step);
+      step.stepProperties = step.stepProperties?.map(camelCaseKeys);
       return step;
     });
   }
