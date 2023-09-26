@@ -98,4 +98,5 @@ export enum Tables {
   elementProperties = 'element_properties',
   profiles = 'profiles',
   values = 'values',
+  predictionTemplates = 'prediction_templates',
 }

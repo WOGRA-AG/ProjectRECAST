@@ -21,5 +21,11 @@ steps:
         type: number
       - name: LSS[Mpa]
         type: number
+        predictionTemplate:
+          input:
+            - Thermography
+          comparator: in
+          compValue:
+            - True
       - name: area[mm2]
         type: number

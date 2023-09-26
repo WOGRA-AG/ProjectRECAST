@@ -191,16 +191,20 @@ components:
           $ref: '#/components/schemas/UuId'
 
     PredictionTemplate:
+      required:
+        - id
       properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        stepPropertyId:
+          $ref: '#/components/schemas/Id'
         input:
           type: array
           items:
-            $ref: '#/components/schemas/StepProperty'
-        condition:
-          properties:
-            comparator:
-              $ref: '#/components/schemas/Comparisons'
-            compValue:
-              type: array
-              items:
-                type: string
+            type: string
+        comparator:
+          $ref: '#/components/schemas/Comparisons'
+        compValue:
+          type: array
+          items:
+            type: string

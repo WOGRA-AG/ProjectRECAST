@@ -16,13 +16,18 @@ import {
   from,
   map,
   merge,
-  mergeAll,
   Observable,
   of,
   Subject,
+  tap,
+  zip,
 } from 'rxjs';
-import { elementComparator } from '../shared/util/common-utils';
-import { snakeCaseKeys, camelCaseKeys } from '../shared/util/common-utils';
+import {
+  elementComparator,
+  snakeCaseKeys,
+  camelCaseKeys,
+} from '../shared/util/common-utils';
+import { PredictionTemplateService } from './prediction-template.service';
 
 @Injectable({
   providedIn: 'root',
@@ -32,12 +37,24 @@ export class StepPropertyService {
     new BehaviorSubject<StepProperty[]>([]);
   private readonly _supabaseClient: SupabaseClient = this.supabase.supabase;
 
-  constructor(private readonly supabase: SupabaseService) {
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly predictionTemplateService: PredictionTemplateService
+  ) {
+    const predictionTemplateChanges$ =
+      predictionTemplateService.predictionTemplates$.pipe(
+        concatMap(() => this.loadProperties$()),
+        catchError(() => of([]))
+      );
     const sessionChanges$ = supabase.currentSession$.pipe(
       concatMap(() => this.loadProperties$()),
       catchError(() => of([]))
     );
-    merge(sessionChanges$, this.propertyChanges$()).subscribe(properties => {
+    merge(
+      sessionChanges$,
+      this.propertyChanges$(),
+      predictionTemplateChanges$
+    ).subscribe(properties => {
       this._stepProperties$.next(properties);
     });
   }
@@ -54,10 +71,29 @@ export class StepPropertyService {
     prop: StepProperty,
     stepId: number | undefined
   ): Observable<StepProperty> {
-    return this.upsertStepProp$(prop, stepId);
+    return this.upsertStepProp$(prop, stepId).pipe(
+      map(stepProp => {
+        stepProp.predictionTemplate = prop.predictionTemplate;
+        if (stepProp.predictionTemplate) {
+          stepProp.predictionTemplate.stepPropertyId = stepProp.id;
+        }
+        return stepProp;
+      }),
+      concatMap(stepProp => {
+        const template = stepProp.predictionTemplate;
+        if (template) {
+          return zip(
+            of(stepProp),
+            this.predictionTemplateService.savePredictionTemplate$(template)
+          );
+        }
+        return zip(of(stepProp));
+      }),
+      map(([stepProp]) => stepProp)
+    );
   }
 
-  public deleteProcess$(id: number): Observable<PostgrestError> {
+  public deleteStepPropById$(id: number): Observable<PostgrestError> {
     const del = this._supabaseClient
       .from(Tables.stepProperties)
       .delete()
@@ -68,10 +104,10 @@ export class StepPropertyService {
     );
   }
 
-  public stepPropertyById$(id: number): Observable<StepProperty> {
+  public stepPropertyById$(id: number): Observable<StepProperty | undefined> {
     return this._stepProperties$.pipe(
-      mergeAll(),
-      filter(step => step.id === id)
+      map(props => props.find(prop => prop.id === id)),
+      distinctUntilChanged(elementComparator)
     );
   }
 
@@ -113,6 +149,11 @@ export class StepPropertyService {
           throw error;
         }
         return camelCaseKeys(data[0]);
+      }),
+      tap(stepProp => {
+        this._stepProperties$.next(
+          this.updateProperty(this._stepProperties$.getValue(), stepProp)
+        );
       })
     );
   }
@@ -132,15 +173,25 @@ export class StepPropertyService {
           const state = this._stepProperties$.getValue();
           switch (payload.eventType) {
             case 'INSERT': {
-              changes$.next(
-                this.insertProperty(state, camelCaseKeys(payload.new))
-              );
+              const property = camelCaseKeys(payload.new) as StepProperty;
+              if (!property.predictionTemplate) {
+                property.predictionTemplate =
+                  this.predictionTemplateService.predictionTemplateByStepPropertyId(
+                    property.id
+                  );
+              }
+              changes$.next(this.insertProperty(state, property));
               break;
             }
             case 'UPDATE': {
-              changes$.next(
-                this.updateProperty(state, camelCaseKeys(payload.new))
-              );
+              const property = camelCaseKeys(payload.new) as StepProperty;
+              if (!property.predictionTemplate) {
+                property.predictionTemplate =
+                  this.predictionTemplateService.predictionTemplateByStepPropertyId(
+                    property.id
+                  );
+              }
+              changes$.next(this.updateProperty(state, property));
               break;
             }
             case 'DELETE': {
@@ -176,6 +227,10 @@ export class StepPropertyService {
     state: StepProperty[],
     prop: StepProperty
   ): StepProperty[] {
+    const exists = !!state.find(value => value.id === prop.id);
+    if (!exists) {
+      return this.insertProperty(state, prop);
+    }
     return state.map(value => (value.id === prop.id ? prop : value));
   }
 
