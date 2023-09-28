@@ -23,9 +23,9 @@ steps:
         type: number
         predictionTemplate:
           input:
-            - Thermography
-          comparator: in
+            - Image
+          comparator: gte
           compValue:
-            - True
+            - 36
       - name: area[mm2]
         type: number

@@ -223,6 +223,10 @@ export class StepFacadeService {
     return state.map(step => {
       step = camelCaseKeys(step);
       step.stepProperties = step.stepProperties?.map(camelCaseKeys);
+      step.stepProperties?.map(prop => {
+        prop.predictionTemplate = camelCaseKeys(prop.predictionTemplate);
+        return prop;
+      });
       return step;
     });
   }

@@ -220,7 +220,13 @@ export class StepPropertyService {
         if (error) {
           throw error;
         }
-        return data?.map(camelCaseKeys);
+        return data?.map((prop: StepProperty) => {
+          prop = camelCaseKeys(prop);
+          if (prop.predictionTemplate) {
+            prop.predictionTemplate = camelCaseKeys(prop.predictionTemplate);
+          }
+          return prop;
+        });
       })
     );
   }
