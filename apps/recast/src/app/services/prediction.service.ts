@@ -17,7 +17,6 @@ import { PredictionTemplate, ValueType } from '../../../build/openapi/recast';
 import { StepPropertyService } from './step-property.service';
 import { environment } from '../../environments/environment';
 import { toLower } from 'lodash';
-import { PredictionTemplateService } from './prediction-template.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,8 +26,7 @@ export class PredictionService {
     private readonly http: HttpClient,
     private readonly elementService: ElementFacadeService,
     private readonly storageService: StorageService,
-    private readonly stepPropertyService: StepPropertyService,
-    private readonly predictionTemplateService: PredictionTemplateService
+    private readonly stepPropertyService: StepPropertyService
   ) {}
 
   public predict(
