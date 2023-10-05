@@ -19,6 +19,11 @@ steps:
     stepProperties:
       - name: Force[N]
         type: number
+      - name: Good
+        type: boolean
+        predictionTemplate:
+          input:
+            - Thermography
       - name: LSS[Mpa]
         type: number
         predictionTemplate:
