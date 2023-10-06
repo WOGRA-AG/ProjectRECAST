@@ -1,3 +1,5 @@
+@use '@wogra/wogra-ui-kit/src/lib/themes/media-queries.scss' as mq;
+
 .bundle-new-wrapper {
   display: flex;
   flex-direction: column;
@@ -11,6 +13,43 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+  }
+
+  .form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .file-upload {
+      min-width: 300px;
+      max-width: 388px;
+      height: 224px;
+      @media #{mq.$medium-and-up} {
+        height: 338px;
+        max-width: 903px;
+      }
+      .inline {
+        width: 100%;
+        gap: 5px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+    .margin-top {
+      width: 100%;
+      margin-top: 10px;
+      display: flex;
+
+      @media #{mq.$medium-and-up} {
+        flex-direction: row;
+        justify-content: space-evenly;
+      }
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+    }
   }
 }
 .header {

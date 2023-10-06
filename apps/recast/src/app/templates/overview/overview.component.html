@@ -1,37 +1,42 @@
-<div class="overview-wrapper">
-  <app-page-header i18n="@@header.overview">Overview</app-page-header>
-
-  <div class="grid-wrapper">
-    <app-tab-group
-      class="tabs"
-      [labels]="tabs"
-      [index]="currentIndex"
-      (indexChanged)="changeContent($event)"></app-tab-group>
-    <app-table
-      class="table"
-      [selectable]="true"
-      [multipleSelect]="true"
-      [columnsSchema]="dataColumns"
-      [(selection)]="selectedRows"
-      [compareWith]="comparator"
-      [data]="tableData$"
-      (deleteClicked)="deleteTableRow($event)"
-      (saveClicked)="editTableRow($event)"
-      (rowClicked)="navigateTo($event)"></app-table>
-    <div class="actions">
-      <app-icon-button
-        *ngIf="!!selectedRows.length"
-        color="warn"
-        class="delete-button"
-        svgIcon="rcst_delete"
-        (click)="deleteSelectedRows()"></app-icon-button>
-      <app-create-button
-        *ngIf="currentIndex === 2"
-        class="button"
-        routerLink="/overview/bundle"
-        i18n="@@action.create">
-        Create
-      </app-create-button>
+<flo-default-template>
+  <flo-page-header header role="heading" i18n="@@header.overview">
+    Overview
+  </flo-page-header>
+  <ng-container main>
+    <div class="overview-wrapper">
+      <div class="grid-wrapper">
+        <flo-tab-group
+          class="tabs"
+          [labels]="tabs"
+          [index]="currentIndex"
+          (indexChanged)="changeContent($event)"></flo-tab-group>
+        <flo-editable-table
+          class="table"
+          [selectable]="true"
+          [multipleSelect]="true"
+          [columnsSchema]="dataColumns"
+          [(selection)]="selectedRows"
+          [compareWith]="comparator"
+          [data]="tableData$"
+          (deleteClicked)="deleteTableRow($event)"
+          (saveClicked)="editTableRow($event)"
+          (rowClicked)="navigateTo($event)"></flo-editable-table>
+        <div class="actions">
+          <flo-icon-button
+            *ngIf="!!selectedRows.length"
+            color="warn"
+            class="delete-button"
+            svgIcon="delete"
+            (click)="deleteSelectedRows()"></flo-icon-button>
+          <flo-create-button
+            *ngIf="currentIndex === 2"
+            class="button"
+            routerLink="/overview/bundle"
+            i18n="@@action.create">
+            Create
+          </flo-create-button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+  </ng-container>
+</flo-default-template>

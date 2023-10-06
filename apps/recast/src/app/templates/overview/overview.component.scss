@@ -1,5 +1,4 @@
-@import 'src/app/design/material/essentials/media-queries';
-
+@use '@wogra/wogra-ui-kit/src/lib/themes/media-queries.scss' as mq;
 .overview-wrapper {
   .table {
     .mat-column-id {
@@ -18,7 +17,7 @@
       display: none;
     }
 
-    @media #{$medium-and-up} {
+    @media #{mq.$medium-and-up} {
       .mat-column-bundleId,
       .mat-column-processId {
         display: table-cell;
@@ -42,7 +41,7 @@
       'table'
       'button';
 
-    @media #{$medium-and-up} {
+    @media #{mq.$medium-and-up} {
       grid-template-columns: auto auto;
       grid-template-rows: auto auto;
       grid-template-areas:
@@ -63,7 +62,7 @@
       grid-area: button;
       justify-self: center;
 
-      @media #{$medium-and-up} {
+      @media #{mq.$medium-and-up} {
         justify-self: end;
       }
     }

@@ -10,7 +10,7 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
+import { Breadcrumb } from '@wogra/wogra-ui-kit';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { AlertService } from '../../services/alert.service';

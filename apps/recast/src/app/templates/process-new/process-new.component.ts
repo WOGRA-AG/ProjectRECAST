@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
+import { Breadcrumb } from '@wogra/wogra-ui-kit';
 import { yamlToProcess$ } from '../../shared/util/common-utils';
 import { ProcessFacadeService } from '../../services';
 import { catchError, concatMap, filter, of, Subject, take } from 'rxjs';
@@ -31,7 +31,7 @@ export class ProcessNewComponent implements OnDestroy {
     this._destroy$.complete();
   }
 
-  public uploadFile(file: File | null): void {
+  public uploadFile(file: File | undefined): void {
     if (!file) {
       return;
     }
