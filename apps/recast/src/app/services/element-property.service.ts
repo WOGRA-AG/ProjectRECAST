@@ -19,9 +19,7 @@ import {
   Subject,
 } from 'rxjs';
 import { ElementProperty } from '../../../build/openapi/recast';
-
-const snakeCase = require('snakecase-keys');
-const camelCase = require('camelcase-keys');
+import { camelCaseKeys, snakeCaseKeys } from '../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -95,7 +93,7 @@ export class ElementPropertyService {
   ): Observable<ElementProperty> {
     const upsert = this._supabaseClient
       .from(Tables.elementProperties)
-      .upsert(snakeCase(elementProperty), {
+      .upsert(snakeCaseKeys(elementProperty), {
         onConflict: 'step_property_id, element_id',
       })
       .select();
@@ -105,7 +103,7 @@ export class ElementPropertyService {
         if (error) {
           throw error;
         }
-        return camelCase(data[0]);
+        return camelCaseKeys(data[0]);
       })
     );
   }
@@ -128,13 +126,13 @@ export class ElementPropertyService {
           switch (payload.eventType) {
             case 'INSERT': {
               changes$.next(
-                this.insertElementProperty(state, camelCase(payload.new))
+                this.insertElementProperty(state, camelCaseKeys(payload.new))
               );
               break;
             }
             case 'UPDATE': {
               changes$.next(
-                this.updateElementProperty(state, camelCase(payload.new))
+                this.updateElementProperty(state, camelCaseKeys(payload.new))
               );
               break;
             }
@@ -164,7 +162,7 @@ export class ElementPropertyService {
         if (error) {
           throw error;
         }
-        return data?.map(camelCase);
+        return data?.map(camelCaseKeys);
       })
     );
   }

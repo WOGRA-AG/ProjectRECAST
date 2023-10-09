@@ -1,5 +1,4 @@
-@import 'src/app/design/material/essentials/media-queries';
-
+@use '@wogra/wogra-ui-kit/src/lib/themes/media-queries.scss' as mq;
 .content-wrapper {
   display: flex;
   flex-direction: column;
@@ -10,7 +9,7 @@
     grid-template-columns: 1fr;
     column-gap: 1rem;
 
-    @media #{$medium-and-up} {
+    @media #{mq.$medium-and-up} {
       grid-template-columns: 1fr 1fr;
     }
 

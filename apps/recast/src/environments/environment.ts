@@ -10,6 +10,7 @@ export const environment = {
     'JlZiI6ImZicmhjeXhyZm5mb2pmdWlvZXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njc5ODkz' +
     'NzksImV4cCI6MTk4MzU2NTM3OX0.B11sNHYYnEskYELwPz6LkKnl2z2sK3th5E5K9lLHlNU',
   ocrInferenceUrl: 'https://trocr-yatai.models.recast.wogra.com/generate',
+  modelPrefix: 'models.recast.wogra.com',
 };
 
 /*

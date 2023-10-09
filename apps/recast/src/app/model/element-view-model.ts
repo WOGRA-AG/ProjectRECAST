@@ -4,6 +4,7 @@ import {
   Step,
   StorageBackend,
   ValueType,
+  PredictionTemplate,
 } from '../../../build/openapi/recast';
 
 export interface ElementViewModel {
@@ -25,6 +26,7 @@ export interface ElementViewProperty {
   storageBackend?: StorageBackend;
   defaultValue: ViewModelValueType;
   value?: ViewModelValueType;
+  predictionTemplate?: PredictionTemplate;
 }
 
 export type ShepardValue = { type: string; value: any };

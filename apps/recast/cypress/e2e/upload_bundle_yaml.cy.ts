@@ -28,18 +28,20 @@ describe('Bundles', () => {
         cy.get('tbody > tr')
           .its('length')
           .then(length => {
-            cy.get('app-button-filled > .mdc-button').click();
-            cy.get('#file-input')
+            cy.get('[data-testid="create-bundle-button"]').click();
+            cy.get('[data-testid="file-input"]')
               .invoke('show')
               .selectFile('cypress/fixtures/example_process.yaml');
-            cy.get('app-button-filled > .mdc-button').click();
+            cy.get(
+              'flo-button-filled > flo-new-button.medium > .mat-ripple'
+            ).click();
             cy.wait(waitForUpdate);
             cy.get('tbody > tr').its('length').should('be.gt', length);
             cy.get(
-              ':last-child > .cdk-column-isDelete > .cell > app-icon-button.ng-star-inserted > .mdc-icon-button > .mat-mdc-button-touch-target'
+              ':last-child > .cdk-column-isDelete > .cell > flo-icon-button.ng-star-inserted > .mdc-icon-button > .mat-mdc-button-touch-target'
             ).click();
             cy.get(
-              'app-submit-button > app-button-filled > .mdc-button'
+              'flo-submit-button > flo-button-filled > .mdc-button'
             ).click();
             cy.wait(waitForDelete);
             cy.get('tbody > tr').its('length').should('eq', length);

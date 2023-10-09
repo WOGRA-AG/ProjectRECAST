@@ -1,4 +1,4 @@
-import { TableColumn } from '../design/components/organisms/table/table.component';
+import { TableColumn } from '@wogra/wogra-ui-kit';
 import { BundleService, ProcessFacadeService } from '../services';
 
 export interface TableColumnDef {

@@ -8,9 +8,8 @@ import {
 } from 'src/app/services';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { TableColumn } from '../../design/components/organisms/table/table.component';
+import { TableColumn, ConfirmDialogComponent } from '@wogra/wogra-ui-kit';
 import { Bundle, Element, Process } from '../../../../build/openapi/recast';
-import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { ViewStateService } from '../../services/view-state.service';
 import { ApplicationStateService } from '../../services/application-state.service';
 import {

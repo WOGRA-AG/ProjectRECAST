@@ -20,14 +20,15 @@ import {
   from,
   distinctUntilChanged,
   concatMap,
+  zip,
+  toArray,
 } from 'rxjs';
-import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
+import { Breadcrumb, ConfirmDialogComponent } from '@wogra/wogra-ui-kit';
 import {
   ElementFacadeService,
   ProcessFacadeService,
   ElementViewModelFacadeService,
 } from 'src/app/services';
-import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {
   ElementViewModel,
@@ -38,8 +39,9 @@ import { elementComparator } from '../../shared/util/common-utils';
 import { AlertService } from '../../services/alert.service';
 import {
   fileExtensionValidator,
-  imageFileExtensionValidator,
-} from '../../validators/file-extension-validator';
+  ImageFileExtensionValidator,
+} from '@wogra/wogra-ui-kit';
+import { PredictionService } from '../../services/prediction.service';
 
 // TODO: refactor this class
 @Component({
@@ -73,7 +75,8 @@ export class ElementDetailComponent implements OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router,
     private dialog: MatDialog,
-    private alert: AlertService
+    private alert: AlertService,
+    private predictionService: PredictionService
   ) {
     this._elementViewModel$
       .pipe(
@@ -86,7 +89,8 @@ export class ElementDetailComponent implements OnDestroy {
             elementViewModel.sortedSteps
           );
           return this.initFormGroup$(elementViewModel);
-        })
+        }),
+        concatMap(() => this.initPredictions(this.elementViewModel!))
       )
       .subscribe();
   }
@@ -215,6 +219,32 @@ export class ElementDetailComponent implements OnDestroy {
     return of(undefined);
   }
 
+  private initPredictions(
+    elementViewModel: ElementViewModel
+  ): Observable<void> {
+    return from(elementViewModel.properties).pipe(
+      concatMap(prop => {
+        if (!prop.predictionTemplate) {
+          return zip(of(prop), of(prop.predictionTemplate));
+        }
+        return zip(
+          of(prop),
+          this.predictionService
+            .updatePredictionValue(
+              elementViewModel.element.id!,
+              prop.predictionTemplate
+            )
+            .pipe(take(1))
+        );
+      }),
+      map(([prop, predictionTemplate]) => {
+        prop.predictionTemplate = predictionTemplate;
+      }),
+      toArray(),
+      map(() => undefined)
+    );
+  }
+
   private initializeComponentProperties(
     step: Step | undefined,
     steps: Step[]
@@ -338,7 +368,7 @@ export class ElementDetailComponent implements OnDestroy {
   private _getValidators(type: ValueType, required = false): ValidatorFn[] {
     const validators: ValidatorFn[] = required ? [Validators.required] : [];
     if (type === ValueType.Image) {
-      validators.push(imageFileExtensionValidator);
+      validators.push(ImageFileExtensionValidator);
     }
     if (type === ValueType.Dataset || type === ValueType.Timeseries) {
       validators.push(fileExtensionValidator(['csv']));

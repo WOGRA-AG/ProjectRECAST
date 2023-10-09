@@ -1,5 +1,4 @@
-@import 'src/app/design/material/essentials/media-queries';
-
+@use '@wogra/wogra-ui-kit/src/lib/themes/media-queries.scss' as mq;
 .wrapper {
   height: 100%;
   display: flex;
@@ -27,11 +26,11 @@
   padding: 1.5rem 1.25rem;
   box-sizing: border-box;
 
-  @media #{$medium-and-up} {
+  @media #{mq.$medium-and-up} {
     padding: 1.625rem 2.5rem;
   }
 
-  @media #{$large-and-up} {
+  @media #{mq.$large-and-up} {
     padding: 2rem 4.688rem;
   }
 }

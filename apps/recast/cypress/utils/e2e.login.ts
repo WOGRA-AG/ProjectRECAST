@@ -22,7 +22,7 @@ export function logout() {
   if (!isDev) {
     cy.visit('/profile');
     cy.wait(500);
-    cy.get('app-button-unfilled > .mdc-button > .mdc-button__label').click();
+    cy.get('flo-logout-button > .mdc-button > .mdc-button__label').click();
     cy.get('#kc-logout').click();
     cy.get('#kc-page-title').contains('You are logged out');
   }
