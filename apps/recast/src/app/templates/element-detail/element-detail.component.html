@@ -28,6 +28,7 @@
                 *ngSwitchCase="ValueTypeEnum.Text"
                 type="text"
                 class="input"
+                [placeholder]="prop.predictionTemplate?.predValue ?? ''"
                 [hint]="prop.hint"
                 [label]="prop.label"
                 [formControlName]="prop.stepPropId"
@@ -37,6 +38,7 @@
                 *ngSwitchCase="ValueTypeEnum.Number"
                 class="input"
                 type="number"
+                [placeholder]="prop.predictionTemplate?.predValue ?? ''"
                 [hint]="prop.hint"
                 [label]="prop.label"
                 [formControlName]="prop.stepPropId"
@@ -104,11 +106,11 @@
                   class="input"
                   i18n-label="@@err.invalid_prop_type"
                   label="Invalid property type"
+                  [placeholder]="prop.predictionTemplate?.predValue ?? ''"
                   [formControlName]="'invalid'">
                 </flo-input-field>
               </ng-container>
             </ng-container>
-            {{ prop.predictionTemplate?.predValue }}
           </div>
         </div>
         <div class="actions">

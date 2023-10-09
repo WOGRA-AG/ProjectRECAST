@@ -12,6 +12,7 @@
           (indexChanged)="changeContent($event)"></flo-tab-group>
         <flo-editable-table
           class="table"
+          [pageSize]="5"
           [selectable]="true"
           [multipleSelect]="true"
           [columnsSchema]="dataColumns"
