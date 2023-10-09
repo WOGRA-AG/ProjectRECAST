@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Breadcrumb } from '@wogra/wogra-ui-kit';
 import { yamlToProcess$ } from '../../shared/util/common-utils';
-import { catchError, of, switchMap, take } from 'rxjs';
+import { catchError, of, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { AlertService } from '../../services/alert.service';
 import { BundleService } from '../../services';
@@ -13,7 +13,7 @@ import { fileExtensionValidator } from '@wogra/wogra-ui-kit';
   templateUrl: './bundle-new.component.html',
   styleUrls: ['./bundle-new.component.scss'],
 })
-export class BundleNewComponent {
+export class BundleNewComponent implements OnDestroy {
   public breadcrumbs: Breadcrumb[] = [
     { label: $localize`:@@header.overview:Overview`, link: '/overview' },
     { label: $localize`:@@header.new_bundle:New Bundle` },
@@ -26,12 +26,18 @@ export class BundleNewComponent {
       fileExtensionValidator(['yaml', 'yml', 'json']),
     ]),
   });
+  private _destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     private readonly router: Router,
     private readonly alert: AlertService,
     private readonly bundleService: BundleService
-  ) {}
+  ) {
+    const fileForm = this.formGroup.get('file');
+    fileForm?.valueChanges.pipe(takeUntil(this._destroy$)).subscribe(value => {
+      this.file = value;
+    });
+  }
 
   public uploadFile(): void {
     if (!this.file) {
@@ -61,5 +67,10 @@ export class BundleNewComponent {
 
   public cancel(): void {
     this.router.navigate(['']);
+  }
+
+  public ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

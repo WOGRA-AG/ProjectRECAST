@@ -11,7 +11,7 @@
         #f="ngForm"
         class="form"
         (reset)="cancel()"
-        (ngSubmit)="uploadFile()"
+        (submit)="uploadFile()"
         [formGroup]="formGroup">
         <flo-drop-file-input
           data-testid="drop-file-input"
@@ -20,7 +20,7 @@
           id="upload">
           <ng-container placeholder>
             <div class="inline">
-              <flo-icon matPrefix>upload</flo-icon>
+              <flo-icon color="primary" matPrefix>upload</flo-icon>
               <mat-label class="primary-text" i18n="@@placeholder.upload_yaml">
                 Upload Process-YAML
               </mat-label>
@@ -38,7 +38,7 @@
               <flo-submit-button
                 data-testid="submit-button"
                 size="medium"
-                [disabled]="!!f.invalid"
+                [disabled]="!!f.invalid || !file"
                 i18n="@@action.create">
                 Create
               </flo-submit-button>
