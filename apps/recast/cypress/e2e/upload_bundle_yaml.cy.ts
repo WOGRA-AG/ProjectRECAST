@@ -32,7 +32,9 @@ describe('Bundles', () => {
             cy.get('[data-testid="file-input"]')
               .invoke('show')
               .selectFile('cypress/fixtures/example_process.yaml');
-            cy.get('[data-testid="submit-button"]').click();
+            cy.get(
+              'flo-button-filled > flo-new-button.medium > .mat-ripple'
+            ).click();
             cy.wait(waitForUpdate);
             cy.get('tbody > tr').its('length').should('be.gt', length);
             cy.get(
