@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-import { Breadcrumb } from '../../design/components/molecules/breadcrumb/breadcrumb.component';
+import { Breadcrumb } from '@wogra/wogra-ui-kit';
 import { yamlToProcess$ } from '../../shared/util/common-utils';
 import { catchError, of, switchMap, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { AlertService } from '../../services/alert.service';
 import { BundleService } from '../../services';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { fileExtensionValidator } from '@wogra/wogra-ui-kit';
 
 @Component({
   selector: 'app-bundle-new',
@@ -16,8 +18,14 @@ export class BundleNewComponent {
     { label: $localize`:@@header.overview:Overview`, link: '/overview' },
     { label: $localize`:@@header.new_bundle:New Bundle` },
   ];
-  public isValid = false;
-  public loading = false;
+  protected loading = false;
+  protected file: File | undefined;
+  protected formGroup: FormGroup = new FormGroup({
+    file: new FormControl('', [
+      Validators.required,
+      fileExtensionValidator(['yaml', 'yml', 'json']),
+    ]),
+  });
 
   constructor(
     private readonly router: Router,
@@ -25,13 +33,13 @@ export class BundleNewComponent {
     private readonly bundleService: BundleService
   ) {}
 
-  public uploadFile(file: File | null): void {
-    if (!file) {
+  public uploadFile(): void {
+    if (!this.file) {
       return;
     }
     this.loading = true;
-    const bundleName = file.name.split('.')[0];
-    yamlToProcess$(file)
+    const bundleName = this.file.name.split('.')[0];
+    yamlToProcess$(this.file)
       .pipe(
         take(1),
         switchMap(procs =>

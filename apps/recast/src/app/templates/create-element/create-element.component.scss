@@ -1,12 +1,11 @@
-@import 'src/app/design/material/essentials/media-queries';
-
+@use '@wogra/wogra-ui-kit/src/lib/themes/media-queries.scss' as mq;
 .grid-wrapper {
   margin-top: 2rem;
   display: grid;
   grid-template-columns: 1fr;
   column-gap: 1rem;
 
-  @media #{$medium-and-up} {
+  @media #{mq.$medium-and-up} {
     grid-template-columns: 1fr 1fr;
   }
 

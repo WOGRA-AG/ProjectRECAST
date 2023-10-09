@@ -1,33 +1,39 @@
-<div class="content-wrapper">
-  <app-page-header i18n="@@header.create_element" [breadcrumbs]="breadcrumbs">
+<flo-default-template>
+  <flo-page-header
+    header
+    i18n="@@header.create_element"
+    [breadcrumbs]="breadcrumbs">
     Bauteil erstellen
-  </app-page-header>
-
-  <form
-    #f="ngForm"
-    [formGroup]="propertiesForm"
-    (ngSubmit)="f.valid && saveElement()">
-    <div class="grid-wrapper">
-      <div class="input-wrapper">
-        <app-input-field
-          class="input"
-          label="Name"
-          formControlName="name"
-          icon="bar_chart">
-        </app-input-field>
-      </div>
+  </flo-page-header>
+  <ng-container main>
+    <div class="content-wrapper">
+      <form
+        #f="ngForm"
+        [formGroup]="propertiesForm"
+        (ngSubmit)="f.valid && saveElement()">
+        <div class="grid-wrapper">
+          <div class="input-wrapper">
+            <flo-input-field
+              class="input"
+              label="Name"
+              formControlName="name"
+              icon="bar_chart">
+            </flo-input-field>
+          </div>
+        </div>
+        <div class="actions">
+          <flo-button-unfilled
+            type="button"
+            [bordered]="true"
+            routerLink="/overview/process/{{ processId }}"
+            i18n="@@action.back">
+            Back
+          </flo-button-unfilled>
+          <flo-submit-button class="button" i18n="@@action.save">
+            Save
+          </flo-submit-button>
+        </div>
+      </form>
     </div>
-    <div class="actions">
-      <app-button-unfilled
-        type="button"
-        [bordered]="true"
-        routerLink="/overview/process/{{ processId }}"
-        i18n="@@action.back">
-        Back
-      </app-button-unfilled>
-      <app-submit-button class="button" i18n="@@action.save">
-        Save
-      </app-submit-button>
-    </div>
-  </form>
-</div>
+  </ng-container>
+</flo-default-template>

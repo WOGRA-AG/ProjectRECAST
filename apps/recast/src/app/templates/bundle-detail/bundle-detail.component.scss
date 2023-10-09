@@ -1,5 +1,4 @@
-@import 'src/app/design/material/essentials/media-queries';
-
+@use '@wogra/wogra-ui-kit/src/lib/themes/media-queries.scss' as mq;
 .bundle-detail-wrapper {
   display: grid;
   height: 95%;
@@ -15,7 +14,7 @@
     grid-area: title;
     display: none;
 
-    @media #{$medium-and-up} {
+    @media #{mq.$medium-and-up} {
       display: inherit;
     }
   }
@@ -31,7 +30,7 @@
     justify-content: center;
     gap: 1rem;
 
-    @media #{$medium-and-up} {
+    @media #{mq.$medium-and-up} {
       justify-content: space-between;
     }
   }

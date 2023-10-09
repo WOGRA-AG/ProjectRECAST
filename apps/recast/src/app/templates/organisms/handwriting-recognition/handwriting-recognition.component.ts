@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { HandwritingRecognitionService } from 'src/app/services/handwriting-recognition.service';
 import { take } from 'rxjs';
+import { SvgIcon } from '@wogra/wogra-ui-kit';
 
 @Component({
   selector: 'app-handwriting-recognition',
@@ -8,7 +9,7 @@ import { take } from 'rxjs';
   styleUrls: ['./handwriting-recognition.component.scss'],
 })
 export class HandwritingRecognitionComponent {
-  @Input() svgIcon = '';
+  @Input() svgIcon: SvgIcon = 'scan';
   @Output() recognized: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(

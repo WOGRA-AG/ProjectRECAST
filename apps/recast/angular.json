@@ -36,11 +36,16 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.svg", "src/assets"],
-            "styles": [
-              "src/app/design/material/recast-material-theme.scss",
-              "src/styles.scss"
+            "assets": [
+              "src/favicon.svg",
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@wogra/wogra-ui-kit/assets",
+                "output": "./assets"
+              }
             ],
+            "styles": ["src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -104,11 +109,16 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.svg", "src/assets"],
-            "styles": [
-              "src/app/design/material/recast-material-theme.scss",
-              "src/styles.scss"
+            "assets": [
+              "src/favicon.svg",
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@wogra/wogra-ui-kit/assets",
+                "output": "./assets"
+              }
             ],
+            "styles": ["src/styles.scss"],
             "scripts": []
           }
         },

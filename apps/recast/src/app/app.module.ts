@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PageNotFoundComponent } from './templates/page-not-found/page-not-found.component';
 import { SupabaseService } from './services';
-import { DesignModule } from './design/design.module';
 import { OverviewComponent } from './templates/overview/overview.component';
 import { ProcessDetailComponent } from './templates/process-detail/process-detail.component';
 import { SharedModule } from './shared/shared.module';
@@ -20,6 +19,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { BundleDetailComponent } from './templates/bundle-detail/bundle-detail.component';
 import { BundleNewComponent } from './templates/bundle-new/bundle-new.component';
+import { WograUiKitModule } from '@wogra/wogra-ui-kit';
 
 @NgModule({
   declarations: [
@@ -39,9 +39,9 @@ import { BundleNewComponent } from './templates/bundle-new/bundle-new.component'
     AppRoutingModule,
     BrowserAnimationsModule,
     UserModule,
-    DesignModule,
     SharedModule,
     StorageModule,
+    WograUiKitModule,
   ],
   providers: [
     SupabaseService,

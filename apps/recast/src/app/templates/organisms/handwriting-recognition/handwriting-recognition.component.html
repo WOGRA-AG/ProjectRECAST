@@ -1,10 +1,10 @@
-<app-button-unfilled
+<flo-button-unfilled
   [bordered]="true"
-  svgIcon="{{ svgIcon }}"
+  [svgIcon]="svgIcon"
   class="button"
   (click)="fileInput.click()">
   <ng-content></ng-content>
-</app-button-unfilled>
+</flo-button-unfilled>
 
 <input
   #fileInput

@@ -1,13 +1,14 @@
 <div class="wrapper">
   <div class="nav-bar surface">
     <a href="">
-      <app-icon svgIcon="rcst_logo" size="logo" color="primary"></app-icon>
+      <flo-icon icon="logo" size="logo"></flo-icon>
     </a>
+    <flo-theme-toggle></flo-theme-toggle>
     <a href="/profile">
-      <app-icon size="huge" color="primary">account_circle</app-icon>
+      <flo-icon size="huge" color="primary">account_circle</flo-icon>
     </a>
   </div>
-  <div class="container background">
+  <div class="container">
     <router-outlet></router-outlet>
   </div>
 </div>

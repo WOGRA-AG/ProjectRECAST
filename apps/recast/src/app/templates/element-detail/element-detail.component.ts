@@ -23,13 +23,12 @@ import {
   zip,
   toArray,
 } from 'rxjs';
-import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
+import { Breadcrumb, ConfirmDialogComponent } from '@wogra/wogra-ui-kit';
 import {
   ElementFacadeService,
   ProcessFacadeService,
   ElementViewModelFacadeService,
 } from 'src/app/services';
-import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {
   ElementViewModel,
@@ -40,8 +39,8 @@ import { elementComparator } from '../../shared/util/common-utils';
 import { AlertService } from '../../services/alert.service';
 import {
   fileExtensionValidator,
-  imageFileExtensionValidator,
-} from '../../validators/file-extension-validator';
+  ImageFileExtensionValidator,
+} from '@wogra/wogra-ui-kit';
 import { PredictionService } from '../../services/prediction.service';
 
 // TODO: refactor this class
@@ -369,7 +368,7 @@ export class ElementDetailComponent implements OnDestroy {
   private _getValidators(type: ValueType, required = false): ValidatorFn[] {
     const validators: ValidatorFn[] = required ? [Validators.required] : [];
     if (type === ValueType.Image) {
-      validators.push(imageFileExtensionValidator);
+      validators.push(ImageFileExtensionValidator);
     }
     if (type === ValueType.Dataset || type === ValueType.Timeseries) {
       validators.push(fileExtensionValidator(['csv']));

@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProfileComponent } from './templates/profile/profile.component';
-import { DesignModule } from '../design/design.module';
+import { WograUiKitModule } from '@wogra/wogra-ui-kit';
 
 @NgModule({
   declarations: [ProfileComponent],
   exports: [ProfileComponent],
-  imports: [CommonModule, DesignModule],
+  imports: [CommonModule, WograUiKitModule],
 })
 export class UserModule {}

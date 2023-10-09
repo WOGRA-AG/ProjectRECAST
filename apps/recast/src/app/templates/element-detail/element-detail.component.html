@@ -1,148 +1,152 @@
-<div class="content-wrapper">
-  <app-page-header [breadcrumbs]="breadcrumbs">
+<flo-default-template>
+  <flo-page-header header [breadcrumbs]="breadcrumbs">
     {{ elementViewModel?.element?.name ?? '' }}
-  </app-page-header>
+  </flo-page-header>
 
-  <app-stepper
-    *ngIf="!!elementViewModel?.currentStep"
-    [steps]="stepTitles"
-    (stepChanged)="stepChanged($event)"
-    [currentIndex]="currentIndex"
-    [disableRipple]="true">
-  </app-stepper>
+  <ng-container main>
+    <div class="content-wrapper">
+      <flo-stepper
+        *ngIf="!!elementViewModel?.currentStep"
+        [steps]="stepTitles"
+        (stepChanged)="stepChanged($event)"
+        [currentIndex]="currentIndex"
+        [disableRipple]="true">
+      </flo-stepper>
 
-  <form
-    #f="ngForm"
-    [formGroup]="propertiesForm"
-    (ngSubmit)="f.valid && onSubmitClicked()">
-    <div class="grid-wrapper">
-      <div
-        class="input-wrapper"
-        *ngFor="let prop of currentProperties.sort(compareByStepPropId)">
-        <ng-container
-          [ngSwitch]="prop.type"
-          *ngIf="propertiesForm.controls['' + prop.stepPropId]">
-          <app-input-field
-            *ngSwitchCase="ValueTypeEnum.Text"
-            type="text"
-            class="input"
-            [hint]="prop.hint"
-            [label]="prop.label"
-            [formControlName]="prop.stepPropId"
-            icon="text_fields">
-          </app-input-field>
-          <app-input-field
-            *ngSwitchCase="ValueTypeEnum.Number"
-            class="input"
-            type="number"
-            [hint]="prop.hint"
-            [label]="prop.label"
-            [formControlName]="prop.stepPropId"
-            icon="bar_chart">
-          </app-input-field>
-          <app-file-input-field
-            class="input"
-            *ngSwitchCase="ValueTypeEnum.File"
-            [formControlName]="prop.stepPropId"
-            [label]="prop.label"></app-file-input-field>
-          <app-file-input-field
-            class="input"
-            *ngSwitchCase="ValueTypeEnum.Image"
-            [formControlName]="prop.stepPropId"
-            [label]="prop.label"></app-file-input-field>
-          <app-file-input-field
-            class="input"
-            *ngSwitchCase="ValueTypeEnum.Timeseries"
-            [formControlName]="prop.stepPropId"
-            [label]="prop.label"></app-file-input-field>
-          <app-file-input-field
-            class="input"
-            *ngSwitchCase="ValueTypeEnum.Dataset"
-            [formControlName]="prop.stepPropId"
-            [label]="prop.label"></app-file-input-field>
-          <mat-checkbox
-            class="input"
-            *ngSwitchCase="ValueTypeEnum.Boolean"
-            [formControlName]="prop.stepPropId"
-            [labelPosition]="'after'"
-            color="primary">
-            {{ prop.label }}</mat-checkbox
-          >
-          <app-date-input-field
-            *ngSwitchCase="ValueTypeEnum.Date"
-            class="input"
-            [hint]="prop.hint"
-            [label]="prop.label"
-            [formControlName]="prop.stepPropId" />
-          <app-color-input-field
-            *ngSwitchCase="ValueTypeEnum.Color"
-            class="input"
-            [label]="prop.label"
-            [hint]="prop.hint"
-            [formControlName]="prop.stepPropId" />
-          <ng-container *ngSwitchDefault>
-            <div *ngIf="isReference(prop.type)">
-              <app-select-field
-                i18n-hint="@@placeholder.select_element"
-                i18n-filterLabel="@@placeholder.filter_elements"
-                [formControlName]="prop.stepPropId"
+      <form
+        #f="ngForm"
+        [formGroup]="propertiesForm"
+        (ngSubmit)="f.valid && onSubmitClicked()">
+        <div class="grid-wrapper">
+          <div
+            class="input-wrapper"
+            *ngFor="let prop of currentProperties.sort(compareByStepPropId)">
+            <ng-container
+              [ngSwitch]="prop.type"
+              *ngIf="propertiesForm.controls['' + prop.stepPropId]">
+              <flo-input-field
+                *ngSwitchCase="ValueTypeEnum.Text"
+                type="text"
+                class="input"
+                [hint]="prop.hint"
                 [label]="prop.label"
-                filterIcon="filter_list"
-                filterLabel="Filter elements"
-                hint="Select element">
-                <mat-option
-                  *ngFor="let e of elementsByReference(prop.type) | async"
-                  [value]="e.id">
-                  {{ e.name }}
-                </mat-option>
-              </app-select-field>
-            </div>
-            <app-input-field
-              *ngIf="!isReference(prop.type)"
-              class="input"
-              i18n-label="@@err.invalid_prop_type"
-              label="Invalid property type"
-              [formControlName]="'invalid'">
-            </app-input-field>
+                [formControlName]="prop.stepPropId"
+                icon="text_fields">
+              </flo-input-field>
+              <flo-input-field
+                *ngSwitchCase="ValueTypeEnum.Number"
+                class="input"
+                type="number"
+                [hint]="prop.hint"
+                [label]="prop.label"
+                [formControlName]="prop.stepPropId"
+                icon="bar_chart">
+              </flo-input-field>
+              <flo-file-input-field
+                class="input"
+                *ngSwitchCase="ValueTypeEnum.File"
+                [formControlName]="prop.stepPropId"
+                [label]="prop.label"></flo-file-input-field>
+              <flo-file-input-field
+                class="input"
+                *ngSwitchCase="ValueTypeEnum.Image"
+                [formControlName]="prop.stepPropId"
+                [label]="prop.label"></flo-file-input-field>
+              <flo-file-input-field
+                class="input"
+                *ngSwitchCase="ValueTypeEnum.Timeseries"
+                [formControlName]="prop.stepPropId"
+                [label]="prop.label"></flo-file-input-field>
+              <flo-file-input-field
+                class="input"
+                *ngSwitchCase="ValueTypeEnum.Dataset"
+                [formControlName]="prop.stepPropId"
+                [label]="prop.label"></flo-file-input-field>
+              <mat-checkbox
+                class="input"
+                *ngSwitchCase="ValueTypeEnum.Boolean"
+                [formControlName]="prop.stepPropId"
+                [labelPosition]="'after'"
+                color="primary">
+                {{ prop.label }}</mat-checkbox
+              >
+              <flo-date-input-field
+                *ngSwitchCase="ValueTypeEnum.Date"
+                class="input"
+                [hint]="prop.hint"
+                [label]="prop.label"
+                [formControlName]="prop.stepPropId" />
+              <flo-color-input-field
+                *ngSwitchCase="ValueTypeEnum.Color"
+                class="input"
+                [label]="prop.label"
+                [hint]="prop.hint"
+                [formControlName]="prop.stepPropId" />
+              <ng-container *ngSwitchDefault>
+                <div *ngIf="isReference(prop.type)">
+                  <flo-select-field
+                    i18n-hint="@@placeholder.select_element"
+                    i18n-filterLabel="@@placeholder.filter_elements"
+                    [formControlName]="prop.stepPropId"
+                    [label]="prop.label"
+                    filterIcon="filter_list"
+                    filterLabel="Filter elements"
+                    hint="Select element">
+                    <mat-option
+                      *ngFor="let e of elementsByReference(prop.type) | async"
+                      [value]="e.id">
+                      {{ e.name }}
+                    </mat-option>
+                  </flo-select-field>
+                </div>
+                <flo-input-field
+                  *ngIf="!isReference(prop.type)"
+                  class="input"
+                  i18n-label="@@err.invalid_prop_type"
+                  label="Invalid property type"
+                  [formControlName]="'invalid'">
+                </flo-input-field>
+              </ng-container>
+            </ng-container>
+            {{ prop.predictionTemplate?.predValue }}
+          </div>
+        </div>
+        <div class="actions">
+          <mat-progress-spinner
+            [diameter]="40"
+            color="primary"
+            *ngIf="loading"
+            mode="indeterminate">
+          </mat-progress-spinner>
+          <flo-button-unfilled
+            *ngIf="!!elementViewModel"
+            type="button"
+            [bordered]="true"
+            (click)="navigateBack$()"
+            i18n="@@action.back">
+            Back
+          </flo-button-unfilled>
+          <ng-container *ngIf="!!elementViewModel?.currentStep">
+            <flo-submit-button
+              *ngIf="!isLastStep"
+              [disabled]="loading || !f.valid"
+              class="button"
+              i18n="@@action.next_step">
+              Take to the next step
+            </flo-submit-button>
+            <flo-submit-button
+              *ngIf="isLastStep"
+              [disabled]="loading || !f.valid"
+              class="button"
+              i18n="@@action.finished">
+              Finished
+            </flo-submit-button>
           </ng-container>
-        </ng-container>
-        {{ prop.predictionTemplate?.predValue }}
-      </div>
+        </div>
+      </form>
+      <mat-spinner
+        *ngIf="!elementViewModel?.properties"
+        class="page-load-spinner"></mat-spinner>
     </div>
-    <div class="actions">
-      <mat-progress-spinner
-        [diameter]="40"
-        color="primary"
-        *ngIf="loading"
-        mode="indeterminate">
-      </mat-progress-spinner>
-      <app-button-unfilled
-        *ngIf="!!elementViewModel"
-        type="button"
-        [bordered]="true"
-        (click)="navigateBack$()"
-        i18n="@@action.back">
-        Back
-      </app-button-unfilled>
-      <ng-container *ngIf="!!elementViewModel?.currentStep">
-        <app-submit-button
-          *ngIf="!isLastStep"
-          [disabled]="loading || !f.valid"
-          class="button"
-          i18n="@@action.next_step">
-          Take to the next step
-        </app-submit-button>
-        <app-submit-button
-          *ngIf="isLastStep"
-          [disabled]="loading || !f.valid"
-          class="button"
-          i18n="@@action.finished">
-          Finished
-        </app-submit-button>
-      </ng-container>
-    </div>
-  </form>
-  <mat-spinner
-    *ngIf="!elementViewModel?.properties"
-    class="page-load-spinner"></mat-spinner>
-</div>
+  </ng-container>
+</flo-default-template>

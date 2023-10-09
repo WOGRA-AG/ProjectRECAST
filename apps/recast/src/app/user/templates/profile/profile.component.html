@@ -4,43 +4,43 @@
   class="form-widget"
   [formGroup]="updateProfileForm">
   <div>
-    <app-input-field
+    <flo-input-field
       i18n-label="@@label.id"
       label="id"
-      formControlName="id"></app-input-field>
+      formControlName="id"></flo-input-field>
   </div>
   <div>
-    <app-input-field
+    <flo-input-field
       i18n-label="@@label.email"
       formControlName="email"
-      label="email"></app-input-field>
+      label="email"></flo-input-field>
   </div>
   <div>
-    <app-input-field
+    <flo-input-field
       i18n-label="@@label.username"
       i18n-errMsg="@@err.min_char"
       formControlName="username"
       label="username"
-      errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
+      errMsg="Minimum of {{ _minlength }} characters"></flo-input-field>
   </div>
   <div>
-    <app-input-field
+    <flo-input-field
       i18n-label="@@label.shep_api_key"
       i18n-errMsg="@@err.min_char"
       formControlName="shepardApiKey"
       label="Shepard Api Key"
-      errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
+      errMsg="Minimum of {{ _minlength }} characters"></flo-input-field>
   </div>
   <div>
-    <app-input-field
+    <flo-input-field
       i18n-label="@@label.shep_url"
       i18n-errMsg="@@err.min_char"
       formControlName="shepardUrl"
       label="Shepard Url"
-      errMsg="Minimum of {{ _minlength }} characters"></app-input-field>
+      errMsg="Minimum of {{ _minlength }} characters"></flo-input-field>
   </div>
   <div>
-    <app-select-field
+    <flo-select-field
       [formControlName]="'storageBackend'"
       label="Storage Backend"
       hint="Select Backend">
@@ -50,14 +50,14 @@
       <mat-option [value]="StorageBackendEnum.Shepard">{{
         StorageBackendEnum.Shepard
       }}</mat-option>
-    </app-select-field>
+    </flo-select-field>
   </div>
   <div class="actions">
-    <app-submit-button [disabled]="loading">
+    <flo-submit-button [disabled]="loading">
       {{ loading ? 'Loading ...' : 'Update' }}
-    </app-submit-button>
-    <app-logout-button (click)="signOut()" i18n="@@action.sign_out"
-      >Sign Out</app-logout-button
+    </flo-submit-button>
+    <flo-logout-button (click)="signOut()" i18n="@@action.sign_out"
+      >Sign Out</flo-logout-button
     >
   </div>
 </form>
