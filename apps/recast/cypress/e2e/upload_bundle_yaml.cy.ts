@@ -28,11 +28,11 @@ describe('Bundles', () => {
         cy.get('tbody > tr')
           .its('length')
           .then(length => {
-            cy.get('flo-button-filled > .mdc-button').click();
+            cy.get('[data-testid="create-bundle-button"]').click();
             cy.get('#file-input')
               .invoke('show')
               .selectFile('cypress/fixtures/example_process.yaml');
-            cy.get('flo-button-filled > .mdc-button').click();
+            cy.get('[data-testid="submit-button"]').click();
             cy.wait(waitForUpdate);
             cy.get('tbody > tr').its('length').should('be.gt', length);
             cy.get(

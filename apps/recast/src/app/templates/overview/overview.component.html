@@ -30,6 +30,7 @@
             svgIcon="delete"
             (click)="deleteSelectedRows()"></flo-icon-button>
           <flo-create-button
+            data-testid="create-bundle-button"
             *ngIf="currentIndex === 2"
             class="button"
             routerLink="/overview/bundle"
