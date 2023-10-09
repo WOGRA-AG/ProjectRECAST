@@ -29,7 +29,7 @@ describe('Bundles', () => {
           .its('length')
           .then(length => {
             cy.get('[data-testid="create-bundle-button"]').click();
-            cy.get('#file-input')
+            cy.get('[data-testid="file-input"]')
               .invoke('show')
               .selectFile('cypress/fixtures/example_process.yaml');
             cy.get('[data-testid="submit-button"]').click();

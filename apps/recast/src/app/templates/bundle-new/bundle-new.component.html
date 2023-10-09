@@ -14,6 +14,7 @@
         (ngSubmit)="uploadFile()"
         [formGroup]="formGroup">
         <flo-drop-file-input
+          data-testid="drop-file-input"
           class="file-upload"
           formControlName="file"
           id="upload">
