@@ -8,13 +8,6 @@ export interface TableColumnDef {
 export class ProcessColumnDef implements TableColumnDef {
   private _columns: TableColumn[] = [
     {
-      key: 'id',
-      label: $localize`:@@label.id:ID`,
-      type: 'text',
-      required: true,
-      editable: false,
-    },
-    {
       key: 'name',
       label: $localize`:@@label.title:Title`,
       type: 'text',
@@ -79,13 +72,6 @@ export class ElementColumnDef implements TableColumnDef {
 
 export class BundleColumnDef implements TableColumnDef {
   private _columns: TableColumn[] = [
-    {
-      key: 'id',
-      label: $localize`:@@label.id:ID`,
-      type: 'text',
-      required: true,
-      editable: false,
-    },
     {
       key: 'name',
       label: $localize`:@@label.title:Title`,

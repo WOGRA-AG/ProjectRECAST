@@ -273,12 +273,13 @@ export class ElementDetailComponent implements OnDestroy {
       elementProperties: [],
       currentStepId: !this.isLastStep && !!nextStep ? nextStep.id : null,
     };
+    const isLastStep = this.isLastStep;
     this.elementService
       .saveElement$(element)
       .pipe(
         take(1),
         concatMap(() => {
-          if (!this.isLastStep) {
+          if (!isLastStep) {
             return of(undefined);
           }
           return this.navigateBack$();

@@ -26,14 +26,15 @@ import {
 })
 export class OverviewComponent implements OnDestroy, OnInit {
   public tabs: string[] = [
+    $localize`:@@label.bundles:Bundles`,
     $localize`:@@label.processes:Prozesse`,
     $localize`:@@label.elements:Bauteile`,
-    $localize`:@@label.bundles:Bundles`,
   ];
   public dataColumns: TableColumn[] = [];
   public selectedRows: TableRow[] = [];
   public tableData$: Observable<any> = new Observable<any>();
-  public currentIndex = OverviewIndex.Processes;
+  public currentIndex = OverviewIndex.Bundles;
+  protected readonly OverviewIndex = OverviewIndex;
   private readonly _bundleColumnDef = new BundleColumnDef();
   private readonly _processColumnDef = new ProcessColumnDef(this.bundleService);
   private readonly _elementColumnDef = new ElementColumnDef(
@@ -220,7 +221,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
 
 type TableRow = Process | Element | Bundle;
 enum OverviewIndex {
-  Processes = 0,
-  Elements = 1,
-  Bundles = 2,
+  Bundles = 0,
+  Processes = 1,
+  Elements = 2,
 }
