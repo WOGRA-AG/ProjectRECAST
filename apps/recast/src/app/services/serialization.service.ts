@@ -43,7 +43,7 @@ export class SerializationService {
       .pipe(
         take(1),
         mergeMap(elements => from(elements)),
-        mergeMap(element => this._processElementProperties$(element)),
+        concatMap(element => this._processElementProperties$(element)),
         toArray(),
         map((rows: DatasetRow[]) => this._datasetFromRows(rows)),
         map(dataset => this._datasetToCsv(dataset)),
