@@ -86,7 +86,7 @@ export class ElementDetailComponent implements OnDestroy {
           this.initBreadcrumbs(elementViewModel.process);
           this.initializeComponentProperties(
             elementViewModel.currentStep,
-            elementViewModel.sortedSteps
+            elementViewModel.process.steps ?? []
           );
           return this.initFormGroup$(elementViewModel);
         }),
@@ -252,7 +252,9 @@ export class ElementDetailComponent implements OnDestroy {
     this.stepTitles = steps.map(s => s.name!);
     this._steps = steps;
     this._currentStep = step;
-    this.currentIndex = step ? this._steps.indexOf(step) : 0;
+    this.currentIndex = step
+      ? this._steps.findIndex(s => s.id === step?.id)
+      : 0;
     this.isLastStep = this._steps.length - 1 === this.currentIndex;
     this.currentProperties = !this._currentStep
       ? this.elementViewModel?.properties!

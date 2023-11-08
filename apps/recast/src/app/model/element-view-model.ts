@@ -12,7 +12,6 @@ export interface ElementViewModel {
   process: Process;
   storageBackends: StorageBackend[];
   currentStep?: Step;
-  sortedSteps: Step[];
   properties: ElementViewProperty[];
 }
 
