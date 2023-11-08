@@ -103,6 +103,8 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .open(ConfirmDialogComponent, {
         data: {
           title,
+          confirm: $localize`:@@action.confirm:Confirm`,
+          cancel: $localize`:@@action.cancel:Cancel`,
         },
         autoFocus: false,
       })
@@ -151,6 +153,8 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .open(ConfirmDialogComponent, {
         data: {
           title: $localize`:@@dialog.delete_selected_rows:Delete Selected Rows?`,
+          confirm: $localize`:@@action.confirm:Confirm`,
+          cancel: $localize`:@@action.cancel:Cancel`,
         },
         autoFocus: false,
       })

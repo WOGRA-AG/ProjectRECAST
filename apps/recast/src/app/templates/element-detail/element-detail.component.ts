@@ -145,6 +145,8 @@ export class ElementDetailComponent implements OnDestroy {
       .open(ConfirmDialogComponent, {
         data: {
           title: $localize`:@@dialog.submit_element:Save Element?`,
+          confirm: $localize`:@@action.confirm:Confirm`,
+          cancel: $localize`:@@action.cancel:Cancel`,
         },
         autoFocus: false,
       })
@@ -176,7 +178,7 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   public stepChanged(index: number): void {
-    if (index >= this._steps.indexOf(this._currentStep!)) {
+    if (index >= this._steps.findIndex(s => s.id === this._currentStep?.id)) {
       return;
     }
     this.navigateStep$(this._steps[index]).pipe(take(1)).subscribe();
