@@ -54,7 +54,10 @@ export class OverviewComponent implements OnDestroy, OnInit {
   ) {
     this.dataColumns = this._processColumnDef.getColumns();
     this.tableData$ = processService.processes$;
-    this.applicationStateService.updateApplicationState();
+    this.applicationStateService
+      .updateApplicationState$()
+      .pipe(take(1))
+      .subscribe();
   }
 
   public ngOnDestroy(): void {
