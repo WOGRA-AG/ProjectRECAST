@@ -1,48 +1,54 @@
-<div class="process-detail-wrapper">
-  <app-page-header [breadcrumbs]="breadcrumbs">
-    {{ title }}
-  </app-page-header>
-
-  <app-stepper
-    [steps]="stepTitles"
-    (stepChanged)="changeContent($event)"
-    [disableRipple]="true"
-    [currentIndex]="currentIndex">
-  </app-stepper>
-
-  <div class="grid-wrapper">
-    <h1 class="title primary-text" i18n="@@label.elements">Bauteile</h1>
-    <app-table
-      class="table"
-      [columnsSchema]="dataColumns"
-      [data]="tableData$"
-      i18n-noDataText="@@info.no_data_text"
-      noDataText="Noch keine Bauteile vorhanden"
-      (deleteClicked)="deleteTableRow($event)"
-      (saveClicked)="editTableRow($event)"
-      (rowClicked)="navigateTo($event)">
-    </app-table>
-    <div class="buttons">
-      <app-handwriting-recognition
-        svgIcon="rcst_scan"
-        i18n="@@action.scan_element"
-        (recognized)="navigateByElementId($event)">
-        Bauteil scannen
-      </app-handwriting-recognition>
-      <app-button-filled
-        class="button"
-        i18n="@@action.create_element"
-        (click)="navigateToCreateElement()">
-        Bauteil erstellen
-      </app-button-filled>
-      <app-button-filled
-        icon="download"
-        size="medium"
-        [disabled]="loading"
-        (click)="downloadDataset()">
-        Dataset
-      </app-button-filled>
-      <mat-spinner diameter="40" *ngIf="loading"></mat-spinner>
-    </div>
+<flo-default-template>
+  <div header role="heading" class="heading" aria-level="1">
+    <flo-page-header [breadcrumbs]="breadcrumbs">
+      {{ title }}
+    </flo-page-header>
+    <flo-button-unfilled
+      icon="download"
+      class="outlined-icon"
+      size="medium"
+      [disabled]="loading"
+      (click)="downloadDataset()">
+      Dataset
+    </flo-button-unfilled>
   </div>
-</div>
+  <ng-container main>
+    <div class="process-detail-wrapper">
+      <flo-stepper
+        [steps]="stepTitles"
+        (stepChanged)="changeContent($event)"
+        [disableRipple]="true"
+        [currentIndex]="currentIndex">
+      </flo-stepper>
+
+      <div class="grid-wrapper">
+        <h1 class="title primary-text" i18n="@@label.elements">Bauteile</h1>
+        <flo-editable-table
+          class="table"
+          [columnsSchema]="dataColumns"
+          [data]="tableData$"
+          i18n-noDataText="@@info.no_data_text"
+          noDataText="Noch keine Bauteile vorhanden"
+          (deleteClicked)="deleteTableRow($event)"
+          (saveClicked)="editTableRow($event)"
+          (rowClicked)="navigateTo($event)">
+        </flo-editable-table>
+        <div class="buttons">
+          <app-handwriting-recognition
+            svgIcon="scan"
+            i18n="@@action.scan_element"
+            (recognized)="navigateByElementId($event)">
+            Bauteil scannen
+          </app-handwriting-recognition>
+          <flo-button-filled
+            class="button"
+            i18n="@@action.create_element"
+            (click)="navigateToCreateElement()">
+            Bauteil erstellen
+          </flo-button-filled>
+          <mat-spinner diameter="40" *ngIf="loading"></mat-spinner>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</flo-default-template>

@@ -8,9 +8,8 @@ import {
 } from 'src/app/services';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { TableColumn } from '../../design/components/organisms/table/table.component';
+import { TableColumn, ConfirmDialogComponent } from '@wogra/wogra-ui-kit';
 import { Bundle, Element, Process } from '../../../../build/openapi/recast';
-import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { ViewStateService } from '../../services/view-state.service';
 import { ApplicationStateService } from '../../services/application-state.service';
 import {
@@ -27,14 +26,15 @@ import {
 })
 export class OverviewComponent implements OnDestroy, OnInit {
   public tabs: string[] = [
+    $localize`:@@label.bundles:Bundles`,
     $localize`:@@label.processes:Prozesse`,
     $localize`:@@label.elements:Bauteile`,
-    $localize`:@@label.bundles:Bundles`,
   ];
   public dataColumns: TableColumn[] = [];
   public selectedRows: TableRow[] = [];
   public tableData$: Observable<any> = new Observable<any>();
-  public currentIndex = OverviewIndex.Processes;
+  public currentIndex = OverviewIndex.Bundles;
+  protected readonly OverviewIndex = OverviewIndex;
   private readonly _bundleColumnDef = new BundleColumnDef();
   private readonly _processColumnDef = new ProcessColumnDef(this.bundleService);
   private readonly _elementColumnDef = new ElementColumnDef(
@@ -54,7 +54,10 @@ export class OverviewComponent implements OnDestroy, OnInit {
   ) {
     this.dataColumns = this._processColumnDef.getColumns();
     this.tableData$ = processService.processes$;
-    this.applicationStateService.updateApplicationState();
+    this.applicationStateService
+      .updateApplicationState$()
+      .pipe(take(1))
+      .subscribe();
   }
 
   public ngOnDestroy(): void {
@@ -103,6 +106,8 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .open(ConfirmDialogComponent, {
         data: {
           title,
+          confirm: $localize`:@@action.confirm:Confirm`,
+          cancel: $localize`:@@action.cancel:Cancel`,
         },
         autoFocus: false,
       })
@@ -151,6 +156,8 @@ export class OverviewComponent implements OnDestroy, OnInit {
       .open(ConfirmDialogComponent, {
         data: {
           title: $localize`:@@dialog.delete_selected_rows:Delete Selected Rows?`,
+          confirm: $localize`:@@action.confirm:Confirm`,
+          cancel: $localize`:@@action.cancel:Cancel`,
         },
         autoFocus: false,
       })
@@ -221,7 +228,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
 
 type TableRow = Process | Element | Bundle;
 enum OverviewIndex {
-  Processes = 0,
-  Elements = 1,
-  Bundles = 2,
+  Bundles = 0,
+  Processes = 1,
+  Elements = 2,
 }

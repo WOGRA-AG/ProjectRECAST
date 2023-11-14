@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Breadcrumb } from '../../design/components/molecules/breadcrumb/breadcrumb.component';
+import { Breadcrumb } from '@wogra/wogra-ui-kit';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   distinctUntilChanged,

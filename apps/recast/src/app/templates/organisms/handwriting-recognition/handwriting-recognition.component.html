@@ -1,0 +1,15 @@
+<flo-button-unfilled
+  [bordered]="true"
+  [svgIcon]="svgIcon"
+  class="button"
+  (click)="fileInput.click()">
+  <ng-content></ng-content>
+</flo-button-unfilled>
+
+<input
+  #fileInput
+  [hidden]="true"
+  capture="environment"
+  type="file"
+  accept="image/*"
+  (change)="scanElement($event)" />

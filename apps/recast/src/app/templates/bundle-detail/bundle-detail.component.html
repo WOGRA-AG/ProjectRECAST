@@ -1,28 +1,32 @@
-<div class="bundle-detail-wrapper">
-  <app-page-header [breadcrumbs]="breadcrumbs" class="title">
+<flo-default-template>
+  <flo-page-header header [breadcrumbs]="breadcrumbs" class="title">
     {{ title }}
-  </app-page-header>
-  <div id="dag" class="dag">
-    <app-dag
-      *ngIf="!!nodes.length"
-      layout="dagre"
-      (nodeClicked)="onNodeSelect($event)"
-      [draggingEnabled]="false"
-      [panningEnabled]="false"
-      [autoCenter]="true"
-      [autoZoom]="true"
-      [links]="links"
-      [nodes]="nodes">
-    </app-dag>
-  </div>
+  </flo-page-header>
+  <ng-container main>
+    <div class="bundle-detail-wrapper">
+      <div id="dag" class="dag">
+        <flo-dag
+          *ngIf="!!nodes.length"
+          layout="dagre"
+          (nodeClicked)="onNodeSelect($event)"
+          [draggingEnabled]="false"
+          [panningEnabled]="false"
+          [autoCenter]="true"
+          [autoZoom]="true"
+          [links]="links"
+          [nodes]="nodes">
+        </flo-dag>
+      </div>
 
-  <div class="buttons">
-    <app-button-unfilled
-      class="button"
-      size="medium"
-      i18n="@@action.back"
-      (click)="navigateBack()">
-      Zurück
-    </app-button-unfilled>
-  </div>
-</div>
+      <div class="buttons">
+        <flo-button-unfilled
+          class="button"
+          size="medium"
+          i18n="@@action.back"
+          (click)="navigateBack()">
+          Zurück
+        </flo-button-unfilled>
+      </div>
+    </div>
+  </ng-container>
+</flo-default-template>

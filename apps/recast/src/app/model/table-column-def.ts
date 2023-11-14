@@ -1,4 +1,4 @@
-import { TableColumn } from '../design/components/organisms/table/table.component';
+import { TableColumn } from '@wogra/wogra-ui-kit';
 import { BundleService, ProcessFacadeService } from '../services';
 
 export interface TableColumnDef {
@@ -7,13 +7,6 @@ export interface TableColumnDef {
 
 export class ProcessColumnDef implements TableColumnDef {
   private _columns: TableColumn[] = [
-    {
-      key: 'id',
-      label: $localize`:@@label.id:ID`,
-      type: 'text',
-      required: true,
-      editable: false,
-    },
     {
       key: 'name',
       label: $localize`:@@label.title:Title`,
@@ -79,13 +72,6 @@ export class ElementColumnDef implements TableColumnDef {
 
 export class BundleColumnDef implements TableColumnDef {
   private _columns: TableColumn[] = [
-    {
-      key: 'id',
-      label: $localize`:@@label.id:ID`,
-      type: 'text',
-      required: true,
-      editable: false,
-    },
     {
       key: 'name',
       label: $localize`:@@label.title:Title`,

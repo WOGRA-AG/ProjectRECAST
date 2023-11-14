@@ -19,7 +19,18 @@ steps:
     stepProperties:
       - name: Force[N]
         type: number
+      - name: Good
+        type: boolean
+        predictionTemplate:
+          input:
+            - Thermography
       - name: LSS[Mpa]
         type: number
+        predictionTemplate:
+          input:
+            - Image
+          comparator: gte
+          compValue:
+            - 36
       - name: area[mm2]
         type: number
