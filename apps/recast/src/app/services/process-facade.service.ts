@@ -25,9 +25,12 @@ import {
   toArray,
 } from 'rxjs';
 import { Process, Step, ValueType } from '../../../build/openapi/recast';
-import { elementComparator, groupBy$ } from '../shared/util/common-utils';
-const snakeCase = require('snakecase-keys');
-const camelCase = require('camelcase-keys');
+import {
+  elementComparator,
+  groupBy$,
+  snakeCaseKeys,
+  camelCaseKeys,
+} from '../shared/util/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -164,7 +167,7 @@ export class ProcessFacadeService {
     const upsertProcess = { id, name, bundleId };
     const upsert = this._supabaseClient
       .from(Tables.processes)
-      .upsert(snakeCase(upsertProcess))
+      .upsert(snakeCaseKeys(upsertProcess))
       .select();
     return from(upsert).pipe(
       filter(({ data, error }) => !!data || !!error),
@@ -172,7 +175,7 @@ export class ProcessFacadeService {
         if (error) {
           throw error;
         }
-        return camelCase(data[0]);
+        return camelCaseKeys(data[0]);
       })
     );
   }
@@ -192,14 +195,16 @@ export class ProcessFacadeService {
           const state = this._processes$.getValue();
           switch (payload.eventType) {
             case 'INSERT': {
-              changes$.next(this.insertProcess(state, camelCase(payload.new)));
+              changes$.next(
+                this.insertProcess(state, camelCaseKeys(payload.new))
+              );
               break;
             }
             case 'UPDATE': {
               const steps = this.stepFacade.steps;
               this.updateProcessWithSteps$(
                 state,
-                camelCase(payload.new),
+                camelCaseKeys(payload.new),
                 steps
               ).subscribe(processes => changes$.next(processes));
               break;
@@ -241,10 +246,10 @@ export class ProcessFacadeService {
 
   private processesToCamelCase(state: Process[]): Process[] {
     return state.map(process => {
-      process = camelCase(process);
+      process = camelCaseKeys(process);
       process.steps = process.steps?.map(step => {
-        step = camelCase(step);
-        step.stepProperties = step.stepProperties?.map(camelCase);
+        step = camelCaseKeys(step);
+        step.stepProperties = step.stepProperties?.map(camelCaseKeys);
         return step;
       });
       return process;

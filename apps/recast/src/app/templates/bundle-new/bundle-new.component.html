@@ -1,33 +1,52 @@
-<div class="bundle-new-wrapper">
-  <app-page-header
-    class="header"
+<flo-default-template>
+  <flo-page-header
+    header
     i18n="@@header.new_bundle"
     [breadcrumbs]="breadcrumbs">
     New Bundle
-  </app-page-header>
-
-  <app-single-file-upload
-    id="upload"
-    i18n-placeholder="@@placeholder.upload_yaml"
-    placeholder="Upload Process-YAML"
-    (fileChange)="uploadFile($event)"
-    (back)="cancel()"
-    (isValid)="isValid = $event">
-    <ng-container actions>
-      <app-button-unfilled
-        type="reset"
-        size="medium"
-        [bordered]="true"
-        i18n="@@action.back">
-        Back
-      </app-button-unfilled>
-      <app-submit-button
-        size="medium"
-        [disabled]="!isValid"
-        i18n="@@action.create">
-        Create
-      </app-submit-button>
-      <mat-spinner diameter="40" *ngIf="loading"></mat-spinner>
-    </ng-container>
-  </app-single-file-upload>
-</div>
+  </flo-page-header>
+  <ng-container main>
+    <div class="bundle-new-wrapper">
+      <form
+        #f="ngForm"
+        class="form"
+        (reset)="cancel()"
+        (submit)="uploadFile()"
+        [formGroup]="formGroup">
+        <flo-drop-file-input
+          data-testid="drop-file-input"
+          class="file-upload"
+          formControlName="file"
+          id="upload">
+          <ng-container placeholder>
+            <div class="inline">
+              <flo-icon color="primary" matPrefix>upload</flo-icon>
+              <mat-label class="primary-text" i18n="@@placeholder.upload_yaml">
+                Upload Process-YAML
+              </mat-label>
+            </div>
+          </ng-container>
+          <ng-container actions>
+            <div class="margin-top">
+              <flo-button-unfilled
+                type="reset"
+                size="medium"
+                [bordered]="true"
+                i18n="@@action.back">
+                Back
+              </flo-button-unfilled>
+              <flo-submit-button
+                data-testid="submit-button"
+                size="medium"
+                [disabled]="!!f.invalid || !file"
+                i18n="@@action.create">
+                Create
+              </flo-submit-button>
+              <mat-spinner diameter="40" *ngIf="loading"></mat-spinner>
+            </div>
+          </ng-container>
+        </flo-drop-file-input>
+      </form>
+    </div>
+  </ng-container>
+</flo-default-template>

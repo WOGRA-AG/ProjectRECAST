@@ -1,32 +1,38 @@
-<div class="content-wrapper">
-  <app-page-header
-    class="header"
+<flo-default-template>
+  <flo-page-header
+    header
     i18n="@@header.new_process"
     [breadcrumbs]="breadcrumbs">
     New Process
-  </app-page-header>
-
-  <app-single-file-upload
-    id="upload"
-    i18n-placeholder="@@placeholder.upload_yaml"
-    placeholder="Upload Process-YAML"
-    (fileChange)="uploadFile($event)"
-    (back)="cancel()"
-    (isValid)="isValid = $event">
-    <ng-container actions>
-      <app-button-unfilled
-        type="reset"
-        size="medium"
-        [bordered]="true"
-        i18n="@@action.back">
-        Back
-      </app-button-unfilled>
-      <app-submit-button
-        size="medium"
-        [disabled]="!isValid"
-        i18n="@@action.create">
-        Create
-      </app-submit-button>
-    </ng-container>
-  </app-single-file-upload>
-</div>
+  </flo-page-header>
+  <ng-container main>
+    <div class="content-wrapper">
+      <form
+        #f="ngForm"
+        (reset)="cancel()"
+        (ngSubmit)="uploadFile($event)"></form>
+      <flo-drop-file-input
+        id="upload"
+        i18n-placeholder="@@placeholder.upload_yaml"
+        placeholder="Upload Process-YAML"
+        (isValid)="isValid = $event">
+        <ng-container actions>
+          <flo-button-unfilled
+            type="reset"
+            size="medium"
+            [bordered]="true"
+            i18n="@@action.back">
+            Back
+          </flo-button-unfilled>
+          <flo-submit-button
+            data-testid="submit-button"
+            size="medium"
+            [disabled]="!isValid"
+            i18n="@@action.create">
+            Create
+          </flo-submit-button>
+        </ng-container>
+      </flo-drop-file-input>
+    </div>
+  </ng-container>
+</flo-default-template>

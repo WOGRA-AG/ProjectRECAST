@@ -20,14 +20,15 @@ import {
   from,
   distinctUntilChanged,
   concatMap,
+  zip,
+  toArray,
 } from 'rxjs';
-import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
+import { Breadcrumb, ConfirmDialogComponent } from '@wogra/wogra-ui-kit';
 import {
   ElementFacadeService,
   ProcessFacadeService,
   ElementViewModelFacadeService,
 } from 'src/app/services';
-import { ConfirmDialogComponent } from '../../design/components/organisms/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {
   ElementViewModel,
@@ -38,8 +39,9 @@ import { elementComparator } from '../../shared/util/common-utils';
 import { AlertService } from '../../services/alert.service';
 import {
   fileExtensionValidator,
-  imageFileExtensionValidator,
-} from '../../validators/file-extension-validator';
+  ImageFileExtensionValidator,
+} from '@wogra/wogra-ui-kit';
+import { PredictionService } from '../../services/prediction.service';
 
 // TODO: refactor this class
 @Component({
@@ -73,7 +75,8 @@ export class ElementDetailComponent implements OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router,
     private dialog: MatDialog,
-    private alert: AlertService
+    private alert: AlertService,
+    private predictionService: PredictionService
   ) {
     this._elementViewModel$
       .pipe(
@@ -83,10 +86,11 @@ export class ElementDetailComponent implements OnDestroy {
           this.initBreadcrumbs(elementViewModel.process);
           this.initializeComponentProperties(
             elementViewModel.currentStep,
-            elementViewModel.sortedSteps
+            elementViewModel.process.steps ?? []
           );
           return this.initFormGroup$(elementViewModel);
-        })
+        }),
+        concatMap(() => this.initPredictions(this.elementViewModel!))
       )
       .subscribe();
   }
@@ -141,15 +145,19 @@ export class ElementDetailComponent implements OnDestroy {
       .open(ConfirmDialogComponent, {
         data: {
           title: $localize`:@@dialog.submit_element:Save Element?`,
+          confirm: $localize`:@@action.confirm:Confirm`,
+          cancel: $localize`:@@action.cancel:Cancel`,
         },
         autoFocus: false,
       })
       .afterClosed()
       .pipe(
         take(1),
-        filter(confirmed => !!confirmed),
-        concatMap(() =>
-          this.elementViewService
+        concatMap(confirmed => {
+          if (!confirmed) {
+            return of(undefined);
+          }
+          return this.elementViewService
             .updateValuesFromElementViewModel$(newModel)
             .pipe(
               takeUntil(this._destroy$),
@@ -157,8 +165,8 @@ export class ElementDetailComponent implements OnDestroy {
                 this.alert.reportError(err.message);
                 return of(undefined);
               })
-            )
-        )
+            );
+        })
       )
       .subscribe(element => {
         this.loading = false;
@@ -170,7 +178,7 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   public stepChanged(index: number): void {
-    if (index >= this._steps.indexOf(this._currentStep!)) {
+    if (index >= this._steps.findIndex(s => s.id === this._currentStep?.id)) {
       return;
     }
     this.navigateStep$(this._steps[index]).pipe(take(1)).subscribe();
@@ -213,6 +221,32 @@ export class ElementDetailComponent implements OnDestroy {
     return of(undefined);
   }
 
+  private initPredictions(
+    elementViewModel: ElementViewModel
+  ): Observable<void> {
+    return from(elementViewModel.properties).pipe(
+      concatMap(prop => {
+        if (!prop.predictionTemplate) {
+          return zip(of(prop), of(prop.predictionTemplate));
+        }
+        return zip(
+          of(prop),
+          this.predictionService
+            .updatePredictionValue(
+              elementViewModel.element.id!,
+              prop.predictionTemplate
+            )
+            .pipe(take(1))
+        );
+      }),
+      map(([prop, predictionTemplate]) => {
+        prop.predictionTemplate = predictionTemplate;
+      }),
+      toArray(),
+      map(() => undefined)
+    );
+  }
+
   private initializeComponentProperties(
     step: Step | undefined,
     steps: Step[]
@@ -220,7 +254,9 @@ export class ElementDetailComponent implements OnDestroy {
     this.stepTitles = steps.map(s => s.name!);
     this._steps = steps;
     this._currentStep = step;
-    this.currentIndex = step ? this._steps.indexOf(step) : 0;
+    this.currentIndex = step
+      ? this._steps.findIndex(s => s.id === step?.id)
+      : 0;
     this.isLastStep = this._steps.length - 1 === this.currentIndex;
     this.currentProperties = !this._currentStep
       ? this.elementViewModel?.properties!
@@ -241,12 +277,13 @@ export class ElementDetailComponent implements OnDestroy {
       elementProperties: [],
       currentStepId: !this.isLastStep && !!nextStep ? nextStep.id : null,
     };
+    const isLastStep = this.isLastStep;
     this.elementService
       .saveElement$(element)
       .pipe(
         take(1),
         concatMap(() => {
-          if (!this.isLastStep) {
+          if (!isLastStep) {
             return of(undefined);
           }
           return this.navigateBack$();
@@ -336,7 +373,7 @@ export class ElementDetailComponent implements OnDestroy {
   private _getValidators(type: ValueType, required = false): ValidatorFn[] {
     const validators: ValidatorFn[] = required ? [Validators.required] : [];
     if (type === ValueType.Image) {
-      validators.push(imageFileExtensionValidator);
+      validators.push(ImageFileExtensionValidator);
     }
     if (type === ValueType.Dataset || type === ValueType.Timeseries) {
       validators.push(fileExtensionValidator(['csv']));
@@ -345,7 +382,7 @@ export class ElementDetailComponent implements OnDestroy {
       validators.push(Validators.pattern(/^#[0-9A-F]{6}$/i));
     }
     if (type === ValueType.Number) {
-      validators.push(Validators.pattern(/^-?\d+$/));
+      validators.push(Validators.pattern(/^-?\d*([,.])?\d*$/));
     }
     return validators;
   }

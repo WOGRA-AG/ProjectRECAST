@@ -8,6 +8,7 @@ import {
 } from 'rxjs';
 import { Document, parseAllDocuments } from 'yaml';
 import {
+  PredictionTemplate,
   Process,
   Profile,
   Step,
@@ -86,6 +87,14 @@ const parseYamlToProcess = (spec: any): Process => {
       if (!isObjectofStepProperty(stepProperty)) {
         throw Error($localize`:@@err.stepProp.invalid:Invalid StepProperty`);
       }
+      if (
+        stepProperty.predictionTemplate &&
+        !isObjectOfPredictionTemplate(stepProperty.predictionTemplate)
+      ) {
+        throw Error(
+          $localize`:@@err.predictionTemplate.invalid:Invalid PredictionTemplate`
+        );
+      }
     });
   });
   return process;
@@ -116,6 +125,10 @@ const isObjectofStepProperty = (obj: any): obj is StepProperty => {
     (Object.values(ValueType).toString().includes(obj.type) ||
       !Object.values(ValueType).toString().includes(obj.type))
   );
+};
+
+const isObjectOfPredictionTemplate = (obj: any): obj is PredictionTemplate => {
+  return typeof obj === 'object' && obj !== null && 'input' in obj;
 };
 
 export const elementComparator = <T>(a: T, b: T): boolean =>

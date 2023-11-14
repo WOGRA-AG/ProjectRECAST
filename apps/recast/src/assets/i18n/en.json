@@ -36,6 +36,7 @@
   "err.stepProp.invalid": "Could not parse valid StepProperty from definition",
   "err.dismiss": "OK",
   "err.invalid_prop_type": "Invalid Property Type",
+  "err.predictionTemplate.invalid": "Could not parse valid PredictionTemplate from definition",
 
   "placeholder.upload_yaml": "Upload Process-YAML",
   "placeholder.select_element": "Select element",

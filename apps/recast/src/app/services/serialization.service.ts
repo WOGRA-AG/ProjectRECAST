@@ -43,7 +43,7 @@ export class SerializationService {
       .pipe(
         take(1),
         mergeMap(elements => from(elements)),
-        mergeMap(element => this._processElementProperties$(element)),
+        concatMap(element => this._processElementProperties$(element)),
         toArray(),
         map((rows: DatasetRow[]) => this._datasetFromRows(rows)),
         map(dataset => this._datasetToCsv(dataset)),
@@ -218,8 +218,8 @@ export class SerializationService {
   }
 
   private _processDataset$(
-    columnName: string,
-    columnType: ValueType,
+    _1: string,
+    _2: ValueType,
     propertyValue: string,
     storageBackend?: StorageBackend
   ): Observable<DatasetValue[]> {

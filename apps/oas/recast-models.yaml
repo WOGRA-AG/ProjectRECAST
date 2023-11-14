@@ -27,6 +27,17 @@ components:
         - SUPABASE
         - SHEPARD
 
+    Comparisons:
+      type: string
+      enum:
+          - eq
+          - neq
+          - gt
+          - gte
+          - lt
+          - lte
+          - in
+          - nin
     Id:
       type: integer
       format: int64
@@ -99,6 +110,8 @@ components:
           type: boolean
         type:
           $ref: '#/components/schemas/ValueType'
+        predictionTemplate:
+          $ref: '#/components/schemas/PredictionTemplate'
 
     Element:
       properties:
@@ -164,6 +177,7 @@ components:
           type: string
         storageBackend:
           $ref: '#/components/schemas/StorageBackend'
+
     Bundle:
       properties:
         id:
@@ -175,3 +189,24 @@ components:
           format: date-time
         ownerId:
           $ref: '#/components/schemas/UuId'
+
+    PredictionTemplate:
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        stepPropertyId:
+          $ref: '#/components/schemas/Id'
+        input:
+          type: array
+          items:
+            type: string
+        comparator:
+          $ref: '#/components/schemas/Comparisons'
+        compValue:
+          type: array
+          items:
+            type: string
+        predValue:
+          type: string

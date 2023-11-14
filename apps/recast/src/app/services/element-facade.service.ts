@@ -7,6 +7,7 @@ import {
   concatMap,
   distinctUntilChanged,
   filter,
+  forkJoin,
   from,
   map,
   merge,
@@ -19,7 +20,11 @@ import {
   tap,
   toArray,
 } from 'rxjs';
-import { Element, ElementProperty } from '../../../build/openapi/recast';
+import {
+  Element,
+  ElementProperty,
+  ValueType,
+} from '../../../build/openapi/recast';
 import {
   PostgrestError,
   REALTIME_LISTEN_TYPES,
@@ -37,6 +42,7 @@ import {
 import { ProcessFacadeService } from './process-facade.service';
 import { StepFacadeService } from './step-facade.service';
 import { StepPropertyService } from './step-property.service';
+import { flatten } from 'lodash';
 
 @Injectable({
   providedIn: 'root',
@@ -111,6 +117,10 @@ export class ElementFacadeService {
           name,
           currentStepId: stepId,
         });
+      }),
+      map(element => {
+        this._elements$.next(this.insertElement(this.elements, element));
+        return element;
       })
     );
   }
@@ -232,6 +242,16 @@ export class ElementFacadeService {
     );
   }
 
+  public referencedElementPropertiesByElementId$(
+    elementId: number
+  ): Observable<ElementProperty[]> {
+    const element = this.elementById(elementId);
+    if (!element) {
+      return of([]);
+    }
+    return this._processElementProperties$(element);
+  }
+
   private upsertElement$({
     id,
     name,
@@ -336,7 +356,10 @@ export class ElementFacadeService {
   }
 
   private insertElement(state: Element[], element: Element): Element[] {
-    element.elementProperties = [];
+    if (state.find(e => e.id === element.id)) {
+      return state;
+    }
+    element.elementProperties = element.elementProperties || [];
     return state.concat(element);
   }
 
@@ -380,5 +403,39 @@ export class ElementFacadeService {
       element.elementProperties = values;
     }
     return element;
+  }
+
+  private _processElementProperties$(
+    element: Element
+  ): Observable<ElementProperty[]> {
+    const row: Observable<ElementProperty[]>[] = [];
+    for (const elementProperty of element.elementProperties ?? []) {
+      row.push(this._processElementProperty$(elementProperty).pipe(take(1)));
+    }
+    return forkJoin(row).pipe(map(flatten), take(1));
+  }
+
+  private _processElementProperty$(
+    elementProperty: ElementProperty
+  ): Observable<ElementProperty[]> {
+    const stepProperty = this.stepPropertyService.stepPropertyById(
+      elementProperty.stepPropertyId ?? 0
+    );
+    const propValue: string = elementProperty.value ?? '';
+    const type: ValueType = stepProperty.type ?? ValueType.Text;
+    if (this.processService.isReference(type)) {
+      return this._processReference$(propValue);
+    }
+    return of([elementProperty]);
+  }
+
+  private _processReference$(
+    propertyValue: string
+  ): Observable<ElementProperty[]> {
+    const element = this.elementById(Number(propertyValue));
+    if (!element) {
+      return of([]);
+    }
+    return this._processElementProperties$(element);
   }
 }

@@ -14,9 +14,11 @@ import {
   take,
   takeUntil,
 } from 'rxjs';
-import { Breadcrumb } from 'src/app/design/components/molecules/breadcrumb/breadcrumb.component';
-import { ConfirmDialogComponent } from 'src/app/design/components/organisms/confirm-dialog/confirm-dialog.component';
-import { TableColumn } from 'src/app/design/components/organisms/table/table.component';
+import {
+  Breadcrumb,
+  ConfirmDialogComponent,
+  TableColumn,
+} from '@wogra/wogra-ui-kit';
 import { ElementFacadeService } from 'src/app/services/element-facade.service';
 import { ProcessFacadeService } from 'src/app/services/process-facade.service';
 import { StepFacadeService } from 'src/app/services/step-facade.service';
@@ -137,7 +139,11 @@ export class ProcessDetailComponent implements OnDestroy {
     }
     this.dialog
       .open(ConfirmDialogComponent, {
-        data: { title: $localize`:@@dialog.delete_element:Delete Element?` },
+        data: {
+          title: $localize`:@@dialog.delete_element:Delete Element?`,
+          confirm: $localize`:@@action.confirm:Confirm`,
+          cancel: $localize`:@@action.cancel:Cancel`,
+        },
         autoFocus: false,
       })
       .afterClosed()
