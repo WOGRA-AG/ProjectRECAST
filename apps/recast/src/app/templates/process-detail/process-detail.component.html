@@ -1,7 +1,17 @@
 <flo-default-template>
-  <flo-page-header header role="heading" [breadcrumbs]="breadcrumbs">
-    {{ title }}
-  </flo-page-header>
+  <div header role="heading" class="heading" aria-level="1">
+    <flo-page-header [breadcrumbs]="breadcrumbs">
+      {{ title }}
+    </flo-page-header>
+    <flo-button-unfilled
+      icon="download"
+      class="outlined-icon"
+      size="medium"
+      [disabled]="loading"
+      (click)="downloadDataset()">
+      Dataset
+    </flo-button-unfilled>
+  </div>
   <ng-container main>
     <div class="process-detail-wrapper">
       <flo-stepper
@@ -35,13 +45,6 @@
             i18n="@@action.create_element"
             (click)="navigateToCreateElement()">
             Bauteil erstellen
-          </flo-button-filled>
-          <flo-button-filled
-            icon="download"
-            size="medium"
-            [disabled]="loading"
-            (click)="downloadDataset()">
-            Dataset
           </flo-button-filled>
           <mat-spinner diameter="40" *ngIf="loading"></mat-spinner>
         </div>

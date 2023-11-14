@@ -1,4 +1,18 @@
 @use '@wogra/wogra-ui-kit/src/lib/themes/media-queries.scss' as mq;
+
+.heading {
+  .outlined-icon {
+    .mat-icon {
+      font-family: 'Material Icons Outlined', 'Material Icons', sans-serif;
+    }
+  }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .process-detail-wrapper {
   .table {
     .mat-column-id {

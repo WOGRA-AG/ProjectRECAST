@@ -5,7 +5,7 @@ import {
   ProcessFacadeService,
   StepFacadeService,
 } from 'src/app/services';
-import { mergeWith, take } from 'rxjs';
+import { mergeWith, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -18,17 +18,15 @@ export class ApplicationStateService {
     private readonly bundleService: BundleService
   ) {}
 
-  public updateApplicationState(): void {
-    this.processService
+  public updateApplicationState$(): Observable<void> {
+    return this.processService
       .updateProcesses$()
       .pipe(
         mergeWith(
           this.elementService.updateElements$(),
           this.stepService.updateSteps$(),
           this.bundleService.updateBundles$()
-        ),
-        take(1)
-      )
-      .subscribe();
+        )
+      );
   }
 }

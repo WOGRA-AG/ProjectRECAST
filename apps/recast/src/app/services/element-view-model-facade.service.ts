@@ -186,16 +186,14 @@ export class ElementViewModelFacadeService {
     return this._processById$(element.processId!).pipe(
       combineLatestWith(
         this._stepById$(element.currentStepId!),
-        this._stepsByProcessId$(element.processId!),
         this._stepPropertiesByProcessId$(element.processId!)
       ),
-      filter(([process, _1, _2, _3]) => !!process),
-      concatMap(([process, step, steps, stepProperties]) =>
+      filter(([process, _1, _2]) => !!process),
+      concatMap(([process, step, stepProperties]) =>
         this._elementViewModelFromElementAndProcessAndStepAndStepPropertiesAndElementProperties$(
           element,
           process,
           step,
-          steps,
           stepProperties
         )
       )
@@ -206,7 +204,6 @@ export class ElementViewModelFacadeService {
     element: Element,
     process: Process | undefined,
     step: Step | undefined,
-    steps: Step[],
     stepProperties: StepProperty[]
   ): Observable<ElementViewModel> {
     if (!process) {
@@ -226,7 +223,6 @@ export class ElementViewModelFacadeService {
       process,
       storageBackends: uniqueStorageBackends,
       currentStep: step,
-      sortedSteps: steps,
       properties: elementViewProperties,
     });
   }
@@ -241,10 +237,6 @@ export class ElementViewModelFacadeService {
 
   private _stepById$(id: number): Observable<Step | undefined> {
     return this.stepService.stepById$(id);
-  }
-
-  private _stepsByProcessId$(id: number): Observable<Step[]> {
-    return this.stepService.stepsByProcessId$(id);
   }
 
   private _stepPropertiesByProcessId$(id: number): Observable<StepProperty[]> {

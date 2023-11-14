@@ -117,6 +117,10 @@ export class ElementFacadeService {
           name,
           currentStepId: stepId,
         });
+      }),
+      map(element => {
+        this._elements$.next(this.insertElement(this.elements, element));
+        return element;
       })
     );
   }
@@ -352,7 +356,10 @@ export class ElementFacadeService {
   }
 
   private insertElement(state: Element[], element: Element): Element[] {
-    element.elementProperties = [];
+    if (state.find(e => e.id === element.id)) {
+      return state;
+    }
+    element.elementProperties = element.elementProperties || [];
     return state.concat(element);
   }
 

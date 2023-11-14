@@ -86,7 +86,7 @@ export class ElementDetailComponent implements OnDestroy {
           this.initBreadcrumbs(elementViewModel.process);
           this.initializeComponentProperties(
             elementViewModel.currentStep,
-            elementViewModel.sortedSteps
+            elementViewModel.process.steps ?? []
           );
           return this.initFormGroup$(elementViewModel);
         }),
@@ -145,6 +145,8 @@ export class ElementDetailComponent implements OnDestroy {
       .open(ConfirmDialogComponent, {
         data: {
           title: $localize`:@@dialog.submit_element:Save Element?`,
+          confirm: $localize`:@@action.confirm:Confirm`,
+          cancel: $localize`:@@action.cancel:Cancel`,
         },
         autoFocus: false,
       })
@@ -176,7 +178,7 @@ export class ElementDetailComponent implements OnDestroy {
   }
 
   public stepChanged(index: number): void {
-    if (index >= this._steps.indexOf(this._currentStep!)) {
+    if (index >= this._steps.findIndex(s => s.id === this._currentStep?.id)) {
       return;
     }
     this.navigateStep$(this._steps[index]).pipe(take(1)).subscribe();
@@ -252,7 +254,9 @@ export class ElementDetailComponent implements OnDestroy {
     this.stepTitles = steps.map(s => s.name!);
     this._steps = steps;
     this._currentStep = step;
-    this.currentIndex = step ? this._steps.indexOf(step) : 0;
+    this.currentIndex = step
+      ? this._steps.findIndex(s => s.id === step?.id)
+      : 0;
     this.isLastStep = this._steps.length - 1 === this.currentIndex;
     this.currentProperties = !this._currentStep
       ? this.elementViewModel?.properties!
@@ -273,12 +277,13 @@ export class ElementDetailComponent implements OnDestroy {
       elementProperties: [],
       currentStepId: !this.isLastStep && !!nextStep ? nextStep.id : null,
     };
+    const isLastStep = this.isLastStep;
     this.elementService
       .saveElement$(element)
       .pipe(
         take(1),
         concatMap(() => {
-          if (!this.isLastStep) {
+          if (!isLastStep) {
             return of(undefined);
           }
           return this.navigateBack$();
