@@ -28,6 +28,7 @@ import {
   ElementFacadeService,
   ProcessFacadeService,
   ElementViewModelFacadeService,
+  AlertService,
 } from 'src/app/services';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -36,7 +37,6 @@ import {
   ViewModelValueType,
 } from '../../model/element-view-model';
 import { elementComparator } from '../../shared/util/common-utils';
-import { AlertService } from '../../services/alert.service';
 import {
   fileExtensionValidator,
   ImageFileExtensionValidator,
@@ -347,6 +347,8 @@ export class ElementDetailComponent implements OnDestroy {
     }
     const control = this.propertiesForm.get(name);
     if (!control) {
+      value =
+        !value && type === ValueType.Date ? new Date().toISOString() : value;
       this.propertiesForm.addControl(
         name,
         new FormControl(

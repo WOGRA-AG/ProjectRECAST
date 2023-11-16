@@ -1,6 +1,10 @@
 @use '@wogra/wogra-ui-kit/src/lib/themes/media-queries.scss' as mq;
 .overview-wrapper {
   .table {
+    .mat-mdc-row {
+      cursor: pointer;
+    }
+
     .mat-column-id {
       width: 10%;
       max-width: 100px;
@@ -12,17 +16,12 @@
       max-width: 100px;
     }
 
-    .mat-column-bundleId,
-    .mat-column-processId {
-      display: none;
-    }
-
     @media #{mq.$medium-and-up} {
       .mat-column-bundleId,
       .mat-column-processId {
         display: table-cell;
       }
-      .mat-column-name:not(:nth-last-child(3)) {
+      .mat-column-name:not(:nth-last-child(2)) {
         min-width: fit-content;
         width: 15%;
         max-width: 200px;
