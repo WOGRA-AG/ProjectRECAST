@@ -25,6 +25,7 @@
   "label.done": "Done",
   "label.bundles": "Bundles",
   "label.bundle": "Bundle",
+  "label.confirm_id": "Element created",
 
   "err.required": "Required",
   "err.invalidTypeFile": "Please select a valid file for input.",

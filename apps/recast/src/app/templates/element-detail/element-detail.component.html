@@ -128,6 +128,13 @@
             i18n="@@action.back">
             Back
           </flo-button-unfilled>
+          <flo-button-filled
+            *ngIf="!elementViewModel?.currentStep"
+            type="button"
+            [routerLink]="['..']"
+            i18n="@@action.create_element">
+            Create element
+          </flo-button-filled>
           <ng-container *ngIf="!!elementViewModel?.currentStep">
             <flo-submit-button
               *ngIf="!isLastStep"
