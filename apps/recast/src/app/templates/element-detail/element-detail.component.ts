@@ -283,10 +283,10 @@ export class ElementDetailComponent implements OnDestroy {
       .pipe(
         take(1),
         concatMap(() => {
-          if (!isLastStep) {
-            return of(undefined);
+          if (isLastStep) {
+            this.propertiesForm.disable();
           }
-          return this.navigateBack$();
+          return of(undefined);
         })
       )
       .subscribe(() => (this.loading = false));
