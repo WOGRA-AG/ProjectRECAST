@@ -16,9 +16,16 @@
       max-width: 100px;
     }
 
+    .mat-column-bundleId,
+    .mat-column-processId,
+    .mat-column-id {
+      display: none;
+    }
+
     @media #{mq.$medium-and-up} {
       .mat-column-bundleId,
-      .mat-column-processId {
+      .mat-column-processId,
+      .mat-column-id {
         display: table-cell;
       }
       .mat-column-name:not(:nth-last-child(2)) {

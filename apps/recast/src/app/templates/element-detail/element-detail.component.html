@@ -129,7 +129,7 @@
             Back
           </flo-button-unfilled>
           <flo-button-filled
-            *ngIf="!elementViewModel?.currentStep"
+            *ngIf="!!elementViewModel && !elementViewModel.currentStep"
             type="button"
             [routerLink]="['..']"
             i18n="@@action.create_element">
