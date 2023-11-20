@@ -11,6 +11,7 @@ import { SvgIcon } from '@wogra/wogra-ui-kit';
 export class HandwritingRecognitionComponent {
   @Input() svgIcon: SvgIcon = 'scan';
   @Output() recognized: EventEmitter<string> = new EventEmitter<string>();
+  loading = false;
 
   constructor(
     private readonly handwritingRecognitionService: HandwritingRecognitionService
@@ -20,12 +21,17 @@ export class HandwritingRecognitionComponent {
     const element = event.currentTarget as HTMLInputElement;
     const fileList: FileList | null = element.files;
     if (!fileList) {
+      this.loading = false;
       return;
     }
+    this.loading = true;
     const file = fileList[0];
     this.handwritingRecognitionService
       .predictImage(file)
       .pipe(take(1))
-      .subscribe(r => this.recognized.emit(r));
+      .subscribe(r => {
+        this.loading = false;
+        this.recognized.emit(r);
+      });
   }
 }

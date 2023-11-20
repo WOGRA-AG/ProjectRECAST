@@ -7,3 +7,5 @@ export { StepPropertyService } from './step-property.service';
 export { SupabaseService } from './supabase.service';
 export { BundleService } from './bundle.service';
 export { ApplicationStateService } from './application-state.service';
+export { AlertService } from './alert.service';
+export { ViewStateService } from './view-state.service';

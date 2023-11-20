@@ -1,10 +1,12 @@
 <flo-button-unfilled
+  *ngIf="!loading"
   [bordered]="true"
   [svgIcon]="svgIcon"
   class="button"
   (click)="fileInput.click()">
   <ng-content></ng-content>
 </flo-button-unfilled>
+<mat-spinner *ngIf="loading" diameter="40"></mat-spinner>
 
 <input
   #fileInput
