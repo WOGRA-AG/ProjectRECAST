@@ -28,6 +28,7 @@ import {
   ElementFacadeService,
   ProcessFacadeService,
   ElementViewModelFacadeService,
+  AlertService,
 } from 'src/app/services';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -36,7 +37,6 @@ import {
   ViewModelValueType,
 } from '../../model/element-view-model';
 import { elementComparator } from '../../shared/util/common-utils';
-import { AlertService } from '../../services/alert.service';
 import {
   fileExtensionValidator,
   ImageFileExtensionValidator,
@@ -283,10 +283,10 @@ export class ElementDetailComponent implements OnDestroy {
       .pipe(
         take(1),
         concatMap(() => {
-          if (!isLastStep) {
-            return of(undefined);
+          if (isLastStep) {
+            this.propertiesForm.disable();
           }
-          return this.navigateBack$();
+          return of(undefined);
         })
       )
       .subscribe(() => (this.loading = false));
@@ -328,7 +328,7 @@ export class ElementDetailComponent implements OnDestroy {
         link: '/overview',
       },
       { label: process.name!, link: '/overview/process/' + process.id },
-      { label: this.elementViewModel?.element.name! },
+      { label: '' + this.elementViewModel?.element.id! },
     ];
   }
 
@@ -347,6 +347,8 @@ export class ElementDetailComponent implements OnDestroy {
     }
     const control = this.propertiesForm.get(name);
     if (!control) {
+      value =
+        !value && type === ValueType.Date ? new Date().toISOString() : value;
       this.propertiesForm.addControl(
         name,
         new FormControl(

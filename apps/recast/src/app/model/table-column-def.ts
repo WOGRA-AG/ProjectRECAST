@@ -23,7 +23,6 @@ export class ProcessColumnDef implements TableColumnDef {
         return this.bundleService.bundleById(value)?.name ?? '';
       },
     },
-    { key: 'isEdit', label: '', type: 'isEdit' },
     { key: 'isDelete', label: '', type: 'isDelete' },
   ];
 
@@ -59,7 +58,6 @@ export class ElementColumnDef implements TableColumnDef {
         return this.processService.processById(value)?.name ?? '';
       },
     },
-    { key: 'isEdit', label: '', type: 'isEdit' },
     { key: 'isDelete', label: '', type: 'isDelete' },
   ];
 
@@ -79,7 +77,6 @@ export class BundleColumnDef implements TableColumnDef {
       required: true,
       editable: true,
     },
-    { key: 'isEdit', label: '', type: 'isEdit' },
     { key: 'isDelete', label: '', type: 'isDelete' },
   ];
 

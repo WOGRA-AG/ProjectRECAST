@@ -47,6 +47,12 @@
       display: none;
     }
 
+    .mat-column-bundleId,
+    .mat-column-processId,
+    .mat-column-id {
+      display: none;
+    }
+
     @media #{mq.$medium-and-up} {
       margin-top: 3rem;
       grid-template-columns: auto auto;
@@ -57,6 +63,11 @@
 
       .title {
         display: inherit;
+      }
+      .mat-column-bundleId,
+      .mat-column-processId,
+      .mat-column-id {
+        display: table-cell;
       }
     }
 

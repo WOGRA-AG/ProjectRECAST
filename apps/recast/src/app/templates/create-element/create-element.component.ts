@@ -8,12 +8,16 @@ import {
   map,
   of,
   Subject,
+  take,
   takeUntil,
 } from 'rxjs';
-import { Breadcrumb } from '@wogra/wogra-ui-kit';
-import { ElementFacadeService } from 'src/app/services/element-facade.service';
-import { ProcessFacadeService } from 'src/app/services/process-facade.service';
-import { AlertService } from '../../services/alert.service';
+import { Breadcrumb, ConfirmDialogComponent } from '@wogra/wogra-ui-kit';
+import {
+  AlertService,
+  ElementFacadeService,
+  ProcessFacadeService,
+} from 'src/app/services';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-element',
@@ -33,7 +37,8 @@ export class CreateElementComponent implements OnDestroy {
     private formBuilder: FormBuilder,
     private readonly processService: ProcessFacadeService,
     private readonly elementService: ElementFacadeService,
-    private readonly alert: AlertService
+    private readonly alert: AlertService,
+    private readonly dialog: MatDialog
   ) {
     this.propertiesForm.addControl(
       'name',
@@ -83,9 +88,21 @@ export class CreateElementComponent implements OnDestroy {
         if (!elementId) {
           return;
         }
-        this.router.navigate([
-          `/overview/process/${this.processId}/element/${elementId}`,
-        ]);
+        this.dialog
+          .open(ConfirmDialogComponent, {
+            data: {
+              title: $localize`:@@label.confirm_id:Created`,
+              content: `ID: ${elementId}`,
+              confirm: $localize`:@@action.confirm:Confirm`,
+            },
+          })
+          .afterClosed()
+          .pipe(take(1))
+          .subscribe(() => {
+            this.router.navigate([
+              `/overview/process/${this.processId}/element/${elementId}`,
+            ]);
+          });
       });
   }
 }

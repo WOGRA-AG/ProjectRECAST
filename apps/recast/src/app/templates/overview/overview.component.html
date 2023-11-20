@@ -37,6 +37,14 @@
             i18n="@@action.create">
             Create
           </flo-create-button>
+          <app-handwriting-recognition
+            *ngIf="currentIndex === OverviewIndex.Elements"
+            data-testid="scan-element-button"
+            svgIcon="scan"
+            i18n="@@action.scan_element"
+            (recognized)="navigateByElementId($event)">
+            Bauteil scannen
+          </app-handwriting-recognition>
         </div>
       </div>
     </div>

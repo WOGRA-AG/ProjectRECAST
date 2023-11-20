@@ -21,7 +21,7 @@ import {
 } from '../../../build/openapi/recast';
 import { StepPropertyService } from './step-property.service';
 import { environment } from '../../environments/environment';
-import { toLower } from 'lodash';
+import { round, toLower } from 'lodash';
 import mime from 'mime';
 
 @Injectable({
@@ -37,7 +37,8 @@ export class PredictionService {
 
   public predict(
     input: (string | File | undefined)[],
-    modelUrl: string
+    modelUrl: string,
+    precision?: number
   ): Observable<string> {
     const inputVal = input.length === 1 ? input[0] : input;
     if (!Array.isArray(inputVal)) {
@@ -45,9 +46,15 @@ export class PredictionService {
       const headers = {
         'Content-Type': mimeType,
       };
-      return this.http.post(modelUrl, inputVal, {
+      const req = this.http.post(modelUrl, inputVal, {
         headers,
       }) as Observable<string>;
+      if (precision) {
+        return req.pipe(
+          map(value => round(Number(value), precision).toString())
+        );
+      }
+      return req;
     }
     //TODO: Test with multiple input Values of different types
     return this.http.post(modelUrl, inputVal) as Observable<string>;
@@ -86,7 +93,9 @@ export class PredictionService {
           if (filteredValues.length !== predictionTemplate.input?.length) {
             return of('');
           }
-          return this.predict(filteredValues, modelUrl);
+          // TODO: get presicion from predictionTemplate
+          const presicion = 2;
+          return this.predict(filteredValues, modelUrl, presicion);
         }),
         map(prediction => {
           return {

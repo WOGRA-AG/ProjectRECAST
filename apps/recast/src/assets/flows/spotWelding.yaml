@@ -23,7 +23,10 @@ steps:
         type: boolean
         predictionTemplate:
           input:
-            - Thermography
+            - Image
+          comparator: eq
+          compValue:
+            - 1
       - name: LSS[Mpa]
         type: number
         predictionTemplate:
