@@ -29,6 +29,7 @@
                 type="text"
                 class="input"
                 [placeholder]="prop.predictionTemplate?.predValue ?? ''"
+                [matTooltip]="prop.predictionTemplate?.predValue ?? ''"
                 [hint]="prop.hint"
                 [label]="prop.label"
                 [formControlName]="prop.stepPropId"
@@ -39,6 +40,7 @@
                 class="input"
                 type="number"
                 [placeholder]="prop.predictionTemplate?.predValue ?? ''"
+                [matTooltip]="prop.predictionTemplate?.predValue ?? ''"
                 [hint]="prop.hint"
                 [label]="prop.label"
                 [formControlName]="prop.stepPropId"
@@ -67,6 +69,7 @@
               <mat-checkbox
                 class="input"
                 *ngSwitchCase="ValueTypeEnum.Boolean"
+                [matTooltip]="prop.predictionTemplate?.predValue ?? ''"
                 [formControlName]="prop.stepPropId"
                 [labelPosition]="'after'"
                 color="primary">
