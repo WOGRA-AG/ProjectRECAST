@@ -25,6 +25,7 @@
   "label.done": "Abgeschlossen",
   "label.bundles": "Bundles",
   "label.bundle": "Bundle",
+  "label.confirm_id": "Bauteil erstellt",
 
   "err.required": "Erforderlich",
   "err.invalidTypeFile": "Die Eingabe muss eine Datei sein",
