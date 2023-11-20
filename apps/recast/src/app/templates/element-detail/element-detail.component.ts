@@ -328,7 +328,7 @@ export class ElementDetailComponent implements OnDestroy {
         link: '/overview',
       },
       { label: process.name!, link: '/overview/process/' + process.id },
-      { label: this.elementViewModel?.element.name! },
+      { label: '' + this.elementViewModel?.element.id! },
     ];
   }
 
