@@ -10,8 +10,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TableColumn, ConfirmDialogComponent } from '@wogra/wogra-ui-kit';
 import { Bundle, Element, Process } from '../../../../build/openapi/recast';
-import { ViewStateService } from '../../services/view-state.service';
-import { ApplicationStateService } from '../../services/application-state.service';
+import {
+  ApplicationStateService,
+  AlertService,
+  ViewStateService,
+} from '../../services';
 import {
   BundleColumnDef,
   ElementColumnDef,
@@ -49,6 +52,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
     private readonly stateService: ViewStateService,
     private readonly elementViewModelService: ElementViewModelFacadeService,
     private readonly applicationStateService: ApplicationStateService,
+    private readonly alertService: AlertService,
     public dialog: MatDialog,
     public router: Router
   ) {
@@ -202,6 +206,17 @@ export class OverviewComponent implements OnDestroy, OnInit {
 
   protected comparator<T extends TableRow>(o1: T, o2: T): boolean {
     return o1.id === o2.id;
+  }
+
+  protected navigateByElementId(elementId: string): void {
+    const element = this.elementService.elementById(+elementId);
+    if (!element) {
+      this.alertService.reportError('Element not found');
+      return;
+    }
+    this.router.navigateByUrl(
+      `overview/process/${element.processId}/element/${elementId}`
+    );
   }
 
   private deleteRow$(rowElement: TableRow): Observable<void> {
