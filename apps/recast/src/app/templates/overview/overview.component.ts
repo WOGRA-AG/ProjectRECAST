@@ -72,10 +72,7 @@ export class OverviewComponent implements OnDestroy, OnInit {
   public ngOnInit(): void {
     this.stateService
       .state$()
-      .pipe(
-        take(1),
-        filter(state => !!state)
-      )
+      .pipe(take(1), filter(Boolean))
       .subscribe(state => {
         this.changeContent(state.overview.index);
       });

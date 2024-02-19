@@ -1,0 +1,45 @@
+name: Grillstation
+steps:
+  - name: Pattie nehmen
+    stepProperties:
+      - name: Pattie geholt
+        defaultValue: true
+        type: boolean
+  - name: Grill vorheizen
+    stepProperties:
+      - name: Temperatur
+        defaultValue: 200
+        type: number
+  - name: Pattie grillen
+    stepProperties:
+      - name: Temperatur
+        defaultValue: 54
+        type: number
+  - name: Pattie prüfen
+    stepProperties:
+      - name: Ist gut gebraten
+        type: boolean
+---
+name: Brötchen Vorbereitungsstation
+steps:
+  - name: Brötchen aufschneiden
+    stepProperties:
+      - name: Ist Halbiert
+        type: boolean
+  - name: Brötchen toasten
+    stepProperties:
+      - name: temperatur
+        type: number
+---
+name: Burger Montage Station
+steps:
+  - name: Brötchen und Pattie nehmen
+    stepProperties:
+      - name: Pattie
+        type: Grillstation
+      - name: Brötchen
+        type: Brötchen Vorbereitungsstation
+  - name: Burger zusammenbauen
+    stepProperties:
+      - name: Ist zusammengebaut
+        type: boolean

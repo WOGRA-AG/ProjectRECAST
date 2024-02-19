@@ -68,13 +68,16 @@ export const yamlToProcess$ = (file: File): Observable<Process[]> =>
       if (!documents.length) {
         throw Error($localize`:@@err.file.empty:No valid Yaml found in File`);
       }
-      return documents.map(doc => {
-        return parseYamlToProcess(doc.toJSON());
-      });
+      return documents
+        .map(doc => parseYamlToProcess(doc.toJSON()))
+        .filter(process => process !== null) as Process[];
     })
   );
 
-const parseYamlToProcess = (spec: any): Process => {
+const parseYamlToProcess = (spec: any): Process | null => {
+  if (!spec) {
+    return null;
+  }
   const process = spec as Process;
   if (!isObjectofProcess(spec)) {
     throw Error($localize`:@@err.process.invalid:Invalid Process`);

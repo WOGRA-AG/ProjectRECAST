@@ -14,8 +14,8 @@ export class ViewStateService {
   }
 
   public updateOverviewIndex(index: number): void {
-    const newState = this._state.getValue();
-    newState.overview.index = index;
+    const currentState = this._state.getValue();
+    const newState = { ...currentState, overview: { index } };
     this.updateState(newState);
   }
 
@@ -34,7 +34,11 @@ export class ViewStateService {
     if (!stateString) {
       return;
     }
-    const state: ViewStateModel = JSON.parse(stateString);
-    this._state.next(state);
+    try {
+      const state: ViewStateModel = JSON.parse(stateString);
+      this._state.next(state);
+    } catch (e) {
+      console.error('Failed to parse state from session storage:', e);
+    }
   }
 }
