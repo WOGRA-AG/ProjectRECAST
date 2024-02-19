@@ -180,7 +180,7 @@ export class StepPropertyService {
                     property.id
                   );
               }
-              changes$.next(this.insertProperty(state, property));
+              changes$.next(this.updateProperty(state, property));
               break;
             }
             case 'UPDATE': {

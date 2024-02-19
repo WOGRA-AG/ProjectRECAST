@@ -16,7 +16,6 @@ import {
   from,
   map,
   merge,
-  mergeMap,
   Observable,
   of,
   skip,
@@ -91,7 +90,7 @@ export class ProcessFacadeService {
 
   public saveProcesses$(procs: Process[]): Observable<Process[]> {
     return from(procs).pipe(
-      mergeMap(proc => this.saveProcess$(proc)),
+      concatMap(proc => this.saveProcess$(proc)),
       take(procs.length),
       toArray()
     );
@@ -227,13 +226,19 @@ export class ProcessFacadeService {
   }
 
   private loadProcesses$(): Observable<Process[]> {
-    const select = this._supabaseClient.from(Tables.processes).select(`
+    const select = this._supabaseClient
+      .from(Tables.processes)
+      .select(
+        `
         *,
         steps: ${Tables.steps}(
           *,
           step_properties: ${Tables.stepProperties} (*)
         )
-      `);
+      `
+      )
+      .order('id', { referencedTable: Tables.steps, ascending: true })
+      .order('id', { ascending: true });
     return from(select).pipe(
       map(({ data, error }) => {
         if (error) {
@@ -261,6 +266,7 @@ export class ProcessFacadeService {
   }
 
   private insertProcess(state: Process[], process: Process): Process[] {
+    process.steps?.sort((a, b) => a.id! - b.id!);
     return state.concat(process);
   }
 
@@ -273,6 +279,7 @@ export class ProcessFacadeService {
       filter(({ key }) => !!key),
       map(({ key, values }) => {
         process = this.addStepsToProcess(process, key!, values);
+        process.steps?.sort((a, b) => a.id! - b.id!);
         return state.map(value => (value.id === process.id ? process : value));
       })
     );
