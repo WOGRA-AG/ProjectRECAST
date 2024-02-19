@@ -69,6 +69,7 @@ export class CreateElementComponent implements OnDestroy {
 
   public saveElement(): void {
     if (!this.processId || !this.propertiesForm.valid) {
+      this.alert.reportError('Invalid form');
       return;
     }
     this.elementService

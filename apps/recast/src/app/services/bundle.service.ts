@@ -8,7 +8,6 @@ import {
   from,
   map,
   merge,
-  mergeMap,
   Observable,
   of,
   Subject,
@@ -118,7 +117,7 @@ export class BundleService {
         bundle.id = bundleId;
         return processes.map(p => ({ ...p, bundleId }));
       }),
-      mergeMap((processes: Process[]) =>
+      concatMap((processes: Process[]) =>
         this.processService.saveProcesses$(processes)
       ),
       catchError(error => {
