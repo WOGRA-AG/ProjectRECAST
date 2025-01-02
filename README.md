@@ -29,8 +29,21 @@ The framework is being validated on welding processes such as:
 5. **Transfer Learning**: Extend findings to additional processes, such as resistance welding.
 
 ### Publications
-Several papers related to the RECAST project have already been published, contributing to the fields of AI and welding 
-process optimization. Links to these publications will be added as soon as they are available.
+The RECAST team has contributed to advancing knowledge in the field of AI and welding through the following publications:
+
+1. **"RECAST: An Open-Source Digital Twin Framework for Industrial Production Environments"**  
+   Authors: Lars Larsen, Thomas Fraunholz, Tim Köhler, Dennis Rall, Veronika Langner, Dominik Görick & Alfons Schuster  
+   Journal: *FAIM2024*  
+   DOI: [10.1007/978-3-031-74482-2_19](https://doi.org/10.1007/978-3-031-74482-2_19)
+
+2. **"RECAST: An Open Source Platform for Item-Specific Capturing of Real Production Processes"**  
+   Authors: Tim Köhler, Thomas Fraunholz, Dennis Rall, Lars Larsen, Dominik Görick, Alfons Schuster
+   Journal: *ICCBDC 2024*  
+   DOI: [10.1145/3694860](https://doi.org/10.1145/3694860)
+
+3. **"A Comparative Study of Open Source Computer Vision Models for Application on Small Data: The Case of CFRP Tape Laying"**  
+   Authors: Thomas Fraunholz, Dennis Rall, Tim Köhler, Alfons Schuster, Monika Mayer, Lars Larsen
+   DOI: [10.48550/arXiv.2409.10104](https://doi.org/10.48550/arXiv.2409.10104)
 
 ### Funding
 - Duration: 3 years
