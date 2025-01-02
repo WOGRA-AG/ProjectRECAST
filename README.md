@@ -37,12 +37,12 @@ The RECAST team has contributed to advancing knowledge in the field of AI and we
    DOI: [10.1007/978-3-031-74482-2_19](https://doi.org/10.1007/978-3-031-74482-2_19)
 
 2. **"RECAST: An Open Source Platform for Item-Specific Capturing of Real Production Processes"**  
-   Authors: Tim Köhler, Thomas Fraunholz, Dennis Rall, Lars Larsen, Dominik Görick, Alfons Schuster
+   Authors: Tim Köhler, Thomas Fraunholz, Dennis Rall, Lars Larsen, Dominik Görick, Alfons Schuster  
    Journal: *ICCBDC 2024*  
    DOI: [10.1145/3694860](https://doi.org/10.1145/3694860)
 
 3. **"A Comparative Study of Open Source Computer Vision Models for Application on Small Data: The Case of CFRP Tape Laying"**  
-   Authors: Thomas Fraunholz, Dennis Rall, Tim Köhler, Alfons Schuster, Monika Mayer, Lars Larsen
+   Authors: Thomas Fraunholz, Dennis Rall, Tim Köhler, Alfons Schuster, Monika Mayer, Lars Larsen  
    DOI: [10.48550/arXiv.2409.10104](https://doi.org/10.48550/arXiv.2409.10104)
 
 ### Funding
