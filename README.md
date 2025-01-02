@@ -1,70 +1,48 @@
-![Recast Logo](https://raw.githubusercontent.com/WOGRA-AG/ProjectRECAST/main/apps/recast/src/assets/logo/recast_logo.svg)
-# RECAST - An Open-Source Digital Twin Framework for Industrial Production Environments
+# RECAST: AI-Powered Quality Assurance for Welding Processes
 
-Welcome to RECAST, an open-source digital twin framework specifically designed for use in industrial production environments.
+### Overview
+RECAST (ÜbeRwachung dEr SChweißquAlität durch künStliche InTelligenz) is a research initiative funded by the Federal Ministry of Education and Research (BMBF). The project focuses on developing an intuitive and adaptable AI framework for process monitoring and quality assurance, with a primary application in welding processes for thermoplastic composite materials.
 
-## Getting Started
-To start using RECAST, we rely on [Supabase] as the primary backend technology. Before you can run the app, you must register and set up your own [Supabase] project. If you need guidance on how to get started with [Supabase], please refer to the [Supabase docs].
+### Objectives
+The main goals of the RECAST project are:
+1. **Automating Manual Processes**: Replace manual steps in production chains with AI-driven solutions.
+2. **Quality Assurance and Process Optimization**: Enable non-destructive, automated quality control for welding processes.
+3. **Open-Source Development**: Deliver a freely available framework to encourage broad adoption in small and medium-sized enterprises (SMEs).
+4. **Ease of Integration**: Allow SMEs to utilize AI technologies without prior expertise.
 
-### Supabase Setup
-After setting up your [Supabase] Project, you'll need three pieces of information from your new project, which can be found in the "Project Settings" menu:
+### Key Features
+- **End-to-End Process Monitoring**: Utilize mobile and embedded devices for seamless data aggregation throughout the production lifecycle.
+- **AI Integration**: Leverage AutoML and Transfer Learning to develop adaptable AI models for real-time decision-making.
+- **Low-Code Accessibility**: Provide user-friendly tools for configuring processes and analyzing data via a web-based interface.
+- **Open Source Framework**: Share the framework and related datasets to facilitate experimentation and knowledge sharing.
 
-1. Reference ID - Located in the "General" tab of your Project's settings.
-2. Anon Api Key - Found in the "API" tab of your project's settings.
-3. The password for your database.
+### Use Cases
+The framework is being validated on welding processes such as:
+- Continuous ultrasonic welding.
+- Continuous resistance welding.
 
-Once you have obtained this information, navigate to the `/apps/supabase` folder within this project. We have already prepared all the necessary migration files for you.
+### Project Milestones
+1. **Sensor Data Collection and Process Visualization**: Establish robust data acquisition and visualization systems.
+2. **AI-Assisted Quality Control**: Develop models for detecting defects in welded components.
+3. **Automated Model Creation**: Implement AutoML for building AI models directly on production equipment.
+4. **Adaptive Process Optimization**: Use AI to optimize parameters for varying materials and forms.
+5. **Transfer Learning**: Extend findings to additional processes, such as resistance welding.
 
-```bash
-cd apps/supabase
-```
+### Publications
+Several papers related to the RECAST project have already been published, contributing to the fields of AI and welding 
+process optimization. Links to these publications will be added as soon as they are available.
 
-To install the [supabase-cli], we recommend using npm:
+### Funding
+- Duration: 3 years
 
-```bash
-npm install
-```
+### How to Contribute
+We welcome contributions from the community. To get involved:
+1. Check out the [repository](https://github.com/example/recast).
+2. Review our [contribution guidelines](CONTRIBUTING.md).
+3. Join discussions in the issues section.
 
-Next, link the CLI to your project:
+### License
+This project is licensed under the [MIT License](LICENSE).
 
-```bash
-npx supabase link --project-ref <YOUR REFERENCE ID>
-```
-
-Confirm your `DATABASE PASSWORD`. This will link your local project to your [Supabase] database. The next step is to push the local migration scripts to this database. First, update your local database created by [supabase-cli] with the following command:
-
-```bash
-npx supabase db reset
-```
-
-Then push the schema to your remote database:
-
-```bash
-npx supabase db push
-```
-
-### Frontend
-The frontend of this project is located in the `apps/recast` folder. 
-Before starting it, you need to update the `apps/recast/src/environments/environments.ts` file with your personal [Supabase] `DatabaseUrl` and your `<AnonAPIKey>`.
-
-To start the frontend, run the following command:
-
-```bash
-npm install && npm start
-```
-
-### Start Using RECAST
-After the frontend has started locally, you can access [http://localhost:4200](http://localhost:4200) to explore RECAST. For more information and examples on how to use the platform, please refer to the [Documentation].
-
-## License
-Recast is primarily distributed under the terms of both the MIT license and the Apache License (Version 2.0).
-
-See [LICENSE-APACHE](LICENSE-APACHE), [LICENSE-MIT](LICENSE-MIT), and [COPYRIGHT](COPYRIGHT) for details.
-
-[Angular]: https://angular.io/
-[Supabase]: https://supabase.com/
-[Shepard]: https://gitlab.com/dlr-shepard
-[WOGRA AG]: https://www.wogra.com/
-[Supabase docs]: https://supabase.com/docs
-[supabase-cli]: https://supabase.com/docs/guides/cli
-[Documentation]: https://wogra-ag.github.io/recast-docs
+### Contact
+For more information, contact Tim Köhler at [tk@wogra.com](mailto:tk@wogra.com).
